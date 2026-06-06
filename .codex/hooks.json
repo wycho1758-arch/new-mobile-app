@@ -1,0 +1,56 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/mobile-subagent-context.mjs",
+            "statusMessage": "Loading mobile runtime context",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/mobile-pretool-policy.mjs",
+            "statusMessage": "Checking mobile repo tool policy",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/mobile-posttool-evidence-reminder.mjs",
+            "statusMessage": "Checking mobile evidence reminder",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/mobile-stop-gatekeeper-advisory.mjs",
+            "statusMessage": "Checking mobile final evidence reminder",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

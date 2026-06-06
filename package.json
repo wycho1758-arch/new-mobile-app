@@ -1,0 +1,12 @@
+{
+  "name": "new-mobile-app-runtime",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-runtime-artifacts.mjs",
+    "test:hooks": "node scripts/test-hooks.mjs",
+    "test:openclaw": "node scripts/test-openclaw-packages.mjs",
+    "test": "npm run validate && npm run test:hooks && npm run test:openclaw",
+    "package:openclaw-skills": "node scripts/package-openclaw-skills.mjs"
+  }
+}
