@@ -107,22 +107,154 @@ docker build -f apps/api/Dockerfile .
 
 ---
 
-## (e) Human-gate (외부 서비스 연결)
+## (e) Human-gate (외부 서비스 연결 + 핸드오프 체크리스트)
 
 아래 항목은 Expo 계정, EAS project, Store 계정 등 외부 서비스 연결이 완료된 후에만 검증 가능합니다.
-로컬 자동화만으로는 실행할 수 없으며, **Human owner의 계정/토큰 준비 후에만 가능**합니다.
+로컬 자동화만으로는 실행할 수 없으며, Human owner의 계정/토큰 준비 후에만 가능합니다.
 
-사전 등록 가이드 §5 Day 0/Day 1 체크리스트를 참조하세요.
+전체 등록 절차 원문은 사전 등록 가이드를 참조하세요:
+https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1372422154
 
-| 항목 | 선행 조건 | 템플릿 준비 상태 |
-|------|-----------|----------------|
-| `eas init` → EAS_PROJECT_ID 확정 | Expo 계정 + 구독 | `eas.json`, `app.config.ts extra.eas` 설정 완료 |
-| Robot user EXPO_TOKEN k8s Secret 적용 | Expo org Robot user 생성 | `infra/clawpod/secret.example.yaml` 제공 |
-| Maestro E2E live 실행 | EAS build 완료 + emulator | `.maestro/home.yml`, `e2e-test-android.yml` 배선 완료 |
-| EAS build (preview/production) | EXPO_TOKEN Secret 주입 | `eas.json` profiles + `.eas/workflows/` 배선 완료 |
-| EAS Submit (store 제출) | Store 계정 + credentials | `build-and-submit.yml` 배선 완료 |
-| Sentry 활성화 | Sentry project + DSN + AUTH_TOKEN | `docs/CREDENTIALS.md` 절차 + SoT §6 4단계 문서화 완료 |
-| Android 최초 수동 업로드 | Google Play 개발자 계정 | 수동 업로드 후 이후 제출은 EAS Submit 자동화 가능 |
-| App Store Connect 제출 | Apple 개발자 계정 + ASC API key | `EXPO_ASC_KEY_ID` / `EXPO_ASC_ISSUER_ID` / `.p8` Secret 주입 필요 |
+---
 
-> **PHASE 4에서 보강 예정**: 위 항목별 상세 절차(토큰 생성 위치, credentials 적용 방법, EAS workflow 트리거 방법)는 PHASE 4 문서 보강에서 추가됩니다.
+### Day 0 — 비용 없이 시작 (담당: Human owner)
+
+참조: 사전 등록 가이드 §5 Day 0
+
+- [ ] GitHub repo 생성 및 팀 초대 (Human owner)
+- [ ] Expo account 생성 및 org 설정, EAS project 초기화 준비 (Human owner)
+  - 참조: `apps/mobile/eas.json`, `apps/mobile/app.config.ts`
+- [ ] Confluence SoT 접근 권한 확인 (Human owner)
+  - 참조: https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1371963427
+- [ ] Jira project 생성 및 팀 멤버 초대 (Human owner)
+- [ ] Codex / OpenAI 계정 및 API 접근 확인 (Human owner)
+- [ ] Google Stitch 접근 및 Design agent 소유권 확인 (Human owner)
+  - 참조: `DESIGN.md`, `docs/design-references/`
+- [ ] ClawPod k8s Secret 적용 권한 확인 (Human owner — ops)
+  - 참조: `infra/clawpod/secret.example.yaml`, `infra/clawpod/agent-runner.yaml`
+- [ ] 무료 우선 원칙 확인 — 결제 항목(Apple Developer, Google Play Console, Expo paid plan, Sentry paid plan)은 아래 단계에서 판단
+
+---
+
+### Day 1 — dry-run 전 (담당: Human owner)
+
+참조: 사전 등록 가이드 §5 Day 1
+
+- [ ] `eas init` 실행 → EAS_PROJECT_ID(UUID) 확정 (Human owner)
+  - 실행 위치: `apps/mobile/` (eas.json과 같은 레벨)
+  - 명령: `npx eas-cli@latest init`
+  - 완료 후: 확정된 UUID를 `infra/clawpod/secret.example.yaml`의 `EAS_PROJECT_ID` 값으로 반영하고 k8s Secret 재적용
+- [ ] Expo org Robot user 생성 및 최소 권한 부여 (Human owner)
+  - 참조: Expo programmatic access 문서, `infra/clawpod/secret.example.yaml`
+  - 원칙: token 원문을 문서/채팅/repo에 평문 저장 금지
+- [ ] EXPO_TOKEN k8s Secret 생성 및 agent-runner에 주입 (Human owner → ops)
+  - 참조: `infra/clawpod/secret.example.yaml`, `infra/clawpod/agent-runner.yaml`
+  - 주입 후 Agent가 EAS CLI를 비대화식으로 실행 가능
+- [ ] GitHub Actions quality-gate 동작 확인 — PR push 후 `.github/workflows/quality-gate.yml` green (Human owner)
+- [ ] Sentry project 생성 및 DSN/AUTH_TOKEN 발급 준비 (Human owner, 무료 플랜으로 시작)
+  - 참조: `docs/CREDENTIALS.md` Sentry 섹션
+- [ ] `infra/clawpod/secret.example.yaml` 기반으로 실제 k8s Secret manifest 작성 후 적용 (Human owner — ops)
+  - 주의: `${...}` placeholder를 실제 값으로 치환 후 적용, 실제 값이 담긴 파일은 커밋 금지
+- [ ] 템플릿 변수 렌더링 계획 수립 — `{{ANDROID_PACKAGE}}` 등 `{{...}}` placeholder를 프로젝트 생성 시 치환할 도구/절차 확인 (Human owner)
+  - 참조: SoT §3 "템플릿 변수 렌더링 규약"
+- [ ] `DATABASE_URL` Secret 준비 (apps/api 포함 시, Human owner — ops)
+  - 참조: `docs/CREDENTIALS.md` DATABASE_URL 섹션
+
+---
+
+### Preview / Internal build 전 (담당: Human owner)
+
+참조: 사전 등록 가이드 §5 Preview/Internal build 전
+
+- [ ] EAS build (e2e-test profile) 트리거 확인 — `EXPO_TOKEN` Secret 주입 후 EAS Workflows 실행 (Human owner)
+  - 참조: `apps/mobile/.eas/workflows/e2e-test-android.yml`
+- [ ] Maestro E2E live 실행 — EAS build 완료 후 emulator에서 `.maestro/home.yml` 실행 확인 (Human owner)
+  - 참조: `apps/mobile/.maestro/home.yml`, `apps/mobile/.eas/workflows/e2e-test-android.yml`
+- [ ] Sentry 활성화 (DSN 주입 시 4단계 절차 적용) (Human owner)
+  1. `app.config.ts` plugins에 Sentry expo plugin 추가 (`SENTRY_ORG`/`SENTRY_PROJECT` 연결)
+  2. `metro.config.js`를 `getSentryExpoConfig` 기반으로 교체 (withNativeWind 래핑 유지)
+  3. EAS secret에 `SENTRY_AUTH_TOKEN` 주입 → EAS Build 시 sourcemap 자동 업로드
+  4. EAS Update 후 sourcemap 업로드 확인 (`ota-update.yml`에 `upload_sentry_sourcemaps: true` 추가 가능)
+  - 참조: `docs/CREDENTIALS.md` Sentry 섹션, SoT §6 Sentry 통합 절차, `apps/mobile/src/app/_layout.tsx`
+- [ ] EAS build (preview profile) 트리거 및 OTA update 확인 (Human owner)
+  - 참조: `apps/mobile/.eas/workflows/ota-update.yml`
+- [ ] `apps/api` 포함 시 — Docker 이미지 빌드 및 프로덕션 환경 배포 검증 (Human owner — ops)
+  - 참조: `apps/api/Dockerfile`, `apps/api/compose.yaml`
+- [ ] Expo paid plan 필요성 판단 — 월 빌드량/concurrency 기준 (Human owner)
+- [ ] Store 계정 명의 확정 — 고객 법인 vs 운영 대행 법인 (Human owner)
+
+---
+
+### Production submit 전 (담당: Human owner)
+
+참조: 사전 등록 가이드 §5 Production submit 전
+
+- [ ] iOS 제출이 필요하면 Apple Developer Program 가입/결제와 App Store Connect 설정을 진행한다.
+  - ASC API key 발급 후 `EXPO_ASC_KEY_ID` / `EXPO_ASC_ISSUER_ID` / `.p8` Secret 주입 필요
+  - 참조: `docs/CREDENTIALS.md` Store 섹션
+- [ ] Android 제출이 필요하면 Google Play Console 가입/등록비 결제와 identity verification을 진행한다.
+  - Google account 준비, developer account type 결정, 등록비 결제, identity/contact verification 필요
+- [ ] Android 최초 제출은 Human owner가 Play Console에 앱(빌드 산출물)을 수동 업로드 1회 수행한다.
+  - Google 요구사항: API 기반 제출(EAS Submit 자동화)은 최초 1회 수동 업로드 이후에만 동작
+  - 참조: Expo Submit 공식 문서, 사전 등록 가이드 §3 Google Play Console 행
+- [ ] EAS Submit 자동화를 위해 Apple/Google service credentials를 Secret으로 준비한다.
+  - 참조: `apps/mobile/.eas/workflows/build-and-submit.yml`, `docs/CREDENTIALS.md`
+- [ ] Store 계정 명의와 고객/운영 대행 주체를 확정한다.
+- [ ] production 빌드 빈도와 OTA MAU 기준으로 Expo paid plan 필요성을 최종 판단한다.
+
+---
+
+### EAS 의존 DoD 항목 요약 (01-8 §2 기준)
+
+아래 항목은 01-8 DoD 중 외부 서비스 연결이 선행되어야 검증 가능한 HUMAN-GATE 항목입니다.
+템플릿 산출물(설정 파일, workflow 배선, 문서)은 모두 완비되어 있습니다.
+
+| DoD 항목 | 담당 | 선행 조건 | 템플릿 준비 상태 |
+|----------|------|-----------|----------------|
+| `eas init` → EAS_PROJECT_ID 확정 | Human owner | Expo 계정 + 구독 | `eas.json`, `app.config.ts extra.eas` 설정 완료 |
+| Robot user EXPO_TOKEN k8s Secret 적용 | Human owner (ops) | Expo org Robot user 생성 | `infra/clawpod/secret.example.yaml` 제공 |
+| Maestro E2E live 실행 | Human owner | EAS build 완료 + emulator | `.maestro/home.yml`, `e2e-test-android.yml` 배선 완료 |
+| EAS build (preview/production) | Human owner | EXPO_TOKEN Secret 주입 | `eas.json` profiles + `.eas/workflows/` 배선 완료 |
+| EAS Submit (store 제출) | Human owner | Store 계정 + credentials | `build-and-submit.yml` 배선 완료 |
+| Sentry 활성화 | Human owner | Sentry project + DSN + AUTH_TOKEN | `docs/CREDENTIALS.md` 절차 + SoT §6 4단계 문서화 완료 |
+| Android 최초 수동 업로드 (1회) | Human owner | Google Play 개발자 계정 | 수동 업로드 후 이후 제출은 EAS Submit 자동화 가능 |
+| App Store Connect 제출 | Human owner | Apple 개발자 계정 + ASC API key | `EXPO_ASC_KEY_ID` / `EXPO_ASC_ISSUER_ID` / `.p8` Secret 주입 필요 |
+
+---
+
+### 01-8 DoD 전체 대조표 (PHASE 3 검증 결과)
+
+아래 표는 PHASE 3 통합 검증에서 확정된 01-8 §2 + §15.5 DoD 전체 항목의 판정 결과입니다.
+로컬 검증 항목은 PASS, 외부 서비스 연결이 필요한 항목은 HUMAN-GATE로 구분합니다.
+
+#### §2 핵심 DoD
+
+| DoD 항목 | 출처(§) | 판정 | 근거 |
+|----------|---------|------|------|
+| pnpm workspace + Turborepo 동작, `packages/contracts`가 `apps/mobile`에서 해석됨 | §2 | PASS | `pnpm-workspace.yaml` + `turbo.json` 존재. `pnpm install` EXIT 0, `pnpm turbo run lint test` 4 tasks all successful |
+| 홈 화면 카운터 샘플이 공유 상수 import하여 렌더링·동작 | §2 | PASS | `apps/mobile/src/app/index.tsx`가 `COUNTER_INCREMENT`(@template/contracts) import. mobile jest 1 test PASS |
+| Jest 유닛 테스트(`home.test.tsx`) 통과 + `jest.setup.ts`가 테스트 env 주입 | §2 | PASS | `home.test.tsx` + `jest.setup.ts` 존재. mobile jest 1 test PASS |
+| RNTL v13+ 고정 — built-in matcher import만으로 등록, `toHaveTextContent` 동작 | §2 | PASS | `@testing-library/react-native: ^13.0.0` 고정. `toHaveTextContent` 사용하며 PASS |
+| NativeWind 동작 (`global.css`, semantic token CSS var defaults, `withNativeWind` Metro) | §2 | PASS | 5개 설정 파일 모두 존재. Metro smoke 검증 시 NativeWind 오류 없음 |
+| Maestro E2E(`home.yml`)가 EAS Workflows maestro job으로 통과 | §2 | HUMAN-GATE | `home.yml` + `e2e-test-android.yml` 배선 완료. EAS Workflows 클라우드 실행은 Expo 계정·eas init 선행 필요 |
+| `eas.json`에 development/preview/production + e2e-test profile 정의 | §2 | PASS | 4개 profile + submit.production 모두 정의 확인 |
+| `.eas/workflows`에 build→maestro / build→submit / update job 배선 | §2 | PASS | `e2e-test-android.yml`, `build-and-submit.yml`, `ota-update.yml` 모두 배선 확인 |
+| `@sentry/react-native` init 및 EAS Build/Update sourcemap 업로드 절차 문서화 | §2 | PASS | `_layout.tsx`에 `Sentry.init`(enabled: Boolean(DSN)) no-op 가드. `docs/CREDENTIALS.md` 절차 완비 |
+| Agent 실행용 `EXPO_TOKEN`을 k8s Secret으로 주입하는 예시 manifest 제공 | §2 | PASS | `infra/clawpod/secret.example.yaml` + `agent-runner.yaml` 예시 manifest 제공 |
+| root `AGENTS.md` + `docs/SETUP.md` / `docs/CREDENTIALS.md` 문서 완비 | §2 | PASS | 3개 문서 존재. `AGENTS.md`에 TDD/hardcod/direct push/shadcn 키워드 포함 |
+| root `DESIGN.md` 존재 + `docs/design-references/`에 awesome-design-md vendored 사본 (DEC-021) | §2 | PASS | `DESIGN.md` 존재. `docs/design-references/LICENSE` + `NOTICE` + vendored 사본 다수 |
+| (선택) `apps/api` 포함 시 §15 backend 완료 기준 4항목 충족 | §2 | PASS | 아래 §15.5 표 4항목 전부 PASS |
+| 하드코딩된 고객/앱 식별자 없이 템플릿 변수로 치환 가능 | §2 | PASS | 금지 식별자(cloud.clawpod.app 등) 0건. 전 변수 env 주입 + 중립 default |
+
+#### §15.5 apps/api 완료 기준
+
+| DoD 항목 | 출처(§) | 판정 | 근거 |
+|----------|---------|------|------|
+| `counter-events.test.ts`가 red→green 통과 (vitest, `pnpm turbo run test` 합류) | §15.5 | PASS | vitest 2 tests PASS (invalid 400 + 201 success mock). turbo test 합류 확인 |
+| `migrate()` 2회 연속 실행이 동일 결과 (멱등) | §15.5 | PASS | API 1회차 부팅 시 마이그레이션 적용, 2회차 신규 0건 — 멱등 확인 |
+| `GET /livez`·`GET /readyz` 무인증 200 응답 (readyz는 DB ping 포함) | §15.5 | PASS | GET /livez 200, GET /readyz 200 (DB 연결 시) / 503 (DB 중단 시) 분기 확인 |
+| `docker build -f apps/api/Dockerfile .` 성공 (컨테이너 이미지 산출) | §15.5 | PASS | turbo prune → tsc → pnpm deploy 전 스테이지 성공, 이미지 sha256 확인 |
+
+**요약: PASS 16 / HUMAN-GATE 1 / FAIL 0**
+
+HUMAN-GATE 1건 사유: Maestro E2E 실제 통과는 EAS Workflows 클라우드 emulator 실행이 필요하며, 이는 Expo 계정·`eas init`·Robot token(사전 등록 가이드 §5 Day 1)이 선행되어야 검증 가능합니다. 동일 클래스의 EAS Build/Submit/Update·Sentry 활성화·Store 제출도 클라우드 실행 시점에 검증되는 HUMAN-GATE 영역이나, DoD 항목 자체(profile 정의·workflow 배선·문서화·init 코드)는 산출물로 충족되어 PASS입니다.
