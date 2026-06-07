@@ -1,12 +1,18 @@
 {
-  "name": "new-mobile-app-runtime",
+  "name": "mobile-app-template",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "devDependencies": {
+    "turbo": "^2.9.16"
+  },
   "scripts": {
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:runtime": "npm run validate && npm run test:hooks && npm run test:openclaw",
     "validate": "node scripts/validate-runtime-artifacts.mjs",
     "test:hooks": "node scripts/test-hooks.mjs",
     "test:openclaw": "node scripts/test-openclaw-packages.mjs",
-    "test": "npm run validate && npm run test:hooks && npm run test:openclaw",
     "package:openclaw-skills": "node scripts/package-openclaw-skills.mjs"
   }
 }

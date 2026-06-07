@@ -1,0 +1,30 @@
+Vendored Source Notice
+======================
+
+Source:   github.com/VoltAgent/awesome-design-md
+License:  MIT (see LICENSE file in this directory)
+Vendored: 2026-06-07
+
+This directory contains a vendored copy of the VoltAgent/awesome-design-md repository,
+which is a curated list of brand-specific DESIGN.md examples. It is included here as a
+reference for authoring the root DESIGN.md for projects based on this template.
+
+Sync Policy (DEC-021)
+---------------------
+The upstream repository (github.com/VoltAgent/awesome-design-md) may be updated
+independently of this vendored copy. Automatic synchronization does not occur.
+Periodic manual synchronization is required.
+
+The upstream synchronization owner and cadence for this repository must be designated
+by the operator at project scaffolding time. Until designated, no synchronization
+obligation is active but the vendored copy may become stale.
+
+When re-syncing, copy all upstream content except the .git directory, and preserve
+this NOTICE file and the LICENSE file intact. Confirm the upstream license remains MIT
+before updating.
+
+Original Copyright
+------------------
+Copyright (c) 2026 VoltAgent
+
+The full MIT license text is in the LICENSE file alongside this NOTICE.
