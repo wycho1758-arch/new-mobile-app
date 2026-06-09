@@ -1,0 +1,1 @@
+Review this Stitch-backed design handoff for DESIGN.md decision handling, objective UI/UX framing, exactly two Option A/B designs, selected-option rationale, Option A/B HTML extraction, Option A/B image extraction, design-pub-html/<YYYY-MM-DD>/ publication, five-state coverage, accessibility, implementation constraints, evidence, and owner handoff risks.

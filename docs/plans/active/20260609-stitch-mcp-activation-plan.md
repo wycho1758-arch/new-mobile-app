@@ -1,7 +1,7 @@
 # Stitch MCP Activation Plan
 
 Date: 2026-06-09
-Status: plan-only, pending approval before runtime activation
+Status: pinned stdio Stitch MCP activated; Stitch generation smoke pending Google Cloud ADC/project setup
 Owner role: Design agent for Stitch design workflow; Codex runtime owner for MCP registration and validation
 
 ## Scope
@@ -12,54 +12,44 @@ This plan covers enabling Stitch MCP for the current repository workflow:
 2. Generate a first mock or wireframe in Stitch.
 3. Get human approval for the wireframe direction.
 4. Send the approved direction plus `DESIGN.md` constraints to Stitch.
-5. Generate one to three visual design options.
+5. Generate exactly two visual design options.
 6. Get human approval for the selected design.
 7. Export HTML and design evidence for implementation handoff.
 
-No runtime activation has been applied yet. `$wm` requires planning before non-trivial runtime changes, and the current worktree already contains unrelated changes.
+Runtime activation has been applied with the pinned stdio adapter. `$wm` required planning and review before activation, and the current worktree still contains unrelated pre-existing changes.
 
 ## Current State
 
-- `.codex/config.toml` registers `mobile-mcp` and `serena`; `stitch` is not registered.
-- `PROJECT_ENVIRONMENT.md` lists required project MCP servers as `mobile-mcp` and `serena`.
-- `scripts/validate-runtime-artifacts.mjs` validates `mobile-mcp` and `serena` only.
+- `.codex/config.toml` registers `mobile-mcp`, `serena`, and `stitch`.
+- `PROJECT_ENVIRONMENT.md` lists required project MCP servers including `stitch`.
+- `scripts/validate-runtime-artifacts.mjs` validates the pinned `stitch-mcp@1.3.2` registration.
 - `DESIGN.md` already declares Google Stitch as the sole authoring tool and requires Stitch export or Stitch MCP fetch for design artifacts.
 - `docs/SETUP.md` lists Google Stitch access and Design agent ownership as a Human owner prerequisite.
 - There are two Codex binaries on PATH. `/usr/local/bin/codex` fails in this session without output, while `/opt/homebrew/bin/codex` reports `codex-cli 0.137.0`.
-- `/opt/homebrew/bin/codex mcp list` succeeds and confirms that `stitch` is not currently active.
+- `/opt/homebrew/bin/codex mcp list` is used for MCP inventory because `/usr/local/bin/codex` fails in this session without output.
 
 ## External Source Basis
 
 - Official Stitch docs are located under `https://stitch.withgoogle.com/docs/mcp/`, but the fetched pages did not expose readable text in this session.
-- Public Stitch MCP references describe a remote MCP endpoint at `https://stitch.googleapis.com/mcp`, API key authentication with `X-Goog-Api-Key`, and API key creation from `https://stitch.withgoogle.com/settings`.
-- Public references describe tools for project and screen management, design generation, screen retrieval, and export URLs for HTML, screenshots, and Figma artifacts.
-- Independent Stitch MCP guidance recommends combining MCP with `DESIGN.md`, checking generation quota, and testing with a simple generation before complex project work.
-- `npm view stitch-mcp` reports `stitch-mcp@1.3.2` as a local stdio MCP adapter package, but this should be treated as fallback after security review rather than the first project default.
+- `npm view stitch-mcp` reports `stitch-mcp@1.3.2` as a local stdio MCP adapter package with tarball integrity `sha512-SlRjWAQGrJ3X1J/kP38wUP+Q3V+aIYKx8zAM5hNQdJvyYmsIKGcOTqJWZOnXaHX/7hvgwOTGlF6B/frPnoWYAA==`.
+- The `stitch-mcp@1.3.2` README and source use Google Cloud Application Default Credentials, `GOOGLE_CLOUD_PROJECT`/`GCLOUD_PROJECT` or `gcloud config get-value project`, and bearer-token calls to `https://stitch.googleapis.com/mcp`.
+- The adapter exposes tools for project and screen management, design generation, screen retrieval, and export/download helpers for HTML/code and screenshots.
 
 ## Proposed Activation Approach
 
-Preferred approach:
-
-```toml
-[mcp_servers.stitch]
-url = "https://stitch.googleapis.com/mcp"
-headers = { "X-Goog-Api-Key" = "$STITCH_API_KEY" }
-```
-
-The exact TOML shape must be verified against the active Codex CLI MCP schema before editing `.codex/config.toml`. If the current Codex CLI does not support remote HTTP MCP headers or environment interpolation, use a pinned local adapter only after review:
+Activated approach:
 
 ```toml
 [mcp_servers.stitch]
 command = "npx"
 args = ["-y", "stitch-mcp@1.3.2"]
-env = { "STITCH_API_KEY" = "$STITCH_API_KEY" }
 ```
 
-Do not use `@latest`.
+This avoids committing API keys and matches the current Codex CLI support surface. `/opt/homebrew/bin/codex mcp add --help` supports streamable HTTP URL plus bearer token env var, but no custom `X-Goog-Api-Key` header option was verified.
 
 ## API Key Storage
 
-Do not store `STITCH_API_KEY` in:
+The chosen adapter does not require a Stitch API key. Do not store Stitch credentials or project-private values in:
 
 - Git-tracked files.
 - `.codex/config.toml` as a literal value.
@@ -70,11 +60,13 @@ Do not store `STITCH_API_KEY` in:
 
 Recommended local test handling:
 
-- Human owner creates the key in Stitch settings.
-- Human owner exports it into the local shell or Codex secret facility as `STITCH_API_KEY`.
-- Commands use process environment injection only.
-- Evidence records whether the variable was present, never its value.
-- Rotate the key after shared demos, failed security checks, or accidental exposure.
+- Human owner prepares a Google Cloud project with Stitch MCP service enabled:
+  - `gcloud beta services mcp enable stitch.googleapis.com --project=<project-id>`
+  - `gcloud auth application-default login`
+  - `gcloud auth application-default set-quota-project <project-id>`
+  - `export GOOGLE_CLOUD_PROJECT=<project-id>` or `gcloud config set project <project-id>`
+- Evidence records whether prerequisites were present, never credential values.
+- Rotate or revoke local credentials after shared demos, failed security checks, or accidental exposure.
 - Codex may update docs that describe required secrets, but must not read or print secret files or secret values.
 
 ## Prompt Review
@@ -109,7 +101,7 @@ Output:
 ### Stage 2 Design Options Prompt
 
 ```text
-Use Stitch to create 1 to 3 polished mobile design options based on the approved wireframe.
+Use Stitch to create exactly two polished mobile design options based on the approved wireframe.
 
 Input:
 - Approved wireframe summary:
@@ -128,8 +120,9 @@ Constraints:
 - Prefer accessible contrast, clear touch targets, and mobile-first layout density.
 
 Output:
-- 1 to 3 design options.
+- Exactly two design options.
 - Screenshot/export references per option.
+- HTML and image artifacts per option under `design-pub-html/<YYYY-MM-DD>/`.
 - Token changes needed in DESIGN.md and apps/mobile/global.css.
 - Implementation notes and risks.
 ```
@@ -163,12 +156,12 @@ After approval, implementation should follow tests-first runtime changes:
 2. Add or update the narrowest runtime eval/result evidence for Stitch MCP activation.
 3. Update `.codex/config.toml` with the verified Stitch MCP config.
 4. Update `PROJECT_ENVIRONMENT.md` so the MCP inventory and required secret handling are accurate.
-5. Update `docs/CREDENTIALS.md` and the local Confluence update document if `STITCH_API_KEY` becomes a required project secret or human-owner prerequisite.
+5. Update `team-doc/10-structured/05-repo-template/codex-runtime-layer.md` as the local Confluence-derived corpus. Do not update `docs/CREDENTIALS.md` or live Confluence for this change.
 6. Run `pnpm run test:runtime`.
 7. Run `pnpm run test:local-harness`, because `.codex`, runtime scripts, `PROJECT_ENVIRONMENT.md`, `docs/CREDENTIALS.md`, or `docs/plans` changes affect the local harness gate.
 8. Restart or reload Codex MCP, then run `/opt/homebrew/bin/codex mcp list` or fix PATH so `codex` resolves to the working binary.
 9. If `codex mcp list` still fails after PATH/reload correction, record the exact command and failure as blocked evidence; do not mark activation complete.
-10. If `STITCH_API_KEY` is present, perform a minimal Stitch smoke test in a throwaway project or read-only listing call, then record evidence without exposing project-private content or the key.
+10. If Google Cloud ADC and project setup are present, perform a minimal Stitch smoke test in a throwaway project or read-only listing call, then record evidence without exposing project-private content or credentials.
 
 ## Gate Impact
 
@@ -181,8 +174,5 @@ After approval, implementation should follow tests-first runtime changes:
 
 Before implementation, confirm:
 
-1. Whether Stitch should be registered as a required project MCP server or optional design-only MCP.
-2. Whether the project accepts remote HTTP MCP config as the default.
-3. Whether the human owner can provide `STITCH_API_KEY` through a local secret mechanism for smoke testing.
-4. Whether actual Stitch generation should create a new throwaway project or use an existing Stitch project.
-5. Whether Stitch credential handling must be added to `docs/CREDENTIALS.md` and the Confluence update document in the same PR.
+1. Whether actual Stitch generation should create a new throwaway project or use an existing Stitch project.
+2. Whether the human owner has completed Google Cloud ADC and project setup for smoke testing.

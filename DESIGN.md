@@ -56,6 +56,6 @@ Design artifacts for this project are produced exclusively with Google Stitch. T
 
 1. Export the Stitch design as a ZIP containing `code.html`, or fetch via Stitch MCP.
 2. Extract semantic token values from the export and update this file + `apps/mobile/global.css`.
-3. Publish the HTML artifact to `docs/design-references/` or a designated hosting location.
+3. Publish Stitch handoff artifacts under project-root `design-pub-html/<YYYY-MM-DD>/` with Option A/B HTML, Option A/B images, `manifest.json`, and `handoff.md`.
 
 For DESIGN.md format examples and brand-specific reference implementations, see `docs/design-references/` (vendored awesome-design-md, MIT).

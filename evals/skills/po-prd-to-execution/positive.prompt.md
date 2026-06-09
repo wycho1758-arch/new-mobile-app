@@ -1,0 +1,1 @@
+$po-prd-to-execution Convert this ready PRD into Jira Epic/Story/role-scoped Tasks with owner role, input artifact, output artifact, Done-when acceptance criteria, evidence requirements, open decisions, non-goals, human gates, and next responsible roles.

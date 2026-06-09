@@ -12,6 +12,7 @@ This harness validates the mobile organization runtime surface that can be check
 - Native Codex custom agents use `.codex/agents/<agent-name>.toml`.
 - Native Codex hooks use `.codex/hooks.json` and `.codex/hooks/`.
 - Native Codex MCP config uses `.codex/config.toml`.
+- Repo-local Codex adapters that require Product/Planning `po-*` or Design `design-*` names map back to their source role skill or SOUL pages.
 - Product/Planning fixture work is coordinator-only: PRD, task, evidence, and human-gate routing.
 - Local validation must not modify external platform/runtime repositories.
 - CI may run this harness conditionally for Codex runtime changes.
@@ -39,7 +40,12 @@ This harness validates the mobile organization runtime surface that can be check
 | mobile-gatekeeper | 1373798443 | Deterministic evidence predicates and pass/fail non-reinterpretation |
 | 01-7. progress plan/status | 1373700222 | Phase 3 manual bootstrap owner steps |
 | SOUL.md Product/Planning | 1373798422 | Local coordinator boundaries |
+| mobile-requirement-office-hours | 1374519364 | `po-requirement-office-hours` source crosswalk |
+| mobile-work-unit-planning-and-agent-sprint | 1374650456 | `po-work-unit-planning-and-agent-sprint` source crosswalk |
+| mobile-prd-to-execution | 1373634562 | `po-prd-to-execution` source crosswalk |
+| mobile-planning-completeness-review | 1374519387 | `po-planning-completeness-review` source crosswalk |
 | SOUL.md Design | 1373765702 | Screen/state/handoff boundaries |
+| mobile-design-handoff | 1373765661 | `design-mobile-design-handoff` source crosswalk |
 | SOUL.md Mobile Architect | 1373667383 | Architecture, ADR, contract, and risk boundaries |
 | SOUL.md Mobile App Dev | 1373700159 | Mobile implementation and native skill smoke boundaries |
 | SOUL.md Backend/API Integrator | 1373700180 | Contract, mock, risk, and backend/API boundaries |

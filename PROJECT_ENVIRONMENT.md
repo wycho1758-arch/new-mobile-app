@@ -153,13 +153,28 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - Repo skills: `.agents/skills/<skill-name>/SKILL.md`.
   - `$wm` plans must be SoT-grounded: material planning decisions cite or name verified SoT inputs, and missing or ambiguous SoT must be reported as unknown/blocked instead of being filled by predictions, assumptions, or expected behavior.
   - `$wm` implementation runs require persisted read-only reviewer evidence for both the completed plan and the actual completed work, and final user reports must include material `git diff` change details.
+  - Product/Planning repo-local Codex adapters use required `po-*` slugs:
+    - `po-requirement-office-hours` maps source skill `mobile-requirement-office-hours` page `1374519364`.
+    - `po-work-unit-planning-and-agent-sprint` maps source skill `mobile-work-unit-planning-and-agent-sprint` page `1374650456`.
+    - `po-prd-to-execution` maps source skill `mobile-prd-to-execution` page `1373634562`.
+    - `po-planning-completeness-review` maps source skill `mobile-planning-completeness-review` page `1374519387`.
+    - These are Product/Planning operational adapters, not a standalone `mobile-product-planning-workflow` role wrapper.
+  - Design repo-local Codex adapters use required `design-*` slugs:
+    - `design-mobile-design-handoff` maps source skill `mobile-design-handoff` page `1373765661`, Design SOUL page `1373765702`, and Design Codex practice page `1374290207`.
+    - `design-stitch-mcp-operating-rules` defines reusable Stitch MCP execution rules for Design handoff work and maps the same Design source/practice pages.
+    - These adapters require objective UI/UX framing, DESIGN.md decision handling, exactly two Stitch design options, Option A/B HTML extraction via `code.html` or Stitch MCP fetch, Option A/B image extraction via Stitch MCP, dated `design-pub-html/<YYYY-MM-DD>/` publication, five-state matrix, UX acceptance criteria, and evidence.
 - Custom agents: `.codex/agents/<agent-name>.toml`.
   - wm review routing uses dedicated read-only agents:
     - `wm-implementation-reviewer`
     - `wm-contract-reviewer`
     - `wm-docs-researcher`
     - `wm-gate-fix-advisor`
-  - legacy `mobile-*` agents remain available for other runtime/eval surfaces, but `$wm` reviewer routing and `scripts/codex-headless-review.mjs` allow only the `wm-*` agents.
+    - `po-planning-reviewer`
+    - `po-scope-gate-reviewer`
+    - `po-docs-researcher`
+    - `design-reviewer`
+    - `design-researcher`
+  - legacy `mobile-*` agents remain available for other runtime/eval surfaces, but `$wm` reviewer routing and `scripts/codex-headless-review.mjs` allow only the dedicated `wm-*`, Product/Planning `po-*`, and Design `design-*` read-only agents listed above.
 - Hooks: `.codex/hooks.json` and `.codex/hooks/*.mjs`.
 - MCP config: `.codex/config.toml`.
 - Root Claude runtime artifacts are not part of the active Codex runtime:
@@ -178,6 +193,14 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - command: `uvx`
   - args: `-p 3.13 --from git+https://github.com/oraios/serena@v1.5.3 serena start-mcp-server --project-from-cwd --context=codex`
   - symbolic navigation MCP for symbol overview, symbol lookup, reference search, and bounded repo code navigation.
+  - `stitch`
+  - command: `npx`
+  - args: `-y stitch-mcp@1.3.2`
+  - design-authoring MCP for Google Stitch project/screen generation and export handoff.
+  - it uses local Google Cloud Application Default Credentials through `gcloud auth application-default login`.
+  - actual use requires a Google Cloud project with the Stitch MCP service enabled, plus `GOOGLE_CLOUD_PROJECT` or a `gcloud config set project` value.
+  - no Stitch API key is stored in the repo, `.codex/config.toml`, `EXPO_PUBLIC_*`, docs, or evidence.
+  - do not use `@latest`.
 - Plugin-provided MCP servers:
   - `expo`
   - URL: `https://mcp.expo.dev/mcp`

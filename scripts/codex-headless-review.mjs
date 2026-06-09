@@ -9,6 +9,11 @@ const allowedAgents = new Set([
   'wm-contract-reviewer',
   'wm-docs-researcher',
   'wm-gate-fix-advisor',
+  'po-planning-reviewer',
+  'po-scope-gate-reviewer',
+  'po-docs-researcher',
+  'design-reviewer',
+  'design-researcher',
 ]);
 
 function usage() {

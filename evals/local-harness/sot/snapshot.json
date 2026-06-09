@@ -68,6 +68,18 @@
       "version": 5
     },
     {
+      "key": "mobile-design-handoff",
+      "pageId": "1373765661",
+      "title": "mobile-design-handoff",
+      "version": 1
+    },
+    {
+      "key": "design-codex-practice",
+      "pageId": "1374290207",
+      "title": "Design Codex CLI Practice Guide",
+      "version": 1
+    },
+    {
       "key": "soul-mobile-architect",
       "pageId": "1373667383",
       "title": "SOUL.md — Mobile Architect",
@@ -205,7 +217,13 @@
     "allowedNativeDevSkills": [
       "wm",
       "mobile-app-dev-workflow",
-      "mobile-backend-api-integrator-workflow"
+      "mobile-backend-api-integrator-workflow",
+      "po-requirement-office-hours",
+      "po-work-unit-planning-and-agent-sprint",
+      "po-prd-to-execution",
+      "po-planning-completeness-review",
+      "design-mobile-design-handoff",
+      "design-stitch-mcp-operating-rules"
     ],
     "forbiddenRoleWrapperSkills": [
       "mobile-product-planning-workflow",

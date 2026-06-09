@@ -56,6 +56,11 @@ Allowed custom agents:
 - `wm-contract-reviewer`
 - `wm-docs-researcher`
 - `wm-gate-fix-advisor`
+- `po-planning-reviewer`
+- `po-scope-gate-reviewer`
+- `po-docs-researcher`
+- `design-reviewer`
+- `design-researcher`
 
 Reviewer/researcher outputs must include source references, must not edit files, and must not recursively delegate.
 
