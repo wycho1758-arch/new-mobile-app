@@ -1,0 +1,1 @@
+No findings. `test:local-harness` is suitable as a conditional PR CI gate, and active OpenClaw packaging coupling is removed from CI/package scripts; remaining OpenClaw references are scope-exclusion documentation only.

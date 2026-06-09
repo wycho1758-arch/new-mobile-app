@@ -4,7 +4,7 @@
 
 ---
 
-## 변수 표 (15종)
+## 변수 표 (12종)
 
 | 변수 | 설명 | 예시 |
 |------|------|------|
@@ -16,10 +16,6 @@
 | `API_URL` | 앱이 호출할 API base URL | `https://api.customer.com` |
 | `EAS_PROJECT_ID` | EAS project UUID | EAS init 후 확정 |
 | `EXPO_OWNER` | Expo account/org | 고객 또는 ClawPod-managed org |
-| `SENTRY_DSN` | client DSN | 프로젝트별 값 |
-| `SENTRY_ORG` | sourcemap 업로드 대상 org | 프로젝트별 값 |
-| `SENTRY_PROJECT` | sourcemap 업로드 대상 project | 프로젝트별 값 |
-| `SENTRY_AUTH_TOKEN` | EAS Build/Update sourcemap upload token | Secret 주입 |
 | `EXPO_TOKEN_SECRET_NAME` | Agent runner가 참조할 k8s Secret 이름 | `clawpod-eas-{{agent}}-{{project}}` |
 | `DATABASE_URL` | PostgreSQL 연결 문자열 (`apps/api` 포함 시) | Secret 주입 |
 | `API_PORT` | api 리슨 포트 (`apps/api` 포함 시) | `3000` |
@@ -86,9 +82,6 @@ grep -rn \
   -e '{{API_URL}}' \
   -e '{{EAS_PROJECT_ID}}' \
   -e '{{EXPO_OWNER}}' \
-  -e '{{SENTRY_DSN}}' \
-  -e '{{SENTRY_ORG}}' \
-  -e '{{SENTRY_PROJECT}}' \
   --include="*.ts" --include="*.tsx" --include="*.yml" --include="*.yaml" --include="*.json" \
   . 2>/dev/null | grep -v '.git/'
 ```

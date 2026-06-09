@@ -1,0 +1,14 @@
+{
+  "fixtures": [
+    "product-planning.context.json",
+    "design.context.json",
+    "mobile-architect.context.json",
+    "mobile-app-dev.context.json",
+    "backend-api-integrator.context.json"
+  ],
+  "expected": {
+    "valid": false,
+    "reason": "role count must be exactly 6"
+  }
+}
+

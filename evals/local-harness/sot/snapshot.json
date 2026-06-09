@@ -1,0 +1,380 @@
+{
+  "snapshotVersion": 1,
+  "fetchedAt": "2026-06-07T05:20:15Z",
+  "source": {
+    "type": "confluence",
+    "cloudId": "https://wondermove-official.atlassian.net",
+    "spaceKey": "mobileappd"
+  },
+  "pages": [
+    {
+      "key": "roles",
+      "pageId": "1373765682",
+      "title": "01-2. 조직 구성과 역할",
+      "version": 1
+    },
+    {
+      "key": "workflows",
+      "pageId": "1373667425",
+      "title": "01-3. Workflows — Case A~H",
+      "version": 2
+    },
+    {
+      "key": "skills",
+      "pageId": "1373667362",
+      "title": "01-4. Skills",
+      "version": 2
+    },
+    {
+      "key": "runtime",
+      "pageId": "1374289964",
+      "title": "Role-specific Codex Runtime",
+      "version": 1
+    },
+    {
+      "key": "runtime-skills",
+      "pageId": "1374290005",
+      "title": "Skills",
+      "version": 4
+    },
+    {
+      "key": "bootstrap-workflow",
+      "pageId": "1374421001",
+      "title": "mobile-project-bootstrap-workflow",
+      "version": 1
+    },
+    {
+      "key": "gatekeeper",
+      "pageId": "1373798443",
+      "title": "mobile-gatekeeper",
+      "version": 4
+    },
+    {
+      "key": "progress-plan",
+      "pageId": "1373700222",
+      "title": "01-7. 진행 계획과 상태",
+      "version": 4
+    },
+    {
+      "key": "soul-product-planning",
+      "pageId": "1373798422",
+      "title": "SOUL.md — Product/Planning",
+      "version": 2
+    },
+    {
+      "key": "soul-design",
+      "pageId": "1373765702",
+      "title": "SOUL.md — Design",
+      "version": 5
+    },
+    {
+      "key": "soul-mobile-architect",
+      "pageId": "1373667383",
+      "title": "SOUL.md — Mobile Architect",
+      "version": 4
+    },
+    {
+      "key": "soul-mobile-app-dev",
+      "pageId": "1373700159",
+      "title": "SOUL.md — Mobile App Dev",
+      "version": 3
+    },
+    {
+      "key": "soul-backend-api-integrator",
+      "pageId": "1373700180",
+      "title": "SOUL.md — Backend/API Integrator",
+      "version": 2
+    },
+    {
+      "key": "soul-qa-release",
+      "pageId": "1373700201",
+      "title": "SOUL.md — QA/Release",
+      "version": 4
+    }
+  ],
+  "roles": {
+    "llm": [
+      "Product/Planning",
+      "Design",
+      "Mobile Architect",
+      "Mobile App Dev",
+      "Backend/API Integrator",
+      "QA/Release"
+    ],
+    "nonLlm": [
+      "Gatekeeper"
+    ],
+    "excluded": [
+      "CTO",
+      "Gatekeeper SOUL.md"
+    ]
+  },
+  "soulRegistry": [
+    {
+      "role": "Product/Planning",
+      "pageId": "1373798422",
+      "pageVersion": 2,
+      "requiredBoundaryKeywords": [
+        "PRD",
+        "scope",
+        "task",
+        "human-gate",
+        "external platform/runtime"
+      ]
+    },
+    {
+      "role": "Design",
+      "pageId": "1373765702",
+      "pageVersion": 5,
+      "requiredBoundaryKeywords": [
+        "screen",
+        "state",
+        "handoff",
+        "PRD",
+        "external platform/runtime"
+      ]
+    },
+    {
+      "role": "Mobile Architect",
+      "pageId": "1373667383",
+      "pageVersion": 4,
+      "requiredBoundaryKeywords": [
+        "architecture",
+        "template",
+        "contract",
+        "risk",
+        "external platform/runtime"
+      ]
+    },
+    {
+      "role": "Mobile App Dev",
+      "pageId": "1373700159",
+      "pageVersion": 3,
+      "requiredBoundaryKeywords": [
+        "implementation",
+        "contract",
+        "test",
+        "evidence",
+        "external platform/runtime"
+      ]
+    },
+    {
+      "role": "Backend/API Integrator",
+      "pageId": "1373700180",
+      "pageVersion": 2,
+      "requiredBoundaryKeywords": [
+        "contract",
+        "mock",
+        "risk",
+        "backend",
+        "external platform/runtime"
+      ]
+    },
+    {
+      "role": "QA/Release",
+      "pageId": "1373700201",
+      "pageVersion": 4,
+      "requiredBoundaryKeywords": [
+        "Maestro",
+        "EAS",
+        "evidence",
+        "failure",
+        "human approval"
+      ]
+    }
+  ],
+  "runtimePaths": {
+    "nativeRepoSkill": ".agents/skills/<skill-name>/SKILL.md",
+    "nativeCustomAgent": ".codex/agents/<agent-name>.toml",
+    "nativeHooks": [
+      ".codex/hooks.json",
+      ".codex/hooks/"
+    ]
+  },
+  "skillTaxonomy": {
+    "mvpSkills": [
+      "mobile-prd-to-execution",
+      "mobile-design-handoff",
+      "mobile-api-contract",
+      "mobile-qa-release",
+      "mobile-gatekeeper"
+    ],
+    "organizationRuntimeSkills": [
+      "mobile-project-bootstrap-workflow"
+    ],
+    "allowedNativeDevSkills": [
+      "wm",
+      "mobile-app-dev-workflow",
+      "mobile-backend-api-integrator-workflow"
+    ],
+    "forbiddenRoleWrapperSkills": [
+      "mobile-product-planning-workflow",
+      "mobile-design-workflow",
+      "mobile-architect-workflow"
+    ],
+    "forbiddenCaseDuplicateSkills": [
+      "mobile-ui-only-feature-workflow",
+      "mobile-api-backed-feature-workflow",
+      "mobile-failure-rework-workflow",
+      "mobile-production-submit-governance"
+    ]
+  },
+  "caseRegistry": [
+    {
+      "case": "A",
+      "name": "new project bootstrap",
+      "skills": [
+        "mobile-project-bootstrap-workflow"
+      ],
+      "roles": [
+        "Product/Planning",
+        "Mobile Architect",
+        "QA/Release",
+        "Mobile App Dev",
+        "operator(human)"
+      ],
+      "localProofLevel": "fixture + repo structure check"
+    },
+    {
+      "case": "B",
+      "name": "PRD decomposition",
+      "skills": [
+        "mobile-prd-to-execution"
+      ],
+      "roles": [
+        "Product/Planning",
+        "Design",
+        "Mobile Architect",
+        "Backend/API Integrator",
+        "QA/Release"
+      ],
+      "localProofLevel": "fixture check"
+    },
+    {
+      "case": "C",
+      "name": "UI-only feature",
+      "skills": [
+        "mobile-design-handoff",
+        "mobile-qa-release"
+      ],
+      "roles": [
+        "Design",
+        "Mobile Architect",
+        "Mobile App Dev",
+        "QA/Release"
+      ],
+      "localProofLevel": "fixture + advisory headless smoke"
+    },
+    {
+      "case": "D",
+      "name": "API-backed feature",
+      "skills": [
+        "mobile-api-contract",
+        "mobile-app-dev-workflow",
+        "mobile-backend-api-integrator-workflow"
+      ],
+      "roles": [
+        "Design",
+        "Mobile Architect",
+        "Backend/API Integrator",
+        "Mobile App Dev",
+        "QA/Release"
+      ],
+      "localProofLevel": "fixture + advisory headless smoke"
+    },
+    {
+      "case": "E",
+      "name": "backend/API centered work",
+      "skills": [
+        "mobile-api-contract",
+        "mobile-backend-api-integrator-workflow",
+        "mobile-qa-release"
+      ],
+      "roles": [
+        "Backend/API Integrator",
+        "Mobile Architect",
+        "Mobile App Dev",
+        "QA/Release"
+      ],
+      "localProofLevel": "fixture + local static check"
+    },
+    {
+      "case": "F",
+      "name": "QA or gate failure",
+      "skills": [
+        "mobile-qa-release",
+        "mobile-gatekeeper"
+      ],
+      "roles": [
+        "QA/Release",
+        "failure task owner",
+        "Mobile Architect",
+        "Product/Planning",
+        "human owner"
+      ],
+      "localProofLevel": "deterministic fixture check"
+    },
+    {
+      "case": "G",
+      "name": "preview/internal release",
+      "skills": [
+        "mobile-qa-release"
+      ],
+      "roles": [
+        "QA/Release",
+        "Product/Planning",
+        "Mobile Architect"
+      ],
+      "localProofLevel": "repo structure + fixture only"
+    },
+    {
+      "case": "H",
+      "name": "production submit",
+      "skills": [
+        "mobile-qa-release"
+      ],
+      "roles": [
+        "QA/Release",
+        "Product/Planning",
+        "Mobile Architect"
+      ],
+      "localProofLevel": "fixture only; actual submit deferred"
+    }
+  ],
+  "gatekeeper": {
+    "type": "non-LLM deterministic predicate",
+    "hasSoulMd": false,
+    "passFailReinterpretationAllowed": false,
+    "predicates": [
+      "task_id_exists",
+      "branch_contains_task_id",
+      "pr_body_has_evidence_link",
+      "pr_head_sha",
+      "ci_checkout_sha",
+      "eas_build_id_exists",
+      "eas_build_git_commit_matches_expected_checkout_sha",
+      "maestro_passed",
+      "approver_not_author",
+      "rework_count_lt_cap"
+    ],
+    "reworkCapThreshold": {
+      "status": "missing-from-sot",
+      "assertion": "Do not invent a numeric threshold; verify predicate wiring only until SoT/config supplies the cap."
+    }
+  },
+  "humanGateCategories": [
+    "production submit",
+    "payment or money movement",
+    "PII or privacy-sensitive behavior",
+    "external messaging or email/SMS push",
+    "legal/terms/contracts",
+    "accepting risk after a gate failure"
+  ],
+  "boundaries": {
+    "noExternalRuntimeRepoEdits": true,
+    "noCtoRole": true,
+    "noGatekeeperSoulMd": true,
+    "noStandaloneRoleWrapperSkills": true,
+    "localHarnessIsNotPodRuntimeParity": true
+  }
+}

@@ -7,10 +7,10 @@ export default function Home() {
   const [count, setCount] = useState(0);
   return (
     <View className="flex-1 items-center justify-center gap-4 bg-background px-6">
-      <Text testID="title" className="text-xl font-bold text-foreground">{Env.APP_DISPLAY_NAME}</Text>
-      <Text testID="counter" className="text-lg text-foreground">Count: {count}</Text>
+      <Text testID="home-title" className="text-xl font-bold text-foreground">{Env.APP_DISPLAY_NAME}</Text>
+      <Text testID="counter-value" className="text-lg text-foreground">Count: {count}</Text>
       <Pressable
-        testID="increment"
+        testID="counter-increment-button"
         accessibilityRole="button"
         onPress={() => setCount((c) => c + COUNTER_INCREMENT)}
         className="rounded-xl bg-primary px-6 py-3"

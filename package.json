@@ -6,13 +6,19 @@
   "devDependencies": {
     "turbo": "^2.9.16"
   },
+  "pnpm": {
+    "overrides": {
+      "lightningcss": "1.30.1"
+    }
+  },
   "scripts": {
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:runtime": "npm run validate && npm run test:hooks && npm run test:openclaw",
-    "validate": "node scripts/validate-runtime-artifacts.mjs",
-    "test:hooks": "node scripts/test-hooks.mjs",
-    "test:openclaw": "node scripts/test-openclaw-packages.mjs",
-    "package:openclaw-skills": "node scripts/package-openclaw-skills.mjs"
+    "test:runtime": "pnpm run validate && pnpm run test:hooks",
+    "test:local-harness:preflight": "node scripts/clean-tree-guard.mjs --self-test && node scripts/codex-preflight.mjs --self-test && node scripts/codex-preflight.mjs",
+    "test:local-harness": "pnpm run test:local-harness:preflight && pnpm run test:runtime && pnpm turbo run lint test && node scripts/test-local-harness.mjs --self-test --stage all && node scripts/test-local-harness.mjs --stage all",
+    "test:local-harness:sot-refresh": "echo \"NOT IMPLEMENTED: refresh evals/local-harness/sot/snapshot.json manually via Atlassian MCP page IDs recorded in evals/local-harness/README.md\"",
+    "validate": "node -e \"require('node:fs').rmSync('.claude-state', { recursive: true, force: true })\" && node scripts/validate-runtime-artifacts.mjs",
+    "test:hooks": "node scripts/test-hooks.mjs"
   }
 }

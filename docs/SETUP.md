@@ -132,7 +132,7 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
   - 참조: `DESIGN.md`, `docs/design-references/`
 - [ ] ClawPod k8s Secret 적용 권한 확인 (Human owner — ops)
   - 참조: `infra/clawpod/secret.example.yaml`, `infra/clawpod/agent-runner.yaml`
-- [ ] 무료 우선 원칙 확인 — 결제 항목(Apple Developer, Google Play Console, Expo paid plan, Sentry paid plan)은 아래 단계에서 판단
+- [ ] 무료 우선 원칙 확인 — 결제 항목(Apple Developer, Google Play Console, Expo paid plan)은 아래 단계에서 판단
 
 ---
 
@@ -151,8 +151,6 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
   - 참조: `infra/clawpod/secret.example.yaml`, `infra/clawpod/agent-runner.yaml`
   - 주입 후 Agent가 EAS CLI를 비대화식으로 실행 가능
 - [ ] GitHub Actions quality-gate 동작 확인 — PR push 후 `.github/workflows/quality-gate.yml` green (Human owner)
-- [ ] Sentry project 생성 및 DSN/AUTH_TOKEN 발급 준비 (Human owner, 무료 플랜으로 시작)
-  - 참조: `docs/CREDENTIALS.md` Sentry 섹션
 - [ ] `infra/clawpod/secret.example.yaml` 기반으로 실제 k8s Secret manifest 작성 후 적용 (Human owner — ops)
   - 주의: `${...}` placeholder를 실제 값으로 치환 후 적용, 실제 값이 담긴 파일은 커밋 금지
 - [ ] 템플릿 변수 렌더링 계획 수립 — `{{ANDROID_PACKAGE}}` 등 `{{...}}` placeholder를 프로젝트 생성 시 치환할 도구/절차 확인 (Human owner)
@@ -170,12 +168,6 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
   - 참조: `apps/mobile/.eas/workflows/e2e-test-android.yml`
 - [ ] Maestro E2E live 실행 — EAS build 완료 후 emulator에서 `.maestro/home.yml` 실행 확인 (Human owner)
   - 참조: `apps/mobile/.maestro/home.yml`, `apps/mobile/.eas/workflows/e2e-test-android.yml`
-- [ ] Sentry 활성화 (DSN 주입 시 4단계 절차 적용) (Human owner)
-  1. `app.config.ts` plugins에 Sentry expo plugin 추가 (`SENTRY_ORG`/`SENTRY_PROJECT` 연결)
-  2. `metro.config.js`를 `getSentryExpoConfig` 기반으로 교체 (withNativeWind 래핑 유지)
-  3. EAS secret에 `SENTRY_AUTH_TOKEN` 주입 → EAS Build 시 sourcemap 자동 업로드
-  4. EAS Update 후 sourcemap 업로드 확인 (`ota-update.yml`에 `upload_sentry_sourcemaps: true` 추가 가능)
-  - 참조: `docs/CREDENTIALS.md` Sentry 섹션, SoT §6 Sentry 통합 절차, `apps/mobile/src/app/_layout.tsx`
 - [ ] EAS build (preview profile) 트리거 및 OTA update 확인 (Human owner)
   - 참조: `apps/mobile/.eas/workflows/ota-update.yml`
 - [ ] `apps/api` 포함 시 — Docker 이미지 빌드 및 프로덕션 환경 배포 검증 (Human owner — ops)
@@ -216,7 +208,6 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
 | Maestro E2E live 실행 | Human owner | EAS build 완료 + emulator | `.maestro/home.yml`, `e2e-test-android.yml` 배선 완료 |
 | EAS build (preview/production) | Human owner | EXPO_TOKEN Secret 주입 | `eas.json` profiles + `.eas/workflows/` 배선 완료 |
 | EAS Submit (store 제출) | Human owner | Store 계정 + credentials | `build-and-submit.yml` 배선 완료 |
-| Sentry 활성화 | Human owner | Sentry project + DSN + AUTH_TOKEN | `docs/CREDENTIALS.md` 절차 + SoT §6 4단계 문서화 완료 |
 | Android 최초 수동 업로드 (1회) | Human owner | Google Play 개발자 계정 | 수동 업로드 후 이후 제출은 EAS Submit 자동화 가능 |
 | App Store Connect 제출 | Human owner | Apple 개발자 계정 + ASC API key | `EXPO_ASC_KEY_ID` / `EXPO_ASC_ISSUER_ID` / `.p8` Secret 주입 필요 |
 
@@ -232,14 +223,13 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
 | DoD 항목 | 출처(§) | 판정 | 근거 |
 |----------|---------|------|------|
 | pnpm workspace + Turborepo 동작, `packages/contracts`가 `apps/mobile`에서 해석됨 | §2 | PASS | `pnpm-workspace.yaml` + `turbo.json` 존재. `pnpm install` EXIT 0, `pnpm turbo run lint test` 4 tasks all successful |
-| 홈 화면 카운터 샘플이 공유 상수 import하여 렌더링·동작 | §2 | PASS | `apps/mobile/src/app/index.tsx`가 `COUNTER_INCREMENT`(@template/contracts) import. mobile jest 1 test PASS |
-| Jest 유닛 테스트(`home.test.tsx`) 통과 + `jest.setup.ts`가 테스트 env 주입 | §2 | PASS | `home.test.tsx` + `jest.setup.ts` 존재. mobile jest 1 test PASS |
+| 홈 화면 카운터 샘플이 공유 상수 import하여 렌더링·동작 | §2 | PASS | `apps/mobile/src/app/index.tsx`가 `COUNTER_INCREMENT`(@template/contracts) import. mobile Jest 2 suites / 5 tests PASS |
+| Jest 유닛 테스트(`home.test.tsx`) 통과 + `jest.setup.ts`가 테스트 env 주입 | §2 | PASS | `home.test.tsx`, `app-config.test.ts`, `jest.setup.ts` 존재. mobile Jest 2 suites / 5 tests PASS |
 | RNTL v13+ 고정 — built-in matcher import만으로 등록, `toHaveTextContent` 동작 | §2 | PASS | `@testing-library/react-native: ^13.0.0` 고정. `toHaveTextContent` 사용하며 PASS |
-| NativeWind 동작 (`global.css`, semantic token CSS var defaults, `withNativeWind` Metro) | §2 | PASS | 5개 설정 파일 모두 존재. Metro smoke 검증 시 NativeWind 오류 없음 |
+| NativeWind 설정 (`global.css`, semantic token CSS var defaults, `withNativewind` Metro config) | §2 | PASS | NativeWind v5-preview/Tailwind CSS 4 설정 파일 존재. lint/Jest/`expo install --check` 통과. 실제 Metro/native smoke는 simulator/device 준비 시 별도 검증 |
 | Maestro E2E(`home.yml`)가 EAS Workflows maestro job으로 통과 | §2 | HUMAN-GATE | `home.yml` + `e2e-test-android.yml` 배선 완료. EAS Workflows 클라우드 실행은 Expo 계정·eas init 선행 필요 |
 | `eas.json`에 development/preview/production + e2e-test profile 정의 | §2 | PASS | 4개 profile + submit.production 모두 정의 확인 |
 | `.eas/workflows`에 build→maestro / build→submit / update job 배선 | §2 | PASS | `e2e-test-android.yml`, `build-and-submit.yml`, `ota-update.yml` 모두 배선 확인 |
-| `@sentry/react-native` init 및 EAS Build/Update sourcemap 업로드 절차 문서화 | §2 | PASS | `_layout.tsx`에 `Sentry.init`(enabled: Boolean(DSN)) no-op 가드. `docs/CREDENTIALS.md` 절차 완비 |
 | Agent 실행용 `EXPO_TOKEN`을 k8s Secret으로 주입하는 예시 manifest 제공 | §2 | PASS | `infra/clawpod/secret.example.yaml` + `agent-runner.yaml` 예시 manifest 제공 |
 | root `AGENTS.md` + `docs/SETUP.md` / `docs/CREDENTIALS.md` 문서 완비 | §2 | PASS | 3개 문서 존재. `AGENTS.md`에 TDD/hardcod/direct push/shadcn 키워드 포함 |
 | root `DESIGN.md` 존재 + `docs/design-references/`에 awesome-design-md vendored 사본 (DEC-021) | §2 | PASS | `DESIGN.md` 존재. `docs/design-references/LICENSE` + `NOTICE` + vendored 사본 다수 |
@@ -257,4 +247,4 @@ https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/137242215
 
 **요약: PASS 16 / HUMAN-GATE 1 / FAIL 0**
 
-HUMAN-GATE 1건 사유: Maestro E2E 실제 통과는 EAS Workflows 클라우드 emulator 실행이 필요하며, 이는 Expo 계정·`eas init`·Robot token(사전 등록 가이드 §5 Day 1)이 선행되어야 검증 가능합니다. 동일 클래스의 EAS Build/Submit/Update·Sentry 활성화·Store 제출도 클라우드 실행 시점에 검증되는 HUMAN-GATE 영역이나, DoD 항목 자체(profile 정의·workflow 배선·문서화·init 코드)는 산출물로 충족되어 PASS입니다.
+HUMAN-GATE 1건 사유: Maestro E2E 실제 통과는 EAS Workflows 클라우드 emulator 실행이 필요하며, 이는 Expo 계정·`eas init`·Robot token(사전 등록 가이드 §5 Day 1)이 선행되어야 검증 가능합니다. 동일 클래스의 EAS Build/Submit/Update·Store 제출도 클라우드 실행 시점에 검증되는 HUMAN-GATE 영역이나, DoD 항목 자체(profile 정의·workflow 배선·문서화·init 코드)는 산출물로 충족되어 PASS입니다.

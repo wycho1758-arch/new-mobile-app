@@ -1,11 +1,13 @@
 ---
 name: mobile-app-dev-workflow
-description: Use when implementing or reviewing an Expo React Native mobile feature, API-backed screen, navigation/state change, or evidence-producing mobile PR in the new mobile app repo. This thin wrapper sequences the Mobile App Dev SOUL.md role through the SoT mobile-design-handoff, mobile-api-contract, mobile-qa-release, and mobile-gatekeeper skills; it must not be used for backend ownership, openclaw-cloud changes, or self-approval.
+description: Use when implementing a repo-scoped Expo React Native change that depends on this project's contract, evidence, QA, role-boundary, or mobile PR rules. This thin write-side wrapper applies the Mobile App Dev SOUL.md role using the repo SoT domains for design handoff, API contract, QA evidence, and gatekeeper boundaries; it must not be used for review-only tasks, generic Expo/RN guidance, backend ownership, external platform/runtime repository changes, or self-approval.
 ---
 
 # Mobile App Dev Workflow
 
-Use this as a thin role workflow for Mobile App Dev work in this repo.
+Use this as a thin write-side role workflow for Mobile App Dev work in this repo.
+
+Review-only tasks must use read-only reviewer agents or code-review mode instead of this implementation workflow.
 
 ## Required Inputs
 
@@ -16,7 +18,7 @@ Use this as a thin role workflow for Mobile App Dev work in this repo.
 
 ## Workflow
 
-1. Confirm scope and ownership. Do not edit `openclaw-cloud` or backend/auth/payment code.
+1. Confirm scope and ownership. Do not edit external platform/runtime repositories or backend/auth/payment code.
 2. Read `references/sot.md` for the Confluence SoT map when task context is incomplete.
 3. Confirm design and API contract before implementation.
 4. Write or update tests first.
@@ -35,4 +37,5 @@ Use this as a thin role workflow for Mobile App Dev work in this repo.
 
 - Positive: API-backed mobile screen implementation request triggers this skill.
 - Negative: backend API design ownership request does not trigger this skill.
+- Negative: review-only mobile implementation review request does not trigger this skill.
 - End-to-end: design + contract + test evidence are all reflected in the final plan.

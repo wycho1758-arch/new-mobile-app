@@ -1,0 +1,22 @@
+{
+  "extraFixture": {
+    "role": "CTO",
+    "type": "LLM",
+    "soulPageId": "0",
+    "soulPageVersion": 1,
+    "caseResponsibilities": [
+      "A"
+    ],
+    "boundaryAssertions": {
+      "ownerResponsibility": "forbidden",
+      "forbiddenOwnershipTransfer": "forbidden",
+      "externalRuntimeModificationBoundary": "forbidden",
+      "humanGateBoundary": "forbidden"
+    },
+    "gatekeeperReferenceOnly": false
+  },
+  "expected": {
+    "valid": false,
+    "reason": "forbidden role fixture"
+  }
+}

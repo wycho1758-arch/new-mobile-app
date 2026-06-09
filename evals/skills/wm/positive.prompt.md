@@ -1,0 +1,1 @@
+$wm Plan and execute a repo-scoped mobile runtime change with SoT-grounded planning only. Do not use predictions, assumptions, or expected behavior to fill missing SoT gaps. Include plan reviewer evidence before implementation, tests-first implementation, final reviewer evidence against the actual completed work, branch/PR gates, and git diff details in the completion report.

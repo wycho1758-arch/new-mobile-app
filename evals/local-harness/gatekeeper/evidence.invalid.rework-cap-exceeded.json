@@ -1,0 +1,31 @@
+{
+  "task_id": "MOB-123",
+  "branch": "feature/MOB-123-check-in",
+  "pr": {
+    "url": "https://github.example/Wondermove-Inc/new-mobile-app/pull/123",
+    "body_has_evidence_link": true,
+    "head_sha": "abc123"
+  },
+  "ci": {
+    "checkout_sha": "abc123"
+  },
+  "eas": {
+    "build_id": "build-123",
+    "git_commit": "abc123"
+  },
+  "maestro": {
+    "passed": true,
+    "report_path": "evals/local-harness/results/maestro-smoke.json"
+  },
+  "review": {
+    "author": "mobile-dev",
+    "approver": "mobile-architect"
+  },
+  "rework": {
+    "count": 99,
+    "cap": null,
+    "cap_source": "missing-from-sot",
+    "threshold_check": "deferred: cap value missing from SoT"
+  }
+}
+

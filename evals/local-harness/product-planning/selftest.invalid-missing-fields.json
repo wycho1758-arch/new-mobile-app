@@ -1,0 +1,56 @@
+{
+  "caseA": {
+    "steps": [
+      {
+        "step": "repo creation and template variable input",
+        "owner": {
+          "type": "human",
+          "role": "operator"
+        }
+      },
+      {
+        "step": "external credential secret injection",
+        "owner": {
+          "type": "human",
+          "role": "operator"
+        }
+      },
+      {
+        "step": "required check and branch protection registration",
+        "owner": {
+          "type": "human",
+          "role": "repo admin"
+        }
+      }
+    ],
+    "forbidden": {
+      "implementsCode": false,
+      "modifiesExternalRuntime": false,
+      "modelsGatekeeperAsLlm": false
+    }
+  },
+  "caseB": {
+    "tasks": [
+      {
+        "ownerRole": "QA/Release",
+        "apiNeeded": true
+      }
+    ],
+    "requiredHumanGateCategories": [
+      "production submit",
+      "payment or money movement",
+      "PII or privacy-sensitive behavior",
+      "external messaging or email/SMS push",
+      "legal/terms/contracts",
+      "accepting risk after a gate failure"
+    ],
+    "forbidden": {
+      "implementsCode": false,
+      "modifiesExternalRuntime": false
+    }
+  },
+  "expected": {
+    "valid": false,
+    "reason": "missing Case A step field"
+  }
+}

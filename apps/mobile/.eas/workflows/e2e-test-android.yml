@@ -5,6 +5,9 @@ on:
 jobs:
   build_android_for_e2e:
     type: build
+    environment: preview
+    env:
+      EXPO_PUBLIC_APP_ENV: preview
     params:
       platform: android
       profile: e2e-test

@@ -3,34 +3,52 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
+    "android": "expo run:android",
+    "doctor": "expo-doctor",
+    "e2e": "maestro test .maestro/*.yml",
+    "ios": "expo run:ios",
     "start": "expo start",
     "test": "jest",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@sentry/react-native": "^6.0.0",
+    "@expo/metro-runtime": "~56.0.14",
     "@template/contracts": "workspace:*",
-    "expo": "~53.0.27",
-    "expo-router": "~5.1.11",
-    "nativewind": "^4.1.0",
-    "react": "19.0.0",
-    "react-native": "0.79.6",
+    "expo": "~56.0.9",
+    "expo-dev-client": "~56.0.19",
+    "expo-linking": "~56.0.13",
+    "expo-router": "~56.2.9",
+    "nativewind": "5.0.0-preview.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-css": "^3.0.7",
+    "react-native-reanimated": "4.3.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-worklets": "0.8.3",
     "zod": "^4.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
     "@testing-library/react-native": "^13.0.0",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^25.9.2",
-    "@types/react": "~19.0.10",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.19.20",
+    "@types/react": "~19.2.17",
+    "expo-doctor": "^1.19.9",
     "jest": "^29.7.0",
-    "jest-expo": "~53.0.6",
-    "tailwindcss": "^3.4.0",
-    "typescript": "^5.6.0"
+    "jest-expo": "~56.0.4",
+    "lightningcss": "1.30.1",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
   },
   "jest": {
     "preset": "jest-expo",
     "setupFiles": [
       "<rootDir>/jest.setup.ts"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.after-env.js"
     ]
   }
 }

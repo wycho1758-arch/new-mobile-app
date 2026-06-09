@@ -12,7 +12,6 @@
 | Credential | 위임 가능 여부 | Owner | 주입 방법 |
 |------------|--------------|-------|-----------|
 | EXPO_TOKEN (Robot user) | Agent 위임 가능 (Secret으로만 제한) | Human owner 생성 | k8s Secret → envFrom |
-| SENTRY_AUTH_TOKEN | Agent 위임 가능 (Secret으로만 제한) | Human owner 생성 | EAS secret + k8s Secret |
 | DATABASE_URL | Agent 위임 가능 (Secret으로만 제한) | Human owner (ops) | k8s Secret → envFrom |
 | App Store Connect API key | Human owner 전용 — Agent 위임 불가 | Human owner | k8s Secret (.p8 평문 금지) |
 | Google Play service account JSON | Human owner 전용 — Agent 위임 불가 | Human owner | k8s Secret (JSON 평문 금지) |
@@ -25,6 +24,8 @@
 ## EXPO_TOKEN
 
 **용도**: Expo Organization Robot user의 access token. EAS CLI가 `EXPO_TOKEN` 환경 변수를 인식하면 `eas login` 없이 비대화식으로 인증됩니다.
+
+> `infra/clawpod/secret.example.yaml`에는 배포 주입 편의를 위해 `EXPO_PUBLIC_*` 값도 함께 예시로 들어 있습니다. `EXPO_PUBLIC_*` 값은 앱 번들에 컴파일되는 공개 클라이언트 설정이며 credential/secret이 아닙니다. 토큰, 비밀번호, bearer credential, signing key, 비공개 endpoint를 `EXPO_PUBLIC_*`로 넣지 않습니다.
 
 **생성 절차**:
 1. Expo Organization 대시보드에서 Robot user를 생성합니다.
@@ -51,40 +52,6 @@ envsubst < infra/clawpod/secret.example.yaml | kubectl apply -f -
 - 평문을 repo에 커밋하지 않습니다.
 - 이미지에 굽지 않습니다 (ENV 레이어 포함).
 - `infra/clawpod/secret.example.yaml`에는 `REPLACE_WITH_ROBOT_USER_TOKEN` 플레이스홀더만 존재해야 합니다.
-
----
-
-## SENTRY_AUTH_TOKEN
-
-**용도**: EAS Build/Update 중 Sentry sourcemap 업로드 전용 토큰. sourcemap upload에 필요한 최소 권한만 부여합니다.
-
-**최소 권한**: `project:write` 스코프만 부여 (Sentry 토큰 생성 시 범위 제한).
-
-**EAS secret 주입 (EAS Build)**:
-
-```bash
-eas secret:create --scope project --name SENTRY_AUTH_TOKEN --value <token>
-```
-
-EAS Build 시 Sentry plugin이 자동으로 sourcemap을 업로드합니다. 별도 명령이 필요 없습니다.
-
-**EAS Update sourcemap 업로드 (OTA)**:
-
-OTA 업데이트는 sourcemap을 자동 업로드하지 않으므로 명시적으로 실행합니다:
-
-```bash
-SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN npx @sentry/expo-upload-sourcemaps dist
-```
-
-**k8s Secret 주입 (Agent runner)**:
-
-`infra/clawpod/secret.example.yaml`의 `SENTRY_AUTH_TOKEN` 키에 주입합니다 (`REPLACE_WITH_SENTRY_TOKEN` 플레이스홀더 교체).
-
-**금지 사항**:
-- 평문을 repo에 커밋하지 않습니다.
-- `eas.json` 또는 앱 소스에 인라인하지 않습니다.
-
----
 
 ## DATABASE_URL (apps/api 포함 시)
 

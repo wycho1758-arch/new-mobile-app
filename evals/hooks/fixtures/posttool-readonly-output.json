@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "rg -n \"apps/mobile|evals|.evidence\" AGENTS.md"
+  },
+  "tool_output": "apps/mobile appears in documentation"
+}

@@ -4,11 +4,17 @@ on:
 jobs:
   build_android:
     type: build
+    environment: production
+    env:
+      EXPO_PUBLIC_APP_ENV: production
     params:
       platform: android
       profile: production
   build_ios:
     type: build
+    environment: production
+    env:
+      EXPO_PUBLIC_APP_ENV: production
     params:
       platform: ios
       profile: production

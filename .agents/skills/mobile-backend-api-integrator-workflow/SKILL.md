@@ -1,11 +1,13 @@
 ---
 name: mobile-backend-api-integrator-workflow
-description: Use when defining, validating, or reviewing mobile-facing backend API contracts, request/response schemas, auth/session behavior, mocks, fixtures, error mapping, or API integration risks for the new mobile app repo. This thin wrapper sequences Backend/API Integrator work through the SoT mobile-api-contract and mobile-gatekeeper skills; it must not be used for UI implementation ownership or secret exposure.
+description: Use when defining or updating mobile-facing backend API contracts, request/response schemas, auth/session behavior, mocks, fixtures, error mapping, or API integration risks for the new mobile app repo. This thin write-side wrapper applies Backend/API Integrator ownership using the repo SoT domains for API contracts and gatekeeper boundaries; it must not be used for review-only tasks, UI implementation ownership or secret exposure.
 ---
 
 # Mobile Backend API Integrator Workflow
 
-Use this as a thin role workflow for Backend/API Integrator work that mobile implementation depends on.
+Use this as a thin write-side role workflow for Backend/API Integrator work that mobile implementation depends on.
+
+Review-only contract tasks must use the read-only `mobile-contract-reviewer` custom agent or code-review mode instead of this workflow.
 
 ## Required Inputs
 
@@ -34,4 +36,5 @@ Use this as a thin role workflow for Backend/API Integrator work that mobile imp
 
 - Positive: API contract and fixture request triggers this skill.
 - Negative: pure UI styling task does not trigger this skill.
+- Negative: review-only contract review request does not trigger this skill.
 - Risk: tenant/payment/PII prompt produces explicit risk notes and next owner.

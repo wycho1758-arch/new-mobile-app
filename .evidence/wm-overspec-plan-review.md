@@ -1,0 +1,19 @@
+**Findings**
+
+Critical: None.
+
+High: None.
+
+Medium: The plan should make the tests-first sequencing explicit for the validator change. Root policy requires TDD ([AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:7)), and the wm workflow says to add the narrowest failing test, eval, harness assertion, or validator check before implementation ([.agents/skills/wm/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/wm/SKILL.md:33)). Current validator behavior only checks `CLAUDE.md` contents if it exists, not the presence of `CLAUDE.md`, `.claude/`, or `.claude-state/` ([scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:160)). Adjust step 3 to: add the root artifact rejection first, confirm it fails while the artifacts exist, then remove the artifacts and rerun gates.
+
+Medium: The plan omits SoT/document sync for a new Codex-only runtime policy. Runtime setting changes must keep `PROJECT_ENVIRONMENT.md` and the Confluence update document synchronized ([AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:37), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:5)). The Confluence mirror currently says Codex headless review does not use Claude fallback routing, but does not state that root Claude artifacts are rejected ([docs/confluence/20260608-codex-expo-rn-runtime-sot-update.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/confluence/20260608-codex-expo-rn-runtime-sot-update.md:240)). Add a narrow doc sync step if the validator becomes authoritative policy.
+
+Low: Scope the artifact rejection to root repo-local artifacts, not every matching name under the working tree. `node_modules/` is ignored ([.gitignore](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.gitignore:1)), and local inspection found third-party `CLAUDE.md`/`.claude` paths there. A recursive validator would create false failures after dependency install. The existing backlog also frames `.claude/`, `.claude-state/`, and `CLAUDE.md` as repo-local commit-risk artifacts ([docs/plans/20260609-structure-inspection-sot.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/plans/20260609-structure-inspection-sot.md:86)).
+
+**Scope Assessment**
+
+The plan is generally scoped and SoT-aligned. It targets Codex runtime paths: repo skills, custom agents, runtime scripts, and evidence/gates are explicitly in the runtime surface ([AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:13), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:153)). Removing `openclaw-cloud` provenance from only `wm-*` agent TOML is appropriately narrow because those files currently contain that provenance wording while preserving read-only reviewer contracts ([.codex/agents/wm-implementation-reviewer.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/agents/wm-implementation-reviewer.toml:4)).
+
+The planned gate set is appropriate for runtime changes: `pnpm run test:runtime` and `pnpm run test:local-harness` are required/conditional runtime gates ([package.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/package.json:17), [package.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/package.json:19), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:200)). Mobile UI/device QA and API contract checks are not directly applicable unless implementation expands into `apps/mobile`, `apps/api`, or `packages/contracts`.
+
+Residual risk: final reviewer evidence is still needed after edits, and any failed gate must remain failed until rerun successfully.

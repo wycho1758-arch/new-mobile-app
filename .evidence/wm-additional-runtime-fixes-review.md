@@ -1,0 +1,15 @@
+**Findings**
+
+High: destructive protected-path removal is still bypassable with common equivalent flags.  
+The hook only blocks `rm -rf <protected-path>` exactly at [.codex/hooks/mobile-pretool-policy.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/hooks/mobile-pretool-policy.mjs:22), and the regression test only covers `rm -rf apps/mobile` at [scripts/test-hooks.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/test-hooks.mjs:140). Synthetic read-only hook inputs for `rm -fr apps/mobile`, `rm -r -f apps/mobile`, and `rm -rf -- apps/mobile` returned allow output. This leaves the prior destructive-delete smoke class only partially fixed, while the evidence summary broadly claims protected repo path removal is blocked at [.evidence/wm-additional-runtime-fixes.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/wm-additional-runtime-fixes.md:19).
+
+Low: PR-readiness evidence does not show the full runtime local harness command for this follow-up.  
+Runtime changes under `.agents`, `.codex`, `evals`, and runtime scripts require the local harness before PR readiness per [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:100) and [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:200). The follow-up evidence records `pnpm run test:hooks` / `pnpm run test:runtime` at [.evidence/wm-additional-runtime-fixes.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/wm-additional-runtime-fixes.md:27), while the final summary says only “Local harness self-tests passed” at [.evidence/codex-runtime-stability/final-xhigh-overall-review-after-fixes.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/codex-runtime-stability/final-xhigh-overall-review-after-fixes.md:17). I found untracked local-harness result files, but this evidence summary does not cite a full `pnpm run test:local-harness` result.
+
+**Addressed Smoke Items**
+
+The quoted `rg`/`grep` `.env` reads are now covered by tests at [scripts/test-hooks.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/test-hooks.mjs:285) and [scripts/test-hooks.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/test-hooks.mjs:315). Runtime evidence reminders for `.codex` patches are covered at [scripts/test-hooks.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/test-hooks.mjs:369). The validator now checks pinned `mobile-mcp` at [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:128), matching [.codex/config.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/config.toml:1).
+
+**Verification**
+
+Ran read-only checks: `node scripts/test-hooks.mjs` passed with 37 fixtures, `node scripts/validate-runtime-artifacts.mjs` passed, `git diff --check` passed, and `git diff -- packages/contracts apps/api` was empty. No API contract drift found. I did not edit files. Official Codex hook docs confirm the legacy `decision: "block"` shape is accepted for PreToolUse, so I did not treat that output shape as a regression: https://developers.openai.com/codex/hooks

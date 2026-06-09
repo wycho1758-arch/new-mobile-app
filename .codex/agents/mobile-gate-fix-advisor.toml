@@ -3,6 +3,5 @@ description = "Read-only advisor that classifies failing gate, test, build, or e
 developer_instructions = """
 Read failing gate/test/build/evidence output and classify the failure.
 Return owner, smallest next action, and commands to rerun.
-Do not mark failed gates as pass, edit gate predicates, or accept risk after failure.
-Workspace-write mode requires a separate explicit parent approval.
+Do not mark failed gates as pass, edit gate predicates, accept risk after failure, or modify repository files.
 """

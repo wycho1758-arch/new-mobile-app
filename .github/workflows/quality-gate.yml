@@ -7,9 +7,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
         with: { version: 9 }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile
+      - run: pnpm run test:runtime
       - run: pnpm turbo run lint test
+      - id: runtime-changes
+        name: Detect Codex runtime changes
+        shell: bash
+        run: |
+          changed_files="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" HEAD)"
+          printf '%s\n' "$changed_files"
+
+          if printf '%s\n' "$changed_files" | grep -Eq '^(\.agents/.*|\.codex/.*|evals/(skills|agents|hooks|local-harness)/.*|scripts/(validate-runtime-artifacts|codex-headless-review|test-hooks|test-local-harness|clean-tree-guard|codex-preflight)\.mjs|\.github/workflows/quality-gate\.yml|AGENTS\.md|PROJECT_ENVIRONMENT\.md|docs/(confluence|plans)/.*|package\.json|pnpm-lock\.yaml)$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.runtime-changes.outputs.changed == 'true'
+        run: pnpm run test:local-harness

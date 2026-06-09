@@ -5,6 +5,9 @@ on:
 jobs:
   publish_update:
     type: update
+    environment: preview
+    env:
+      EXPO_PUBLIC_APP_ENV: preview
     params:
       channel: preview
       platform: all

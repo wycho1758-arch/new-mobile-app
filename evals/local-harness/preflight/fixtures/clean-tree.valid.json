@@ -1,0 +1,11 @@
+{
+  "name": "valid clean tree",
+  "roots": [
+    {
+      "label": "MOBILE_APP_ROOT",
+      "statusLines": [],
+      "allowGeneratedResults": true,
+      "expectedClean": true
+    }
+  ]
+}

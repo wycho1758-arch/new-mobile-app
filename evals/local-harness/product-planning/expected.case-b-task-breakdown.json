@@ -1,0 +1,79 @@
+{
+  "case": "B",
+  "sourcePageIds": [
+    "1373667425",
+    "1373798422"
+  ],
+  "tasks": [
+    {
+      "ownerRole": "Product/Planning",
+      "inputArtifact": "PRD fixture",
+      "outputArtifact": "scope decision log and role-scoped task packet",
+      "evidencePath": "evals/local-harness/results/product-planning.json",
+      "humanGate": false,
+      "nextRole": "Design"
+    },
+    {
+      "ownerRole": "Design",
+      "inputArtifact": "approved PRD acceptance criteria",
+      "outputArtifact": "screen inventory, five-state matrix, UX acceptance criteria",
+      "evidencePath": "design link or state matrix reference",
+      "humanGate": false,
+      "nextRole": "Mobile Architect"
+    },
+    {
+      "ownerRole": "Mobile Architect",
+      "inputArtifact": "screen inventory and API-needed marker",
+      "outputArtifact": "route/state impact and API contract review request",
+      "evidencePath": "ADR or architecture decision note",
+      "humanGate": false,
+      "nextRole": "Backend/API Integrator"
+    },
+    {
+      "ownerRole": "Backend/API Integrator",
+      "inputArtifact": "API-needed marker",
+      "outputArtifact": "API contract, mock fixture, risk assessment",
+      "evidencePath": "contract fixture reference",
+      "humanGate": false,
+      "nextRole": "Mobile App Dev",
+      "apiNeeded": true
+    },
+    {
+      "ownerRole": "Mobile App Dev",
+      "inputArtifact": "design handoff and fixed API contract",
+      "outputArtifact": "implementation PR and unit/component test result",
+      "evidencePath": ".evidence/<task-id>.json",
+      "humanGate": false,
+      "nextRole": "QA/Release"
+    },
+    {
+      "ownerRole": "QA/Release",
+      "inputArtifact": "implementation PR and acceptance criteria",
+      "outputArtifact": "Maestro/EAS evidence and failure classification if needed",
+      "evidencePath": ".evidence/<task-id>.json",
+      "humanGate": false,
+      "nextRole": "Product/Planning"
+    },
+    {
+      "ownerRole": "Product/Planning",
+      "inputArtifact": "production submit request if later introduced",
+      "outputArtifact": "recorded human approval decision",
+      "evidencePath": "human approval record",
+      "humanGate": true,
+      "humanGateCategory": "production submit",
+      "nextRole": "QA/Release"
+    }
+  ],
+  "requiredHumanGateCategories": [
+    "production submit",
+    "payment or money movement",
+    "PII or privacy-sensitive behavior",
+    "external messaging or email/SMS push",
+    "legal/terms/contracts",
+    "accepting risk after a gate failure"
+  ],
+  "forbidden": {
+    "implementsCode": false,
+    "modifiesExternalRuntime": false
+  }
+}

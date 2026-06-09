@@ -15,7 +15,7 @@ This is a template repository. No customer brand values are hardcoded here. Toke
 
 ### Semantic Tokens
 
-The following tokens are defined as CSS custom properties in `apps/mobile/global.css` under `@layer base :root`. Values use HSL channel notation compatible with Tailwind CSS / NativeWind.
+The following tokens are defined as CSS custom properties in `apps/mobile/global.css` under `:root`, then exposed to Tailwind CSS v4 through the CSS-first `@theme` block. Values use HSL channel notation compatible with Tailwind CSS / NativeWind.
 
 | Token | CSS Variable | Default Value (HSL channels) | Meaning |
 |-------|-------------|------------------------------|---------|
@@ -24,15 +24,14 @@ The following tokens are defined as CSS custom properties in `apps/mobile/global
 | Primary | `--primary` | `221 83% 53%` | Primary action / brand color |
 | Primary Foreground | `--primary-foreground` | `210 40% 98%` | Text on primary background |
 
-Usage in Tailwind / NativeWind:
+Usage in Tailwind CSS v4 / NativeWind:
 
-```js
-// tailwind.config.js
-colors: {
-  background: 'hsl(var(--background))',
-  foreground: 'hsl(var(--foreground))',
-  primary: 'hsl(var(--primary))',
-  'primary-foreground': 'hsl(var(--primary-foreground))',
+```css
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
 }
 ```
 
@@ -43,7 +42,7 @@ Apply via className: `bg-background`, `text-foreground`, `bg-primary`, `text-pri
 When a project design system is confirmed:
 
 1. Replace the HSL values in this table with the confirmed brand values.
-2. Update the corresponding `--variable` values in `apps/mobile/global.css` to match.
+2. Update the corresponding `--variable` values and `@theme` mappings in `apps/mobile/global.css` to match.
 3. If `apps/console` is included, update the shadcn/ui CSS variable block in the console's `globals.css` to match.
 4. Commit all three files in the same PR.
 

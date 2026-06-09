@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .codex/hooks/mobile-subagent-context.mjs",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/mobile-subagent-context.mjs\"",
             "statusMessage": "Loading mobile runtime context",
             "timeout": 30
           }
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .codex/hooks/mobile-pretool-policy.mjs",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/mobile-pretool-policy.mjs\"",
             "statusMessage": "Checking mobile repo tool policy",
             "timeout": 30
           }
@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .codex/hooks/mobile-posttool-evidence-reminder.mjs",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/mobile-posttool-evidence-reminder.mjs\"",
             "statusMessage": "Checking mobile evidence reminder",
             "timeout": 30
           }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .codex/hooks/mobile-stop-gatekeeper-advisory.mjs",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/mobile-stop-gatekeeper-advisory.mjs\"",
             "statusMessage": "Checking mobile final evidence reminder",
             "timeout": 30
           }

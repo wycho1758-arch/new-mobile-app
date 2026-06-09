@@ -1,0 +1,31 @@
+{
+  "evidence": {
+    "task_id": "MOB-1",
+    "branch": "feature/MOB-1",
+    "pr": {
+      "body_has_evidence_link": true,
+      "head_sha": "a"
+    },
+    "ci": {
+      "checkout_sha": "a"
+    },
+    "eas": {
+      "build_id": "b",
+      "git_commit": "a"
+    },
+    "maestro": {
+      "passed": true
+    },
+    "review": {
+      "author": "same",
+      "approver": "same"
+    },
+    "rework": {
+      "count": 0,
+      "cap": null,
+      "cap_source": "missing-from-sot"
+    }
+  },
+  "expectedReason": "approver_not_author"
+}
+

@@ -1,0 +1,23 @@
+**Findings**
+
+Critical: None.
+
+High: None.
+
+Medium: The report’s “deterministic mobile gates passed” claim is too broad unless it explicitly points to prior baseline evidence. This attempt records only `expo install --check`, mobile lint, and mobile Jest as passed ([android-write-mode-e2e-attempt.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/mobile-qa-env-requirements/android-write-mode-e2e-attempt.md:15), [android-write-mode-e2e-attempt.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/mobile-qa-env-requirements/android-write-mode-e2e-attempt.md:17)). Mobile runtime readiness also requires `expo doctor` and `codex mcp list` ([AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:103)); PR readiness also needs workspace/runtime gates where applicable ([AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:100), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:12)). Prior baseline evidence does show those passed ([baseline.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/api-app-run-check/baseline.md:11), [baseline.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/api-app-run-check/baseline.md:16)), but this attempt should cite that or narrow the claim.
+
+Medium: The blocker is not only host emulator/tooling. The local Maestro flow is still unexecutable in this unrendered template because it contains `appId: {{ANDROID_PACKAGE}}` ([home.yml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/.maestro/home.yml:1)), while the `e2e` script runs `maestro test .maestro/*.yml` directly ([package.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/package.json:8)). Repo docs define `{{...}}` Maestro placeholders as project-generation tokens that must be replaced ([docs/TEMPLATE_VARIABLES.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/TEMPLATE_VARIABLES.md:33), [docs/TEMPLATE_VARIABLES.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/TEMPLATE_VARIABLES.md:37)). The report does list this blocker, but the result line should split host prerequisites from repo/template app-id readiness.
+
+Low: The attempt report summarizes command outcomes but does not include raw exit codes or log excerpts for the Android probes and emulator boot attempts ([android-write-mode-e2e-attempt.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/mobile-qa-env-requirements/android-write-mode-e2e-attempt.md:7), [android-write-mode-e2e-attempt.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/mobile-qa-env-requirements/android-write-mode-e2e-attempt.md:20)). For a blocked environment gate, that is enough for a narrative review, but weaker as reusable PR evidence.
+
+**Verification Notes**
+
+Scope is aligned with the Android-first strategy: Android can be the local native E2E lane only after platform tools, a running target, Maestro, and executable app id handling are available ([android-first-e2e-strategy-review.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/mobile-qa-env-requirements/android-first-e2e-strategy-review.md:16), [android-first-e2e-strategy-review.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/mobile-qa-env-requirements/android-first-e2e-strategy-review.md:18)).
+
+Tests-first is not applicable to this evidence-only attempt. No implementation fix is claimed here. If the Maestro app-id handling is changed later, TDD applies first.
+
+Mobile UI boundaries look fine for the affected flow: React Native primitives, NativeWind classes, semantic class names, stable `testID`s, and matching Jest/Maestro selectors are present ([index.tsx](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/src/app/index.tsx:2), [index.tsx](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/src/app/index.tsx:13), [home.test.tsx](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/src/app/__tests__/home.test.tsx:17), [home.yml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/.maestro/home.yml:4)).
+
+No API contract drift found in this scope. The mobile counter imports the shared constant from `@template/contracts` ([index.tsx](/Users/tw.kim/Documents/AGA/test/new-mobile-app/apps/mobile/src/app/index.tsx:3)), consistent with the repo contract rule ([AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:80)).
+
+Conclusion: Android E2E is correctly blocked, not failed by app code. It is not PR-ready E2E evidence until a usable Android target, Java 17+, Maestro CLI, executable app id handling, and serial `mobile-mcp`/Maestro evidence are recorded.

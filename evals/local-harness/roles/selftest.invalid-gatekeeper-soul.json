@@ -1,0 +1,22 @@
+{
+  "extraFixture": {
+    "role": "Gatekeeper SOUL.md",
+    "type": "LLM",
+    "soulPageId": "1373798443",
+    "soulPageVersion": 4,
+    "caseResponsibilities": [
+      "F"
+    ],
+    "boundaryAssertions": {
+      "ownerResponsibility": "forbidden",
+      "forbiddenOwnershipTransfer": "forbidden",
+      "externalRuntimeModificationBoundary": "forbidden",
+      "humanGateBoundary": "forbidden"
+    },
+    "gatekeeperReferenceOnly": false
+  },
+  "expected": {
+    "valid": false,
+    "reason": "forbidden role fixture"
+  }
+}

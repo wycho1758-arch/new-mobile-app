@@ -1,0 +1,95 @@
+{
+  "case": "A",
+  "sourcePageIds": [
+    "1373667425",
+    "1373700222",
+    "1374421001"
+  ],
+  "steps": [
+    {
+      "step": "scope decision log",
+      "owner": {
+        "type": "agent",
+        "role": "Product/Planning"
+      },
+      "humanGate": false,
+      "sotMapping": "01-3 Case A step 1; mobile-project-bootstrap-workflow step 1",
+      "evidence": "scope decision log"
+    },
+    {
+      "step": "repo creation and template variable input",
+      "owner": {
+        "type": "human",
+        "role": "operator"
+      },
+      "humanGate": true,
+      "sotMapping": "01-7 Phase 3 manual bootstrap; 01-3 Case A step 1",
+      "evidence": "repo URL and template variable decision record"
+    },
+    {
+      "step": "organization-runtime skill install",
+      "owner": {
+        "type": "human",
+        "role": "operator"
+      },
+      "humanGate": true,
+      "sotMapping": "01-7 Phase 3 manual bootstrap; mobile-project-bootstrap-workflow step 3",
+      "evidence": "skill install record without secret values"
+    },
+    {
+      "step": "required check and branch protection registration",
+      "owner": {
+        "type": "human",
+        "role": "repo admin"
+      },
+      "humanGate": true,
+      "sotMapping": "01-7 Phase 3 manual bootstrap; mobile-project-bootstrap-workflow step 4",
+      "evidence": "required check registration record"
+    },
+    {
+      "step": "external credential secret injection",
+      "owner": {
+        "type": "human",
+        "role": "operator"
+      },
+      "humanGate": true,
+      "sotMapping": "01-7 Phase 3 manual bootstrap; mobile-project-bootstrap-workflow step 5",
+      "evidence": "secret path readiness record without secret values"
+    },
+    {
+      "step": "template default and deviation review",
+      "owner": {
+        "type": "agent",
+        "role": "Mobile Architect"
+      },
+      "humanGate": false,
+      "sotMapping": "01-3 Case A step 2; mobile-project-bootstrap-workflow step 6",
+      "evidence": "ADR-style deviation note"
+    },
+    {
+      "step": "EAS Maestro evidence readiness",
+      "owner": {
+        "type": "agent",
+        "role": "QA/Release"
+      },
+      "humanGate": false,
+      "sotMapping": "01-3 Case A step 3; mobile-project-bootstrap-workflow step 7",
+      "evidence": "readiness checklist"
+    },
+    {
+      "step": "initial app shell check",
+      "owner": {
+        "type": "agent",
+        "role": "Mobile App Dev"
+      },
+      "humanGate": false,
+      "sotMapping": "01-3 Case A step 4; mobile-project-bootstrap-workflow step 8",
+      "evidence": "initial app shell check result"
+    }
+  ],
+  "forbidden": {
+    "implementsCode": false,
+    "modifiesExternalRuntime": false,
+    "modelsGatekeeperAsLlm": false
+  }
+}

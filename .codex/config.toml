@@ -1,0 +1,8 @@
+[mcp_servers.mobile-mcp]
+command = "npx"
+args = ["-y", "@mobilenext/mobile-mcp@0.0.58"]
+
+[mcp_servers.serena]
+startup_timeout_sec = 15
+command = "uvx"
+args = ["-p", "3.13", "--from", "git+https://github.com/oraios/serena@v1.5.3", "serena", "start-mcp-server", "--project-from-cwd", "--context=codex"]
