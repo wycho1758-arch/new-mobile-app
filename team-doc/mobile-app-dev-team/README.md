@@ -25,6 +25,7 @@ Confluence 원본 export, 구조화 참조, `_meta` 감사 기록은 root
 | `12-ref-organization-goal-plan.md` | Reference organization 구성 goal/checkpoint 계획 |
 | `13-pod-organization-e2e-improvement-plan.md` | Pod 조직(boram-* 패턴)으로 모바일 앱 E2E를 무인 수행하기 위한 개선 계획 |
 | `14-native-e2e-strategy.md` | RN Web, EAS/Maestro, human-device/mobile-mcp 증거 사다리와 native 증거 경계 |
+| `15-human-ops-live-readiness-annex.md` | human/ops 승인 뒤에만 가능한 live readiness 작업의 승인·증거·금지 claim annex |
 | `ref-organization/` | Reference organization 재사용 가이드와 current-project example |
 | `99-source-map.md` | 근거 파일과 active/historical crosswalk |
 

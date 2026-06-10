@@ -13,6 +13,7 @@
 | `team-doc/mobile-app-dev-team/12-ref-organization-goal-plan.md` | Goal and checkpoint plan for the reusable reference organization layer |
 | `team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md` | Improvement plan for running the team as OpenClaw cloud pods with autonomous mobile-app E2E |
 | `team-doc/mobile-app-dev-team/14-native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
+| `team-doc/mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
 | `team-doc/mobile-app-dev-team/ref-organization/` | Reference organization reusable guidance, current-project examples, and migration crosswalk |
 | `team-doc/mobile-app-dev-team/ref-organization/99-source-map-and-migration/old-to-new-crosswalk.md` | File-by-file migration plan from historical `team-doc/10-structured/**` identifiers into `ref-organization/`; source content is validated through root archive files |
 | `docs/plans/work-units/<work-unit-id>/` | Durable GitHub work-unit artifact root for role-pod handoff |
