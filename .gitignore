@@ -4,6 +4,9 @@ node_modules/
 dist/
 .turbo/
 out/
+.claude/
+.claude-state/
+docs/plans/active/
 .env
 .env.*
 !.env.example
