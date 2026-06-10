@@ -1,7 +1,7 @@
 # Codex CLI Expo/RN Runtime Environment SoT Update
 
 Date: 2026-06-08
-Status: Environment runtime SoT synchronized; Expo Codex plugin activated 2026-06-09; hook Source Basis publication tracked separately
+Status: Local publication mirror/evidence synchronized; Expo Codex plugin activated 2026-06-09; hook Source Basis publication tracked separately
 
 ## Decision Summary
 
@@ -13,7 +13,11 @@ Root source in repo:
 
 Boundary:
 
+- This document is a local publication mirror/evidence artifact derived from
+  root repo runtime facts. It is not the active runtime SoT for local validators.
 - This document covers the current environment/runtime setup only.
+- Live Confluence publish/update requires explicit user approval with target
+  page IDs, current versions, proposed body changes, and reviewer evidence.
 - Hook Source Basis publication evidence is tracked separately in `docs/plans/active/20260608-codex-hook-source-basis-confluence-update-plan.md` and `.evidence/codex-runtime-stability/source-basis-published-*.md`.
 
 Published hook Source Basis inventory:
