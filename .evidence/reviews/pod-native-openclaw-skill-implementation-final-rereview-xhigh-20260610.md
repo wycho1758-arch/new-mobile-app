@@ -1,0 +1,13 @@
+**Findings**
+
+Low: PR scope is not confirmably limited from the current worktree. The requested post-review scope is narrow, and the new evidence records that narrow scope in [.evidence/reviews/pod-native-openclaw-skill-implementation-evidence-20260610.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/reviews/pod-native-openclaw-skill-implementation-evidence-20260610.md:7). However, `git diff --name-only` still shows tracked modifications outside that scope, including [.agents/skills/wm/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/wm/SKILL.md:14), [.codex/hooks.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/hooks.json:52), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:203), and [team-doc/mobile-app-dev-team/01-team-composition.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/01-team-composition.md:3). This may be unrelated dirty state, but the PR package should isolate the pod-native OpenClaw skill fix before claiming limited scope.
+
+**Resolved Prior Findings**
+
+The frontmatter validator finding is resolved. `parseFrontmatter` exists in [scripts/validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:87), and the OpenClaw skill validator now enforces `name: codex-cli-auth-setup`, non-empty `description`, and no keys beyond `name`/`description` in [scripts/validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:399). The target skill has the expected frontmatter in [SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md:1).
+
+The missing final implementation evidence finding is resolved. The evidence file now exists and records scope plus passed `pnpm run validate:team-doc`, `pnpm run test:runtime`, and `pnpm run test:local-harness` results in [.evidence/reviews/pod-native-openclaw-skill-implementation-evidence-20260610.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/reviews/pod-native-openclaw-skill-implementation-evidence-20260610.md:17). Those commands are the expected runtime/local harness scripts in [package.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/package.json:17).
+
+**Verdict**
+
+Prior findings are resolved for the scoped post-review fixes. Do not treat the overall branch as scope-clean until the out-of-scope dirty worktree changes are separated or explicitly included in the PR scope.

@@ -1,0 +1,19 @@
+**Findings**
+
+Critical: None.
+
+High: The proposed second AGENTS rule is too absolute if it says Codex skills/agents work is limited only to `.agents` and `.codex`. Repo policy requires TDD first and recognizes runtime evals/evidence/scripts as part of the Codex runtime surface: [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:7), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:19), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:32), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:84). Reword it to limit primary Codex skill/agent artifacts to `.agents` and `.codex`, while still allowing required tests/evals/validators/evidence.
+
+High: The current worktree already has `.agents`, `.codex`, runtime script, and `PROJECT_ENVIRONMENT.md` changes. The narrowed plan says “Do not create or modify `.agents` or `.codex` artifacts,” so implementation evidence/PR scope will be contaminated unless those existing changes are isolated or explicitly excluded. This matters because `.agents`, `.codex`, `AGENTS.md`, and `PROJECT_ENVIRONMENT.md` trigger runtime/local-harness implications: [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:287), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:295).
+
+Medium: The existing repo plan artifact is broader than the narrowed request. It calls for updates to multiple managed docs beyond the new skill source folder and AGENTS rules: [09-pod-native-openclaw-skill-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/09-pod-native-openclaw-skill-plan.md:66), [09-pod-native-openclaw-skill-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/09-pod-native-openclaw-skill-plan.md:140). Do not follow that file unchanged for this narrowed implementation.
+
+Medium: `README.md` inside the skill folder conflicts with “skill-creator style” if it is intended to be part of the runtime skill payload. The skill-creator guidance says a skill consists of `SKILL.md` plus optional `scripts/`, `references/`, and `assets/`, and explicitly says not to create README-style auxiliary files: [SKILL.md](/Users/tw.kim/.codex/skills/.system/skill-creator/SKILL.md:56), [SKILL.md](/Users/tw.kim/.codex/skills/.system/skill-creator/SKILL.md:123). If kept, mark it source-only and do not mirror it into `/workspace/skills/codex-cli-auth-setup/`.
+
+Medium: The plan validates script content statically but does not require executable validation for `codex-cli-precheck.sh`. Since scripts are included for deterministic reliability, add at least `bash -n team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh`, or wire equivalent syntax/smoke validation into `validate-team-doc`: [SKILL.md](/Users/tw.kim/.codex/skills/.system/skill-creator/SKILL.md:94), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:7).
+
+Low: When adding AGENTS rule checks to `scripts/validate-team-doc.mjs`, avoid using the existing `read()`/`exists()` helpers for `AGENTS.md`; those resolve under `team-doc`, not repo root: [scripts/validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:5), [scripts/validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:41).
+
+**Verdict**
+
+Do not proceed until the High items are corrected. The narrowed direction is otherwise viable: validator first, then docs/source files, then `pnpm run validate:team-doc`, `pnpm run test:runtime`, and `pnpm run test:local-harness`. Evidence should state that `/workspace/skills` runtime behavior is outside local-harness proof scope per [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:53).
