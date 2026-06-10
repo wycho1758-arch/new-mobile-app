@@ -1,0 +1,19 @@
+**Findings**
+
+- **Medium:** `scripts/validate-team-doc.mjs` does not fully enforce the CTO invariant across managed docs. It requires the “Do not use CTO…” sentence and forbids two exact strings only in `08-role-title-update-plan.md`, but it does not scan all managed team docs, SOUL metadata/H1s, matrices, or filenames for CTO usage. Current docs are clean, so this is not a Critical/High blocker. Sources: [validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:348), [validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:354), [validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:432).
+
+- **Residual ambiguity:** the repo still has an existing negative self-test fixture named `selftest.invalid-cto.json` containing `"role": "CTO"`. It is excluded from active role fixtures and used to prove CTO is rejected, so I do not count it as an active runtime role violation. If the approved decision literally forbids any CTO fixture/filename with no negative-test exception, this needs a recorded exception or rename. Sources: [selftest.invalid-cto.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/roles/selftest.invalid-cto.json:1), [test-local-harness.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/test-local-harness.mjs:25), [test-local-harness.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/test-local-harness.mjs:394).
+
+No Critical/High blockers found.
+
+**Confirmed**
+
+The six-role runtime model is preserved: six LLM roles plus non-LLM Gatekeeper are shown with separate Display Title and Operating Role columns. Sources: [01-team-composition.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/01-team-composition.md:3), [01-team-composition.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/01-team-composition.md:7).
+
+CPO / Product Delivery Lead is limited to display title while `Operating Role: Product/Planning` remains intact. Sources: [product-planning-soul.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/02-role-souls/product-planning-soul.md:3), [01-team-composition.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/01-team-composition.md:9).
+
+The pyramid and technical routing are clear: Product/Planning receives intake and routes technical decisions to Mobile Architect / Technical Lead before execution. Sources: [05-work-processes.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/05-work-processes.md:5), [05-work-processes.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/05-work-processes.md:10), [mobile-architect-soul.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/02-role-souls/mobile-architect-soul.md:20).
+
+P0/P1 ownership is correctly scoped: Product/Planning approves PRD fit/scope/evidence/human-gate routing, not design quality; Design owns quality and must not fetch/publish HTML before P1. Sources: [product-planning-soul.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/02-role-souls/product-planning-soul.md:98), [design-soul.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/02-role-souls/design-soul.md:91), [design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:42).
+
+I reviewed read-only and did not rerun the reported passing commands.

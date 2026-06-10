@@ -11,6 +11,10 @@ Use this guide when creating another development team from this one.
 
 ## Step 2. Define Team Shape
 
+- List display titles separately from Operating Role values.
+- Keep Operating Role values stable when skills, agents, fixtures, gates, or validators depend on them.
+- Use Chief Product Officer (CPO) / Product Delivery Lead only as the top product/delivery display title when Product/Planning remains the operating role.
+- Route technical decisions from Product/Planning to the technical owner instead of collapsing architecture authority into the product role.
 - List LLM roles.
 - List non-LLM deterministic gates separately.
 - Do not create SOUL.md for deterministic gates.
@@ -20,6 +24,9 @@ Use this guide when creating another development team from this one.
 
 Each role page should contain:
 
+- Display Title.
+- Operating Role.
+- Authority Level.
 - Mission.
 - Responsibilities.
 - Inputs.
@@ -65,4 +72,3 @@ At minimum:
 - Run the validator and confirm it fails for missing docs.
 - Add docs until the validator passes.
 - Run xhigh read-only review for role-boundary and source-map correctness.
-

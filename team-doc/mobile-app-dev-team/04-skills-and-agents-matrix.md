@@ -4,19 +4,19 @@
 
 Active repo-local skills are only the directories that currently exist under `.agents/skills/<slug>/SKILL.md`.
 
-| Skill | Primary Role | Use |
-| --- | --- | --- |
-| `wm` | Cross-role repo workflow | SoT-grounded planning, TDD routing, reviewer evidence, PR readiness |
-| `po-requirement-office-hours` | Product/Planning | Ambiguous request clarification |
-| `po-work-unit-planning-and-agent-sprint` | Product/Planning | Work-unit sizing and bounded sprint shaping |
-| `po-prd-to-execution` | Product/Planning | PRD/work-unit to role-scoped tasks |
-| `po-planning-completeness-review` | Product/Planning | Readiness review before execution |
-| `design-mobile-design-handoff` | Design | Stitch-backed mobile design handoff |
-| `design-stitch-mcp-operating-rules` | Design | Stitch execution, P0/P1 gates, publication rules |
-| `mobile-app-dev-workflow` | Mobile App Dev | Expo React Native implementation |
-| `mobile-backend-api-integrator-workflow` | Backend/API Integrator | Mobile-facing API contract/integration work |
-| `e2e-test` | QA/Release | E2E plan, reset, execution, evidence |
-| `qa-railway-workflow` | QA/Release | Railway API deploy/health/RN Web evidence; not full mobile release readiness |
+| Skill | Display Title | Operating Role | Use |
+| --- | --- | --- | --- |
+| `wm` | Cross-role repo workflow | Cross-role repo workflow | SoT-grounded planning, TDD routing, reviewer evidence, PR readiness |
+| `po-requirement-office-hours` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | Ambiguous request clarification |
+| `po-work-unit-planning-and-agent-sprint` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | Work-unit sizing and bounded sprint shaping |
+| `po-prd-to-execution` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | PRD/work-unit to role-scoped tasks |
+| `po-planning-completeness-review` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | Readiness review before execution |
+| `design-mobile-design-handoff` | Product Designer | Design | Stitch-backed mobile design handoff |
+| `design-stitch-mcp-operating-rules` | Product Designer | Design | Stitch execution, P0/P1 gates, publication rules |
+| `mobile-app-dev-workflow` | Mobile App Developer | Mobile App Dev | Expo React Native implementation |
+| `mobile-backend-api-integrator-workflow` | Backend/API Engineer | Backend/API Integrator | Mobile-facing API contract/integration work |
+| `e2e-test` | QA/Release Engineer | QA/Release | E2E plan, reset, execution, evidence |
+| `qa-railway-workflow` | QA/Release Engineer | QA/Release | Railway API deploy/health/RN Web evidence; not full mobile release readiness |
 
 ## Current custom agents
 
@@ -48,4 +48,3 @@ These legacy mobile-* agents remain available for other runtime/eval surfaces. F
 ## Deferred OpenClaw Skills
 
 OpenClaw skills are intentionally deferred. Do not invent OpenClaw skill names or package contracts in this document set. Add them only after a new SoT defines the runtime, install path, package format, and verification gate.
-
