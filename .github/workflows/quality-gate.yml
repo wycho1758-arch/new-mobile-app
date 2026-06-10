@@ -23,7 +23,7 @@ jobs:
           changed_files="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" HEAD)"
           printf '%s\n' "$changed_files"
 
-          if printf '%s\n' "$changed_files" | grep -Eq '^(\.agents/.*|\.codex/.*|evals/(skills|agents|hooks|local-harness|work-units)/.*|scripts/lib/.*|scripts/(validate-runtime-artifacts|validate-work-units|codex-headless-review|test-hooks|test-local-harness|clean-tree-guard|codex-preflight)\.mjs|\.github/workflows/quality-gate\.yml|AGENTS\.md|PROJECT_ENVIRONMENT\.md|docs/(confluence|plans)/.*|package\.json|pnpm-lock\.yaml)$'; then
+          if printf '%s\n' "$changed_files" | grep -Eq '^(\.agents/.*|\.codex/.*|evals/(skills|agents|hooks|local-harness|work-units)/.*|scripts/lib/.*|scripts/(validate-runtime-artifacts|validate-work-units|codex-headless-review|test-hooks|test-local-harness|clean-tree-guard|codex-preflight|ingest-eas-evidence)\.mjs|\.github/workflows/quality-gate\.yml|AGENTS\.md|PROJECT_ENVIRONMENT\.md|docs/(confluence|plans)/.*|package\.json|pnpm-lock\.yaml)$'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"

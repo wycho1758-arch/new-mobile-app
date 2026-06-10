@@ -1,0 +1,49 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "evidence-ladder-waived",
+  "stage": "05-qa-release",
+  "state": "done",
+  "owner_role": "QA/Release",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "wm-implementation-reviewer",
+    "evidence": ".evidence/reviews/evidence-ladder-waived.md"
+  },
+  "human_gates": [
+    {
+      "gate_id": "hg-native-evidence-waiver",
+      "category": "failed-gate-risk",
+      "blocking_stage": "05-qa-release",
+      "state": "approved",
+      "decision_path": "00-product-planning/human-gates/hg-native-evidence-waiver.json"
+    }
+  ],
+  "evidence_ladder": {
+    "required_level": "L2",
+    "achieved_level": "L1"
+  },
+  "evidence": [
+    {
+      "path": ".evidence/e2e-test/20260611-rn-web-only/summary.md",
+      "kind": "rn-web-evidence"
+    },
+    {
+      "path": "docs/plans/work-units/evidence-ladder-waived/00-product-planning/human-gates/hg-native-evidence-waiver.json",
+      "kind": "human-gate-decision"
+    }
+  ],
+  "handoff": {
+    "next_role": "Release Gatekeeper (System)",
+    "next_artifact": "docs/plans/work-units/evidence-ladder-waived/06-gatekeeper/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "QA/Release",
+      "action": "created"
+    }
+  ]
+}

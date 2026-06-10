@@ -53,7 +53,7 @@ function requirePackageScripts() {
   }
 
   const scripts = packageJson.scripts || {};
-  const expectedRuntime = 'pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run test:hooks';
+  const expectedRuntime = 'pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run validate:eas-evidence && pnpm run test:hooks';
   if (scripts['test:runtime'] !== expectedRuntime) {
     fail(`package.json test:runtime must keep active gates only: ${expectedRuntime}`);
   }
@@ -65,6 +65,9 @@ function requirePackageScripts() {
   }
   if (scripts['validate:work-unit-next'] !== 'node scripts/work-unit-next.mjs --self-test') {
     fail('package.json missing validate:work-unit-next runtime validator script');
+  }
+  if (scripts['validate:eas-evidence'] !== 'node scripts/ingest-eas-evidence.mjs --self-test') {
+    fail('package.json missing validate:eas-evidence runtime validator script');
   }
   if (scripts['test:runtime']?.includes('validate:team-doc-archive')) {
     fail('package.json test:runtime must not include archive/reference validator');

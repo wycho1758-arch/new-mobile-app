@@ -13,6 +13,22 @@
 | Native E2E | Maestro/mobile-mcp evidence when simulator/device is available |
 | Production submit | Human approval record plus release evidence |
 
+## Mobile Evidence Ladder
+
+Mobile work units use the evidence ladder in
+`team-doc/mobile-app-dev-team/14-native-e2e-strategy.md`:
+
+- L0 `jest`: unit, component, contract, and runtime checks.
+- L1 `rn-web`: RN Web + Playwright for browser-reproducible flows only.
+- L2 `eas-maestro`: native package plus EAS/Maestro evidence.
+- L3 `human-device`: linked device/mobile-mcp evidence plus human-gate residual risk.
+
+Product/Planning sets `status.json.evidence_ladder.required_level`. QA/Release
+sets `achieved_level`. `05-qa-release` cannot be marked `done` unless the
+achieved level meets the required level or an approved `failed-gate-risk`
+human-gate waiver exists. RN Web evidence must not be used as L2 or L3 native
+proof.
+
 ## Release Gatekeeper (System)
 
 - Release Gatekeeper (System) is the display title for the non-LLM deterministic Gatekeeper.

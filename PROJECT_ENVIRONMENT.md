@@ -80,6 +80,17 @@ This file is the root source for the current project environment and runtime set
   - Run Maestro and `mobile-mcp` visual QA when the required EAS account, simulator, emulator, or device is available.
   - If the user chooses direct local/manual native verification instead, record it as HUMAN-GATE evidence with residual risk; do not remove or mark the Maestro/mobile-mcp requirements as replaced.
 
+## Mobile Native Evidence Ladder
+
+- Strategy doc: `team-doc/mobile-app-dev-team/14-native-e2e-strategy.md`.
+- Work-unit field: `status.json.evidence_ladder`.
+- L0 `jest`: unit/component/contract/runtime checks.
+- L1 `rn-web`: RN Web + Playwright for browser-reproducible flows only.
+- L2 `eas-maestro`: EAS/Maestro native evidence.
+- L3 `human-device`: linked device or `mobile-mcp` evidence plus human-gate residual risk.
+- `scripts/validate-work-units.mjs` enforces `05-qa-release` `done` evidence levels.
+- `scripts/ingest-eas-evidence.mjs --self-test` validates offline EAS/Maestro fixture ingestion and URL-query redaction. It does not call EAS, use tokens, run devices, or prove native readiness.
+
 ## Mobile Styling
 
 - Styling layer: NativeWind with React Native primitives and semantic design tokens.
@@ -285,8 +296,13 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/test-hooks.mjs`
   - `scripts/validate-work-units.mjs`
     - validates committed `docs/plans/work-units/*/status.json` artifacts against the passive `wu-status/v1` status-machine schema.
+    - enforces the mobile evidence ladder for `05-qa-release` `done` states.
     - `--self-test` validates positive and negative fixtures under `evals/work-units/fixtures`.
     - repo-local only: it does not prove pod execution, native behavior, EAS state, GitHub branch protection, Jira, Confluence, or other external platform state.
+  - `scripts/ingest-eas-evidence.mjs`
+    - offline fixture ingest and redaction self-test for `eas-evidence/v1`.
+    - writes canonical evidence-shaped output for recorded EAS/Maestro JSON.
+    - repo-local only: `--self-test` does not call EAS, use `EXPO_TOKEN`, run Maestro cloud jobs, or prove native/device behavior.
   - `scripts/work-unit-next.mjs`
     - resolves deterministic `wm-next-action/v1` outputs from validated `wu-status/v1` work-unit state.
     - `--self-test` validates resolver fixtures under `evals/work-units/fixtures/valid/resolver-*`.
@@ -320,6 +336,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `evals/{skills,agents,hooks,local-harness,work-units}/**`
   - `scripts/lib/**`
   - `scripts/{validate-runtime-artifacts,validate-work-units,codex-headless-review,test-hooks,test-local-harness,clean-tree-guard,codex-preflight}.mjs`
+  - `scripts/ingest-eas-evidence.mjs`
   - `.github/workflows/quality-gate.yml`
   - `PROJECT_ENVIRONMENT.md`
   - `docs/{confluence,plans}/**`

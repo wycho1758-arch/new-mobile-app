@@ -110,6 +110,7 @@ pnpm run validate:repo-operations
 pnpm run validate:team-doc
 pnpm run validate:work-units
 pnpm run validate:work-unit-next
+pnpm run validate:eas-evidence
 pnpm run test:hooks
 ```
 
@@ -153,9 +154,13 @@ Validators enforce documented policy; they are not the policy owner.
   team/runtime inputs.
 - `scripts/validate-work-units.mjs` validates committed work-unit `status.json`
   artifacts and its own fixtures for the passive `wu-status/v1` status-machine
-  schema. It is repo-local runtime validation only and does not prove pod,
-  native, EAS, branch-protection, Jira, Confluence, or other external platform
-  state.
+  schema, including the mobile evidence ladder required before `05-qa-release`
+  can be marked `done`. It is repo-local runtime validation only and does not
+  prove pod, native, EAS, branch-protection, Jira, Confluence, or other external
+  platform state.
+- `scripts/ingest-eas-evidence.mjs` validates offline EAS/Maestro fixture ingest
+  and redaction into `eas-evidence/v1`. Its self-test is repo-local only and
+  does not call EAS, use tokens, run cloud jobs, or prove native behavior.
 - `scripts/work-unit-next.mjs` resolves deterministic next actions from
   validated work-unit state and validates its own resolver fixtures. It is
   repo-local orchestration validation only and does not execute role work,

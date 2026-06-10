@@ -74,6 +74,37 @@ const ignoredEvidenceMatchers = [
   /^\.evidence\/.*\/raw(?:\/|$)/,
 ];
 
+const evidenceLevelAliases = new Map([
+  ['L0', 'L0'],
+  ['jest', 'L0'],
+  ['L1', 'L1'],
+  ['rn-web', 'L1'],
+  ['L2', 'L2'],
+  ['eas-maestro', 'L2'],
+  ['L3', 'L3'],
+  ['human-device', 'L3'],
+]);
+
+const evidenceLevelRank = new Map([
+  ['L0', 0],
+  ['L1', 1],
+  ['L2', 2],
+  ['L3', 3],
+]);
+
+const evidenceKindLevels = new Map([
+  ['jest-evidence', 'L0'],
+  ['test-evidence', 'L0'],
+  ['rn-web-evidence', 'L1'],
+  ['playwright-evidence', 'L1'],
+  ['eas-evidence', 'L2'],
+  ['eas-maestro-evidence', 'L2'],
+  ['native-evidence', 'L2'],
+  ['mobile-mcp-evidence', 'L3'],
+  ['human-device-evidence', 'L3'],
+  ['device-evidence', 'L3'],
+]);
+
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -178,6 +209,78 @@ function validateEvidence(errors, source, status) {
     }
     validateEvidencePath(errors, source, item.path, `evidence[${index}].path`);
     validateString(errors, source, `evidence[${index}].kind`, item.kind);
+  }
+}
+
+function normalizeEvidenceLevel(value) {
+  if (typeof value !== 'string') return null;
+  return evidenceLevelAliases.get(value) || null;
+}
+
+function validateEvidenceLevel(errors, source, value, label) {
+  const normalized = normalizeEvidenceLevel(value);
+  if (!normalized) {
+    fail(errors, source, `${label} must be one of: ${Array.from(evidenceLevelAliases.keys()).join(', ')}`);
+    return null;
+  }
+  return normalized;
+}
+
+function evidenceSupportsLevel(item, requiredLevel) {
+  if (!isPlainObject(item)) return false;
+  const itemLevel = evidenceKindLevels.get(item.kind);
+  if (!itemLevel) return false;
+  return evidenceLevelRank.get(itemLevel) >= evidenceLevelRank.get(requiredLevel);
+}
+
+function hasEvidenceForLevel(status, level) {
+  if (level === 'L0') return true;
+  if (!Array.isArray(status.evidence)) return false;
+  return status.evidence.some((item) => evidenceSupportsLevel(item, level));
+}
+
+function hasApprovedFailedGateRisk(status, options) {
+  if (!Array.isArray(status.human_gates)) return false;
+  return status.human_gates.some((gate) => {
+    if (!isPlainObject(gate)) return false;
+    if (gate.category !== 'failed-gate-risk' || gate.state !== 'approved') return false;
+    const decision = options.humanGateDecisionsByPath?.get(gate.decision_path);
+    if (!decision) return false;
+    return decision.category === 'failed-gate-risk' && decision.decision === 'approved';
+  });
+}
+
+function validateEvidenceLadder(errors, source, status, options) {
+  if (status.evidence_ladder === undefined) return;
+  if (!isPlainObject(status.evidence_ladder)) {
+    fail(errors, source, 'evidence_ladder must be an object when present');
+    return;
+  }
+
+  const required = status.evidence_ladder.required_level === undefined
+    ? null
+    : validateEvidenceLevel(errors, source, status.evidence_ladder.required_level, 'evidence_ladder.required_level');
+  const achieved = status.evidence_ladder.achieved_level === undefined
+    ? null
+    : validateEvidenceLevel(errors, source, status.evidence_ladder.achieved_level, 'evidence_ladder.achieved_level');
+
+  if (status.stage !== '05-qa-release' || status.state !== 'done') return;
+
+  if (!required) {
+    fail(errors, source, '05-qa-release done requires evidence_ladder.required_level');
+    return;
+  }
+  if (!achieved) {
+    fail(errors, source, '05-qa-release done requires evidence_ladder.achieved_level');
+    return;
+  }
+
+  if (!hasEvidenceForLevel(status, achieved)) {
+    fail(errors, source, `evidence_ladder.achieved_level ${status.evidence_ladder.achieved_level} must be backed by matching evidence kind`);
+  }
+
+  if (evidenceLevelRank.get(achieved) < evidenceLevelRank.get(required) && !hasApprovedFailedGateRisk(status, options)) {
+    fail(errors, source, '05-qa-release done requires achieved evidence level to meet required_level or an approved failed-gate-risk human gate');
   }
 }
 
@@ -334,6 +437,7 @@ export function validateWorkUnitStatus(status, options = {}) {
 
   validateReviewer(errors, source, status);
   validateEvidence(errors, source, status);
+  validateEvidenceLadder(errors, source, status, options);
   validateHandoff(errors, source, status);
   validateEvents(errors, source, status);
 

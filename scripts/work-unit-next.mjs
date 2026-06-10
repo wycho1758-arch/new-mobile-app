@@ -123,6 +123,16 @@ function hasEvidence(status, kinds, pathPatterns = []) {
   });
 }
 
+function nativeEvidenceKindsForLevel(requiredLevel) {
+  if (requiredLevel === 'L3' || requiredLevel === 'human-device') {
+    return ['mobile-mcp-evidence', 'human-device-evidence', 'device-evidence'];
+  }
+  if (requiredLevel === 'L2' || requiredLevel === 'eas-maestro') {
+    return ['native-evidence', 'eas-evidence', 'eas-maestro-evidence', 'mobile-mcp-evidence', 'human-device-evidence', 'device-evidence'];
+  }
+  return [];
+}
+
 function baseNext(status) {
   return {
     schema: nextActionSchema,
@@ -234,7 +244,8 @@ export function resolveNextAction(status, options = {}) {
 
   if (status.stage === '05-qa-release') {
     const requiredLevel = status.evidence_ladder?.required_level;
-    if ((requiredLevel === 'L2' || requiredLevel === 'L3') && !hasEvidence(status, ['native-evidence', 'eas-evidence', 'mobile-mcp-evidence'])) {
+    const requiredNativeKinds = nativeEvidenceKindsForLevel(requiredLevel);
+    if (requiredNativeKinds.length > 0 && !hasEvidence(status, requiredNativeKinds)) {
       next.blocked_reasons.push(`missing-evidence-level-${requiredLevel}`);
       next.evidence_required.push('native-evidence');
       return next;

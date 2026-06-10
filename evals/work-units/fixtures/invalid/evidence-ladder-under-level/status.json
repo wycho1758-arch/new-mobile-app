@@ -1,0 +1,37 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "evidence-ladder-under-level",
+  "stage": "05-qa-release",
+  "state": "done",
+  "owner_role": "QA/Release",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "wm-implementation-reviewer",
+    "evidence": ".evidence/reviews/evidence-ladder-under-level.md"
+  },
+  "human_gates": [],
+  "evidence_ladder": {
+    "required_level": "L2",
+    "achieved_level": "L1"
+  },
+  "evidence": [
+    {
+      "path": ".evidence/e2e-test/20260611-rn-web-only/summary.md",
+      "kind": "rn-web-evidence"
+    }
+  ],
+  "handoff": {
+    "next_role": "Release Gatekeeper (System)",
+    "next_artifact": "docs/plans/work-units/evidence-ladder-under-level/06-gatekeeper/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "QA/Release",
+      "action": "created"
+    }
+  ]
+}

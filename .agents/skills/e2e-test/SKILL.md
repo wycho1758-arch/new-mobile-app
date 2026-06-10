@@ -48,6 +48,15 @@ Required artifacts:
 - `issues.md`
 - `summary.md`
 
+## Evidence Ladder
+
+- L0 `jest`: unit/component/contract/runtime checks. This skill may link L0 evidence but does not replace the relevant test command.
+- L1 `rn-web`: RN Web Playwright evidence for browser-reproducible UI, navigation, state, and business flows.
+- L2 `eas-maestro`: EAS/Maestro native evidence. Use only after a live EAS run has been approved and completed; offline fixtures validate ingestion and redaction only.
+- L3 `human-device`: linked device or `mobile-mcp` evidence plus a `human-gate/v1` residual-risk decision. A bare human approval is not enough.
+
+For work units, Product/Planning sets `status.json.evidence_ladder.required_level` and QA/Release records `achieved_level`. Do not mark `05-qa-release` complete with RN Web evidence when L2 or L3 is required unless an approved `failed-gate-risk` waiver is linked.
+
 ## Boundaries
 
 - RN Web E2E validates only browser-reproducible UI, navigation, state, and business logic flows.
