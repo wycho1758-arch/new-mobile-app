@@ -1,0 +1,11 @@
+{
+  "name": "invalid-forbidden-raw-path",
+  "valid": false,
+  "files": {
+    ".evidence/e2e-test/20260611-010203-smoke/raw/output.json": "{}\n"
+  },
+  "expectedErrors": [
+    ".evidence/e2e-test/20260611-010203-smoke/raw/output.json",
+    "forbidden evidence path"
+  ]
+}

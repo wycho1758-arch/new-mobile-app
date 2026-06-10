@@ -20,7 +20,7 @@
 | Docker version | `docker --version` and `docker compose version` | Pass, exit 0 | Docker 28.5.2 and Docker Compose v2.40.3 available. |
 | Start Postgres | `docker compose -f apps/api/compose.yaml up -d postgres` | Pass, exit 0 | `api-postgres-1` started. |
 | Postgres readiness | `docker compose -f apps/api/compose.yaml exec -T postgres pg_isready -U app -d app` | Pass, exit 0 | `/var/run/postgresql:5432 - accepting connections`. |
-| Start API | `DATABASE_URL=... API_BEARER_TOKEN=local-dev-token API_PORT=3001 pnpm --filter @template/api dev` | Pass | `tsx watch src/index.ts` started and served smoke requests. |
+| Start API | `DATABASE_URL=... API_BEARER_TOKEN=<redacted> API_PORT=3001 pnpm --filter @template/api dev` | Pass | `tsx watch src/index.ts` started and served smoke requests. |
 | Liveness | `curl -fsS http://127.0.0.1:3001/livez` | Pass, exit 0 | `{"status":"ok"}` |
 | Readiness | `curl -fsS http://127.0.0.1:3001/readyz` | Pass, exit 0 | `{"status":"ok"}` |
 | Authenticated counter event | `POST /api/counter-events` with bearer token | Pass, exit 0 | Response returned an id, count `1`, and `createdAt`. |

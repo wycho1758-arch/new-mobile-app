@@ -2,6 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { findSecretLikeValues } from './lib/secret-patterns.mjs';
 
 const root = process.cwd();
 const docRoot = path.join(root, 'team-doc');
@@ -78,19 +79,10 @@ if (fs.existsSync(repoSkillRoot)) {
 }
 
 const generatedFiles = listFiles('mobile-app-dev-team', (file) => /\.(md|json|sh)$/.test(file));
-const secretPatterns = [
-  /\bsk-[A-Za-z0-9_-]{20,}\b/,
-  /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/,
-  /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/,
-  /\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{20,}\b/,
-  /DATABASE_URL\s*=\s*["']?(postgres|mysql):\/\/(?!.*(example|placeholder|localhost|test))/i,
-  /API_BEARER_TOKEN\s*=\s*["']?(?!test|placeholder|example)[A-Za-z0-9_.-]{12,}/i,
-];
-
 for (const file of generatedFiles) {
   const body = read(file);
-  for (const pattern of secretPatterns) {
-    if (pattern.test(body)) fail(`probable secret or concrete credential in team-doc/${file}`);
+  for (const match of findSecretLikeValues(body)) {
+    fail(`probable secret or concrete credential in team-doc/${file}:${match.line}`);
   }
 }
 

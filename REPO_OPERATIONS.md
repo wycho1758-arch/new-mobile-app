@@ -112,6 +112,7 @@ pnpm run validate:work-units
 pnpm run validate:work-unit-next
 pnpm run validate:eas-evidence
 pnpm run validate:project-environment
+pnpm run validate:evidence-hygiene
 pnpm run test:hooks
 ```
 
@@ -168,6 +169,10 @@ Validators enforce documented policy; they are not the policy owner.
   package script composition, and local snapshot metadata. Its self-test is
   repo-local only and does not call Confluence, Atlassian, Railway, EAS, GitHub,
   mobile-mcp, devices, pods, or external platform services.
+- `scripts/validate-evidence-hygiene.mjs` validates durable evidence hygiene for
+  `.evidence/` and `docs/plans/work-units/`, including forbidden evidence paths,
+  `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` naming, and shared secret-pattern
+  scanning. Its self-test is repo-local only and does not call external services.
 - `scripts/work-unit-next.mjs` resolves deterministic next actions from
   validated work-unit state and validates its own resolver fixtures. It is
   repo-local orchestration validation only and does not execute role work,

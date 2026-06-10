@@ -15,6 +15,7 @@ This file is the root source for the current project environment and runtime set
   - `pnpm run test:local-harness` for Codex runtime changes.
   - `pnpm run validate:work-unit-next` is composed into `test:runtime` for the work-unit next-action resolver.
   - `pnpm run validate:project-environment` is composed into `test:runtime` for offline SoT drift detection.
+  - `pnpm run validate:evidence-hygiene` is composed into `test:runtime` for durable evidence path and secret hygiene.
 
 ## Mobile Runtime
 
@@ -308,6 +309,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - offline drift validator for `PROJECT_ENVIRONMENT.md` against executable repo facts: package manager pin, mobile package versions, MCP pins, quality-gate runtime path detection, package script composition, and local snapshot metadata.
     - `--self-test` validates positive and negative fixtures under `evals/local-harness/project-environment/fixtures`.
     - repo-local only: it does not call Confluence, Atlassian, Railway, EAS, GitHub, mobile-mcp, devices, pods, or external platform services.
+  - `scripts/validate-evidence-hygiene.mjs`
+    - offline evidence hygiene validator for `.evidence/` and `docs/plans/work-units/`: forbidden durable evidence paths, `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` directory naming, and shared secret-pattern scanning with file/line errors.
+    - `--self-test` validates positive and negative fixtures under `evals/local-harness/evidence-hygiene/fixtures`.
+    - repo-local only: it does not call Confluence, Atlassian, Railway, EAS, GitHub, mobile-mcp, devices, pods, Google Cloud, Stitch, or external platform services.
   - `scripts/work-unit-next.mjs`
     - resolves deterministic `wm-next-action/v1` outputs from validated `wu-status/v1` work-unit state.
     - `--self-test` validates resolver fixtures under `evals/work-units/fixtures/valid/resolver-*`.
@@ -317,7 +322,8 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/codex-preflight.mjs`
     - default mode checks local Codex CLI candidates and writes `evals/local-harness/results/preflight.json`.
     - `--pod` mode is repo-local pod readiness preflight: it checks role identity, Node 22, packageManager pnpm pin, Codex CLI candidate, git identity, GitHub auth status, Chromium/RN Web capability, `.codex/config.toml`, and `codex mcp list`.
-    - `--pod` reports auth/EAS/GitHub/MCP readiness as redacted status only, sets `native_e2e_local: false` for boram-like pods, exits non-zero on blockers, and does not prove actual OrbStack/OpenClaw execution or native device behavior.
+    - `--pod` reports auth/EAS/GitHub/MCP readiness as redacted status only, sets `native_e2e_local: false` for boram-like pods, and adds Design-role-only Stitch local prerequisite status for ADC/project presence without printing values.
+    - `--pod` exits non-zero on blockers and does not prove actual OrbStack/OpenClaw execution, native device behavior, live Stitch service enablement, or Google Cloud service state.
   - `scripts/test-local-harness.mjs`
 - Manual provenance refresh:
   - `pnpm run sot:provenance-refresh:manual`
@@ -343,6 +349,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/{validate-runtime-artifacts,validate-work-units,codex-headless-review,test-hooks,test-local-harness,clean-tree-guard,codex-preflight}.mjs`
   - `scripts/ingest-eas-evidence.mjs`
   - `scripts/validate-project-environment.mjs`
+  - `scripts/validate-evidence-hygiene.mjs`
   - `.github/workflows/quality-gate.yml`
   - `PROJECT_ENVIRONMENT.md`
   - `docs/{confluence,plans}/**`

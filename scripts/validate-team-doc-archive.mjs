@@ -2,6 +2,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { findSecretLikeValues } from './lib/secret-patterns.mjs';
 
 const root = process.cwd();
 const docRoot = path.join(root, 'team-doc');
@@ -314,18 +315,9 @@ const archivedGeneratedFiles = bundleEntries.filter((entry) => {
     || entry.teamDocRelativePath.startsWith('_meta/');
 });
 
-const secretPatterns = [
-  /\bsk-[A-Za-z0-9_-]{20,}\b/,
-  /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/,
-  /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/,
-  /\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{20,}\b/,
-  /DATABASE_URL\s*=\s*["']?(postgres|mysql):\/\/(?!.*(example|placeholder|localhost|test))/i,
-  /API_BEARER_TOKEN\s*=\s*["']?(?!test|placeholder|example)[A-Za-z0-9_.-]{12,}/i,
-];
-
 for (const file of archivedGeneratedFiles) {
-  for (const pattern of secretPatterns) {
-    if (pattern.test(file.content)) fail(`probable secret or concrete credential in archived team-doc/${file.teamDocRelativePath}`);
+  for (const match of findSecretLikeValues(file.content)) {
+    fail(`probable secret or concrete credential in archived team-doc/${file.teamDocRelativePath}:${match.line}`);
   }
 }
 

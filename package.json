@@ -14,7 +14,7 @@
   "scripts": {
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:runtime": "pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run validate:eas-evidence && pnpm run validate:project-environment && pnpm run test:hooks",
+    "test:runtime": "pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run validate:eas-evidence && pnpm run validate:project-environment && pnpm run validate:evidence-hygiene && pnpm run test:hooks",
     "test:local-harness:preflight": "node scripts/clean-tree-guard.mjs --self-test && node scripts/codex-preflight.mjs --self-test && node scripts/codex-preflight.mjs",
     "test:local-harness": "pnpm run test:local-harness:preflight && pnpm run test:runtime && pnpm turbo run lint test && node scripts/test-local-harness.mjs --self-test --stage all && node scripts/test-local-harness.mjs --stage all",
     "sot:provenance-refresh:manual": "echo \"ADVISORY ONLY: not a test, not CI, and not required for test:runtime or test:local-harness. Refresh evals/local-harness/sot/snapshot.json provenance with page IDs, versions, fetched time, diff summary, reviewer evidence, and explicit user approval before any live Confluence publish.\"",
@@ -27,6 +27,7 @@
     "validate:work-unit-next": "node scripts/work-unit-next.mjs --self-test",
     "validate:eas-evidence": "node scripts/ingest-eas-evidence.mjs --self-test",
     "validate:project-environment": "node scripts/validate-project-environment.mjs --self-test && node scripts/validate-project-environment.mjs",
+    "validate:evidence-hygiene": "node scripts/validate-evidence-hygiene.mjs --self-test && node scripts/validate-evidence-hygiene.mjs",
     "test:hooks": "node scripts/test-hooks.mjs"
   }
 }

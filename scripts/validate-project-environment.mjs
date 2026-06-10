@@ -175,23 +175,43 @@ export function validateProjectEnvironment(files = readFileMap()) {
   if (!qualityGateRuntimePattern.includes('validate-project-environment')) {
     errors.push('quality-gate.yml must detect scripts/validate-project-environment.mjs');
   }
+  if (!qualityGateRuntimePattern.includes('validate-evidence-hygiene')) {
+    errors.push('quality-gate.yml must detect scripts/validate-evidence-hygiene.mjs');
+  }
   if (!environment.includes('scripts/validate-project-environment.mjs')) {
     errors.push('PROJECT_ENVIRONMENT.md must document scripts/validate-project-environment.mjs');
+  }
+  if (!environment.includes('scripts/validate-evidence-hygiene.mjs')) {
+    errors.push('PROJECT_ENVIRONMENT.md must document scripts/validate-evidence-hygiene.mjs');
   }
   if (!environment.includes('validate:project-environment')) {
     errors.push('PROJECT_ENVIRONMENT.md must document validate:project-environment');
   }
+  if (!environment.includes('validate:evidence-hygiene')) {
+    errors.push('PROJECT_ENVIRONMENT.md must document validate:evidence-hygiene');
+  }
   if (!repoOperations.includes('validate:project-environment')) {
     errors.push('REPO_OPERATIONS.md must include validate:project-environment in active runtime composition');
   }
+  if (!repoOperations.includes('validate:evidence-hygiene')) {
+    errors.push('REPO_OPERATIONS.md must include validate:evidence-hygiene in active runtime composition');
+  }
   if (!repoOperations.includes('scripts/validate-project-environment.mjs')) {
     errors.push('REPO_OPERATIONS.md must document scripts/validate-project-environment.mjs responsibility');
+  }
+  if (!repoOperations.includes('scripts/validate-evidence-hygiene.mjs')) {
+    errors.push('REPO_OPERATIONS.md must document scripts/validate-evidence-hygiene.mjs responsibility');
   }
   if (packageJson) {
     const script = packageJson.scripts?.['validate:project-environment'];
     requireEqual(errors, 'package.json scripts.validate:project-environment', script, 'node scripts/validate-project-environment.mjs --self-test && node scripts/validate-project-environment.mjs');
     if (!packageJson.scripts?.['test:runtime']?.includes('pnpm run validate:project-environment')) {
       errors.push('package.json test:runtime must include pnpm run validate:project-environment');
+    }
+    const evidenceScript = packageJson.scripts?.['validate:evidence-hygiene'];
+    requireEqual(errors, 'package.json scripts.validate:evidence-hygiene', evidenceScript, 'node scripts/validate-evidence-hygiene.mjs --self-test && node scripts/validate-evidence-hygiene.mjs');
+    if (!packageJson.scripts?.['test:runtime']?.includes('pnpm run validate:evidence-hygiene')) {
+      errors.push('package.json test:runtime must include pnpm run validate:evidence-hygiene');
     }
   }
 

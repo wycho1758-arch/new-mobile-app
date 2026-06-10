@@ -1,0 +1,11 @@
+{
+  "name": "invalid-e2e-directory-name",
+  "valid": false,
+  "files": {
+    ".evidence/e2e-test/not-a-timestamp/summary.md": "invalid directory name fixture\n"
+  },
+  "expectedErrors": [
+    ".evidence/e2e-test/not-a-timestamp",
+    "must match"
+  ]
+}

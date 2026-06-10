@@ -53,7 +53,7 @@ function requirePackageScripts() {
   }
 
   const scripts = packageJson.scripts || {};
-  const expectedRuntime = 'pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run validate:eas-evidence && pnpm run validate:project-environment && pnpm run test:hooks';
+  const expectedRuntime = 'pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run validate:eas-evidence && pnpm run validate:project-environment && pnpm run validate:evidence-hygiene && pnpm run test:hooks';
   if (scripts['test:runtime'] !== expectedRuntime) {
     fail(`package.json test:runtime must keep active gates only: ${expectedRuntime}`);
   }
@@ -71,6 +71,9 @@ function requirePackageScripts() {
   }
   if (scripts['validate:project-environment'] !== 'node scripts/validate-project-environment.mjs --self-test && node scripts/validate-project-environment.mjs') {
     fail('package.json missing validate:project-environment runtime validator script');
+  }
+  if (scripts['validate:evidence-hygiene'] !== 'node scripts/validate-evidence-hygiene.mjs --self-test && node scripts/validate-evidence-hygiene.mjs') {
+    fail('package.json missing validate:evidence-hygiene runtime validator script');
   }
   if (scripts['test:runtime']?.includes('validate:team-doc-archive')) {
     fail('package.json test:runtime must not include archive/reference validator');
@@ -138,6 +141,7 @@ requireTerms('REPO_OPERATIONS.md', [
   '## Evidence Gates',
   '## Package Script Composition',
   'validate:team-doc-archive',
+  'validate:evidence-hygiene',
   'archive/reference',
   'TEAM_DOC_ARCHIVE_MANIFEST.json',
   'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
@@ -146,6 +150,7 @@ requireTerms('REPO_OPERATIONS.md', [
   'delete-ready',
   'active current team/runtime gate',
   'legacy Confluence-shaped corpus',
+  'scripts/validate-evidence-hygiene.mjs',
   'Codex-only Repo Work Policy',
   '/workspace/CODEX_MANAGED_PATHS.md',
   '/workspace/new-mobile-app/',

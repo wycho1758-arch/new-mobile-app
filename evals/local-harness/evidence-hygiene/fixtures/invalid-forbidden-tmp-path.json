@@ -1,0 +1,11 @@
+{
+  "name": "invalid-forbidden-tmp-path",
+  "valid": false,
+  "files": {
+    ".evidence/tmp/session/notes.md": "tmp evidence is not durable\n"
+  },
+  "expectedErrors": [
+    ".evidence/tmp/session/notes.md",
+    "forbidden evidence path"
+  ]
+}

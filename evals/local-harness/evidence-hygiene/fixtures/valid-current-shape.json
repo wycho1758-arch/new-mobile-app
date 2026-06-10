@@ -1,0 +1,9 @@
+{
+  "name": "valid-current-shape",
+  "valid": true,
+  "files": {
+    ".evidence/e2e-test/20260611-010203-smoke/summary.md": "durable summary\n",
+    "docs/plans/work-units/example/status.json": "{ \"schema\": \"wu-status/v1\" }\n"
+  },
+  "expectedErrors": []
+}

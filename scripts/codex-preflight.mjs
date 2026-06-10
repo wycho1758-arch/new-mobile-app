@@ -80,6 +80,8 @@ function createActualResolver() {
         ghAuthStatus: () => run('gh', ['auth', 'status']),
         chromiumPath: () => run('sh', ['-lc', 'command -v chromium || command -v chromium-browser || command -v google-chrome || command -v google-chrome-stable']),
         codexMcpList: () => run('codex', ['mcp', 'list']),
+        googleAdcStatus: () => run('sh', ['-lc', 'test -n "$GOOGLE_APPLICATION_CREDENTIALS" -a -f "$GOOGLE_APPLICATION_CREDENTIALS" || test -f "$HOME/.config/gcloud/application_default_credentials.json"']),
+        googleCloudProjectStatus: () => run('sh', ['-lc', 'test -n "$GOOGLE_CLOUD_PROJECT" || test -n "$(gcloud config get-value project 2>/dev/null)"']),
       };
       return commands[name]?.() || { status: 1, stdout: '', stderr: `unknown command fixture: ${name}` };
     },
@@ -294,6 +296,35 @@ function resolvePodRole(env, resolver) {
   };
 }
 
+function roleSlug(value) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function isDesignRole(role) {
+  return roleSlug(role) === 'design' || roleSlug(role) === 'wm-design';
+}
+
+function stitchPreflightStatus(role, env, resolver) {
+  if (!isDesignRole(role.role)) {
+    return {
+      status: 'not-applicable',
+      reason: 'non-design-role',
+    };
+  }
+
+  const adc = resolver.command('googleAdcStatus');
+  const project = resolver.command('googleCloudProjectStatus');
+  const adcStatus = adc.status === 0 ? 'present' : 'missing';
+  const projectStatus = project.status === 0 || env.GOOGLE_CLOUD_PROJECT ? 'configured' : 'missing';
+
+  return {
+    status: adcStatus === 'present' && projectStatus === 'configured' ? 'configured' : 'missing',
+    adc: adcStatus,
+    project: projectStatus,
+    values: 'redacted',
+  };
+}
+
 function addBlocker(blockers, reason, detail = {}) {
   blockers.push({ reason, ...detail });
 }
@@ -350,6 +381,7 @@ function runPodPreflight(options = {}) {
   const environment = runtimeEnvironment({ pnpmVersion });
   const nodeMajor = nodeVersion.status === 0 ? parseNodeMajor(nodeVersion.stdout) : null;
   const blockers = [];
+  const stitch = stitchPreflightStatus(role, env, resolver);
 
   if (!role.role) addBlocker(blockers, 'missing-role-identity');
   if (role.expectedRole && role.role && role.role !== role.expectedRole) {
@@ -372,6 +404,12 @@ function runPodPreflight(options = {}) {
   if (ghAuthStatus.status !== 0) addBlocker(blockers, 'github-auth-unavailable');
   if (!resolver.codexConfigExists()) addBlocker(blockers, 'codex-config-missing');
   if (codexMcpList.status !== 0) addBlocker(blockers, 'codex-mcp-unavailable');
+  if (isDesignRole(role.role) && stitch.status !== 'configured') {
+    addBlocker(blockers, 'stitch-preflight-missing', {
+      adc: stitch.adc,
+      project: stitch.project,
+    });
+  }
 
   const capabilities = {
     rn_web_e2e: chromiumPath.status === 0,
@@ -399,6 +437,7 @@ function runPodPreflight(options = {}) {
     environment,
     capabilities,
     statusOnly,
+    stitch,
     blockers,
     probes,
   };
@@ -423,6 +462,9 @@ function runSelfTest() {
     'pod.valid-no-chromium.json',
     'pod.valid-eas-present.json',
     'pod.local-skip.json',
+    'pod.invalid-design-stitch-missing.json',
+    'pod.valid-non-design-stitch-skip.json',
+    'pod.valid-design-stitch-present-redacted.json',
   ];
   const failures = [];
 
@@ -477,12 +519,23 @@ function runSelfTest() {
       failures.push(`${fixtureName}: expected eas_cloud ${fixture.expected.easCloud}, got ${result.capabilities?.eas_cloud}`);
     }
 
+    if (fixture.expected.stitchStatus && result.stitch?.status !== fixture.expected.stitchStatus) {
+      failures.push(`${fixtureName}: expected stitch status ${fixture.expected.stitchStatus}, got ${result.stitch?.status}`);
+    }
+
     if (fixture.expected.pnpmComparison && result.environment?.comparisons?.pnpmVersion !== fixture.expected.pnpmComparison) {
       failures.push(`${fixtureName}: expected pnpm comparison ${fixture.expected.pnpmComparison}, got ${result.environment?.comparisons?.pnpmVersion}`);
     }
 
-    if (fixture.expected.forbiddenOutput && JSON.stringify(result).includes(fixture.expected.forbiddenOutput)) {
-      failures.push(`${fixtureName}: output includes forbidden fixture value`);
+    const forbiddenOutputs = [
+      ...(Array.isArray(fixture.expected.forbiddenOutputs) ? fixture.expected.forbiddenOutputs : []),
+      ...(fixture.expected.forbiddenOutput ? [fixture.expected.forbiddenOutput] : []),
+    ];
+
+    for (const forbiddenOutput of forbiddenOutputs) {
+      if (JSON.stringify(result).includes(forbiddenOutput)) {
+        failures.push(`${fixtureName}: output includes forbidden fixture value`);
+      }
     }
   }
 
