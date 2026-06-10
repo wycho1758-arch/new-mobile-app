@@ -221,6 +221,10 @@ Expected results include marketplace `expo-plugins`, plugin `expo@expo-plugins` 
 Runtime paths:
 
 - repo skills: `.agents/skills/<skill-name>/SKILL.md`
+  - `$wm` plans must be SoT-grounded and must cite or name verified SoT inputs for material planning decisions.
+  - `$wm` implementation runs must not proceed past planning until applicable local SoT has been read and cited or named in the plan.
+  - `$wm` pre-implementation plan review evidence and final actual-work review evidence are mandatory for non-trivial implementation runs.
+  - The `$wm` headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.
   - `$e2e-test`: repo QA skill for E2E test planning, tested-instance reset, planned execution, and objective evidence capture across RN Web Playwright, Maestro, `mobile-mcp`, or manual HUMAN-GATE checks.
   - `$e2e-test` records evidence under `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` and does not implement app, backend, contract, or runtime fixes.
   - `$e2e-test` is a Codex skill and must not be confused with the EAS profile or workflow label named `e2e-test`.
@@ -243,7 +247,7 @@ Root scripts:
 
 Codex headless review:
 
-- allows only `wm-*` reviewer/researcher/advisor agents for wm routing.
+- allows only dedicated `wm-*`, Product/Planning `po-*`, and Design `design-*` reviewer/researcher/advisor agents for wm routing.
 - invokes Codex with `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
 - does not use Claude, `--engine auto`, or `review_engine_preference` fallback routing.
 - rejects root Claude runtime artifacts (`CLAUDE.md`, `.claude/`, `.claude-state/`) from the active Codex runtime. Dependency-local files with matching names under ignored package directories are out of scope.

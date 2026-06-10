@@ -326,11 +326,15 @@ assert(exists(wmSkillPath), 'missing .agents/skills/wm/SKILL.md');
 if (exists(wmSkillPath)) {
   const wm = read(wmSkillPath);
   assert(/\$wm/.test(wm) && /\/wm/.test(wm), 'wm skill must document explicit $wm and /wm triggers');
+  assert(/Review-only requests MUST route to the read-only custom agents/i.test(wm), 'wm skill must require read-only routing for review-only requests');
   assert(/MUST plan before non-trivial work/i.test(wm), 'wm skill must require planning before non-trivial work');
   assert(/SoT-grounded planning/i.test(wm), 'wm skill must require SoT-grounded planning');
+  assert(/MUST NOT proceed past planning until the applicable local SoT has been read and cited or named/i.test(wm), 'wm skill must block implementation until applicable SoT is read and cited or named');
   assert(/predictions, assumptions, or expected behavior/i.test(wm), 'wm skill must forbid prediction-based planning');
   assert(/completed implementation plan must be reviewed/i.test(wm), 'wm skill must require reviewer check for completed plans');
+  assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(wm), 'wm skill must require mandatory plan and final review evidence');
   assert(/actual completed work must be reviewed/i.test(wm), 'wm skill must require reviewer check for actual completed work');
+  assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(wm), 'wm skill must clarify helper choice is optional but review evidence is mandatory');
   assert(/git diff/i.test(wm) && /completion report/i.test(wm), 'wm skill must require git diff details in completion reports');
   assert(/TDD/i.test(wm), 'wm skill must require TDD');
   assert(/branch/i.test(wm) && /PR/.test(wm), 'wm skill must preserve branch and PR workflow');
@@ -347,6 +351,16 @@ if (exists(wmSkillPath)) {
     assert(!wm.includes(agentName), `wm skill must not route reviewers through legacy agent ${agentName}`);
   }
   assert(!/graphify|OPENCLAW_ROOT_DIR|\.codex\/skills\/wm|Claude Code|claude-headless-review|--engine auto|review_engine_preference|admin-portal|admin-api/i.test(wm), 'wm skill contains forbidden legacy runtime terms');
+}
+
+const projectEnvironmentPath = 'PROJECT_ENVIRONMENT.md';
+assert(exists(projectEnvironmentPath), 'missing PROJECT_ENVIRONMENT.md');
+if (exists(projectEnvironmentPath)) {
+  const environment = read(projectEnvironmentPath);
+  assert(/\$wm`? plans must be SoT-grounded/i.test(environment), 'PROJECT_ENVIRONMENT.md must require $wm SoT-grounded plans');
+  assert(/must not proceed past planning until applicable local SoT has been read and cited or named/i.test(environment), 'PROJECT_ENVIRONMENT.md must block $wm implementation until applicable SoT is read and cited or named');
+  assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(environment), 'PROJECT_ENVIRONMENT.md must require mandatory $wm plan and final review evidence');
+  assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(environment), 'PROJECT_ENVIRONMENT.md must clarify helper choice is optional but $wm review evidence is mandatory');
 }
 
 for (const artifactPath of forbiddenRootRuntimeArtifacts) {

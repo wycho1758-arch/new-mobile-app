@@ -200,7 +200,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - repo skills remain authoritative for contracts, role boundaries, evidence, and QA gates.
 - Repo skills: `.agents/skills/<skill-name>/SKILL.md`.
   - `$wm` plans must be SoT-grounded: material planning decisions cite or name verified SoT inputs, and missing or ambiguous SoT must be reported as unknown/blocked instead of being filled by predictions, assumptions, or expected behavior.
+  - `$wm` implementation runs must not proceed past planning until applicable local SoT has been read and cited or named in the plan.
+  - `$wm` pre-implementation plan review evidence and final actual-work review evidence are mandatory for non-trivial implementation runs.
   - `$wm` implementation runs require persisted read-only reviewer evidence for both the completed plan and the actual completed work, and final user reports must include material `git diff` change details.
+  - The `$wm` headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.
   - `$e2e-test` is the repo QA skill for E2E test planning, tested-instance reset, planned execution, and objective evidence capture across RN Web Playwright, Maestro, `mobile-mcp`, or manual HUMAN-GATE checks. It records evidence under `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` and does not implement fixes.
   - `$qa-railway-workflow` is the repo QA skill for Railway CLI install/login/project/service/database/variable/domain/deploy/status/log/health workflows, redacted Railway evidence, RN Web E2E API URL handoff, and `PROJECT_ENVIRONMENT.md` synchronization. It does not implement app, backend, contract, migration, or mobile UI fixes.
   - Product/Planning repo-local Codex adapters use required `po-*` slugs:

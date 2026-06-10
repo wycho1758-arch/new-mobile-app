@@ -1,1 +1,1 @@
-Review the current runtime skill plan for risks and missing checks. Do not edit files.
+Review the current runtime skill plan for risks and missing checks through read-only reviewer routing. Do not edit files.

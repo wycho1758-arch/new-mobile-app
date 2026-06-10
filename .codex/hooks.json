@@ -48,6 +48,12 @@
             "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/mobile-stop-gatekeeper-advisory.mjs\"",
             "statusMessage": "Checking mobile final evidence reminder",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/mobile-stop-call-check.mjs\"",
+            "statusMessage": "Checking configured mobile stop calls",
+            "timeout": 45
           }
         ]
       }

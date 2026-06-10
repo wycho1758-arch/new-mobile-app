@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 
 const envFileDenyReason = [
@@ -540,6 +540,50 @@ const cases = [
     },
   },
   {
+    name: 'stop call check no-ops unless enabled',
+    script: '.codex/hooks/mobile-stop-call-check.mjs',
+    input: {
+      hook_event_name: 'Stop',
+      last_assistant_message: 'Done with evidence: pnpm run test:hooks passed.',
+    },
+    exitCode: 0,
+    expect: {
+      continue: true,
+    },
+  },
+  {
+    name: 'stop call check reports missing configured calls',
+    script: '.codex/hooks/mobile-stop-call-check.mjs',
+    env: {
+      WM_STOP_CALL_CHECK_ENABLE: '1',
+    },
+    input: {
+      hook_event_name: 'Stop',
+    },
+    exitCode: 0,
+    expect: {
+      continue: true,
+      systemMessage: 'Stop call check skipped: no WM_STOP_CALL_CHECK_HTTP_URL or WM_STOP_CALL_CHECK_MCP_TOOL configured.',
+    },
+  },
+  {
+    name: 'stop call check reports mcp spawn failure as json',
+    script: '.codex/hooks/mobile-stop-call-check.mjs',
+    env: {
+      WM_STOP_CALL_CHECK_ENABLE: '1',
+      WM_STOP_CALL_CHECK_MCP_TOOL: 'mobile_list_available_devices',
+      WM_STOP_CALL_CHECK_MCP_COMMAND: 'definitely-not-a-real-mcp-command',
+    },
+    input: {
+      hook_event_name: 'Stop',
+    },
+    exitCode: 0,
+    expect: {
+      decision: 'block',
+      reason: 'Stop call check failed: spawn definitely-not-a-real-mcp-command ENOENT',
+    },
+  },
+  {
     name: 'session start emits mobile runtime context',
     script: '.codex/hooks/mobile-subagent-context.mjs',
     fixture: 'evals/hooks/fixtures/session-start.json',
@@ -553,6 +597,43 @@ const cases = [
   },
 ];
 
+const httpServer = spawn('node', ['evals/hooks/fixtures/http-livez-server.mjs'], {
+  stdio: ['ignore', 'pipe', 'inherit'],
+});
+process.once('exit', () => httpServer.kill('SIGTERM'));
+
+const port = await new Promise((resolve, reject) => {
+  let buffer = '';
+  httpServer.stdout.on('data', (chunk) => {
+    buffer += chunk.toString('utf8');
+    const line = buffer.split('\n')[0]?.trim();
+    if (line) resolve(line);
+  });
+  httpServer.on('error', reject);
+  httpServer.on('exit', (code) => reject(new Error(`http fixture server exited early with code ${code}`)));
+});
+
+cases.push({
+  name: 'stop call check performs curl and mcp tool call',
+  script: '.codex/hooks/mobile-stop-call-check.mjs',
+  env: {
+    WM_STOP_CALL_CHECK_ENABLE: '1',
+    WM_STOP_CALL_CHECK_HTTP_URL: `http://127.0.0.1:${port}/livez`,
+    WM_STOP_CALL_CHECK_MCP_TOOL: 'mobile_list_available_devices',
+    WM_STOP_CALL_CHECK_MCP_COMMAND: 'node',
+    WM_STOP_CALL_CHECK_MCP_ARGS_JSON: JSON.stringify(['evals/hooks/fixtures/mcp-list-devices-server.mjs']),
+  },
+  input: {
+    hook_event_name: 'Stop',
+  },
+  exitCode: 0,
+  expect: {
+    continue: true,
+    systemMessage:
+      'Stop call check passed: curl http://127.0.0.1:<port>/livez returned 200; MCP tool mobile_list_available_devices returned result.',
+  },
+});
+
 const failures = [];
 
 function exactJsonEqual(left, right) {
@@ -564,6 +645,7 @@ for (const testCase of cases) {
   const result = spawnSync('node', [testCase.script], {
     input,
     encoding: 'utf8',
+    env: { ...process.env, ...(testCase.env ?? {}) },
   });
   if (result.status !== testCase.exitCode) {
     failures.push(`${testCase.name}: expected exit ${testCase.exitCode}, got ${result.status}`);
@@ -575,10 +657,15 @@ for (const testCase of cases) {
     failures.push(`${testCase.name}: stdout was not valid JSON; got ${result.stdout}`);
     continue;
   }
-  if (!exactJsonEqual(parsed, testCase.expect)) {
+  const expected = JSON.parse(
+    JSON.stringify(testCase.expect).replaceAll('http://127.0.0.1:<port>', `http://127.0.0.1:${port}`),
+  );
+  if (!exactJsonEqual(parsed, expected)) {
     failures.push(`${testCase.name}: stdout did not exactly match ${JSON.stringify(testCase.expect)}; got ${result.stdout}`);
   }
 }
+
+httpServer.kill('SIGTERM');
 
 if (failures.length) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));

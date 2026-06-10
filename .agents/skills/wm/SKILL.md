@@ -7,7 +7,7 @@ description: Use only when explicitly invoked as $wm or /wm to run the WonderMov
 
 Use this repo-local WonderMove workflow only when the user explicitly invokes `$wm` or `/wm`.
 
-Review-only requests should route to the read-only custom agents without triggering write-side implementation.
+Review-only requests MUST route to the read-only custom agents without triggering write-side implementation.
 
 ## Operating Rules
 
@@ -21,6 +21,15 @@ Review-only requests should route to the read-only custom agents without trigger
 - Use `packages/contracts` as the single source of truth for shared API schemas and mobile-facing request/response types.
 - Keep React Native UI on NativeWind, React Native primitives, and semantic design tokens.
 - Preserve branch and PR workflow; do not push directly to `main`.
+
+## Mandatory SoT And Review Gates
+
+- Non-trivial implementation runs MUST NOT proceed past planning until the applicable local SoT has been read and cited or named in the plan.
+- If applicable SoT is missing, unreadable, or ambiguous, mark the item unknown or blocked instead of proceeding from assumptions.
+- Pre-implementation plan review evidence and final actual-work review evidence are mandatory for non-trivial implementation runs.
+- The completed implementation plan must be reviewed by the appropriate read-only reviewer before implementation starts, unless the user explicitly requested planning-only and no repo edits will follow.
+- The actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
+- The headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.
 
 ## Workflow
 
@@ -39,7 +48,7 @@ Review-only requests should route to the read-only custom agents without trigger
    - Workspace code changes: `pnpm turbo run lint test`.
    - Mobile runtime changes: `pnpm --filter mobile exec expo install --check`, mobile lint/test/doctor, and local visual QA when a simulator or device is available.
 8. After implementation and tests, actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
-9. Record evidence under `.evidence/` or `evals/*/results/` when the task requires review, gate, harness, or QA proof. Persist plan-review and final-review evidence when implementation proceeds.
+9. Record evidence under `.evidence/` or `evals/*/results/` for review, gate, harness, or QA proof. Persist plan-review and final-review evidence for every non-trivial implementation run.
 10. Before the final user completion report, run `git diff` for the changed paths, check full `git status --short`, and include the material diff/change details in the completion report.
 
 ## Symbolic Navigation
@@ -48,7 +57,7 @@ Use Serena MCP for symbol overview, symbol lookup, reference search, and bounded
 
 ## Read-Only Review Routing
 
-Use `scripts/codex-headless-review.mjs` for Codex headless high review evidence when an independent read-only pass is needed.
+Use `scripts/codex-headless-review.mjs` as one supported path for Codex headless high review evidence. The headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.
 
 Allowed custom agents:
 
