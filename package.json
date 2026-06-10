@@ -19,7 +19,9 @@
     "test:local-harness": "pnpm run test:local-harness:preflight && pnpm run test:runtime && pnpm turbo run lint test && node scripts/test-local-harness.mjs --self-test --stage all && node scripts/test-local-harness.mjs --stage all",
     "test:local-harness:sot-refresh": "echo \"NOT IMPLEMENTED: refresh evals/local-harness/sot/snapshot.json manually via Atlassian MCP page IDs recorded in evals/local-harness/README.md\"",
     "validate": "node -e \"require('node:fs').rmSync('.claude-state', { recursive: true, force: true })\" && node scripts/validate-runtime-artifacts.mjs && node scripts/codex-headless-review.mjs --self-test",
+    "generate:team-doc-archive": "node scripts/create-team-doc-archive-manifest.mjs",
     "validate:repo-operations": "node scripts/validate-repo-operations.mjs",
+    "validate:team-doc-archive": "node scripts/validate-team-doc-archive.mjs",
     "validate:team-doc": "node scripts/validate-team-doc.mjs",
     "test:hooks": "node scripts/test-hooks.mjs"
   }

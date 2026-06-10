@@ -1,0 +1,1794 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-06-10T10:16:57.203Z",
+  "sourceRoots": [
+    "team-doc/00-source/",
+    "team-doc/10-structured/",
+    "team-doc/_meta/"
+  ],
+  "archiveSourcePathStrategy": {
+    "originalRoots": [
+      "team-doc/00-source/",
+      "team-doc/10-structured/",
+      "team-doc/_meta/"
+    ],
+    "manifestPath": "TEAM_DOC_ARCHIVE_MANIFEST.json",
+    "bundlePath": "TEAM_DOC_ARCHIVE_BUNDLE.jsonl",
+    "restoreInstructions": "Restore entries by writing each TEAM_DOC_ARCHIVE_BUNDLE.jsonl line content to its path field."
+  },
+  "deletionReadiness": {
+    "status": "physically-deleted-in-working-tree",
+    "evidencePaths": [
+      ".evidence/reviews/team-doc-delete-readiness-evidence-20260610.md",
+      ".evidence/reviews/team-doc-delete-readiness-final-review-high-20260610.md",
+      ".evidence/reviews/team-doc-physical-deletion-evidence-20260610.md"
+    ]
+  },
+  "totals": {
+    "files": 118,
+    "sourceMarkdownFiles": 71,
+    "structuredMarkdownFiles": 32,
+    "metaFiles": 5,
+    "bytes": 799624,
+    "docTypes": {
+      "reference": 19,
+      "operational-guide": 2,
+      "procedure": 9,
+      "index": 1,
+      "role-contract": 1
+    }
+  },
+  "files": [
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374.md",
+      "kind": "source",
+      "sha256": "c047cbda813928216ba22ef46d519c039ba23cff8a9945c61663499f664948f1",
+      "bytes": 5116,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373012374",
+        "sourceTitle": "mobile-app-dev-team",
+        "sourceVersion": "3",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373012374",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330.md",
+      "kind": "source",
+      "sha256": "a81f89894be7dbfda0d4fb80b7f2fccc9a50ca06687c660e7bc99d83a34ce853",
+      "bytes": 5014,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373667330",
+        "sourceTitle": "[00] LLM 조직 구성 표준 프로세스",
+        "sourceVersion": "3",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667330",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-1-원칙과-제약-1373601794.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-1-원칙과-제약-1373601794.md",
+      "kind": "source",
+      "sha256": "88d1674a8be05872ac681581df3e076126a7ba54357f8fcfb30dcf9c6f16cf49",
+      "bytes": 4659,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373601794",
+        "sourceTitle": "00-1. 원칙과 제약",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373601794",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-2-조직-설계-절차-1373601815.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-2-조직-설계-절차-1373601815.md",
+      "kind": "source",
+      "sha256": "19fd58577bd56e08364c364be38efd6bbf03e4c29461525d376bdec6d7c86255",
+      "bytes": 3797,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373601815",
+        "sourceTitle": "00-2. 조직 설계 절차",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373601815",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-3-산출물-표준-1373765641.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-3-산출물-표준-1373765641.md",
+      "kind": "source",
+      "sha256": "ea741f6c06e27b78bff4c4c9a2fea47c87678e771fcb893d136acb1d5f7b8ba0",
+      "bytes": 6588,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373765641",
+        "sourceTitle": "00-3. 산출물 표준",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765641",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-4-가설-결정-레지스트리-1373798401.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/00-llm-조직-구성-표준-프로세스-1373667330/00-4-가설-결정-레지스트리-1373798401.md",
+      "kind": "source",
+      "sha256": "e3b66ac99a679e1941f22031f2f794998f907c061a280e7a05cff4fdbda42dbd",
+      "bytes": 8378,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373798401",
+        "sourceTitle": "00-4. 가설·결정 레지스트리",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373798401",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097.md",
+      "kind": "source",
+      "sha256": "f1eb7dc8f3573a0a29223b2431fb022689dbaeb7e69c5c4e8255519f1e7fcea2",
+      "bytes": 2540,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700097",
+        "sourceTitle": "[01] Mobile App 조직",
+        "sourceVersion": "1",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700097",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-1-방향과-제약-1373700117.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-1-방향과-제약-1373700117.md",
+      "kind": "source",
+      "sha256": "4333d881fe44a30b5a45684284a626c83db329dc58e329f895b4787143f7e337",
+      "bytes": 9266,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700117",
+        "sourceTitle": "01-1. 방향과 제약",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700117",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-2-조직-구성과-역할-1373765682.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-2-조직-구성과-역할-1373765682.md",
+      "kind": "source",
+      "sha256": "1915c4018c9a4cefefb5ae72244e0bc7b122ce381973a88ed54a3fc164d1b33d",
+      "bytes": 2346,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373765682",
+        "sourceTitle": "01-2. 조직 구성과 역할",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765682",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-3-workflows-case-a-h-1373667425.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-3-workflows-case-a-h-1373667425.md",
+      "kind": "source",
+      "sha256": "fdd63957de0b42b181c97736b2d407b3a7bbf7ddf0d570d35c3ae1689c45bf0e",
+      "bytes": 9839,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667425",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362.md",
+      "kind": "source",
+      "sha256": "940ca8019f63414538371d0fb9700f457843dee5f6808ee2a814f19502bf4718",
+      "bytes": 11036,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373667362",
+        "sourceTitle": "01-4. Skills",
+        "sourceVersion": "4",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667362",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/01-4-외부-skill-생태계-조사-검증-근거-16후보-1374355758.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/01-4-외부-skill-생태계-조사-검증-근거-16후보-1374355758.md",
+      "kind": "source",
+      "sha256": "7a125a1a89d5565c9181b4fea8f5b1cad22f3e1348f2061f290cfa4ed0f18359",
+      "bytes": 16259,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355758",
+        "sourceTitle": "01-4 외부 skill 생태계 조사 검증 근거 (16후보)",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355758",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-api-contract-1373765723.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-api-contract-1373765723.md",
+      "kind": "source",
+      "sha256": "ba21fe1686f6da2b69ced2e1056fac945846c8da1885959ae6b7884abf28cb2c",
+      "bytes": 5730,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373765723",
+        "sourceTitle": "mobile-api-contract",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765723",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-design-handoff-1373765661.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-design-handoff-1373765661.md",
+      "kind": "source",
+      "sha256": "63392fd99336ccdad0763c1393f849ee016f95ae821880c6d4295a07853b16f2",
+      "bytes": 5385,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373765661",
+        "sourceTitle": "mobile-design-handoff",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765661",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-gatekeeper-1373798443.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-gatekeeper-1373798443.md",
+      "kind": "source",
+      "sha256": "ab6a6ca5aea7bcf1ab55f5b796050969d3092c98547c32ac3a6b6a9b138bb24e",
+      "bytes": 5491,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373798443",
+        "sourceTitle": "mobile-gatekeeper",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373798443",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-prd-to-execution-1373634562.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-prd-to-execution-1373634562.md",
+      "kind": "source",
+      "sha256": "f90617893b144bcb9c97bf216c12a8a5a5571e6b2db179da619bea7d0883b971",
+      "bytes": 3645,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373634562",
+        "sourceTitle": "mobile-prd-to-execution",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373634562",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-qa-release-1373667404.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-qa-release-1373667404.md",
+      "kind": "source",
+      "sha256": "d4ca694d0939058392dcd06b328df155679c1ee9960ce6f28831b7e55fd802ac",
+      "bytes": 7563,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373667404",
+        "sourceTitle": "mobile-qa-release",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667404",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964.md",
+      "kind": "source",
+      "sha256": "2546e16512e6a99477e09439fdec7e3d7d8876656d312f5658662179350694a7",
+      "bytes": 3364,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374289964",
+        "sourceTitle": "Role-specific Codex Runtime",
+        "sourceVersion": "3",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374289964",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/agents-1374290025.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/agents-1374290025.md",
+      "kind": "source",
+      "sha256": "e483d2a4180a3bf1b051a0129397335150737823600e1f7c7bd29f03e5b435ac",
+      "bytes": 934,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290025",
+        "sourceTitle": "Agents",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290025",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/hooks-1374060648.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/hooks-1374060648.md",
+      "kind": "source",
+      "sha256": "942de1d05f6a8d3cd93b478567c0dd6a3849cb7e858f2c00045fef5b98c755c1",
+      "bytes": 6280,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374060648",
+        "sourceTitle": "Hooks",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374060648",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/optional-subagents-and-lazycodex-pattern-reuse-1374290066.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/optional-subagents-and-lazycodex-pattern-reuse-1374290066.md",
+      "kind": "source",
+      "sha256": "0df1defcb68ad80ddd068c5dea46c3de2a8358a489027e045e4b378e20510d7d",
+      "bytes": 1850,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290066",
+        "sourceTitle": "Optional Subagents and LazyCodex Pattern Reuse",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290066",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-blocker-and-resume-conditions-1374355583.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-blocker-and-resume-conditions-1374355583.md",
+      "kind": "source",
+      "sha256": "7e346447c94d8a78fa4ab88cfda27b751ec6a8bddf0132af09b0cf816b05c05b",
+      "bytes": 2232,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355583",
+        "sourceTitle": "Rollout Blocker and Resume Conditions",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355583",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-pr-evidence-1374355605.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/rollout-pr-evidence-1374355605.md",
+      "kind": "source",
+      "sha256": "e26bd1d97704ec57ac93ac83e5b3ce2332101155535a3aa45382ac70fa496520",
+      "bytes": 2121,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355605",
+        "sourceTitle": "Rollout PR Evidence",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355605",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-evaluation-and-ci-gate-1374355541.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-evaluation-and-ci-gate-1374355541.md",
+      "kind": "source",
+      "sha256": "aa436f18d0c0b56dab2b4cef3f6b4847bf605abd22eb30ef0cb65734c4880c66",
+      "bytes": 1681,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355541",
+        "sourceTitle": "Runtime Evaluation and CI Gate",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355541",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-path-decision-1374289985.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-path-decision-1374289985.md",
+      "kind": "source",
+      "sha256": "ee6da51a47ba02cad87b8c7aed6d92416c3c6e76b9160251a18caa7e228344a9",
+      "bytes": 1377,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374289985",
+        "sourceTitle": "Runtime Path Decision",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374289985",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/skills-1374290005.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/skills-1374290005.md",
+      "kind": "source",
+      "sha256": "801707c40c9c646f16eb914953405998a101690a3f10ffa28fee6e6d55792068",
+      "bytes": 5724,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290005",
+        "sourceTitle": "Skills",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290005",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138.md",
+      "kind": "source",
+      "sha256": "ec47d75405f0d6501fc793324c08e352817051384c85026d411c8e1a3ab46998",
+      "bytes": 21927,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700138",
+        "sourceTitle": "01-5. SOUL.md 템플릿",
+        "sourceVersion": "4",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700138",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/mobile-codex-cli-실무-지침서-practitioner-guide-1374519410.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/mobile-codex-cli-실무-지침서-practitioner-guide-1374519410.md",
+      "kind": "source",
+      "sha256": "f2cf6a394e4d46bf0f5e7a40043288475727d8bf24163158c8355d23757f5db5",
+      "bytes": 9244,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374519410",
+        "sourceTitle": "Mobile Codex CLI 실무 지침서 / Practitioner Guide",
+        "sourceVersion": "3",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519410",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180.md",
+      "kind": "source",
+      "sha256": "04484f06aea39b924c634c15fb59d6a98a2dd183f1dcdb0085a8e0ea71c41fce",
+      "bytes": 24958,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700180",
+        "sourceTitle": "SOUL.md — Backend/API Integrator",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700180",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180/backend-api-integrator-codex-cli-실무-지침-1374355727.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-backend-api-integrator-1373700180/backend-api-integrator-codex-cli-실무-지침-1374355727.md",
+      "kind": "source",
+      "sha256": "07810567a108b4998eebf25b78feb67fdd7913184741035afb72a910be3c0c3f",
+      "bytes": 1661,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355727",
+        "sourceTitle": "Backend API Integrator Codex CLI 실무 지침",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355727",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702.md",
+      "kind": "source",
+      "sha256": "1a6bdddad7d50373898d844eb815e6c672776191358bd7df8e4d98d3e6cead9c",
+      "bytes": 24724,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373765702",
+        "sourceTitle": "SOUL.md — Design",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373765702",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702/design-codex-cli-실무-지침-1374290207.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702/design-codex-cli-실무-지침-1374290207.md",
+      "kind": "source",
+      "sha256": "d23b99808fb80eefcc754072bd3009d50d05feae9eafed760441d18e409b1842",
+      "bytes": 1984,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290207",
+        "sourceTitle": "Design Codex CLI 실무 지침",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290207",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159.md",
+      "kind": "source",
+      "sha256": "ef830b88365b6b103b14171fdbb79f8da2d5f0f0ddea3c4869ba8f945c86dd27",
+      "bytes": 24763,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700159",
+        "sourceTitle": "SOUL.md — Mobile App Dev",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700159",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159/mobile-app-dev-codex-cli-실무-지침-1374421154.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-app-dev-1373700159/mobile-app-dev-codex-cli-실무-지침-1374421154.md",
+      "kind": "source",
+      "sha256": "8ab8edf05bcca10f848f80b9292513cf9726253713bf0ffd523f13b14a480835",
+      "bytes": 1538,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374421154",
+        "sourceTitle": "Mobile App Dev Codex CLI 실무 지침",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374421154",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383.md",
+      "kind": "source",
+      "sha256": "21a352ae79427f8f57a5e6482432e3aed794bdd4c28b48f803bd9d3e29e4e178",
+      "bytes": 27858,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373667383",
+        "sourceTitle": "SOUL.md — Mobile Architect",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667383",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383/mobile-architect-codex-cli-실무-지침-1374519454.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-mobile-architect-1373667383/mobile-architect-codex-cli-실무-지침-1374519454.md",
+      "kind": "source",
+      "sha256": "e2acb5a28546b9677e1225303d01809dfc28d4b0d60b9eecbba14554b475465b",
+      "bytes": 1575,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374519454",
+        "sourceTitle": "Mobile Architect Codex CLI 실무 지침",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519454",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422.md",
+      "kind": "source",
+      "sha256": "6d1cc8e756e640f1d4baa6b037a61b8a4506807d248d38c19de266d126f5f9e3",
+      "bytes": 24850,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373798422",
+        "sourceTitle": "SOUL.md — Product/Planning",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373798422",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387.md",
+      "kind": "source",
+      "sha256": "2f2d9b53eb8971f765eab87e14e12a52344c0f5bd89826e5bff0171c03af1628",
+      "bytes": 15485,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374519387",
+        "sourceTitle": "mobile-planning-completeness-review",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519387",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-requirement-office-hours-1374519364.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-requirement-office-hours-1374519364.md",
+      "kind": "source",
+      "sha256": "9ae7e67f55bbd2a84c2dc99da255b8fc787d1615f783e502f55787561c27c97f",
+      "bytes": 12931,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374519364",
+        "sourceTitle": "mobile-requirement-office-hours",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519364",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md",
+      "kind": "source",
+      "sha256": "b0456401697f6433fdd036f8a36dce087cd2d894c47b5f5cd1f3611630e6deee",
+      "bytes": 14948,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374650456",
+        "sourceTitle": "mobile-work-unit-planning-and-agent-sprint",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650456",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-codex-cli-실무-지침-1374355705.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-codex-cli-실무-지침-1374355705.md",
+      "kind": "source",
+      "sha256": "1c37555b1e48d0528ab3eed462491d687f70b6e02879766bf40a9f8726d006ef",
+      "bytes": 1551,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355705",
+        "sourceTitle": "Product Planning Codex CLI 실무 지침",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355705",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-operational-skills-summary-1374421079.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-operational-skills-summary-1374421079.md",
+      "kind": "source",
+      "sha256": "6e4f6e6a22c7e18b039b4f100cffd8c29eebe9027d7a689cce736437a71f8293",
+      "bytes": 6107,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374421079",
+        "sourceTitle": "Product Planning Operational Skills Summary",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374421079",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201.md",
+      "kind": "source",
+      "sha256": "4f344c1338326186638a38b6bfd6392f3c327c4844a17d0082d0a5e1fe2ae1e2",
+      "bytes": 26844,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700201",
+        "sourceTitle": "SOUL.md — QA/Release",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700201",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201/qa-release-codex-cli-실무-지침-1374453910.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-qa-release-1373700201/qa-release-codex-cli-실무-지침-1374453910.md",
+      "kind": "source",
+      "sha256": "8d57b66727b15bc0ca9dbf5e124c18dcec24cebc88cf3b1582fdc75cdd937f48",
+      "bytes": 1627,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374453910",
+        "sourceTitle": "QA Release Codex CLI 실무 지침",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453910",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-6-개발-지침-root-agents-md-확장안-1373634583.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-6-개발-지침-root-agents-md-확장안-1373634583.md",
+      "kind": "source",
+      "sha256": "746188ce378964ffdcbf927e8c542cee6301b911b5f34b9f2d99d168265013bd",
+      "bytes": 9476,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373634583",
+        "sourceTitle": "01-6. 개발 지침 (root AGENTS.md 확장안)",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373634583",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-7-진행-계획과-상태-1373700222.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-7-진행-계획과-상태-1373700222.md",
+      "kind": "source",
+      "sha256": "f71dc1c6605d28a96662fd0ec01f6777673d14bad4efd712c87fa184456d33bd",
+      "bytes": 9956,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373700222",
+        "sourceTitle": "01-7. 진행 계획과 상태",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373700222",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427.md",
+      "kind": "source",
+      "sha256": "70912b18a52e333e4bdb32a1d3e35687499533c537654a48f3a26541ac41fb01",
+      "bytes": 72307,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1371963427",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427/clawpod-agent-모바일-템플릿-온라인-서비스-사전-등록-가이드-1372422154.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-8-clawpod-agent용-기본-모바일-앱-프로젝트-템플릿-repo-구성-설계안-1371963427/clawpod-agent-모바일-템플릿-온라인-서비스-사전-등록-가이드-1372422154.md",
+      "kind": "source",
+      "sha256": "d5b19423d251c641f25a96664c25d4e1185fa86899d88c794806ded1f062f7c1",
+      "bytes": 21644,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1372422154",
+        "sourceTitle": "ClawPod Agent 모바일 템플릿 온라인 서비스 사전 등록 가이드",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1372422154",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446.md",
+      "kind": "source",
+      "sha256": "068f3501b9b645e209350229b00cf45944e5657db2f770d7283c582215524980",
+      "bytes": 32257,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1373667446",
+        "sourceTitle": "01-9. 검증 근거·감사 기록",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1373667446",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-3-정합성-조사-검증-근거-2026-06-06-1374060594.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-3-정합성-조사-검증-근거-2026-06-06-1374060594.md",
+      "kind": "source",
+      "sha256": "46a051ebd6c4adffb0621d7bb1c2daa0aa8833e9ebf60d81d21be5cbad8309dd",
+      "bytes": 7070,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374060594",
+        "sourceTitle": "01-3 정합성 조사 검증 근거 (2026-06-06)",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374060594",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-8-템플릿-repo-구현-검증-근거-2026-06-07-1374355642.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/01-8-템플릿-repo-구현-검증-근거-2026-06-07-1374355642.md",
+      "kind": "source",
+      "sha256": "80b9a623062199c6d42c5526a8e641301f2bce719773ae226c1a51364b27b2ec",
+      "bytes": 9855,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374355642",
+        "sourceTitle": "01-8 템플릿 repo 구현 검증 근거 (2026-06-07)",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374355642",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-1-confluence-corpus-and-sot-map-1374453802.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-1-confluence-corpus-and-sot-map-1374453802.md",
+      "kind": "source",
+      "sha256": "2242a5e5e415671c9b59f34dce7d99d599981a5dd654a9e2670b94278c5f0a3c",
+      "bytes": 5988,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374453802",
+        "sourceTitle": "2026-06-07 Stage 1 - Confluence Corpus and SoT Map",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453802",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-2-cross-role-collaboration-contract-1374552097.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-2-cross-role-collaboration-contract-1374552097.md",
+      "kind": "source",
+      "sha256": "a160fd43e5924f13e46d91f80840d5476fe7b49a103a7335cba8bc4494815e4a",
+      "bytes": 4540,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374552097",
+        "sourceTitle": "2026-06-07 Stage 2 - Cross-Role Collaboration Contract",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374552097",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-per-role-soul-md-gap-audit-rollup-1374650371.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-per-role-soul-md-gap-audit-rollup-1374650371.md",
+      "kind": "source",
+      "sha256": "b31514dfcfe151aaeb96ea4daad586c4e18e44c31fc9666902fe42abeb485697",
+      "bytes": 3088,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374650371",
+        "sourceTitle": "2026-06-07 Stage 3 - Per-Role SOUL.md Gap Audit Rollup",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650371",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-backend-api-integrator-1374650413.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-backend-api-integrator-1374650413.md",
+      "kind": "source",
+      "sha256": "78d88022b4341b8c082b3169ce0727ff754f3f7e86e6026c64035740dc4002a0",
+      "bytes": 1889,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374650413",
+        "sourceTitle": "2026-06-07 Stage 3 Role - Backend API Integrator",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650413",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-design-1374650392.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-design-1374650392.md",
+      "kind": "source",
+      "sha256": "3b7d107cb033e14abb53703909c7d9aff41512cea1224b425f09727e7dd2bc1d",
+      "bytes": 1440,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374650392",
+        "sourceTitle": "2026-06-07 Stage 3 Role - Design",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650392",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-app-dev-1374290141.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-app-dev-1374290141.md",
+      "kind": "source",
+      "sha256": "63e5f01d3bd2f75c56085fd4a3398ef7730d3d0afc1eb48797b30a2cc2991f34",
+      "bytes": 1734,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290141",
+        "sourceTitle": "2026-06-07 Stage 3 Role - Mobile App Dev",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290141",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-architect-1374453823.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-mobile-architect-1374453823.md",
+      "kind": "source",
+      "sha256": "4dbaa12b05b7b79cad0fb4e17d2f9f110fce49604627db0cae8f3dbbc6e65045",
+      "bytes": 1339,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374453823",
+        "sourceTitle": "2026-06-07 Stage 3 Role - Mobile Architect",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453823",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-product-planning-1374552118.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-product-planning-1374552118.md",
+      "kind": "source",
+      "sha256": "9621aef1fee71d19699a2f82754815ecef73abf3d76c1b30c5abfa603c1e9652",
+      "bytes": 1477,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374552118",
+        "sourceTitle": "2026-06-07 Stage 3 Role - Product Planning",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374552118",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-qa-release-1374421058.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-3-role-qa-release-1374421058.md",
+      "kind": "source",
+      "sha256": "a00ec5642b7f5a49a2cee7e34defd7c150011c7ce827f0ad686724351ab43b4b",
+      "bytes": 1559,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374421058",
+        "sourceTitle": "2026-06-07 Stage 3 Role - QA Release",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374421058",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-4-event-to-owner-coverage-matrix-1374650433.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-4-event-to-owner-coverage-matrix-1374650433.md",
+      "kind": "source",
+      "sha256": "94b9a97b48a499922a503f199d2a9fa225dff18379fdea86fc15f479dd5d4e0f",
+      "bytes": 2242,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374650433",
+        "sourceTitle": "2026-06-07 Stage 4 - Event-to-Owner Coverage Matrix",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374650433",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-5-required-update-skill-audit-1374290163.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-5-required-update-skill-audit-1374290163.md",
+      "kind": "source",
+      "sha256": "23ca8813a7ccb4ed8919cfd2336c979909ef037be8f60e15893ddd7b54d1fb8d",
+      "bytes": 2317,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290163",
+        "sourceTitle": "2026-06-07 Stage 5 - Required Update Skill Audit",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290163",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-6-runtime-and-local-harness-validation-fit-1374453844.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-6-runtime-and-local-harness-validation-fit-1374453844.md",
+      "kind": "source",
+      "sha256": "c89fda5ec329b71e8ff9a4b218e3ceac198b903e7b2d70684ca26b4a651aa9db",
+      "bytes": 2134,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374453844",
+        "sourceTitle": "2026-06-07 Stage 6 - Runtime and Local Harness Validation Fit",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453844",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-7-final-minimal-change-proposal-1374519340.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-07-stage-7-final-minimal-change-proposal-1374519340.md",
+      "kind": "source",
+      "sha256": "7e35b2f492eae34e54ebfd3f5f3aba7f8798be9d2303d05e15d716b2699cbb6a",
+      "bytes": 2859,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374519340",
+        "sourceTitle": "2026-06-07 Stage 7 - Final Minimal Change Proposal",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374519340",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-codex-hook-source-basis-update-evidence-1376813059.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-codex-hook-source-basis-update-evidence-1376813059.md",
+      "kind": "source",
+      "sha256": "3134a9b4f2422ebb191967caab596fb85c6f26984dc04c75ef955d056f329b0c",
+      "bytes": 5277,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1376813059",
+        "sourceTitle": "2026-06-08 Codex Hook Source Basis Update Evidence",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1376813059",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522.md",
+      "kind": "source",
+      "sha256": "54f04536e056e94c8d0eea9bb7a0c5a16b14ce8095b2317373a73f87fda1efda",
+      "bytes": 19855,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374912522",
+        "sourceTitle": "2026-06-08 First Agent Runtime E2E Canary Plan",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374912522",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/first-agent-runtime-e2e-canary-reproducible-guide-2026-06-08-1375830055.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/first-agent-runtime-e2e-canary-reproducible-guide-2026-06-08-1375830055.md",
+      "kind": "source",
+      "sha256": "89f95c5ff1f75031c5aad69d24ce96ff7d10e073434d2bfaaee0d8df913b0cbd",
+      "bytes": 5802,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1375830055",
+        "sourceTitle": "First Agent Runtime E2E Canary — Reproducible Guide (2026-06-08)",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1375830055",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/skill-설치-경로-sot-검증-보고-01-8-vs-01-4-2026-06-08-1375305752.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522/skill-설치-경로-sot-검증-보고-01-8-vs-01-4-2026-06-08-1375305752.md",
+      "kind": "source",
+      "sha256": "95a9f0fd1f12ccfb512acea28c2baed2215dc2ac993c04ec35bb7bac8dde07c2",
+      "bytes": 5585,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1375305752",
+        "sourceTitle": "Skill 설치 경로 SoT 검증 보고 — 01-8 vs 01-4 (2026-06-08)",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1375305752",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/조사자료-1373110273/clawpod용-expo-eas-통합-스타터-보일러플레이트-조사-보고서-1372815381.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/조사자료-1373110273/clawpod용-expo-eas-통합-스타터-보일러플레이트-조사-보고서-1372815381.md",
+      "kind": "source",
+      "sha256": "28f5d8a2af209c975cf3dc2c59335820831d35be32fc26882a601cb579ed6f6d",
+      "bytes": 13706,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1372815381",
+        "sourceTitle": "ClawPod용 Expo + EAS 통합 스타터/보일러플레이트 조사 보고서",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1372815381",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-local-harness-완료-및-운영-가이드-1374290184.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-local-harness-완료-및-운영-가이드-1374290184.md",
+      "kind": "source",
+      "sha256": "2f7adbf40f6d9d9e5f39e1fba2fcec99675188a952289e1255538fdfd602d6d4",
+      "bytes": 9630,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374290184",
+        "sourceTitle": "2026-06-07 Mobile Local Harness 완료 및 운영 가이드",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374290184",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-soul-md-감사-완료-및-후속-진행-가이드-1374453866.md",
+      "teamDocRelativePath": "00-source/mobile-app-dev-team-1373012374/환경구축-및-검증-1372356612/2026-06-07-mobile-soul-md-감사-완료-및-후속-진행-가이드-1374453866.md",
+      "kind": "source",
+      "sha256": "eed94c905e493da0f73d222621fead589e7008265d70ce58ad9d882453823fdb",
+      "bytes": 6181,
+      "extension": "md",
+      "frontmatter": {
+        "pageId": "1374453866",
+        "sourceTitle": "2026-06-07 Mobile SOUL.md 감사 완료 및 후속 진행 가이드",
+        "sourceVersion": "unknown",
+        "sourceUrl": "https://wondermove-official.atlassian.net/wiki/spaces/mobileappd/pages/1374453866",
+        "fetchedAt": "2026-06-09T03:41:15.000Z",
+        "syncStatus": "synced"
+      }
+    },
+    {
+      "path": "team-doc/00-source/readme.md",
+      "teamDocRelativePath": "00-source/readme.md",
+      "kind": "source",
+      "sha256": "ab4fd331de84adb2fffa9cb3bbab1cd2fa777fe9ddbeb1f0412833710993d20b",
+      "bytes": 602,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/00-meta-process/page-header-standard.md",
+      "teamDocRelativePath": "10-structured/00-meta-process/page-header-standard.md",
+      "kind": "structured",
+      "sha256": "9921ded5f315d7564538de73556aefec4bd46da109c3bfb930e3841e91404232",
+      "bytes": 1986,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667330",
+        "sourceTitle": "[00] LLM 조직 구성 표준 프로세스",
+        "sourceVersion": "3",
+        "sourceHeading": "페이지 헤더 표준 블록"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/00-meta-process/process-overview.md",
+      "teamDocRelativePath": "10-structured/00-meta-process/process-overview.md",
+      "kind": "structured",
+      "sha256": "e9128df7532ffbd709ff4e9fdd556899dc0bf82ddf93b8ed4f6ed28066d35e58",
+      "bytes": 1305,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667330",
+        "sourceTitle": "[00] LLM 조직 구성 표준 프로세스",
+        "sourceVersion": "3",
+        "sourceHeading": "이 레이어가 하는 일"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/00-meta-process/readme.md",
+      "teamDocRelativePath": "10-structured/00-meta-process/readme.md",
+      "kind": "structured",
+      "sha256": "83979f874ac94f347dae4970e16437b06510958303ac81d8a5bfaf58ccea1288",
+      "bytes": 175,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/01-mobile-org/organization-overview.md",
+      "teamDocRelativePath": "10-structured/01-mobile-org/organization-overview.md",
+      "kind": "structured",
+      "sha256": "4854359e6b1bc1e1aaacb0c0546c4aceb769b6c45853abfbeaf06406dfb36dc1",
+      "bytes": 939,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "operational-guide",
+        "sourcePageId": "1373700097",
+        "sourceTitle": "[01] Mobile App 조직",
+        "sourceVersion": "1",
+        "sourceHeading": "이 섹션이 하는 일"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/01-mobile-org/readme.md",
+      "teamDocRelativePath": "10-structured/01-mobile-org/readme.md",
+      "kind": "structured",
+      "sha256": "92bf307261e9743607f972c4a22b3a9b11250c3fa19a465af5475eede5371597",
+      "bytes": 147,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-a-bootstrap.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-a-bootstrap.md",
+      "kind": "structured",
+      "sha256": "b69feff6b8170ca5da7439ddbe145b94c1ba3859cf4626dd8915a0b415df355e",
+      "bytes": 2409,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case A. 신규 프로젝트 bootstrap"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-b-prd-breakdown.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-b-prd-breakdown.md",
+      "kind": "structured",
+      "sha256": "46dbf71f9dc179ecce31c62c33d61cc66841160cd9e3f8b9bfe7ea51cc38a3b7",
+      "bytes": 1265,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case B. PRD 접수와 Epic/Task 분해"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-c-ui-only-feature.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-c-ui-only-feature.md",
+      "kind": "structured",
+      "sha256": "49a9505c6f071e7705ae1a6f22345a75ad7c2ea2db22d9742404eee39fd42d76",
+      "bytes": 1422,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case C. UI-only feature"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-d-api-backed-feature.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-d-api-backed-feature.md",
+      "kind": "structured",
+      "sha256": "00730f42329410b041c0b6a031401ba701d6e70c51191f97fe6a88b01583a8c9",
+      "bytes": 1784,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case D. API-backed feature"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-e-backend-api-change.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-e-backend-api-change.md",
+      "kind": "structured",
+      "sha256": "c29c9d747ab0571a9021b9a02815822f18efc99c6c715883ff6109de871af9a1",
+      "bytes": 1340,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case E. Backend/API 변경 중심 작업"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-f-gate-failure.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-f-gate-failure.md",
+      "kind": "structured",
+      "sha256": "5f512f9651edaa05697a2dbb7fb48409f824424da833ef0d221d305d5753e723",
+      "bytes": 1284,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case F. QA 실패 또는 Gate 실패"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-g-preview-release.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-g-preview-release.md",
+      "kind": "structured",
+      "sha256": "23e54b41dd2d3542184877e2266edcc2a39f5f9906bf5c427e7d54c1a37535be",
+      "bytes": 1015,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case G. Preview/Internal release"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/case-h-production-submit.md",
+      "teamDocRelativePath": "10-structured/02-workflows/case-h-production-submit.md",
+      "kind": "structured",
+      "sha256": "09f7be5e9174ac06c16eee85a10393b50dc38b38807c9f3b255c98244b3354d2",
+      "bytes": 1558,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1373667425",
+        "sourceTitle": "01-3. Workflows — Case A~H",
+        "sourceVersion": "2",
+        "sourceHeading": "Case H. Production submit"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/02-workflows/readme.md",
+      "teamDocRelativePath": "10-structured/02-workflows/readme.md",
+      "kind": "structured",
+      "sha256": "c6829998480b63d4c5101f6a9b9466c750d9f9b7c2b767f013cb9e885e19834c",
+      "bytes": 542,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/03-skills/case-coverage-registry.md",
+      "teamDocRelativePath": "10-structured/03-skills/case-coverage-registry.md",
+      "kind": "structured",
+      "sha256": "b890819077291ac4c674e25b7ec6ca7b7c6fb1ca8b73bdbcb848ff0a3bf7237f",
+      "bytes": 4614,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667362",
+        "sourceTitle": "01-4. Skills",
+        "sourceVersion": "4",
+        "sourceHeading": "Case A-H skill coverage registry"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/03-skills/external-skill-selection-policy.md",
+      "teamDocRelativePath": "10-structured/03-skills/external-skill-selection-policy.md",
+      "kind": "structured",
+      "sha256": "0c9c2687054a053b05b130bbf816c938c7ac69b2a579bc1e69623ccd81e19772",
+      "bytes": 1872,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667362",
+        "sourceTitle": "01-4. Skills",
+        "sourceVersion": "4",
+        "sourceHeading": "External official skill selection policy"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/03-skills/mvp-skill-matrix.md",
+      "teamDocRelativePath": "10-structured/03-skills/mvp-skill-matrix.md",
+      "kind": "structured",
+      "sha256": "e14a64491afbc0371d742d2ae2e739c2d70691f14c6e8c9313c4238dc2e36aa9",
+      "bytes": 2707,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667362",
+        "sourceTitle": "01-4. Skills",
+        "sourceVersion": "4",
+        "sourceHeading": "MVP skill matrix"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/03-skills/optional-skills.md",
+      "teamDocRelativePath": "10-structured/03-skills/optional-skills.md",
+      "kind": "structured",
+      "sha256": "f8b77f317b7bc1d587db1183e5ec1d043f48551bb91b814ad1343884787dd3eb",
+      "bytes": 1395,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667362",
+        "sourceTitle": "01-4. Skills",
+        "sourceVersion": "4",
+        "sourceHeading": "Optional skills"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/03-skills/readme.md",
+      "teamDocRelativePath": "10-structured/03-skills/readme.md",
+      "kind": "structured",
+      "sha256": "ec59c7347131675f701a9f1a55a629943f1f93aa466f3aa9df7cbacd5324492c",
+      "bytes": 384,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/03-skills/skill-placement-policy.md",
+      "teamDocRelativePath": "10-structured/03-skills/skill-placement-policy.md",
+      "kind": "structured",
+      "sha256": "f9405ec3205bf6df8a0618abb6406c746ef689f3adcde046421f3e38e86de5bd",
+      "bytes": 1369,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667362",
+        "sourceTitle": "01-4. Skills",
+        "sourceVersion": "4",
+        "sourceHeading": "Skill placement policy"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/04-soul-contracts/readme.md",
+      "teamDocRelativePath": "10-structured/04-soul-contracts/readme.md",
+      "kind": "structured",
+      "sha256": "556aee672d399b4a7748c52b82e3e571ce147eaf20e0dbe76376cd7fb044dd35",
+      "bytes": 302,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/04-soul-contracts/role-pages-index.md",
+      "teamDocRelativePath": "10-structured/04-soul-contracts/role-pages-index.md",
+      "kind": "structured",
+      "sha256": "c534d4cd280bc5ac1b1a660b51c85abf4a858371af27fa5d4248c216d8cda0c7",
+      "bytes": 1367,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "index",
+        "sourcePageId": "1373700138",
+        "sourceTitle": "01-5. SOUL.md 템플릿",
+        "sourceVersion": "4",
+        "sourceHeading": "Role page index"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/04-soul-contracts/soul-base-template-en.md",
+      "teamDocRelativePath": "10-structured/04-soul-contracts/soul-base-template-en.md",
+      "kind": "structured",
+      "sha256": "c5799b7ab877e4712f8af8eb23a6e368ee8a3bfbec12d6d2c399e6f087ac99f0",
+      "bytes": 4456,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373700138",
+        "sourceTitle": "01-5. SOUL.md 템플릿",
+        "sourceVersion": "4",
+        "sourceHeading": "English base skeleton"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/04-soul-contracts/soul-base-template-ko.md",
+      "teamDocRelativePath": "10-structured/04-soul-contracts/soul-base-template-ko.md",
+      "kind": "structured",
+      "sha256": "20e9e4e12420300650f72859fdc481615873bc934bbaf9821c7f0f9975a3085e",
+      "bytes": 4072,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373700138",
+        "sourceTitle": "01-5. SOUL.md 템플릿",
+        "sourceVersion": "4",
+        "sourceHeading": "Korean base skeleton"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/04-soul-contracts/soul-base-template.md",
+      "teamDocRelativePath": "10-structured/04-soul-contracts/soul-base-template.md",
+      "kind": "structured",
+      "sha256": "6d22d4fbd71bc180cb3715b73d43dce56896994c8c0a476c59fa669056f4b2ab",
+      "bytes": 4146,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "role-contract",
+        "sourcePageId": "1373700138",
+        "sourceTitle": "01-5. SOUL.md 템플릿",
+        "sourceVersion": "4",
+        "sourceHeading": "SOUL.md common base"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/ci-and-eas.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/ci-and-eas.md",
+      "kind": "structured",
+      "sha256": "1ef279f1d45dbd1e2be15b5771b4ec17e498091cceff351875ee6ec4e5eef3d6",
+      "bytes": 3217,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "procedure",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "CI and EAS workflows"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/codex-runtime-layer.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/codex-runtime-layer.md",
+      "kind": "structured",
+      "sha256": "ed4c8232fc41c3c1b819a6cc5784eef390c7d8e1a281195571363ac26080b920",
+      "bytes": 4059,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Codex runtime layer"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/mobile-runtime.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/mobile-runtime.md",
+      "kind": "structured",
+      "sha256": "6ff2c5673cdcfa414d167f53990598f955cbc6879cc351bd955ea1f9ab37d607",
+      "bytes": 3520,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Mobile runtime sample set"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/optional-api.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/optional-api.md",
+      "kind": "structured",
+      "sha256": "9632799a976cf48d59bd024412aa0bae8ca212d9a957230fa25fa6817f084128",
+      "bytes": 4849,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Optional API workspace"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/readme.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/readme.md",
+      "kind": "structured",
+      "sha256": "72dcb0f71979effb63e5f5fe68558464c0a63c700e22d98b9e16a1b7da01af6e",
+      "bytes": 497,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/references.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/references.md",
+      "kind": "structured",
+      "sha256": "721f47f28a81cf3bee24d2619110bb326226567c37817eb4abefbbf9b53bb679",
+      "bytes": 2407,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Reference basis"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/source-selection.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/source-selection.md",
+      "kind": "structured",
+      "sha256": "e0223ccacd8f68218e8b6d0e888172ad98bd0e51721df4e00ec6f912aa561ca7",
+      "bytes": 2464,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Source selection matrix"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/target-tree.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/target-tree.md",
+      "kind": "structured",
+      "sha256": "c3d9b0aa7889498280fb5adf087109f961e83e7d56dade4e06a9ddc523b19793",
+      "bytes": 3090,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Target directory structure"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/template-purpose-and-dod.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/template-purpose-and-dod.md",
+      "kind": "structured",
+      "sha256": "4ad29faed17c427a199bf7353377c1ff7d4e20de7a2595990ec156ecb3f216a4",
+      "bytes": 4489,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Purpose and Definition of Done"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/05-repo-template/variables.md",
+      "teamDocRelativePath": "10-structured/05-repo-template/variables.md",
+      "kind": "structured",
+      "sha256": "48116aab293b4055fd1749c5bd08dabc4552ca31b827b765fce350e2092a397f",
+      "bytes": 2762,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1371963427",
+        "sourceTitle": "01-8. ClawPod Agent용 기본 모바일 앱 프로젝트 템플릿 repo 구성 설계안",
+        "sourceVersion": "20",
+        "sourceHeading": "Template variables"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/06-codex-runtime/practitioner-guide.md",
+      "teamDocRelativePath": "10-structured/06-codex-runtime/practitioner-guide.md",
+      "kind": "structured",
+      "sha256": "c27163a0cbfd88684901a1da29fe639884215dcefaa03258215f43104c36cb6c",
+      "bytes": 1276,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "operational-guide",
+        "sourcePageId": "1374519410",
+        "sourceTitle": "Mobile Codex CLI 실무 지침서 / Practitioner Guide",
+        "sourceVersion": "3",
+        "sourceHeading": "Workflow Pillars / 작업 기둥"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/06-codex-runtime/readme.md",
+      "teamDocRelativePath": "10-structured/06-codex-runtime/readme.md",
+      "kind": "structured",
+      "sha256": "3163a942e670fd01a8178370ec1d9c0995bb3f2204dca9af609b55f84ff8e079",
+      "bytes": 174,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/06-codex-runtime/runtime-boundary.md",
+      "teamDocRelativePath": "10-structured/06-codex-runtime/runtime-boundary.md",
+      "kind": "structured",
+      "sha256": "22b7931016c8d1cb5f248144f92e37d2da1fe548132e27e541a2cf84a82e0708",
+      "bytes": 1678,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1374289964",
+        "sourceTitle": "Role-specific Codex Runtime",
+        "sourceVersion": "3",
+        "sourceHeading": "이 페이지의 역할"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/07-evidence-and-audit/evidence-index.md",
+      "teamDocRelativePath": "10-structured/07-evidence-and-audit/evidence-index.md",
+      "kind": "structured",
+      "sha256": "6d39b6e34520e012b52097e5ded8322baa578188477dba750bc7718da596cd56",
+      "bytes": 1754,
+      "extension": "md",
+      "frontmatter": {
+        "docType": "reference",
+        "sourcePageId": "1373667446",
+        "sourceTitle": "01-9. 검증 근거·감사 기록",
+        "sourceVersion": "unknown",
+        "sourceHeading": "하위 검증 근거"
+      }
+    },
+    {
+      "path": "team-doc/10-structured/07-evidence-and-audit/readme.md",
+      "teamDocRelativePath": "10-structured/07-evidence-and-audit/readme.md",
+      "kind": "structured",
+      "sha256": "095783b2bd5adef6aaa88db2c98364c75c75585bb503236b4c16be0cdfef6425",
+      "bytes": 142,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/10-structured/readme.md",
+      "teamDocRelativePath": "10-structured/readme.md",
+      "kind": "structured",
+      "sha256": "95e48947fdc7f17b7f88ffcb37fa52bfe9daa7db4285c585c063a6a4fe0d5c06",
+      "bytes": 500,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/_meta/confluence-page-map.json",
+      "teamDocRelativePath": "_meta/confluence-page-map.json",
+      "kind": "meta",
+      "sha256": "733cbea390d3d937c6c2b469eb14cdfaf0de18b192615dcf5a8f91bc08015ee6",
+      "bytes": 34411,
+      "extension": "json",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/_meta/fetch-report.md",
+      "teamDocRelativePath": "_meta/fetch-report.md",
+      "kind": "meta",
+      "sha256": "1853626a4cd2d2942860ee6d76bec44e6a8dff412c6c59524049822d0d8c339c",
+      "bytes": 1151,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/_meta/readme.md",
+      "teamDocRelativePath": "_meta/readme.md",
+      "kind": "meta",
+      "sha256": "b4db34ba8318ff99a60ad8006f4a3b9e2099dc4480e7e4717d9a6401ef6858cc",
+      "bytes": 187,
+      "extension": "md",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/_meta/split-map.json",
+      "teamDocRelativePath": "_meta/split-map.json",
+      "kind": "meta",
+      "sha256": "dc59fcd40239fea28e22fabdeb271fc35c10e4a6dd536ebf366d220a97955702",
+      "bytes": 38293,
+      "extension": "json",
+      "frontmatter": null
+    },
+    {
+      "path": "team-doc/_meta/validation-report.md",
+      "teamDocRelativePath": "_meta/validation-report.md",
+      "kind": "meta",
+      "sha256": "a6fea9e923abe4f8eb67e9128244847420cac577f4d6b75c0ff766ac15af438a",
+      "bytes": 250,
+      "extension": "md",
+      "frontmatter": null
+    }
+  ]
+}

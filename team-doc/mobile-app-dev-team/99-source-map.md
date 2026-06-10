@@ -10,11 +10,22 @@
 | `.agents/skills/<slug>/SKILL.md` | Active repo-local skill contracts |
 | `.codex/agents/<agent>.toml` | Active custom agent contracts |
 | `team-doc/mobile-app-dev-team/10-github-artifact-workflow.md` | Current pod-isolated GitHub artifact handoff workflow |
+| `team-doc/mobile-app-dev-team/12-ref-organization-goal-plan.md` | Goal and checkpoint plan for the reusable reference organization layer |
+| `team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md` | Improvement plan for running the team as OpenClaw cloud pods with autonomous mobile-app E2E |
+| `team-doc/mobile-app-dev-team/ref-organization/` | Reference organization reusable guidance, current-project examples, and migration crosswalk |
+| `team-doc/mobile-app-dev-team/ref-organization/99-source-map-and-migration/old-to-new-crosswalk.md` | File-by-file migration plan from historical `team-doc/10-structured/**` identifiers into `ref-organization/`; source content is validated through root archive files |
 | `docs/plans/work-units/<work-unit-id>/` | Durable GitHub work-unit artifact root for role-pod handoff |
-| `team-doc/10-structured/03-skills/mvp-skill-matrix.md` | Current skill matrix reference |
-| `team-doc/10-structured/03-skills/case-coverage-registry.md` | Case A-H process reference |
-| `team-doc/00-source/.../01-2-조직-구성과-역할-1373765682.md` | Original 6 LLM + Gatekeeper role source |
-| `team-doc/00-source/.../01-5-soul-md-템플릿-1373700138/` | Historical SOUL.md source pages |
+| `TEAM_DOC_ARCHIVE_MANIFEST.json` | Root archive metadata for historical `team-doc/00-source/`, `team-doc/10-structured/`, and `_meta` paths |
+| `TEAM_DOC_ARCHIVE_BUNDLE.jsonl` | Root archive content bundle for historical `team-doc/00-source/`, `team-doc/10-structured/`, and `_meta` files |
+| `team-doc/00-source/.../01-2-조직-구성과-역할-1373765682.md` | Historical identifier for original 6 LLM + Gatekeeper role source; content is validated through root archive files |
+| `team-doc/00-source/.../01-5-soul-md-템플릿-1373700138/` | Historical identifier for SOUL.md source pages; content is validated through root archive files |
+
+## Historical Structured Inputs
+
+| Source | Use |
+| --- | --- |
+| `team-doc/10-structured/03-skills/mvp-skill-matrix.md` | Historical skill matrix identifier; content is validated through root archive files. Current active skill status is validated from `.agents/skills/` and `team-doc/mobile-app-dev-team/04-skills-and-agents-matrix.md`. |
+| `team-doc/10-structured/03-skills/case-coverage-registry.md` | Historical Case A-H process identifier; content is validated through root archive files. Use `ref-organization/04-workflows-and-handoffs/scenario-overlays-a-h.md` for reusable guidance. |
 
 ## Display Title To Operating Role Crosswalk
 
@@ -44,7 +55,7 @@
 
 ## Stale Or Lower-Priority Sources
 
-`team-doc/10-structured/06-codex-runtime/runtime-boundary.md` may omit newer active skills such as `qa-railway-workflow`. When it conflicts with `PROJECT_ENVIRONMENT.md`, `.agents/skills`, or the current skill matrix, use current repo files as the stronger source.
+`team-doc/10-structured/06-codex-runtime/runtime-boundary.md` may omit newer active skills such as `qa-railway-workflow`. When it conflicts with `PROJECT_ENVIRONMENT.md`, `.agents/skills`, or `team-doc/mobile-app-dev-team/04-skills-and-agents-matrix.md`, use current repo files as the stronger source.
 
 ## Reviewer Notes Incorporated
 

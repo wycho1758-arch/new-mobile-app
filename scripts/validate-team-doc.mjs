@@ -7,34 +7,6 @@ const root = process.cwd();
 const docRoot = path.join(root, 'team-doc');
 const errors = [];
 
-const requiredDirs = [
-  '.',
-  '00-source',
-  '10-structured',
-  '10-structured/00-meta-process',
-  '10-structured/01-mobile-org',
-  '10-structured/02-workflows',
-  '10-structured/03-skills',
-  '10-structured/04-soul-contracts',
-  '10-structured/05-repo-template',
-  '10-structured/06-codex-runtime',
-  '10-structured/07-evidence-and-audit',
-  '_meta',
-];
-
-const allowedDocTypes = new Set([
-  'policy',
-  'procedure',
-  'template',
-  'reference',
-  'registry',
-  'evidence',
-  'runtime',
-  'role-contract',
-  'operational-guide',
-  'index',
-]);
-
 function fail(message) {
   errors.push(message);
 }
@@ -53,15 +25,6 @@ function existsRoot(relativePath) {
 
 function readRoot(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8');
-}
-
-function readJson(relativePath) {
-  try {
-    return JSON.parse(read(relativePath));
-  } catch (error) {
-    fail(`${relativePath} must be valid JSON: ${error.message}`);
-    return null;
-  }
 }
 
 function listFiles(baseDir, predicate = () => true) {
@@ -98,76 +61,6 @@ function parseFrontmatter(body) {
   return data;
 }
 
-for (const dir of requiredDirs) {
-  const readme = path.join(dir, 'readme.md');
-  if (!exists(readme)) fail(`missing lowercase index: team-doc/${readme}`);
-}
-
-const pageMap = exists('_meta/confluence-page-map.json')
-  ? readJson('_meta/confluence-page-map.json')
-  : (fail('missing team-doc/_meta/confluence-page-map.json'), null);
-const splitMap = exists('_meta/split-map.json')
-  ? readJson('_meta/split-map.json')
-  : (fail('missing team-doc/_meta/split-map.json'), null);
-
-if (pageMap) {
-  if (!pageMap.homePageId) fail('confluence-page-map.json missing homePageId');
-  if (!pageMap.fetchedAt) fail('confluence-page-map.json missing fetchedAt');
-  if (!Array.isArray(pageMap.nodes)) fail('confluence-page-map.json nodes must be an array');
-
-  const nodes = Array.isArray(pageMap.nodes) ? pageMap.nodes : [];
-  const pageNodes = nodes.filter((node) => node.type === 'page');
-  if (!pageNodes.length) fail('confluence-page-map.json must include at least one page node');
-
-  for (const node of pageNodes) {
-    for (const key of ['id', 'title', 'version', 'url', 'sourcePath']) {
-      if (!node[key]) fail(`page node missing ${key}: ${node.id || node.title || '<unknown>'}`);
-    }
-    if (node.sourcePath && !exists(node.sourcePath)) {
-      fail(`sourcePath does not exist for page ${node.id}: ${node.sourcePath}`);
-    }
-    if (node.sourcePath && !node.sourcePath.startsWith('00-source/')) {
-      fail(`sourcePath must live under 00-source for page ${node.id}: ${node.sourcePath}`);
-    }
-    if (node.depth > 0 && node.parentId && !node.sourcePath?.includes('/')) {
-      fail(`sourcePath must mirror parent/child tree for page ${node.id}: ${node.sourcePath}`);
-    }
-  }
-}
-
-const sourceFiles = listFiles('00-source', (file) => file.endsWith('.md') && !file.endsWith('/readme.md'));
-for (const file of sourceFiles) {
-  const frontmatter = parseFrontmatter(read(file));
-  if (!frontmatter) {
-    fail(`source markdown missing frontmatter: team-doc/${file}`);
-    continue;
-  }
-  for (const key of ['pageId', 'sourceTitle', 'sourceVersion', 'sourceUrl', 'fetchedAt']) {
-    if (!frontmatter[key]) fail(`source markdown missing ${key}: team-doc/${file}`);
-  }
-}
-
-const structuredFiles = listFiles(
-  '10-structured',
-  (file) => file.endsWith('.md') && !file.endsWith('/readme.md'),
-);
-for (const file of structuredFiles) {
-  const frontmatter = parseFrontmatter(read(file));
-  if (!frontmatter) {
-    fail(`structured markdown missing frontmatter: team-doc/${file}`);
-    continue;
-  }
-  for (const key of ['docType', 'sourcePageId', 'sourceTitle', 'sourceVersion', 'sourceHeading']) {
-    if (!frontmatter[key]) fail(`structured markdown missing ${key}: team-doc/${file}`);
-  }
-  if (frontmatter.docType && !allowedDocTypes.has(frontmatter.docType)) {
-    fail(`structured markdown has invalid docType "${frontmatter.docType}": team-doc/${file}`);
-  }
-}
-
-const currentSkillMatrix = exists('10-structured/03-skills/mvp-skill-matrix.md')
-  ? read('10-structured/03-skills/mvp-skill-matrix.md')
-  : '';
 const managedSkillMatrix = exists('mobile-app-dev-team/04-skills-and-agents-matrix.md')
   ? read('mobile-app-dev-team/04-skills-and-agents-matrix.md')
   : '';
@@ -178,67 +71,13 @@ if (fs.existsSync(repoSkillRoot)) {
     .map((entry) => entry.name)
     .sort();
   for (const skillSlug of repoSkillSlugs) {
-    if (!currentSkillMatrix.includes(`\`${skillSlug}\``)) {
-      fail(`current skill matrix missing generated repo skill: ${skillSlug}`);
-    }
     if (managedSkillMatrix && !managedSkillMatrix.includes(`\`${skillSlug}\``)) {
       fail(`managed skill matrix missing active repo-local skill: ${skillSlug}`);
     }
   }
 }
 
-const obsoleteGeneratedSkillSlugs = [
-  'mobile-prd-to-execution',
-  'mobile-design-handoff',
-  'mobile-api-contract',
-  'mobile-qa-release',
-  'mobile-gatekeeper',
-  'mobile-project-bootstrap-workflow',
-];
-
-for (const file of structuredFiles) {
-  const body = read(file);
-  if (/Sentry|@sentry|SENTRY/.test(body)) {
-    fail(`structured doc must not describe Sentry as current/default template scope: team-doc/${file}`);
-  }
-  if (/`title`, `counter`, `increment`/.test(body)) {
-    fail(`structured doc has obsolete mobile testID set: team-doc/${file}`);
-  }
-  for (const slug of obsoleteGeneratedSkillSlugs) {
-    if (body.includes(`\`${slug}\``)) {
-      fail(`structured doc references obsolete generated skill slug ${slug}: team-doc/${file}`);
-    }
-  }
-}
-
-if (pageMap && splitMap) {
-  if (!Array.isArray(splitMap.entries)) fail('split-map.json entries must be an array');
-  const entries = Array.isArray(splitMap.entries) ? splitMap.entries : [];
-  const entryByPage = new Map(entries.map((entry) => [String(entry.sourcePageId), entry]));
-  const sourcePageIds = pageMap.nodes
-    .filter((node) => node.type === 'page')
-    .map((node) => String(node.id));
-
-  for (const pageId of sourcePageIds) {
-    const entry = entryByPage.get(pageId);
-    if (!entry) {
-      fail(`split-map.json missing source page ${pageId}`);
-      continue;
-    }
-    if (!['split', 'index', 'source-only'].includes(entry.status)) {
-      fail(`split-map entry ${pageId} has invalid status: ${entry.status}`);
-    }
-    if (!Array.isArray(entry.files) || entry.files.length === 0) {
-      fail(`split-map entry ${pageId} must map to at least one file`);
-      continue;
-    }
-    for (const file of entry.files) {
-      if (!exists(file)) fail(`split-map entry ${pageId} references missing file: ${file}`);
-    }
-  }
-}
-
-const generatedFiles = listFiles('.', (file) => /\.(md|json|sh)$/.test(file));
+const generatedFiles = listFiles('mobile-app-dev-team', (file) => /\.(md|json|sh)$/.test(file));
 const secretPatterns = [
   /\bsk-[A-Za-z0-9_-]{20,}\b/,
   /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/,
@@ -346,6 +185,7 @@ const managedTeamDocRoot = 'mobile-app-dev-team';
 const githubArtifactWorkflowDoc = `${managedTeamDocRoot}/10-github-artifact-workflow.md`;
 const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw-skills`;
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
+const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
 
 for (const relativePath of [
   `${managedTeamDocRoot}/README.md`,
@@ -563,6 +403,539 @@ if (fs.existsSync(codexCliPrecheckPath)) {
   }
 }
 
+const refOrganizationSections = [
+  '00-orientation-and-sot',
+  '01-organization-model',
+  '02-runtime-surfaces',
+  '03-role-contracts-and-capabilities',
+  '04-workflows-and-handoffs',
+  '05-skills-agents-and-tools',
+  '06-gates-evidence-and-audit',
+  '07-repo-template-and-runtime',
+  '08-new-organization-template',
+  '99-source-map-and-migration',
+];
+
+for (const relativePath of [
+  `${refOrganizationRoot}/README.md`,
+  ...refOrganizationSections.map((section) => `${refOrganizationRoot}/${section}/README.md`),
+  `${refOrganizationRoot}/00-orientation-and-sot/current-project-vs-template.md`,
+  `${refOrganizationRoot}/00-orientation-and-sot/purpose.md`,
+  `${refOrganizationRoot}/00-orientation-and-sot/sot-priority.md`,
+  `${refOrganizationRoot}/02-runtime-surfaces/repo-local-codex-runtime.md`,
+  `${refOrganizationRoot}/02-runtime-surfaces/pod-native-openclaw-skills.md`,
+  `${refOrganizationRoot}/02-runtime-surfaces/pod-codex-completion-hooks.md`,
+  `${refOrganizationRoot}/02-runtime-surfaces/computer-use-and-tool-surfaces.md`,
+  `${refOrganizationRoot}/01-organization-model/team-shape.md`,
+  `${refOrganizationRoot}/01-organization-model/role-boundaries.md`,
+  `${refOrganizationRoot}/01-organization-model/gatekeeper-model.md`,
+  `${refOrganizationRoot}/03-role-contracts-and-capabilities/role-soul-template.md`,
+  `${refOrganizationRoot}/03-role-contracts-and-capabilities/role-capability-matrix.md`,
+  `${refOrganizationRoot}/03-role-contracts-and-capabilities/handoff-responsibilities.md`,
+  `${refOrganizationRoot}/04-workflows-and-handoffs/lifecycle-workflow.md`,
+  `${refOrganizationRoot}/04-workflows-and-handoffs/durable-github-work-unit.md`,
+  `${refOrganizationRoot}/04-workflows-and-handoffs/scenario-overlays-a-h.md`,
+  `${refOrganizationRoot}/04-workflows-and-handoffs/failure-loop.md`,
+  `${refOrganizationRoot}/05-skills-agents-and-tools/active-skill-agent-policy.md`,
+  `${refOrganizationRoot}/05-skills-agents-and-tools/skill-placement-policy.md`,
+  `${refOrganizationRoot}/05-skills-agents-and-tools/reviewer-researcher-boundaries.md`,
+  `${refOrganizationRoot}/05-skills-agents-and-tools/optional-tool-adoption.md`,
+  `${refOrganizationRoot}/06-gates-evidence-and-audit/required-gates.md`,
+  `${refOrganizationRoot}/06-gates-evidence-and-audit/evidence-rules.md`,
+  `${refOrganizationRoot}/06-gates-evidence-and-audit/human-gates.md`,
+  `${refOrganizationRoot}/06-gates-evidence-and-audit/audit-index.md`,
+  `${refOrganizationRoot}/07-repo-template-and-runtime/repo-target-tree.md`,
+  `${refOrganizationRoot}/07-repo-template-and-runtime/mobile-runtime.md`,
+  `${refOrganizationRoot}/07-repo-template-and-runtime/optional-api.md`,
+  `${refOrganizationRoot}/07-repo-template-and-runtime/ci-eas-railway.md`,
+  `${refOrganizationRoot}/08-new-organization-template/create-new-team-guide.md`,
+  `${refOrganizationRoot}/08-new-organization-template/variable-map.md`,
+  `${refOrganizationRoot}/08-new-organization-template/checklist.md`,
+  `${refOrganizationRoot}/99-source-map-and-migration/source-priority.md`,
+  `${refOrganizationRoot}/99-source-map-and-migration/historical-vs-active.md`,
+  `${refOrganizationRoot}/99-source-map-and-migration/old-to-new-crosswalk.md`,
+  `${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`,
+]) {
+  if (!exists(relativePath)) fail(`missing ref-organization checkpoint document: team-doc/${relativePath}`);
+}
+
+const refOrganizationStatusTerms = [
+  'Status:',
+  'Source class:',
+  'Upstream SoT:',
+  'Downstream consumers:',
+  'Last reviewed date:',
+  'Reviewer evidence:',
+];
+
+const allowedRefOrganizationStatuses = new Set([
+  'reusable template guidance',
+  'current-project example',
+  'historical source migration',
+  'active current SoT mirror',
+]);
+
+for (const relativePath of listFiles(refOrganizationRoot, (file) => file.endsWith('.md'))) {
+  const body = read(relativePath);
+  const topLines = body.split('\n').slice(0, 40).join('\n');
+  for (const term of refOrganizationStatusTerms) {
+    if (!topLines.includes(term)) {
+      fail(`team-doc/${relativePath} missing ref-organization page status field: ${term}`);
+    }
+  }
+
+  const statusMatch = topLines.match(/^Status:\s*(.+)$/m);
+  if (statusMatch && !allowedRefOrganizationStatuses.has(statusMatch[1].trim())) {
+    fail(`team-doc/${relativePath} has invalid ref-organization status: ${statusMatch[1].trim()}`);
+  }
+  const lastReviewedMatch = topLines.match(/^Last reviewed date:\s*(.+)$/m);
+  if (lastReviewedMatch && !/^\d{4}-\d{2}-\d{2}$/.test(lastReviewedMatch[1].trim())) {
+    fail(`team-doc/${relativePath} has invalid Last reviewed date format: ${lastReviewedMatch[1].trim()}`);
+  }
+  const reviewerEvidenceMatches = Array.from(topLines.matchAll(/^Reviewer evidence:\s*(.+)$/gm));
+  for (const reviewerEvidenceMatch of reviewerEvidenceMatches) {
+    const reviewerEvidence = reviewerEvidenceMatch[1].trim();
+    if (/pending/i.test(reviewerEvidence)) {
+      fail(`team-doc/${relativePath} has unresolved Reviewer evidence: ${reviewerEvidence}`);
+    }
+    if (!reviewerEvidence.startsWith('.evidence/reviews/')) {
+      fail(`team-doc/${relativePath} Reviewer evidence must link .evidence/reviews/: ${reviewerEvidence}`);
+    }
+  }
+}
+
+const refOrganizationCrosswalk = `${refOrganizationRoot}/99-source-map-and-migration/old-to-new-crosswalk.md`;
+if (exists(refOrganizationCrosswalk)) {
+  const body = read(refOrganizationCrosswalk);
+  const allowedCrosswalkStatuses = new Set([
+    'move',
+    'rewrite',
+    'archive-as-scenario',
+    'current-project-example',
+    'drop-with-reason',
+  ]);
+
+  const rows = body
+    .split('\n')
+    .filter((line) => line.startsWith('| `team-doc/10-structured/'));
+
+  for (const row of rows) {
+    const cells = row.split('|').map((cell) => cell.trim());
+    const [sourceCell, statusCell, targetCell, reasonCell] = cells.slice(1, 5);
+    if (!allowedCrosswalkStatuses.has(statusCell)) {
+      fail(`ref-organization crosswalk invalid status "${statusCell}" for ${sourceCell}`);
+    }
+    if (statusCell === 'drop-with-reason') {
+      if (!reasonCell) fail(`ref-organization crosswalk drop-with-reason row missing reason: ${sourceCell}`);
+      continue;
+    }
+    if (!targetCell) {
+      fail(`ref-organization crosswalk row missing target: ${sourceCell}`);
+      continue;
+    }
+    if (/Checkpoint|page status block/i.test(targetCell)) {
+      fail(`ref-organization crosswalk target must contain repo-relative paths only: ${sourceCell}`);
+    }
+    const targetPaths = Array.from(targetCell.matchAll(/`([^`]+)`/g), (match) => match[1]);
+    if (!targetPaths.length) {
+      fail(`ref-organization crosswalk target must include at least one backticked repo-relative path: ${sourceCell}`);
+    }
+    for (const targetPath of targetPaths) {
+      if (!targetPath.startsWith(`team-doc/${refOrganizationRoot}/`)) {
+        fail(`ref-organization crosswalk target must live under team-doc/${refOrganizationRoot}: ${sourceCell} -> ${targetPath}`);
+      }
+      const targetRelativePath = targetPath.replace(/^team-doc\//, '');
+      if (!targetRelativePath.endsWith('/')) {
+        if (!exists(targetRelativePath)) {
+          fail(`ref-organization crosswalk target does not exist: ${sourceCell} -> ${targetPath}`);
+        }
+      }
+    }
+  }
+}
+
+requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`, [
+  'Last reviewed date',
+  'computer-use/tool surfaces',
+  'owner role or routing owner',
+  'evidence boundary',
+  'not a repo-local Codex artifact unless a SoT says so',
+  'docs/plans/work-units/<work-unit-id>/',
+  'Gatekeeper has no SOUL.md',
+  'TEAM_DOC_ARCHIVE_MANIFEST.json',
+  'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
+  'do not enumerate the live',
+]);
+
+requireNoDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`, [
+  'find team-doc/10-structured',
+]);
+
+requireDocTerms(refOrganizationCrosswalk, [
+  'TEAM_DOC_ARCHIVE_MANIFEST.json',
+  'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
+  'Do not use the live `team-doc/10-structured/` directory as the coverage source',
+]);
+
+requireNoDocTerms(refOrganizationCrosswalk, [
+  'find team-doc/10-structured',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/repo-local-codex-runtime.md`, [
+  '.agents/skills/<skill-name>/SKILL.md',
+  '.codex/agents/<agent-name>.toml',
+  '.codex/hooks.json',
+  '.codex/hooks/',
+  '.codex/config.toml',
+  'repo-local Codex',
+  'not `/workspace/skills/<slug>/SKILL.md`',
+  'not `/workspace/codex-hooks`',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/purpose.md`, [
+  'reusable reference-organization',
+  'current WonderMove mobile project',
+  'TEAM_DOC_ARCHIVE_MANIFEST.json',
+  'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
+  'current SoT',
+  'future organizations',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/sot-priority.md`, [
+  'AGENTS.md',
+  'PROJECT_ENVIRONMENT.md',
+  '.agents/skills',
+  '.codex/agents',
+  'team-doc/mobile-app-dev-team',
+  'TEAM_DOC_ARCHIVE_MANIFEST.json',
+  'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-native-openclaw-skills.md`, [
+  '/workspace/skills/<slug>/SKILL.md',
+  'team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
+  'pod-native OpenClaw',
+  'not `.agents/skills/<skill-name>/SKILL.md`',
+  'source-only',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-codex-completion-hooks.md`, [
+  '/workspace/codex-hooks',
+  'not `/workspace/skills/<slug>/SKILL.md`',
+  'not `.codex/hooks`',
+  'per-agent E2E',
+  'local repo/source validation does not prove actual OpenClaw system event delivery',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/computer-use-and-tool-surfaces.md`, [
+  'computer-use/tool surfaces',
+  'owner role or routing owner',
+  'allowed use cases',
+  'evidence boundary',
+  'human-gated',
+  'not a repo-local Codex artifact unless a SoT says so',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/01-organization-model/team-shape.md`, [
+  'Display Title',
+  'Operating Role',
+  '6 LLM roles plus 1 non-LLM deterministic Gatekeeper',
+  'future organizations may change role names or counts',
+  'avoid adding roles until a repeated ownership gap exists',
+  'non-LLM deterministic gates separately',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/01-organization-model/role-boundaries.md`, [
+  'Product/Planning',
+  'Design',
+  'Mobile Architect',
+  'Mobile App Dev',
+  'Backend/API Integrator',
+  'QA/Release',
+  'must not absorb',
+  'packages/contracts',
+  'read-only reviewer',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/01-organization-model/gatekeeper-model.md`, [
+  'Release Gatekeeper (System)',
+  'non-LLM',
+  'deterministic',
+  'No Gatekeeper SOUL.md',
+  'cannot replace human approval',
+  'cannot accept failed-gate risk',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/role-soul-template.md`, [
+  'Display Title',
+  'Operating Role',
+  'Authority Level',
+  'Mission',
+  'Responsibilities',
+  'Inputs',
+  'Outputs',
+  'Available skills',
+  'Available read-only agents',
+  'Human gate triggers',
+  'Gatekeeper does not inherit this template',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/role-capability-matrix.md`, [
+  'Can Do',
+  'Produces',
+  'Must Handoff To',
+  'Must Not Do',
+  'Release Gatekeeper (System)',
+  'LLM judgment',
+  'SOUL.md',
+  'owner',
+  'input artifact',
+  'output artifact',
+  'acceptance criteria',
+  'evidence requirement',
+  'next responsible role',
+  'GitHub branch/commit/PR',
+  'docs/plans/work-units/<work-unit-id>/',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/handoff-responsibilities.md`, [
+  'owner',
+  'input artifact',
+  'output artifact',
+  'acceptance criteria',
+  'evidence requirement',
+  'next responsible role',
+  'GitHub branch/commit/PR',
+  'docs/plans/work-units/<work-unit-id>/',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/lifecycle-workflow.md`, [
+  'Intake And Planning',
+  'Design Readiness',
+  'API Readiness',
+  'Implementation',
+  'QA And Release Evidence',
+  'Failure Loop',
+  'Reviewer(xhigh)',
+  'docs/plans/work-units/<work-unit-id>/',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/durable-github-work-unit.md`, [
+  'GitHub branch/commit/PR',
+  'docs/plans/work-units/<work-unit-id>/',
+  'status: required | not-applicable | deferred/non-goal',
+  'PRD acceptance line or explicit non-goal reference',
+  'owner',
+  'input artifact',
+  'output artifact',
+  'acceptance criteria',
+  'evidence requirement',
+  'dependencies/blockers',
+  'open decisions',
+  'next responsible role',
+  'handoff link',
+  'canonical evidence',
+  '.evidence/local/',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/scenario-overlays-a-h.md`, [
+  'Case A',
+  'Case B',
+  'Case C',
+  'Case D',
+  'Case E',
+  'Case F',
+  'Case G',
+  'Case H',
+  'scenario overlays',
+  'not primary navigation',
+  'current SoT',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/failure-loop.md`, [
+  'Failed check remains failed',
+  'wm-gate-fix-advisor',
+  'owning implementation workflow',
+  'QA/Release',
+  'Product/Planning',
+  'human owner',
+  'failed-gate risk acceptance',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/active-skill-agent-policy.md`, [
+  'actual `.agents/skills` directory',
+  'active repo-local skill',
+  'legacy mobile-* agents',
+  'read-only',
+  'repo skills remain authoritative',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/skill-placement-policy.md`, [
+  '.agents/skills/<skill-name>/SKILL.md',
+  '/workspace/skills/<slug>/SKILL.md',
+  '/workspace/codex-hooks',
+  'computer-use/tool surfaces',
+  'not a repo-local Codex artifact unless a SoT says so',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/reviewer-researcher-boundaries.md`, [
+  'read-only',
+  'source references',
+  'must not recursively delegate',
+  'must not edit files',
+  'must not approve failed gates',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/optional-tool-adoption.md`, [
+  'optional',
+  'recurring process gap',
+  'SoT',
+  'validator',
+  'human gate',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/required-gates.md`, [
+  'pnpm run validate:team-doc',
+  'pnpm run test:runtime',
+  'pnpm turbo run lint test',
+  'pnpm run test:local-harness',
+  'pnpm --filter mobile exec expo install --check',
+  'codex mcp list',
+  'mobile-mcp',
+  'Maestro',
+  'Release Gatekeeper (System)',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/evidence-rules.md`, [
+  'Done requires linked artifacts',
+  'canonical evidence',
+  '.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/',
+  'command output',
+  'exit status',
+  'must not print or persist secrets',
+  '.evidence/local/',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/human-gates.md`, [
+  'Production submit',
+  'Payment',
+  'PII',
+  'External messaging',
+  'Legal',
+  'Business/budget',
+  'Irreversible scope tradeoff',
+  'Accepting risk after a failed gate',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/audit-index.md`, [
+  'historical evidence',
+  'current evidence',
+  'source map',
+  'reviewer evidence',
+  'command output',
+  'local validation does not prove actual OpenClaw pod execution',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/repo-target-tree.md`, [
+  'apps/mobile',
+  'apps/api',
+  'packages/contracts',
+  '.agents/skills',
+  '.codex/agents',
+  'current-project example',
+  'future organizations may have different repo layouts',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/mobile-runtime.md`, [
+  'Expo SDK 56',
+  'React Native',
+  'NativeWind',
+  'testID',
+  'mobile-mcp',
+  'current-project example',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/optional-api.md`, [
+  'apps/api',
+  'packages/contracts',
+  'single source of truth',
+  'routes',
+  'services',
+  'db',
+  'optional',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/ci-eas-railway.md`, [
+  'quality gate',
+  'pnpm run test:runtime',
+  'pnpm turbo run lint test',
+  'pnpm run test:local-harness',
+  'EAS',
+  'Railway',
+  'does not prove full mobile release readiness',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/create-new-team-guide.md`, [
+  'Freeze Source Inputs',
+  'Define Team Shape',
+  'Write Role SOUL.md Files',
+  'Create Capability Matrix',
+  'Create Skill/Agent Matrix',
+  'Define Process',
+  'Add Validation',
+  'Reviewer(xhigh)',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/variable-map.md`, [
+  'organization_name',
+  'repo_root',
+  'managed_docs_root',
+  'runtime_surfaces',
+  'role_families',
+  'human_gates',
+  'evidence_paths',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/checklist.md`, [
+  'Source inputs frozen',
+  'Runtime surfaces separated',
+  'Roles and gates separated',
+  'Durable handoff defined',
+  'Reviewer(xhigh) completed',
+  'Validation commands passed',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/source-priority.md`, [
+  'AGENTS.md',
+  'PROJECT_ENVIRONMENT.md',
+  '.agents/skills',
+  '.codex/agents',
+  'team-doc/mobile-app-dev-team',
+  'TEAM_DOC_ARCHIVE_MANIFEST.json',
+  'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
+]);
+
+requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/historical-vs-active.md`, [
+  'active current SoT',
+  'historical source',
+  'current-project example',
+  'reusable template guidance',
+  'TEAM_DOC_ARCHIVE_MANIFEST.json',
+  'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
+  'current SoT wins',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/README.md`, [
+  'ref-organization/',
+  'Reference organization',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
+  'ref-organization',
+  '12-ref-organization-goal-plan.md',
+  'old-to-new-crosswalk.md',
+]);
+
 requireDocTerms(`${managedTeamDocRoot}/01-team-composition.md`, [
   '6 LLM roles plus 1 non-LLM deterministic Gatekeeper',
   'Chief Product Officer (CPO) / Product Delivery Lead',
@@ -718,4 +1091,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated team-doc: ${sourceFiles.length} source files, ${structuredFiles.length} structured files.`);
+console.log('Validated current team-doc managed docs.');
