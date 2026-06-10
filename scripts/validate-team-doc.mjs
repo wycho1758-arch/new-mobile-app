@@ -481,6 +481,12 @@ requireDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
   'name: codex-cli-auth-setup',
   'description:',
   '# Codex CLI Auth Setup',
+  '## OpenClaw AGENTS.md Codex-only Repo Work Policy',
+  'this agent MUST use Codex CLI as the execution engine',
+  '/workspace/CODEX_MANAGED_PATHS.md',
+  '/workspace/codex-hooks/codex-run',
+  '/workspace/new-mobile-app/',
+  'Project path',
   '/workspace/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh',
   '--dangerously-bypass-approvals-and-sandbox',
   'Never print auth token values',
@@ -488,7 +494,19 @@ requireDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
   'redaction',
 ]);
 
+requireNoDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
+  'Boram MUST',
+  'Boram must',
+  'Boram SHOULD',
+  'Boram should',
+]);
+
 if (exists(`${codexCliAuthSetupSkillRoot}/SKILL.md`)) {
+  const skillBody = read(`${codexCliAuthSetupSkillRoot}/SKILL.md`);
+  if (/(^|\n)\s*(?:[-*]\s*)?Boram\s+(?:MUST|SHOULD|must|should)\b/.test(skillBody)) {
+    fail(`pod-native OpenClaw AGENTS.md policy must use an agent-neutral subject, not Boram: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+  }
+
   const skillFrontmatter = parseFrontmatter(read(`${codexCliAuthSetupSkillRoot}/SKILL.md`));
   if (!skillFrontmatter) {
     fail(`pod-native OpenClaw skill missing YAML frontmatter: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
