@@ -8,7 +8,9 @@ This file is the root source for the current project environment and runtime set
 
 - Package manager: `pnpm@9.15.9` from root `package.json`.
 - Workspace packages: `apps/*` and `packages/*` from `pnpm-workspace.yaml`.
-- Turbo tasks: `lint` and `test` from `turbo.json`.
+- Turbo tasks: `build`, `lint`, and `test` from `turbo.json`; `test` depends
+  on upstream `^build` so clean CI builds workspace package runtime exports
+  before dependent package tests run.
 - Required root gates:
   - `pnpm run test:runtime`
   - `pnpm turbo run lint test`

@@ -9,6 +9,7 @@ const args = process.argv.slice(2);
 const requiredFiles = [
   'package.json',
   'apps/mobile/package.json',
+  'turbo.json',
   '.codex/config.toml',
   '.github/workflows/quality-gate.yml',
   'PROJECT_ENVIRONMENT.md',
@@ -141,6 +142,7 @@ export function validateProjectEnvironment(files = readFileMap()) {
   const errors = [];
   const packageJson = parseJson(errors, files, 'package.json');
   const mobilePackageJson = parseJson(errors, files, 'apps/mobile/package.json');
+  const turboJson = parseJson(errors, files, 'turbo.json');
   const snapshot = parseJson(errors, files, 'evals/local-harness/sot/snapshot.json');
   const environment = files['PROJECT_ENVIRONMENT.md'] || '';
   const repoOperations = files['REPO_OPERATIONS.md'] || '';
@@ -162,6 +164,17 @@ export function validateProjectEnvironment(files = readFileMap()) {
       const actual = mobilePackageJson[section]?.[packageName];
       const expected = envPackageVersion(environment, packageName);
       requireEqual(errors, `apps/mobile/package.json ${section}.${packageName}`, actual, expected);
+    }
+  }
+
+  if (turboJson) {
+    const buildOutputs = turboJson.tasks?.build?.outputs;
+    if (!Array.isArray(buildOutputs) || !buildOutputs.includes('dist/**')) {
+      errors.push('turbo.json tasks.build.outputs must include dist/** for workspace package build artifacts');
+    }
+    const testDependsOn = turboJson.tasks?.test?.dependsOn;
+    if (!Array.isArray(testDependsOn) || !testDependsOn.includes('^build')) {
+      errors.push('turbo.json tasks.test.dependsOn must include ^build so clean CI builds workspace package exports before tests');
     }
   }
 
