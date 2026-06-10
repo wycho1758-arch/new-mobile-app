@@ -204,17 +204,19 @@ export function validateProjectEnvironment(files = readFileMap()) {
       errors.push(`quality-gate.yml must include ${command}`);
     }
   }
-  if (!qualityGateRuntimePattern.includes('validate-project-environment')) {
-    errors.push('quality-gate.yml must detect scripts/validate-project-environment.mjs');
-  }
-  if (!qualityGateRuntimePattern.includes('validate-evidence-hygiene')) {
-    errors.push('quality-gate.yml must detect scripts/validate-evidence-hygiene.mjs');
-  }
-  if (!environment.includes('scripts/validate-project-environment.mjs')) {
-    errors.push('PROJECT_ENVIRONMENT.md must document scripts/validate-project-environment.mjs');
-  }
-  if (!environment.includes('scripts/validate-evidence-hygiene.mjs')) {
-    errors.push('PROJECT_ENVIRONMENT.md must document scripts/validate-evidence-hygiene.mjs');
+  for (const script of [
+    'validate-repo-operations',
+    'validate-team-doc',
+    'validate-team-doc-archive',
+    'validate-project-environment',
+    'validate-evidence-hygiene',
+  ]) {
+    if (!qualityGateRuntimePattern.includes(script)) {
+      errors.push(`quality-gate.yml must detect scripts/${script}.mjs`);
+    }
+    if (!environment.includes(`scripts/${script}.mjs`)) {
+      errors.push(`PROJECT_ENVIRONMENT.md must document scripts/${script}.mjs`);
+    }
   }
   if (!environment.includes('validate:project-environment')) {
     errors.push('PROJECT_ENVIRONMENT.md must document validate:project-environment');

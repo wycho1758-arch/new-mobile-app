@@ -2,7 +2,7 @@
 
 ## OpenClaw And Codex Skill Routing
 
-- Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape and are authored under `team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/` using skill-creator structure.
+- Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/` using skill-creator structure.
 - Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts; required validators, evals, scripts, and evidence may still be added when the change needs them.
 
 This repository is the mobile app template runtime for WonderMove mobile agents.

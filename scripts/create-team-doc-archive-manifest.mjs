@@ -8,6 +8,11 @@ const teamDocRoot = path.join(root, 'team-doc');
 const manifestPath = path.join(root, 'TEAM_DOC_ARCHIVE_MANIFEST.json');
 const bundlePath = path.join(root, 'TEAM_DOC_ARCHIVE_BUNDLE.jsonl');
 
+if (process.env.ALLOW_LEGACY_TEAM_DOC_ARCHIVE_CAPTURE !== '1') {
+  console.error('Legacy team-doc archive capture is retired from active tooling. Set ALLOW_LEGACY_TEAM_DOC_ARCHIVE_CAPTURE=1 only for an approved pre-deletion/source-refresh recapture.');
+  process.exit(1);
+}
+
 const sourceRoots = [
   '00-source',
   '10-structured',

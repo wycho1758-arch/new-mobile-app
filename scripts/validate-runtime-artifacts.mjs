@@ -50,7 +50,7 @@ const legacyMobileReviewerNames = [
   'mobile-docs-researcher',
   'mobile-gate-fix-advisor',
 ];
-const forbiddenRootRuntimeArtifacts = ['CLAUDE.md', '.claude', '.claude-state'];
+const ignoredRootClaudeArtifacts = ['CLAUDE.md', '.claude', '.claude-state'];
 const expandedHumanGateCategories = [
   'production submit',
   'payment or money movement',
@@ -463,8 +463,19 @@ if (exists(projectEnvironmentPath)) {
   assert(/--json-envelope/i.test(environment), 'PROJECT_ENVIRONMENT.md must document codex-headless-review --json-envelope');
 }
 
-for (const artifactPath of forbiddenRootRuntimeArtifacts) {
-  assert(!exists(artifactPath), `root Claude runtime artifact must not be present: ${artifactPath}`);
+if (exists('.gitignore')) {
+  const gitignoreLines = new Set(read('.gitignore').split('\n').map((line) => line.trim()));
+  for (const artifactPath of ignoredRootClaudeArtifacts) {
+    const expectedIgnore = artifactPath.startsWith('.') && !artifactPath.includes('.md')
+      ? `${artifactPath}/`
+      : artifactPath;
+    assert(
+      gitignoreLines.has(expectedIgnore),
+      `root Claude transient artifact must be gitignored: ${expectedIgnore}`,
+    );
+  }
+} else {
+  assert(false, 'missing .gitignore for root Claude transient artifact policy');
 }
 
 const headlessPath = 'scripts/codex-headless-review.mjs';

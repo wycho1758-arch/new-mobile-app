@@ -7,6 +7,11 @@ const docRoot = path.join(root, 'team-doc');
 const fetchedAt = new Date().toISOString();
 const baseUrl = 'https://wondermove-official.atlassian.net/wiki';
 
+if (process.env.ALLOW_LEGACY_TEAM_DOC_GENERATION !== '1') {
+  console.error('Legacy team-doc generation is retired from active tooling. Set ALLOW_LEGACY_TEAM_DOC_GENERATION=1 only for an approved archive/source refresh.');
+  process.exit(1);
+}
+
 const nodes = [
   { id: '1373012374', type: 'page', title: 'mobile-app-dev-team', parentId: null, depth: 0, version: '3' },
   { id: '1372356612', type: 'folder', title: '환경구축 및 검증', parentId: '1373012374', depth: 1 },

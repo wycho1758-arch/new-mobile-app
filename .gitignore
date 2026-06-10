@@ -4,6 +4,7 @@ node_modules/
 dist/
 .turbo/
 out/
+CLAUDE.md
 .claude/
 .claude-state/
 docs/plans/active/

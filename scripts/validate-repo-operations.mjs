@@ -129,9 +129,10 @@ requireTerms('REPO_OPERATIONS.md', [
   'AGENTS.md',
   'PROJECT_ENVIRONMENT.md',
   'REPO_OPERATIONS.md',
-  'team-doc/mobile-app-dev-team/',
+  'mobile-app-dev-team/',
   'team-doc/00-source/',
   'team-doc/10-structured/',
+  'team-doc/_meta/',
   'scripts/',
   'not policy owner',
   '## Document Strata',
@@ -163,25 +164,25 @@ requireConfluenceDependencyBoundary();
 requireFile('TEAM_DOC_ARCHIVE_MANIFEST.json');
 requireFile('TEAM_DOC_ARCHIVE_BUNDLE.jsonl');
 
-requireTerms('team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
+requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'REPO_OPERATIONS.md',
   '/workspace/CODEX_MANAGED_PATHS.md',
   '/workspace/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
 ]);
 
-forbidTerms('team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
+forbidTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'Recommended AGENTS.md policy wording:',
   'Allowed direct actions by this agent:',
   'This agent MUST NOT directly use read/edit/write for Codex-managed repo/path content',
 ]);
 
-requireTerms('team-doc/mobile-app-dev-team/README.md', [
+requireTerms('mobile-app-dev-team/README.md', [
   'REPO_OPERATIONS.md',
   'team/role/process/reference',
 ]);
 
-requireTerms('team-doc/mobile-app-dev-team/99-source-map.md', [
+requireTerms('mobile-app-dev-team/99-source-map.md', [
   'REPO_OPERATIONS.md',
   'repo-wide operating policy',
 ]);

@@ -13,7 +13,7 @@ runtime facts document.
 | `AGENTS.md` | Mandatory agent execution rules, constraints, runtime paths, and required gates. |
 | `PROJECT_ENVIRONMENT.md` | Current runtime and environment facts. |
 | `REPO_OPERATIONS.md` | Canonical repo-wide operating policy and policy ownership model. |
-| `team-doc/mobile-app-dev-team/` | Team, role, process, reference, and migration documentation. |
+| `mobile-app-dev-team/` | Team, role, process, reference, and migration documentation. |
 | `team-doc/00-source/` | Immutable Confluence source/export evidence. |
 | `team-doc/10-structured/` | Generated or structured reference layer, not current policy owner. |
 | `TEAM_DOC_ARCHIVE_MANIFEST.json` | Root-owned archive metadata for historical team-doc source/reference corpus. |
@@ -76,7 +76,7 @@ from a repo validation perspective.
 ## OpenClaw And Codex Operational Boundaries
 
 Pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime
-and are authored under `team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/`.
+and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/`.
 Repo-local Codex skills and agents use `.agents/skills/<skill-name>/SKILL.md`
 and `.codex/agents/<agent-name>.toml`.
 

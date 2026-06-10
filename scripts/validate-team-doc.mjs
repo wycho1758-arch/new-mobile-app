@@ -5,7 +5,7 @@ import path from 'node:path';
 import { findSecretLikeValues } from './lib/secret-patterns.mjs';
 
 const root = process.cwd();
-const docRoot = path.join(root, 'team-doc');
+const docRoot = root;
 const errors = [];
 
 function fail(message) {
@@ -82,19 +82,19 @@ const generatedFiles = listFiles('mobile-app-dev-team', (file) => /\.(md|json|sh
 for (const file of generatedFiles) {
   const body = read(file);
   for (const match of findSecretLikeValues(body)) {
-    fail(`probable secret or concrete credential in team-doc/${file}:${match.line}`);
+    fail(`probable secret or concrete credential in ${file}:${match.line}`);
   }
 }
 
 function requireDocTerms(relativePath, terms) {
   if (!exists(relativePath)) {
-    fail(`missing required role document: team-doc/${relativePath}`);
+    fail(`missing required role document: ${relativePath}`);
     return;
   }
   const body = read(relativePath);
   for (const term of terms) {
     if (!body.includes(term)) {
-      fail(`team-doc/${relativePath} missing required role-boundary term: ${term}`);
+      fail(`${relativePath} missing required role-boundary term: ${term}`);
     }
   }
 }
@@ -114,33 +114,33 @@ function requireRootTerms(relativePath, terms) {
 
 function forbidDocTerms(relativePath, terms) {
   if (!exists(relativePath)) {
-    fail(`missing required role document: team-doc/${relativePath}`);
+    fail(`missing required role document: ${relativePath}`);
     return;
   }
   const body = read(relativePath);
   for (const term of terms) {
     if (body.includes(term)) {
-      fail(`team-doc/${relativePath} includes forbidden role-boundary term: ${term}`);
+      fail(`${relativePath} includes forbidden role-boundary term: ${term}`);
     }
   }
 }
 
 function requireNoDocTerms(relativePath, terms) {
   if (!exists(relativePath)) {
-    fail(`missing required document: team-doc/${relativePath}`);
+    fail(`missing required document: ${relativePath}`);
     return;
   }
   const body = read(relativePath);
   for (const term of terms) {
     if (body.includes(term)) {
-      fail(`team-doc/${relativePath} includes forbidden term: ${term}`);
+      fail(`${relativePath} includes forbidden term: ${term}`);
     }
   }
 }
 
 function requireOrderedTopLevelHeadings(relativePath, headings) {
   if (!exists(relativePath)) {
-    fail(`missing required role document: team-doc/${relativePath}`);
+    fail(`missing required role document: ${relativePath}`);
     return;
   }
 
@@ -153,7 +153,7 @@ function requireOrderedTopLevelHeadings(relativePath, headings) {
   for (const expected of headings) {
     const index = actualHeadings.indexOf(expected, start);
     if (index < 0) {
-      fail(`team-doc/${relativePath} missing ordered runtime SOUL heading: ${expected}`);
+      fail(`${relativePath} missing ordered runtime SOUL heading: ${expected}`);
       return;
     }
     start = index + 1;
@@ -205,13 +205,13 @@ for (const relativePath of [
   `${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`,
   `${podRoleBootstrapSkillRoot}/references/report-template.md`,
 ]) {
-  if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: team-doc/${relativePath}`);
+  if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: ${relativePath}`);
 }
 
 requireRootTerms('AGENTS.md', [
   '## OpenClaw And Codex Skill Routing',
   'Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape',
-  'team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
+  'mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
   'Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts',
   'required validators, evals, scripts, and evidence may still be added when the change needs them',
 ]);
@@ -347,20 +347,20 @@ requireNoDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
 if (exists(`${codexCliAuthSetupSkillRoot}/SKILL.md`)) {
   const skillBody = read(`${codexCliAuthSetupSkillRoot}/SKILL.md`);
   if (/(^|\n)\s*(?:[-*]\s*)?Boram\s+(?:MUST|SHOULD|must|should)\b/.test(skillBody)) {
-    fail(`pod-native OpenClaw AGENTS.md policy must use an agent-neutral subject, not Boram: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+    fail(`pod-native OpenClaw AGENTS.md policy must use an agent-neutral subject, not Boram: ${codexCliAuthSetupSkillRoot}/SKILL.md`);
   }
 
   const skillFrontmatter = parseFrontmatter(read(`${codexCliAuthSetupSkillRoot}/SKILL.md`));
   if (!skillFrontmatter) {
-    fail(`pod-native OpenClaw skill missing YAML frontmatter: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+    fail(`pod-native OpenClaw skill missing YAML frontmatter: ${codexCliAuthSetupSkillRoot}/SKILL.md`);
   } else {
     const keys = Object.keys(skillFrontmatter).sort();
     const unexpectedKeys = keys.filter((key) => !['description', 'name'].includes(key));
     if (skillFrontmatter.name !== 'codex-cli-auth-setup') {
-      fail(`pod-native OpenClaw skill frontmatter name must be codex-cli-auth-setup: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+      fail(`pod-native OpenClaw skill frontmatter name must be codex-cli-auth-setup: ${codexCliAuthSetupSkillRoot}/SKILL.md`);
     }
     if (!skillFrontmatter.description) {
-      fail(`pod-native OpenClaw skill frontmatter missing description: team-doc/${codexCliAuthSetupSkillRoot}/SKILL.md`);
+      fail(`pod-native OpenClaw skill frontmatter missing description: ${codexCliAuthSetupSkillRoot}/SKILL.md`);
     }
     if (unexpectedKeys.length) {
       fail(`pod-native OpenClaw skill frontmatter must only include name and description: ${unexpectedKeys.join(', ')}`);
@@ -397,15 +397,15 @@ requireNoDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
 if (exists(`${podRoleBootstrapSkillRoot}/SKILL.md`)) {
   const skillFrontmatter = parseFrontmatter(read(`${podRoleBootstrapSkillRoot}/SKILL.md`));
   if (!skillFrontmatter) {
-    fail(`pod-role-bootstrap skill missing YAML frontmatter: team-doc/${podRoleBootstrapSkillRoot}/SKILL.md`);
+    fail(`pod-role-bootstrap skill missing YAML frontmatter: ${podRoleBootstrapSkillRoot}/SKILL.md`);
   } else {
     const keys = Object.keys(skillFrontmatter).sort();
     const unexpectedKeys = keys.filter((key) => !['description', 'name'].includes(key));
     if (skillFrontmatter.name !== 'pod-role-bootstrap') {
-      fail(`pod-role-bootstrap skill frontmatter name must be pod-role-bootstrap: team-doc/${podRoleBootstrapSkillRoot}/SKILL.md`);
+      fail(`pod-role-bootstrap skill frontmatter name must be pod-role-bootstrap: ${podRoleBootstrapSkillRoot}/SKILL.md`);
     }
     if (!skillFrontmatter.description) {
-      fail(`pod-role-bootstrap skill frontmatter missing description: team-doc/${podRoleBootstrapSkillRoot}/SKILL.md`);
+      fail(`pod-role-bootstrap skill frontmatter missing description: ${podRoleBootstrapSkillRoot}/SKILL.md`);
     }
     if (unexpectedKeys.length) {
       fail(`pod-role-bootstrap skill frontmatter must only include name and description: ${unexpectedKeys.join(', ')}`);
@@ -535,7 +535,7 @@ for (const relativePath of [
   `${refOrganizationRoot}/99-source-map-and-migration/old-to-new-crosswalk.md`,
   `${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`,
 ]) {
-  if (!exists(relativePath)) fail(`missing ref-organization checkpoint document: team-doc/${relativePath}`);
+  if (!exists(relativePath)) fail(`missing ref-organization checkpoint document: ${relativePath}`);
 }
 
 const refOrganizationStatusTerms = [
@@ -559,26 +559,26 @@ for (const relativePath of listFiles(refOrganizationRoot, (file) => file.endsWit
   const topLines = body.split('\n').slice(0, 40).join('\n');
   for (const term of refOrganizationStatusTerms) {
     if (!topLines.includes(term)) {
-      fail(`team-doc/${relativePath} missing ref-organization page status field: ${term}`);
+      fail(`${relativePath} missing ref-organization page status field: ${term}`);
     }
   }
 
   const statusMatch = topLines.match(/^Status:\s*(.+)$/m);
   if (statusMatch && !allowedRefOrganizationStatuses.has(statusMatch[1].trim())) {
-    fail(`team-doc/${relativePath} has invalid ref-organization status: ${statusMatch[1].trim()}`);
+    fail(`${relativePath} has invalid ref-organization status: ${statusMatch[1].trim()}`);
   }
   const lastReviewedMatch = topLines.match(/^Last reviewed date:\s*(.+)$/m);
   if (lastReviewedMatch && !/^\d{4}-\d{2}-\d{2}$/.test(lastReviewedMatch[1].trim())) {
-    fail(`team-doc/${relativePath} has invalid Last reviewed date format: ${lastReviewedMatch[1].trim()}`);
+    fail(`${relativePath} has invalid Last reviewed date format: ${lastReviewedMatch[1].trim()}`);
   }
   const reviewerEvidenceMatches = Array.from(topLines.matchAll(/^Reviewer evidence:\s*(.+)$/gm));
   for (const reviewerEvidenceMatch of reviewerEvidenceMatches) {
     const reviewerEvidence = reviewerEvidenceMatch[1].trim();
     if (/pending/i.test(reviewerEvidence)) {
-      fail(`team-doc/${relativePath} has unresolved Reviewer evidence: ${reviewerEvidence}`);
+      fail(`${relativePath} has unresolved Reviewer evidence: ${reviewerEvidence}`);
     }
     if (!reviewerEvidence.startsWith('.evidence/reviews/')) {
-      fail(`team-doc/${relativePath} Reviewer evidence must link .evidence/reviews/: ${reviewerEvidence}`);
+      fail(`${relativePath} Reviewer evidence must link .evidence/reviews/: ${reviewerEvidence}`);
     }
   }
 }
@@ -620,10 +620,10 @@ if (exists(refOrganizationCrosswalk)) {
       fail(`ref-organization crosswalk target must include at least one backticked repo-relative path: ${sourceCell}`);
     }
     for (const targetPath of targetPaths) {
-      if (!targetPath.startsWith(`team-doc/${refOrganizationRoot}/`)) {
-        fail(`ref-organization crosswalk target must live under team-doc/${refOrganizationRoot}: ${sourceCell} -> ${targetPath}`);
+      if (!targetPath.startsWith(`${refOrganizationRoot}/`)) {
+        fail(`ref-organization crosswalk target must live under ${refOrganizationRoot}: ${sourceCell} -> ${targetPath}`);
       }
-      const targetRelativePath = targetPath.replace(/^team-doc\//, '');
+      const targetRelativePath = targetPath;
       if (!targetRelativePath.endsWith('/')) {
         if (!exists(targetRelativePath)) {
           fail(`ref-organization crosswalk target does not exist: ${sourceCell} -> ${targetPath}`);
@@ -685,14 +685,14 @@ requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/sot-priority.md`,
   'PROJECT_ENVIRONMENT.md',
   '.agents/skills',
   '.codex/agents',
-  'team-doc/mobile-app-dev-team',
+  'mobile-app-dev-team',
   'TEAM_DOC_ARCHIVE_MANIFEST.json',
   'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
 ]);
 
 requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-native-openclaw-skills.md`, [
   '/workspace/skills/<slug>/SKILL.md',
-  'team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
+  'mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
   'pod-native OpenClaw',
   'not `.agents/skills/<skill-name>/SKILL.md`',
   'source-only',
@@ -989,7 +989,7 @@ requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/source-prior
   'PROJECT_ENVIRONMENT.md',
   '.agents/skills',
   '.codex/agents',
-  'team-doc/mobile-app-dev-team',
+  'mobile-app-dev-team',
   'TEAM_DOC_ARCHIVE_MANIFEST.json',
   'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
 ]);
@@ -1047,12 +1047,12 @@ const allowedManagedCtoSafetySentence =
 for (const relativePath of listFiles(managedTeamDocRoot, (file) => file.endsWith('.md'))) {
   const fileName = path.basename(relativePath);
   if (/(^|[-_. ])cto([-_. ]|$)/i.test(fileName)) {
-    fail(`managed team doc filename must not introduce CTO: team-doc/${relativePath}`);
+    fail(`managed team doc filename must not introduce CTO: ${relativePath}`);
   }
 
   const bodyWithoutAllowedSafetySentence = read(relativePath).replaceAll(allowedManagedCtoSafetySentence, '');
   if (/\bCTO\b/i.test(bodyWithoutAllowedSafetySentence)) {
-    fail(`managed team doc must not introduce CTO outside the approved safety sentence: team-doc/${relativePath}`);
+    fail(`managed team doc must not introduce CTO outside the approved safety sentence: ${relativePath}`);
   }
 }
 
@@ -1170,4 +1170,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log('Validated current team-doc managed docs.');
+console.log('Validated current mobile-app-dev-team managed docs.');
