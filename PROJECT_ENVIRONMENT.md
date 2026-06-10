@@ -190,12 +190,12 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `expo-plugins`
     - source: `expo/skills`
     - ref: `main`
-    - marketplace root: `/Users/tw.kim/.codex/.tmp/marketplaces/expo-plugins`
+    - marketplace root: user-local Codex marketplace cache, not a repo-pinned path; do not commit a resolved absolute path.
 - Installed Codex plugins:
   - `expo@expo-plugins`
     - version: `1.1.0`
     - status: installed and enabled
-    - plugin root: `/Users/tw.kim/.codex/plugins/cache/expo-plugins/expo/1.1.0`
+    - plugin root: user-local Codex plugin cache for `expo-plugins/expo/1.1.0`, not a repo-pinned path; do not commit a resolved absolute path.
     - use only for generic Expo, React Native, EAS, dev client, SDK upgrade, deployment, native UI, API route, and data fetching guidance.
     - repo skills remain authoritative for contracts, role boundaries, evidence, and QA gates.
 - Repo skills: `.agents/skills/<skill-name>/SKILL.md`.
