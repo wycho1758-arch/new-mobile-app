@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { validateWorkUnitStatus } from './lib/work-unit-machine.mjs';
+import {
+  validateHumanGateDecision,
+  validateWorkUnitStatus,
+} from './lib/work-unit-machine.mjs';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -11,11 +14,11 @@ function relative(file) {
   return path.relative(root, file).replaceAll(path.sep, '/');
 }
 
-function readJson(file) {
+function readJson(file, targetErrors = errors) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch (error) {
-    errors.push(`${relative(file)}: invalid JSON: ${error.message}`);
+    targetErrors.push(`${relative(file)}: invalid JSON: ${error.message}`);
     return null;
   }
 }
@@ -52,15 +55,63 @@ function expectedWorkUnitId(file) {
   return path.basename(path.dirname(file));
 }
 
-function validateFile(file) {
-  const status = readJson(file);
+function humanGateDecisionFiles(workUnitDir) {
+  const files = [];
+  const planningGateDir = path.join(workUnitDir, '00-product-planning/human-gates');
+  if (fs.existsSync(planningGateDir)) {
+    for (const entry of fs.readdirSync(planningGateDir, { withFileTypes: true })) {
+      if (entry.isFile() && entry.name.endsWith('.json')) {
+        files.push(path.join(planningGateDir, entry.name));
+      }
+    }
+  }
+
+  const releaseApproval = path.join(workUnitDir, '05-qa-release/human-approval.json');
+  if (fs.existsSync(releaseApproval)) {
+    files.push(releaseApproval);
+  }
+
+  return files.sort();
+}
+
+function expectedGateId(file) {
+  if (path.basename(file) === 'human-approval.json') return undefined;
+  return path.basename(file, '.json');
+}
+
+function decisionPath(workUnitDir, file) {
+  return path.relative(workUnitDir, file).replaceAll(path.sep, '/');
+}
+
+function validateWorkUnitDirectory(statusFile, targetErrors = errors) {
+  const status = readJson(statusFile, targetErrors);
   if (!status) return false;
-  const fileErrors = validateWorkUnitStatus(status, {
-    source: relative(file),
-    expectedWorkUnitId: expectedWorkUnitId(file),
+
+  const workUnitDir = path.dirname(statusFile);
+  const decisionsByPath = new Map();
+
+  for (const file of humanGateDecisionFiles(workUnitDir)) {
+    const decision = readJson(file, targetErrors);
+    if (!decision) continue;
+    const decisionErrors = validateHumanGateDecision(decision, {
+      source: relative(file),
+      expectedGateId: expectedGateId(file),
+    });
+    targetErrors.push(...decisionErrors);
+    decisionsByPath.set(decisionPath(workUnitDir, file), decision);
+  }
+
+  const statusErrors = validateWorkUnitStatus(status, {
+    source: relative(statusFile),
+    expectedWorkUnitId: expectedWorkUnitId(statusFile),
+    humanGateDecisionsByPath: decisionsByPath,
   });
-  errors.push(...fileErrors);
-  return fileErrors.length === 0;
+  targetErrors.push(...statusErrors);
+  return statusErrors.length === 0;
+}
+
+function validateFile(file) {
+  return validateWorkUnitDirectory(file, errors);
 }
 
 function runSelfTest() {
@@ -79,12 +130,8 @@ function runSelfTest() {
   }
 
   for (const file of invalidFiles) {
-    const status = readJson(file);
-    if (!status) continue;
-    const fileErrors = validateWorkUnitStatus(status, {
-      source: relative(file),
-      expectedWorkUnitId: expectedWorkUnitId(file),
-    });
+    const fileErrors = [];
+    validateWorkUnitDirectory(file, fileErrors);
     if (fileErrors.length === 0) {
       errors.push(`${relative(file)}: invalid fixture unexpectedly passed`);
     }

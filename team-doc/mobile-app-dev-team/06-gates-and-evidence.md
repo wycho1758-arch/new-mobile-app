@@ -63,3 +63,32 @@ Stop for recorded human decision when work involves:
 - Business/budget owner decision.
 - Irreversible scope tradeoff.
 - Accepting risk after a failed gate.
+
+Machine-readable human gate decisions use `human-gate/v1` under the durable
+work-unit root:
+
+- Planning gates: `docs/plans/work-units/<work-unit-id>/00-product-planning/human-gates/<gate-id>.json`
+- Release approval: `docs/plans/work-units/<work-unit-id>/05-qa-release/human-approval.json`
+
+The deterministic category slugs are:
+
+- `production-submit`
+- `payment-money-movement`
+- `pii-privacy`
+- `external-messaging`
+- `legal-compliance`
+- `business-budget-owner`
+- `irreversible-scope-tradeoff`
+- `failed-gate-risk`
+
+Each decision envelope must include `schema`, `gate_id`, `category`,
+`decision`, `scope`, `decided_by`, `decision_reference`, `decided_at`,
+`residual_risk`, and `evidence_links`. Decisions are `approved`, `rejected`, or
+`deferred`. `decision_reference` must be a GitHub issue comment or pull request
+review URL for the offline validator path. `failed-gate-risk` additionally
+requires `failed_check_reference`.
+
+Human gate envelopes make a decision auditable and machine-readable; they do not
+turn a role, reviewer, pod, LLM, or Release Gatekeeper into a human approver.
+`blocked-human` work may resume to `in-progress` only when the matching
+decision envelope is `approved`.

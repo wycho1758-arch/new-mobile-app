@@ -1,0 +1,123 @@
+Findings first.
+
+**Medium**
+
+`decision_reference` accepts broad PR/issue URLs, not only concrete human decision anchors. The PR2 SoT defines `decision_reference` as a GitHub comment/review URL trust anchor, and the updated gate docs say it must be a GitHub issue comment or pull request review URL. The implementation’s regex makes the `#issuecomment-...` or `#pullrequestreview-...` fragment optional, so `https://github.com/example/mobile-app-template/pull/101` validates even though it does not identify a specific human approval/rejection/defer decision. I confirmed this with a read-only `node --input-type=module` call returning `[]` errors for a bare PR URL.
+
+Source refs: `team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:145`, `team-doc/mobile-app-dev-team/06-gates-and-evidence.md:87`, `scripts/lib/work-unit-machine.mjs:396`.
+
+No Critical or High findings found.
+
+**Review Summary**
+
+The implementation stays inside the repo-internal PR2 scope: changed tracked files are limited to the work-unit validator and local SoT docs, with new work-unit fixtures and review evidence. No `apps/mobile`, `apps/api`, `packages/contracts`, live EAS, pod, webhook, Secret/token, branch protection, mobile-mcp, or live Confluence publish work appears in the reviewed diff/evidence.
+
+Tests/eval fixtures cover the requested approved, rejected, deferred, agent approver, unknown category, failed-gate-risk missing reference, missing decision reference, ignored/path traversal evidence, missing decision file, and blocked-human resume-without-approval cases. The gap is that there is no invalid fixture for a malformed or non-anchored `decision_reference`, and the validator currently allows that case.
+
+Human authority and deterministic Gatekeeper boundaries are otherwise preserved: role/agent/Gatekeeper/LLM/pod approver identities are rejected, `blocked-human` requires a gate, and `in-progress` with human gates requires approved decisions. Confluence/live platform boundaries are preserved as local-only validation with live publication remaining human-gated.
+
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "e2eb31d",
+    "target": "working-tree PR2 human-gate/v1 implementation",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "team-doc/mobile-app-dev-team/06-gates-and-evidence.md",
+      "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md",
+      "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md",
+      "docs/plans/work-units/README.md",
+      "scripts/lib/work-unit-machine.mjs",
+      "scripts/validate-work-units.mjs",
+      "evals/work-units/fixtures/valid/human-gate-approved/**",
+      "evals/work-units/fixtures/valid/human-gate-rejected/**",
+      "evals/work-units/fixtures/valid/human-gate-deferred/**",
+      "evals/work-units/fixtures/invalid/human-gate-agent-approver/**",
+      "evals/work-units/fixtures/invalid/human-gate-unknown-category/**",
+      "evals/work-units/fixtures/invalid/human-gate-failed-risk-missing-ref/**",
+      "evals/work-units/fixtures/invalid/human-gate-missing-decision-reference/**",
+      "evals/work-units/fixtures/invalid/human-gate-ignored-evidence-link/**",
+      "evals/work-units/fixtures/invalid/human-gate-path-traversal/**",
+      "evals/work-units/fixtures/invalid/human-gate-resume-without-approval/**",
+      "evals/work-units/fixtures/invalid/human-gate-missing-decision-file/**",
+      ".evidence/reviews/pr2-human-gate-envelope-implementation-checkpoint-20260610.md",
+      ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "summary": "decision_reference validation accepts bare GitHub PR/issue URLs instead of requiring the concrete issue-comment or pull-request-review URL that anchors the human decision.",
+      "source_refs": [
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:145",
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:87",
+        "scripts/lib/work-unit-machine.mjs:396"
+      ],
+      "owner": "Mobile App Dev"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "git diff --name-status e2eb31d",
+      "status": "PASS",
+      "evidence": "Read-only review showed tracked changes only in docs/plans/work-units/README.md, scripts/lib/work-unit-machine.mjs, scripts/validate-work-units.mjs, team-doc/mobile-app-dev-team/06-gates-and-evidence.md, and team-doc/mobile-app-dev-team/10-github-artifact-workflow.md."
+    },
+    {
+      "command": "git ls-files --others --exclude-standard",
+      "status": "PASS",
+      "evidence": "Read-only review found only PR2 review evidence and human-gate work-unit fixtures as untracked files."
+    },
+    {
+      "command": "node scripts/validate-work-units.mjs --self-test",
+      "status": "PASS",
+      "evidence": "Ran during review; exit 0 with output: Validated work-unit status fixtures."
+    },
+    {
+      "command": "node scripts/validate-work-units.mjs",
+      "status": "PASS",
+      "evidence": "Ran during review; exit 0 with output: Validated work-unit status artifacts."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Ran during review; exit 0 with output: Validated current team-doc managed docs."
+    },
+    {
+      "command": "git diff --check e2eb31d",
+      "status": "PASS",
+      "evidence": "Ran during review; exit 0 with no whitespace errors."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Checkpoint records exit 0 and runtime validation output at .evidence/reviews/pr2-human-gate-envelope-implementation-checkpoint-20260610.md:69-77."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Checkpoint records exit 0, including test:runtime and pnpm turbo run lint test, at .evidence/reviews/pr2-human-gate-envelope-implementation-checkpoint-20260610.md:79-87."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile UI/runtime paths changed; AGENTS.md requires mobile-mcp visual QA only for mobile UI/runtime changes with an available simulator/device."
+    },
+    {
+      "command": "live Confluence publish",
+      "status": "NOT_APPLICABLE",
+      "evidence": "PROJECT_ENVIRONMENT.md and REPO_OPERATIONS.md define live Confluence publish/update as external human-gated work; checkpoint records no live publish was performed."
+    }
+  ],
+  "residual_risks": [
+    "Offline validation cannot cryptographically prove the GitHub author identity; the plan already treats that as policy-level anchoring until a future online verification path exists.",
+    "The currently passing self-test does not include an invalid fixture for a bare PR or issue URL decision_reference, so the identified validator gap can regress unnoticed until covered.",
+    "Live Confluence publication and external platform state remain outside PR2 local validation."
+  ],
+  "next_action": "fix_findings"
+}
+```

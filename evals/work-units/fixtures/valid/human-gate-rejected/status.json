@@ -1,0 +1,41 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "human-gate-rejected",
+  "stage": "04-mobile-app",
+  "state": "blocked-human",
+  "owner_role": "Mobile App Dev",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "failed",
+    "agent": "wm-implementation-reviewer",
+    "evidence": ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md"
+  },
+  "human_gates": [
+    {
+      "gate_id": "hg-risk-rejected",
+      "category": "failed-gate-risk",
+      "blocking_stage": "04-mobile-app",
+      "state": "rejected",
+      "decision_path": "00-product-planning/human-gates/hg-risk-rejected.json"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md",
+      "kind": "review"
+    }
+  ],
+  "handoff": {
+    "next_role": "Product/Planning",
+    "next_artifact": "docs/plans/work-units/human-gate-rejected/00-product-planning/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-10T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "blocked-human"
+    }
+  ]
+}

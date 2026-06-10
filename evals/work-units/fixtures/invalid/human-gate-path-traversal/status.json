@@ -1,0 +1,41 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "human-gate-path-traversal",
+  "stage": "00-product-planning",
+  "state": "blocked-human",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "po-planning-reviewer",
+    "evidence": null
+  },
+  "human_gates": [
+    {
+      "gate_id": "hg-path-traversal",
+      "category": "pii-privacy",
+      "blocking_stage": "00-product-planning",
+      "state": "deferred",
+      "decision_path": "00-product-planning/human-gates/hg-path-traversal.json"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md",
+      "kind": "review"
+    }
+  ],
+  "handoff": {
+    "next_role": "Product/Planning",
+    "next_artifact": "docs/plans/work-units/human-gate-path-traversal/00-product-planning/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-10T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "blocked-human"
+    }
+  ]
+}

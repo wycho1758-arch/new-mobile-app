@@ -25,12 +25,15 @@ This path is used because the current GitHub quality gate already treats `docs/p
 ```text
 docs/plans/work-units/<work-unit-id>/
   README.md
+  status.json
   00-product-planning/
     brief.md
     work-unit-decision.md
     task-packet.md
     evidence-matrix.md
     human-gates.md
+    human-gates/
+      <gate-id>.json
     dependencies-and-blockers.md
     planning-completeness-review.md
   01-design/
@@ -75,6 +78,7 @@ docs/plans/work-units/<work-unit-id>/
     failure-classification.md
     release-risk-summary.md
     human-approval.md
+    human-approval.json
   06-gatekeeper/
     check-results.md
     ci-status.md
@@ -103,6 +107,12 @@ Each role artifact must include:
 - GitHub branch/PR handoff link when work leaves the current pod
 
 Optional backend, Railway, EAS, native, and mobile-mcp files must not be treated as mandatory unless the approved work touches those surfaces. Mark them `not-applicable` or `deferred/non-goal` with a reason.
+
+`status.json` uses `wu-status/v1` and is validated by `pnpm run validate:work-units`.
+Human gate decision JSON files use `human-gate/v1` and are validated together
+with the work-unit status. A `blocked-human` work unit can resume only when the
+matching decision file is `approved`. Rejected or deferred decisions remain
+recorded audit artifacts and do not unblock execution.
 
 ## Role Outputs
 

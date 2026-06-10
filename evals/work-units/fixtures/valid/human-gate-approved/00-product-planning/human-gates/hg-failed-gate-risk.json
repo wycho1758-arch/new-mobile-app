@@ -1,0 +1,21 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-failed-gate-risk",
+  "category": "failed-gate-risk",
+  "decision": "approved",
+  "scope": "Allow one retry after the referenced failed runtime gate for this fixture only.",
+  "decided_by": {
+    "name": "Taylor Kim",
+    "contact": "https://github.com/example-user",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/101#issuecomment-1001",
+  "decided_at": "2026-06-10T00:09:00.000Z",
+  "failed_check_reference": "https://github.com/example/mobile-app-template/actions/runs/1001/job/2001",
+  "residual_risk": [
+    "One retry is allowed; release remains blocked until gates pass."
+  ],
+  "evidence_links": [
+    ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md"
+  ]
+}

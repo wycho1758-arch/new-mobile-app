@@ -35,11 +35,14 @@ docs/plans/work-units/<work-unit-id>/
   README.md
   status.json
   00-product-planning/
+    human-gates/
+      <gate-id>.json
   01-design/
   02-architecture/
   03-contract-api/
   04-mobile-app/
   05-qa-release/
+    human-approval.json
   06-gatekeeper/
   07-pr/
 ```
@@ -49,6 +52,14 @@ docs/plans/work-units/<work-unit-id>/
 role, read-only reviewer envelope, durable evidence links, handoff target, and
 append-only event sequence for repo-state handoff. It is not an orchestrator and
 does not trigger role execution.
+
+Human gate decision JSON files use `human-gate/v1` and are validated by the same
+command. Planning gates live at
+`00-product-planning/human-gates/<gate-id>.json`; release approval lives at
+`05-qa-release/human-approval.json`. These files make human decisions auditable
+and machine-readable, but do not replace human authority. A `blocked-human`
+work-unit may resume to `in-progress` only when the matching decision is
+`approved`.
 
 Design handoff indexes must link the committed publication package:
 
