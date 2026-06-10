@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const port = 19006;
 const baseURL = `http://127.0.0.1:${port}`;
-const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? '';
+const appApiUrl = process.env.EXPO_PUBLIC_API_URL ?? 'http://127.0.0.1:65535';
 
 export default defineConfig({
   testDir: './e2e-web',
@@ -32,7 +32,7 @@ export default defineConfig({
       EXPO_PUBLIC_APP_DISPLAY_NAME: 'Mobile App Template',
       EXPO_PUBLIC_APP_SLUG: 'mobile-app-template',
       EXPO_PUBLIC_APP_SCHEME: 'mobileapptemplate',
-      EXPO_PUBLIC_API_URL: apiUrl,
+      EXPO_PUBLIC_API_URL: appApiUrl,
       EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER: 'com.template.mobile',
       EXPO_PUBLIC_ANDROID_PACKAGE: 'com.template.mobile',
     },

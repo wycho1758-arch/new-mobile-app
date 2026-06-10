@@ -63,18 +63,19 @@ This file is the root source for the current project environment and runtime set
 - Repo QA skill: `$e2e-test` plans, resets, executes, and records E2E evidence. It is a Codex skill, not the EAS build profile or workflow label named `e2e-test`.
 - RN Web E2E validates only RN Web/browser-reproducible UI, navigation, state, and business logic flows.
 - RN Web E2E does not validate native modules, OS permissions, native lifecycle behavior, push delivery, biometrics, camera, GPS, or other device/hardware features.
-- RN Web release E2E requires a deployed backend API URL through public client config:
+- Base RN Web E2E without an explicit API URL runs the browser UI/business-flow checks with a non-production loopback placeholder URL so local Expo Web can satisfy runtime URL validation. This does not prove deployed backend API reachability.
+- RN Web deployed-backend E2E requires a deployed backend API URL through public client config:
   - `EXPO_PUBLIC_API_URL=<deployed-api-url> pnpm --filter mobile e2e:web`
   - `EXPO_PUBLIC_API_URL` is compiled into the client app and is not private; never put bearer tokens, signing keys, passwords, or private endpoints in it.
   - The current Railway QA API URL verified for this workspace is `https://api-production-3d74.up.railway.app`.
   - Evidence: `.evidence/e2e-test/20260609-233244-rn-web-railway-api/`.
-- Playwright launches Expo Web with deterministic public test config plus the caller-provided backend API URL:
+- Playwright launches Expo Web with deterministic public test config plus the caller-provided backend API URL when present:
   - `EAS_BUILD=false`
   - `EXPO_PUBLIC_APP_ENV=development`
   - `EXPO_PUBLIC_APP_DISPLAY_NAME=Mobile App Template`
   - `EXPO_PUBLIC_APP_SLUG=mobile-app-template`
   - `EXPO_PUBLIC_APP_SCHEME=mobileapptemplate`
-  - `EXPO_PUBLIC_API_URL` from the command environment
+  - `EXPO_PUBLIC_API_URL` from the command environment, or `http://127.0.0.1:65535` as a local UI-only placeholder when no API URL is supplied
   - `EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER=com.template.mobile`
   - `EXPO_PUBLIC_ANDROID_PACKAGE=com.template.mobile`
 - `EXPO_PUBLIC_*` values are public client configuration and must not contain tokens, bearer credentials, signing keys, passwords, or private service endpoints.
