@@ -1,0 +1,15 @@
+{
+  "name": "invalid-mobile-nativewind-mismatch",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-set",
+      "file": "apps/mobile/package.json",
+      "path": ["dependencies", "nativewind"],
+      "value": "5.0.0-preview.5"
+    }
+  ],
+  "expectedErrors": [
+    "apps/mobile/package.json dependencies.nativewind"
+  ]
+}

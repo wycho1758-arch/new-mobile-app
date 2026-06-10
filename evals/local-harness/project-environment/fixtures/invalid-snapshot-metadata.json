@@ -1,0 +1,14 @@
+{
+  "name": "invalid-snapshot-metadata",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-delete",
+      "file": "evals/local-harness/sot/snapshot.json",
+      "path": ["pages", 0, "pageId"]
+    }
+  ],
+  "expectedErrors": [
+    "snapshot pages[0].pageId"
+  ]
+}

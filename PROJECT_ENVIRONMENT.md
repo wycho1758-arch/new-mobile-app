@@ -14,6 +14,7 @@ This file is the root source for the current project environment and runtime set
   - `pnpm turbo run lint test`
   - `pnpm run test:local-harness` for Codex runtime changes.
   - `pnpm run validate:work-unit-next` is composed into `test:runtime` for the work-unit next-action resolver.
+  - `pnpm run validate:project-environment` is composed into `test:runtime` for offline SoT drift detection.
 
 ## Mobile Runtime
 
@@ -303,6 +304,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - offline fixture ingest and redaction self-test for `eas-evidence/v1`.
     - writes canonical evidence-shaped output for recorded EAS/Maestro JSON.
     - repo-local only: `--self-test` does not call EAS, use `EXPO_TOKEN`, run Maestro cloud jobs, or prove native/device behavior.
+  - `scripts/validate-project-environment.mjs`
+    - offline drift validator for `PROJECT_ENVIRONMENT.md` against executable repo facts: package manager pin, mobile package versions, MCP pins, quality-gate runtime path detection, package script composition, and local snapshot metadata.
+    - `--self-test` validates positive and negative fixtures under `evals/local-harness/project-environment/fixtures`.
+    - repo-local only: it does not call Confluence, Atlassian, Railway, EAS, GitHub, mobile-mcp, devices, pods, or external platform services.
   - `scripts/work-unit-next.mjs`
     - resolves deterministic `wm-next-action/v1` outputs from validated `wu-status/v1` work-unit state.
     - `--self-test` validates resolver fixtures under `evals/work-units/fixtures/valid/resolver-*`.
@@ -337,6 +342,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/lib/**`
   - `scripts/{validate-runtime-artifacts,validate-work-units,codex-headless-review,test-hooks,test-local-harness,clean-tree-guard,codex-preflight}.mjs`
   - `scripts/ingest-eas-evidence.mjs`
+  - `scripts/validate-project-environment.mjs`
   - `.github/workflows/quality-gate.yml`
   - `PROJECT_ENVIRONMENT.md`
   - `docs/{confluence,plans}/**`

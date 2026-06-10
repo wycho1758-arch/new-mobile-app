@@ -111,6 +111,7 @@ pnpm run validate:team-doc
 pnpm run validate:work-units
 pnpm run validate:work-unit-next
 pnpm run validate:eas-evidence
+pnpm run validate:project-environment
 pnpm run test:hooks
 ```
 
@@ -161,6 +162,12 @@ Validators enforce documented policy; they are not the policy owner.
 - `scripts/ingest-eas-evidence.mjs` validates offline EAS/Maestro fixture ingest
   and redaction into `eas-evidence/v1`. Its self-test is repo-local only and
   does not call EAS, use tokens, run cloud jobs, or prove native behavior.
+- `scripts/validate-project-environment.mjs` validates offline drift between
+  `PROJECT_ENVIRONMENT.md` and executable repo facts such as package manager
+  pin, mobile package versions, MCP pins, quality-gate runtime path detection,
+  package script composition, and local snapshot metadata. Its self-test is
+  repo-local only and does not call Confluence, Atlassian, Railway, EAS, GitHub,
+  mobile-mcp, devices, pods, or external platform services.
 - `scripts/work-unit-next.mjs` resolves deterministic next actions from
   validated work-unit state and validates its own resolver fixtures. It is
   repo-local orchestration validation only and does not execute role work,

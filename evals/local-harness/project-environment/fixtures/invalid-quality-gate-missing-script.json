@@ -1,0 +1,15 @@
+{
+  "name": "invalid-quality-gate-missing-script",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/quality-gate.yml",
+      "from": "|validate-project-environment",
+      "to": ""
+    }
+  ],
+  "expectedErrors": [
+    "quality-gate.yml must detect scripts/validate-project-environment.mjs"
+  ]
+}

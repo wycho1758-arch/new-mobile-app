@@ -1,0 +1,15 @@
+{
+  "name": "invalid-package-manager-mismatch",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-set",
+      "file": "package.json",
+      "path": ["packageManager"],
+      "value": "pnpm@10.0.0"
+    }
+  ],
+  "expectedErrors": [
+    "package.json packageManager"
+  ]
+}
