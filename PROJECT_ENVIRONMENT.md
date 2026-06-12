@@ -1,6 +1,6 @@
 # Project Environment
 
-Last updated: 2026-06-11
+Last updated: 2026-06-12
 
 This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
@@ -225,6 +225,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - The `$wm` headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.
   - `$e2e-test` is the repo QA skill for E2E test planning, tested-instance reset, planned execution, and objective evidence capture across RN Web Playwright, Maestro, `mobile-mcp`, or manual HUMAN-GATE checks. It records evidence under `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` and does not implement fixes.
   - `$qa-railway-workflow` is the repo QA skill for Railway CLI install/login/project/service/database/variable/domain/deploy/status/log/health workflows, redacted Railway evidence, RN Web E2E API URL handoff, and `PROJECT_ENVIRONMENT.md` synchronization. It does not implement app, backend, contract, migration, or mobile UI fixes.
+  - `$git-workflow` is the repo Git workflow skill for Codex agents that need branch preflight, scoped commit, PR, reviewer status, approval checks, issue handling, handoff, or completion flow. It preserves branch/PR workflow, forbids direct push to `main`, self-approval, failed-gate pass-through, unauthorized force-push, unauthorized issue mutation, and merge/delete branch during completion. It records local readiness only; live GitHub/Jira/Confluence/EAS/OpenClaw state remains external-platform proof.
   - Product/Planning repo-local Codex adapters use required `po-*` slugs:
     - `po-requirement-office-hours` maps source skill `mobile-requirement-office-hours` page `1374519364`.
     - `po-work-unit-planning-and-agent-sprint` maps source skill `mobile-work-unit-planning-and-agent-sprint` page `1374650456`.

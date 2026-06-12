@@ -8,6 +8,7 @@ Active repo-local skills are only the directories that currently exist under `.a
 | --- | --- | --- | --- |
 | `wm` | Cross-role repo workflow | Cross-role repo workflow | SoT-grounded planning, TDD routing, reviewer evidence, PR readiness |
 | `wm-orchestrate` | Cross-role next-action resolver | Cross-role repo workflow | Deterministic work-unit next-action resolution from `status.json`; stops on role, reviewer, gate, or human-gate blocks |
+| `git-workflow` | Git workflow guardrail | Cross-role repo workflow | Branch preflight, scoped commit, PR/reviewer status, issue authorization, handoff, and completion without self-approval or gate bypass |
 | `po-requirement-office-hours` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | Ambiguous request clarification |
 | `po-work-unit-planning-and-agent-sprint` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | Work-unit sizing and bounded sprint shaping |
 | `po-prd-to-execution` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | PRD/work-unit to role-scoped tasks |

@@ -449,6 +449,44 @@ if (exists(wmSkillPath)) {
   assert(!/graphify|OPENCLAW_ROOT_DIR|\.codex\/skills\/wm|Claude Code|claude-headless-review|--engine auto|review_engine_preference|admin-portal|admin-api/i.test(wm), 'wm skill contains forbidden legacy runtime terms');
 }
 
+const gitWorkflowSkillPath = '.agents/skills/git-workflow/SKILL.md';
+const gitWorkflowEvalPaths = [
+  'evals/skills/git-workflow/positive.prompt.md',
+  'evals/skills/git-workflow/negative.prompt.md',
+  'evals/skills/git-workflow/review-only-negative.prompt.md',
+  'evals/skills/git-workflow/unsafe-main-push-negative.prompt.md',
+  'evals/skills/git-workflow/self-approval-negative.prompt.md',
+  'evals/skills/git-workflow/issue-mutation-negative.prompt.md',
+];
+
+assert(exists(gitWorkflowSkillPath), 'missing .agents/skills/git-workflow/SKILL.md');
+for (const evalPath of gitWorkflowEvalPaths) {
+  assert(exists(evalPath), `missing git-workflow eval fixture: ${evalPath}`);
+}
+if (exists(gitWorkflowSkillPath)) {
+  const gitWorkflow = read(gitWorkflowSkillPath);
+  assert(/\$git-workflow/.test(gitWorkflow) && /\/git-workflow/.test(gitWorkflow), 'git-workflow skill must document explicit $git-workflow and /git-workflow triggers');
+  assert(/direct push to `main`/i.test(gitWorkflow), 'git-workflow skill must forbid direct push to main');
+  assert(/force-push[\s\S]*explicit human approval|explicit human approval[\s\S]*force-push/i.test(gitWorkflow), 'git-workflow skill must require explicit human approval before force-push');
+  assert(/self-approval/i.test(gitWorkflow), 'git-workflow skill must forbid self-approval');
+  assert(/marking failed gates as passed|failed-gate pass-through|failed gates as passed/i.test(gitWorkflow), 'git-workflow skill must forbid failed-gate pass-through');
+  assert(/issue mutation[\s\S]*explicit authorization|explicit authorization[\s\S]*issue mutation/i.test(gitWorkflow), 'git-workflow skill must require explicit authorization for issue mutation');
+  assert(/complete[\s\S]*(merge|delete branch)|(merge|delete branch)[\s\S]*complete/i.test(gitWorkflow), 'git-workflow skill must forbid merge/delete branch during complete mode');
+  assert(/GitHub\/Jira\/Confluence\/EAS\/OpenClaw|external-platform proof/i.test(gitWorkflow), 'git-workflow skill must distinguish local validation from external-platform proof');
+}
+if (exists('evals/skills/git-workflow/unsafe-main-push-negative.prompt.md')) {
+  const unsafeMainPush = read('evals/skills/git-workflow/unsafe-main-push-negative.prompt.md');
+  assert(/direct .*main/i.test(unsafeMainPush) && /force-push/i.test(unsafeMainPush), 'git-workflow unsafe-main-push fixture must cover direct main push and force-push');
+}
+if (exists('evals/skills/git-workflow/self-approval-negative.prompt.md')) {
+  const selfApproval = read('evals/skills/git-workflow/self-approval-negative.prompt.md');
+  assert(/self-approval/i.test(selfApproval) && /failed-gate|failed gate/i.test(selfApproval), 'git-workflow self-approval fixture must cover self-approval and failed-gate pass-through');
+}
+if (exists('evals/skills/git-workflow/issue-mutation-negative.prompt.md')) {
+  const issueMutation = read('evals/skills/git-workflow/issue-mutation-negative.prompt.md');
+  assert(/issue mutation/i.test(issueMutation) && /explicit authorization/i.test(issueMutation), 'git-workflow issue-mutation fixture must cover explicit authorization for issue mutation');
+}
+
 const projectEnvironmentPath = 'PROJECT_ENVIRONMENT.md';
 assert(exists(projectEnvironmentPath), 'missing PROJECT_ENVIRONMENT.md');
 if (exists(projectEnvironmentPath)) {

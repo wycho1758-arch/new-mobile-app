@@ -225,6 +225,7 @@
       "po-planning-completeness-review",
       "design-mobile-design-handoff",
       "design-stitch-mcp-operating-rules",
+      "git-workflow",
       "e2e-test",
       "qa-railway-workflow"
     ],

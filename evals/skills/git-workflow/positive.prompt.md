@@ -1,0 +1,1 @@
+$git-workflow Start a repo-scoped git workflow for a Codex agent after implementation evidence exists. Run preflight, check branch/upstream status, prepare a Conventional Commit, open a PR with evidence links, request reviewer status, and stop before merge or branch deletion.
