@@ -1,0 +1,134 @@
+Critical: none.
+
+High: none.
+
+Medium: none.
+
+Low: none.
+
+The implementation is scoped to the approved `project-bootstrap` work. The tracked diff only includes `project-bootstrap` docs/script plus the two validators, matching the plan scope in `.evidence/wm/20260612-project-bootstrap-blocker-guide-plan.md:7` and the repo’s pod-native skill routing rule in `AGENTS.md:5`. The worktree does contain unrelated untracked evidence files and an untracked zip, so PR assembly should include only the reviewed paths, but the reviewed tracked diff itself is scoped.
+
+TDD/validator-first evidence is present: the command evidence records initial validator failures before implementation at `.evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:6`, and the added validator assertions are in `scripts/validate-repo-operations.mjs:174` and `scripts/validate-team-doc.mjs:548`.
+
+The blocker guide behavior satisfies the request. The script writes a Markdown blocker guide when blockers exist, records `blocker_guide.path` in the JSON report, and links the reference guide via `reference`/`reference_status` in `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:337` and `:458`. The user-facing skill docs describe the generated guide path at `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:109`.
+
+Safety boundaries are preserved. The guide encourages status checks and local inspection, but explicitly forbids printing secrets and forbids `pod-role-bootstrap`, `pnpm install`, EAS, Railway deploys, Stitch generation/export, and GitHub mutation from the blocker-resolution guide at `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md:29`. Mobile UI and API contract checks are not applicable because no `apps/mobile`, `apps/api`, or `packages/contracts` files changed.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "c15a32e202cd4a3d66f00eb6139f8d95f117c7de",
+    "target": "working-tree:project-bootstrap-blocker-guide",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      ".evidence/wm/20260612-project-bootstrap-blocker-guide-plan.md",
+      ".evidence/wm/20260612-project-bootstrap-blocker-guide-plan-review.md",
+      ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md",
+      ".evidence/wm/20260612-project-bootstrap-wm-role-canonical-review.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "scripts/validate-repo-operations.mjs",
+      "scripts/validate-team-doc.mjs"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "scope review against approved plan and git diff",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-plan.md:7-13 scopes the task to project-bootstrap blocker Markdown guidance; git diff --name-only showed only project-bootstrap docs/script plus scripts/validate-repo-operations.mjs and scripts/validate-team-doc.mjs."
+    },
+    {
+      "command": "TDD/validator-first review",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:6-19 records initial validator failures before implementation and post-implementation passes; scripts/validate-repo-operations.mjs:174-201 and scripts/validate-team-doc.mjs:548-586 contain the added assertions."
+    },
+    {
+      "command": "generated blocker Markdown and JSON report linkage review",
+      "status": "PASS",
+      "evidence": "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:337-389 builds/writes the blocker guide when blockers exist; :391-460 records blocker_guide in the JSON report; .evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:21-55 records a passing smoke run."
+    },
+    {
+      "command": "agent/tool/browser-use and external-action safety review",
+      "status": "PASS",
+      "evidence": "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md:9-38 permits status/local checks and forbids secrets, pod-role-bootstrap, pnpm install, EAS, Railway deploys, Stitch generation/export, and GitHub mutation from the guide."
+    },
+    {
+      "command": "secret hygiene review",
+      "status": "PASS",
+      "evidence": "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:18-30 and references/report-template.md:93-98 define status-only/no-secret evidence boundaries; rg secret-pattern scan over reviewed changed paths and evidence returned no matches; .evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:76-78 states no secret-bearing material was recorded."
+    },
+    {
+      "command": "bash -n mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "status": "PASS",
+      "evidence": "Rerun during review exited 0; also recorded PASS at .evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:62."
+    },
+    {
+      "command": "node scripts/validate-repo-operations.mjs",
+      "status": "PASS",
+      "evidence": "Rerun during review exited 0 with 'Validated repo operations policy ownership.'; recorded PASS at .evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:18."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Rerun during review exited 0 with 'Validated current mobile-app-dev-team managed docs.'; recorded PASS at .evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:19."
+    },
+    {
+      "command": "blocker smoke run with temp report/guide paths",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:21-58 records blocked status, guide status written, reference_status present, guide existence, detected blockers, agent boundary content, and no live external operation."
+    },
+    {
+      "command": "git diff --check -- mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap scripts/validate-repo-operations.mjs scripts/validate-team-doc.mjs .evidence/wm/20260612-project-bootstrap-blocker-guide-plan.md .evidence/wm/20260612-project-bootstrap-blocker-guide-plan-review-prompt.md",
+      "status": "PASS",
+      "evidence": "Rerun during review exited 0; recorded PASS at .evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:63."
+    },
+    {
+      "command": "pnpm run validate:evidence-hygiene",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:64 records PASS; PROJECT_ENVIRONMENT.md:18-20 defines this as part of runtime evidence hygiene."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:65 records PASS; AGENTS.md:106-108 and PROJECT_ENVIRONMENT.md:14-20 require this gate for runtime changes."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:66 records PASS; AGENTS.md:55-60 and AGENTS.md:106-109 define the local harness scope and requirement for Codex runtime changes."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "PASS",
+      "evidence": ".evidence/wm/20260612-project-bootstrap-blocker-guide-command-evidence.md:67 records PASS; AGENTS.md:102-112 defines this as a required PR verification gate."
+    },
+    {
+      "command": "mobile UI/runtime boundary review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No apps/mobile files, selectors, Expo Router screens, React Native primitives, NativeWind styling, or mobile runtime config changed; AGENTS.md:40-53 mobile runtime and selector rules are therefore not applicable."
+    },
+    {
+      "command": "API contract usage review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No apps/api or packages/contracts files changed; AGENTS.md:84-100 contract/import-direction rules are therefore not applicable."
+    },
+    {
+      "command": "mobile-mcp / visual QA review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "The reviewed change is pod-native project-bootstrap documentation/script behavior, not mobile UI/runtime behavior; AGENTS.md:109-110 requires mobile-mcp visual QA only for mobile UI/runtime changes with an available simulator or device."
+    }
+  ],
+  "residual_risks": [
+    "The full worktree contains unrelated untracked evidence files and an untracked zip outside the reviewed implementation paths; PR preparation should include only the reviewed project-bootstrap, validator, and relevant evidence artifacts.",
+    "The full pnpm gates were reviewed from persisted command evidence rather than rerun in this read-only reviewer pass; the lightweight syntax, validator, diff-check, and secret-pattern checks were rerun and passed."
+  ],
+  "next_action": "proceed"
+}
+```

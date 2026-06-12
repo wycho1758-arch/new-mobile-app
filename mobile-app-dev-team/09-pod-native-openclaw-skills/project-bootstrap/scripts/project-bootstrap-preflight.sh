@@ -8,6 +8,10 @@ REPORT_PATH="${PROJECT_BOOTSTRAP_REPORT_PATH:-${REPORT_PATH:-/workspace/state/pr
 POD_ROLE_BOOTSTRAP_REPORT="${POD_ROLE_BOOTSTRAP_REPORT:-/workspace/state/pod-role-bootstrap-report.json}"
 STITCH_ADC_REPORT="${STITCH_ADC_REPORT:-/workspace/state/stitch-adc-setup-report.json}"
 EAS_ROBOT_AUTH_REPORT="${EAS_ROBOT_AUTH_REPORT:-/workspace/state/eas-robot-auth-setup-report.json}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+BLOCKERS_MD_PATH="${PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH:-${BLOCKERS_MD_PATH:-/workspace/state/project-bootstrap-blockers.md}}"
+BLOCKER_RESOLUTION_GUIDE="${PROJECT_BOOTSTRAP_BLOCKER_RESOLUTION_GUIDE:-${SKILL_ROOT}/references/blocker-resolution-guide.md}"
 
 redact() {
   sed -E 's/(token|key|secret|password|credential)([=: ][^ ]+)/\1=***REDACTED***/Ig'
@@ -43,6 +47,10 @@ resolve_role() {
     return
   fi
 
+  read_identity_role
+}
+
+read_identity_role() {
   if [[ -r /workspace/IDENTITY ]]; then
     head -n 1 /workspace/IDENTITY | tr -d '\r'
     return
@@ -63,6 +71,17 @@ normalize_role() {
   printf '%s' "$1" \
     | tr '[:upper:]' '[:lower:]' \
     | sed -E 's#[[:space:]_/]+#-#g; s#^-+##; s#-+$##'
+}
+
+is_canonical_role() {
+  case "$1" in
+    product-planning|design|mobile-architect|mobile-app-dev|backend-api-integrator|qa-release)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
 }
 
 mcp_status() {
@@ -91,7 +110,39 @@ fi
 
 role="$(resolve_role)"
 role_key="$(normalize_role "${role}")"
+identity_role="$(read_identity_role)"
+identity_role_key="$(normalize_role "${identity_role}")"
+role_canonical_status="missing"
+if [[ "${role}" != "missing" ]]; then
+  if ! is_canonical_role "${role_key}"; then
+    role_canonical_status="unknown"
+  elif [[ "${role}" == "${role_key}" ]]; then
+    role_canonical_status="canonical"
+  else
+    role_canonical_status="non_canonical"
+  fi
+fi
+identity_role_canonical_status="not_configured"
+identity_role_match_status="not_configured"
+if [[ "${identity_role}" != "missing" ]]; then
+  if ! is_canonical_role "${identity_role_key}"; then
+    identity_role_canonical_status="unknown"
+  elif [[ "${identity_role}" == "${identity_role_key}" ]]; then
+    identity_role_canonical_status="canonical"
+  else
+    identity_role_canonical_status="non_canonical"
+  fi
+
+  if [[ -n "${WM_ROLE:-}" ]]; then
+    if [[ "${identity_role_key}" == "${role_key}" ]]; then
+      identity_role_match_status="match"
+    else
+      identity_role_match_status="mismatch"
+    fi
+  fi
+fi
 role_expected_status="not_configured"
+expected_role_canonical_status="not_configured"
 if [[ -n "${WM_EXPECTED_ROLE:-}" ]]; then
   expected_role_key="$(normalize_role "${WM_EXPECTED_ROLE}")"
   if [[ "${role_key}" == "${expected_role_key}" ]]; then
@@ -99,15 +150,22 @@ if [[ -n "${WM_EXPECTED_ROLE:-}" ]]; then
   else
     role_expected_status="mismatch"
   fi
+  if ! is_canonical_role "${expected_role_key}"; then
+    expected_role_canonical_status="unknown"
+  elif [[ "${WM_EXPECTED_ROLE}" == "${expected_role_key}" ]]; then
+    expected_role_canonical_status="canonical"
+  else
+    expected_role_canonical_status="non_canonical"
+  fi
 fi
 
 role_requires_stitch="false"
 role_requires_eas="false"
 case "${role_key}" in
-  design|product-designer)
+  design)
     role_requires_stitch="true"
     ;;
-  qa-release|qa|release)
+  qa-release)
     role_requires_eas="true"
     ;;
 esac
@@ -115,9 +173,16 @@ esac
 mkdir -p "$(dirname "${REPORT_PATH}")"
 
 node - "$REPORT_PATH" \
+  "$BLOCKERS_MD_PATH" \
+  "$BLOCKER_RESOLUTION_GUIDE" \
   "$role" \
   "$role_key" \
+  "$role_canonical_status" \
+  "$identity_role" \
+  "$identity_role_canonical_status" \
+  "$identity_role_match_status" \
   "$role_expected_status" \
+  "$expected_role_canonical_status" \
   "$REPO_PATH" \
   "$(dir_status "${REPO_PATH}")" \
   "$(file_status "${REPO_PATH}/AGENTS.md")" \
@@ -165,9 +230,16 @@ const path = require('node:path');
 
 const [
   reportPath,
+  blockerGuidePath,
+  blockerGuideReferencePath,
   role,
   roleKey,
+  roleCanonicalStatus,
+  identityRole,
+  identityRoleCanonicalStatus,
+  identityRoleMatchStatus,
   expectedRoleStatus,
+  expectedRoleCanonicalStatus,
   repoPath,
   repoPathStatus,
   agentsFile,
@@ -220,7 +292,14 @@ function requirePresent(label, value) {
 }
 
 if (role === 'missing') blockers.push('missing role identity');
+if (roleCanonicalStatus === 'unknown') blockers.push('unknown WM_ROLE canonical slug');
+if (roleCanonicalStatus === 'non_canonical') blockers.push('WM_ROLE must use canonical role slug');
+if (identityRoleCanonicalStatus === 'unknown') blockers.push('unknown /workspace/IDENTITY canonical slug');
+if (identityRoleCanonicalStatus === 'non_canonical') blockers.push('/workspace/IDENTITY must use canonical role slug');
+if (identityRoleMatchStatus === 'mismatch') blockers.push('WM_ROLE and /workspace/IDENTITY mismatch');
 if (expectedRoleStatus === 'mismatch') blockers.push('WM_EXPECTED_ROLE mismatch');
+if (expectedRoleCanonicalStatus === 'unknown') blockers.push('unknown WM_EXPECTED_ROLE canonical slug');
+if (expectedRoleCanonicalStatus === 'non_canonical') blockers.push('WM_EXPECTED_ROLE must use canonical role slug');
 if (repoPathStatus !== 'present' && (!repoCloneUrl || tokenBearingCloneUrl)) {
   blockers.push('repo missing and REPO_CLONE_URL is missing or token-bearing');
 }
@@ -255,6 +334,60 @@ if (roleRequiresEas === 'true') {
   if (easRobotAuthReport !== 'present') blockers.push('missing eas-robot-auth-setup report');
 }
 
+const blockerGuide = {
+  path: blockerGuidePath,
+  status: blockers.length ? 'written' : 'not_applicable',
+  reference: blockerGuideReferencePath,
+  reference_status: fs.existsSync(blockerGuideReferencePath) ? 'present' : 'missing',
+};
+
+if (blockers.length) {
+  const referenceBody = fs.existsSync(blockerGuideReferencePath)
+    ? fs.readFileSync(blockerGuideReferencePath, 'utf8').trim()
+    : '# Project Bootstrap Blocker Resolution Guide\n\nReference guide missing. Use the JSON report blocker list and repo SoT to resolve blockers without printing secrets.';
+  const generatedAt = new Date().toISOString();
+  const blockerLines = blockers.map((blocker) => `- ${blocker}`).join('\n');
+  const markdown = [
+    '# Project Bootstrap Blockers',
+    '',
+    `Generated at: ${generatedAt}`,
+    `Report: ${reportPath}`,
+    `Repo path: ${repoPath}`,
+    '',
+    '## Detected Blockers',
+    '',
+    blockerLines,
+    '',
+    '## Current Status Summary',
+    '',
+    `- Role: ${role}`,
+    `- Role normalized: ${roleKey}`,
+    `- Role canonical: ${roleCanonicalStatus}`,
+    `- /workspace/IDENTITY: ${identityRole}`,
+    `- /workspace/IDENTITY canonical: ${identityRoleCanonicalStatus}`,
+    `- /workspace/IDENTITY match: ${identityRoleMatchStatus}`,
+    `- WM_EXPECTED_ROLE: ${expectedRoleStatus}`,
+    `- WM_EXPECTED_ROLE canonical: ${expectedRoleCanonicalStatus}`,
+    `- Repo path status: ${repoPathStatus}`,
+    `- Managed path status: ${managedPathStatus}`,
+    `- Codex CLI: ${codexCli}`,
+    `- GitHub CLI: ${ghCli}`,
+    `- pnpm CLI: ${pnpmCli}`,
+    `- Required MCP mobile-mcp: ${mobileMcp}`,
+    `- Required MCP serena: ${serenaMcp}`,
+    `- Required MCP stitch: ${stitchMcp}`,
+    `- Pod role bootstrap report: ${podRoleBootstrapReport}`,
+    '',
+    '## Resolution Guide',
+    '',
+    referenceBody,
+    '',
+  ].join('\n');
+
+  fs.mkdirSync(path.dirname(blockerGuidePath), { recursive: true });
+  fs.writeFileSync(blockerGuidePath, markdown);
+}
+
 const report = {
   schema: 'project-bootstrap/v1',
   status: blockers.length ? 'blocked' : 'ready_for_bootstrap',
@@ -270,7 +403,12 @@ const report = {
   role: {
     resolved: role,
     normalized: roleKey,
+    canonical: roleCanonicalStatus,
+    workspace_identity: identityRole,
+    workspace_identity_canonical: identityRoleCanonicalStatus,
+    workspace_identity_match: identityRoleMatchStatus,
     expected: expectedRoleStatus,
+    expected_canonical: expectedRoleCanonicalStatus,
     requires_stitch: roleRequiresStitch === 'true',
     requires_eas: roleRequiresEas === 'true',
   },
@@ -317,6 +455,7 @@ const report = {
     stitch_adc_setup: roleRequiresStitch === 'true' ? stitchAdcReport : 'not_applicable',
     eas_robot_auth_setup: roleRequiresEas === 'true' ? easRobotAuthReport : 'not_applicable',
   },
+  blocker_guide: blockerGuide,
   blockers,
   reporting: 'status only; no auth token values, raw credential output, ADC JSON, database URLs, bearer tokens, or private keys',
 };

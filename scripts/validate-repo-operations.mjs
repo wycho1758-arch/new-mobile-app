@@ -178,12 +178,26 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstra
   '/workspace/CODEX_MANAGED_PATHS.md',
   'PROJECT_ENVIRONMENT.md',
   'repo_sot_files',
+  'references/blocker-resolution-guide.md',
+  'PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH',
+  'project-bootstrap-blockers.md',
   'qa-release',
   'mobile-mcp',
   'serena',
   'stitch',
   'human-gate/v1',
   'status only',
+]);
+
+requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md', [
+  'Project Bootstrap Blocker Resolution Guide',
+  'missing role identity',
+  'pnpm-pin-mismatch',
+  'git-identity-missing',
+  'github-auth-unavailable',
+  'codex-mcp-unavailable',
+  'Agent/tool-use boundary',
+  'Do not print token values',
 ]);
 
 forbidTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [

@@ -17,9 +17,14 @@ human-readable summary derived from it.
     }
   },
   "role": {
-    "resolved": "Product/Planning | Design | Mobile Architect | Mobile App Dev | Backend/API Integrator | QA/Release | design | qa-release | missing",
+    "resolved": "<raw resolved role value; canonical slug required> | missing",
     "normalized": "product-planning | design | mobile-architect | mobile-app-dev | backend-api-integrator | qa-release | missing",
+    "canonical": "canonical | non_canonical | unknown | missing",
+    "workspace_identity": "<raw /workspace/IDENTITY first-line value; canonical slug required> | missing",
+    "workspace_identity_canonical": "canonical | non_canonical | unknown | not_configured",
+    "workspace_identity_match": "match | mismatch | not_configured",
     "expected": "match | mismatch | not_configured",
+    "expected_canonical": "canonical | non_canonical | unknown | not_configured",
     "requires_stitch": false,
     "requires_eas": false
   },
@@ -74,13 +79,20 @@ human-readable summary derived from it.
     "stitch_adc_setup": "present | missing | not_applicable",
     "eas_robot_auth_setup": "present | missing | not_applicable"
   },
+  "blocker_guide": {
+    "path": "/workspace/state/project-bootstrap-blockers.md",
+    "status": "written | not_applicable",
+    "reference": "/workspace/skills/project-bootstrap/references/blocker-resolution-guide.md",
+    "reference_status": "present | missing"
+  },
   "blockers": ["status-only blocker reason"],
   "reporting": "status only; no auth token values, raw credential output, ADC JSON, database URLs, bearer tokens, or private keys"
 }
 ```
 
 Evidence may contain command names, exit statuses, object names, status labels,
-and report paths. It must not contain auth token values, API keys, OAuth tokens,
-refresh tokens, passwords, Google ADC JSON, service account JSON, database URLs,
-bearer token values, private key material, raw stdout/stderr from status
-commands, or rendered private-material-bearing manifests.
+report paths, and the generated blocker guide path. It must not contain auth
+token values, API keys, OAuth tokens, refresh tokens, passwords, Google ADC JSON,
+service account JSON, database URLs, bearer token values, private key material,
+raw stdout/stderr from status commands, or rendered private-material-bearing
+manifests.

@@ -550,6 +550,9 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   'pod-role-bootstrap',
   'stitch-adc-setup',
   'eas-robot-auth-setup',
+  'references/blocker-resolution-guide.md',
+  'PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH',
+  'project-bootstrap-blockers.md',
   'qa-release',
   'repo_sot_files',
   'REPO_OPERATIONS.md',
@@ -569,6 +572,17 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
   '/workspace/CODEX_MANAGED_PATHS.md',
   'project-bootstrap-report.json',
+]);
+
+requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guide.md`, [
+  'Project Bootstrap Blocker Resolution Guide',
+  'missing role identity',
+  'pnpm-pin-mismatch',
+  'git-identity-missing',
+  'github-auth-unavailable',
+  'codex-mcp-unavailable',
+  'Agent/tool-use boundary',
+  'Do not print token values',
 ]);
 
 requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [
