@@ -5,7 +5,6 @@ Source class: reference
 Upstream SoT:
 
 - `AGENTS.md`
-- `mobile-app-dev-team/09-pod-native-openclaw-skill-plan.md`
 - `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md`
 
 Downstream consumers:

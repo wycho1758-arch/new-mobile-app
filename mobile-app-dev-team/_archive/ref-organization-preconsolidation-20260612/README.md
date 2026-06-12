@@ -4,7 +4,7 @@ Status: reusable template guidance
 Source class: index
 Upstream SoT:
 
-- `mobile-app-dev-team/_archive/12-ref-organization-goal-plan.md`
+- `mobile-app-dev-team/12-ref-organization-goal-plan.md`
 - `mobile-app-dev-team/00-sot-and-principles.md`
 - `mobile-app-dev-team/99-source-map.md`
 
@@ -33,6 +33,6 @@ This tree is the reusable reference-organization layer for future agent teams. I
 - [New Organization Template](./08-new-organization-template/README.md)
 - [Source Map And Migration](./99-source-map-and-migration/README.md)
 
-## Consolidation Boundary
+## Checkpoint 2 Boundary
 
-This tree is intentionally consolidated to root README plus one README per section. Pre-consolidation files are preserved under `mobile-app-dev-team/_archive/ref-organization-preconsolidation-20260612/`.
+This file is skeleton/navigation only. Content migration happens in later checkpoints after Reviewer(xhigh) approval.

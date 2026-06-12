@@ -22,15 +22,20 @@ Confluence 원본 export, 구조화 참조, `_meta` 감사 기록은 root
 | `06-gates-and-evidence.md` | 게이트, 검증, evidence 규칙 |
 | `07-new-team-template-guide.md` | 다른 개발팀 생성 시 재사용 절차 |
 | `10-github-artifact-workflow.md` | pod-isolated role agent의 GitHub PR 산출물 handoff 규칙 |
-| `12-ref-organization-goal-plan.md` | Reference organization 구성 goal/checkpoint 계획 |
-| `13-pod-organization-e2e-improvement-plan.md` | Pod 조직(boram-* 패턴)으로 모바일 앱 E2E를 무인 수행하기 위한 개선 계획 |
 | `14-native-e2e-strategy.md` | RN Web, EAS/Maestro, human-device/mobile-mcp 증거 사다리와 native 증거 경계 |
 | `15-human-ops-live-readiness-annex.md` | human/ops 승인 뒤에만 가능한 live readiness 작업의 승인·증거·금지 claim annex |
 | `16-pod-environment-bootstrap.md` | fresh OpenClaw role pod의 `/workspace/projects/Wondermove-Inc/new-mobile-app` zero-to-ready 부트스트랩 순서와 OrbStack pod 설정값 체크리스트 |
 | `17-orbstack-pod-config-values.md` | 현재 repo SoT에서 확인 가능한 OrbStack role pod 설정 실제값과 owner/operator가 추가 제공해야 하는 누락값 목록 |
-| `18-orbstack-pod-config-setup-runbook-plan.md` | 누락 설정값을 수집·적용하기 위한 공식 문서 URL 포함 owner/operator runbook 계획 |
 | `ref-organization/` | Reference organization 재사용 가이드와 current-project example |
 | `99-source-map.md` | 근거 파일과 active/historical crosswalk |
+
+## 완료/대체된 계획
+
+| Archived plan | Current replacement |
+| --- | --- |
+| `_archive/12-ref-organization-goal-plan.md` | `ref-organization/` consolidated section READMEs and `99-source-map.md` |
+| `_archive/13-pod-organization-e2e-improvement-plan.md` | Repo-local/offline portions are implemented in runtime validators, pod-native skills, `14-native-e2e-strategy.md`, `15-human-ops-live-readiness-annex.md`, and `16-pod-environment-bootstrap.md`; live pod/EAS/Maestro/human approval remains evidence-gated. |
+| `_archive/18-orbstack-pod-config-setup-runbook-plan.md` | `16-pod-environment-bootstrap.md` and `17-orbstack-pod-config-values.md` |
 
 ## 운영 원칙
 

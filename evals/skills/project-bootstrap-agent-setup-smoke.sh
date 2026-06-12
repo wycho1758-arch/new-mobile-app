@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh"
+PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh"
 NODE_BIN_DIR="$(dirname "$(command -v node)")"
 NO_CODEX_PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin"
 
@@ -146,9 +147,58 @@ case_qa_role_report_generation() {
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.eas_robot_auth_setup === 'generated'"
 }
 
+case_product_planning_status_only_missing_preflight() {
+  local tmpdir repo_path report_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    .codex/config.toml \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.status === 'ready_for_bootstrap'"
+  assert_json_field "${report_path}" "Array.isArray(r.blockers) && r.blockers.length === 0"
+  assert_json_field "${report_path}" "r.role.normalized === 'product-planning' && r.role.requires_stitch === false && r.role.requires_eas === false"
+  assert_json_field "${report_path}" "r.cli.railway === 'missing' && r.cli.gcloud === 'missing' && r.cli.eas === 'missing'"
+  assert_json_field "${report_path}" "r.reports.pod_role_bootstrap === 'missing'"
+}
+
 case_design_full_setup
 case_wrong_repo_path_blocks_repair
 case_missing_codex_orders_precheck
 case_qa_role_report_generation
+case_product_planning_status_only_missing_preflight
 
 printf 'project-bootstrap-agent-setup smoke passed\n'

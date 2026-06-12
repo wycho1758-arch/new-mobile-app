@@ -182,7 +182,7 @@ GitHub만이 durable" 원칙과 `01-team-composition.md`의 "Gatekeeper는 비-L
 
 - **WHY**: G4. live pod 실측상 pod에는 Node 22/git/Chromium이 있고
   `/workspace/skills/codex-cli-auth-setup`이 이미 동작 패턴으로 존재한다
-  (`09-pod-native-openclaw-skill-plan.md`). 같은 패턴으로 "역할 부트스트랩"을 추가하고,
+  (`09-pod-native-openclaw-skills/README.md`). 같은 패턴으로 "역할 부트스트랩"을 추가하고,
   macOS 전용인 preflight를 pod에서 동작하게 확장하면 된다.
 - **WHAT**:
   - `scripts/codex-preflight.mjs`에 `--pod` 모드: codex 후보 경로에 `which codex` +

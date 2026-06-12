@@ -85,6 +85,38 @@ The default order is: run
 source `/workspace/state/project-bootstrap-role.env` when present, rerun
 preflight, and only then report unresolved blockers to the user.
 
+## Status-Only Missing Values
+
+Not every `missing` status in `/workspace/state/project-bootstrap-report.json`
+is a blocker. The agent must report user-facing blockers from the report
+`blockers` array and the current workflow phase.
+
+Status-only examples:
+
+- `cli.railway: missing` is a tool inventory result. It is not a
+  Product/Planning bootstrap blocker unless an approved Railway action is in
+  scope.
+- `cli.gcloud: missing` is a tool inventory result. It is not a
+  Product/Planning bootstrap blocker and is relevant only when Design/Stitch
+  setup is selected by SoT.
+- `cli.eas: missing` is a tool inventory result. It is not a Product/Planning
+  bootstrap blocker and is relevant only when QA/Release EAS work is selected
+  by SoT.
+- `reports.pod_role_bootstrap: missing` before `pod-role-bootstrap` runs means
+  the bootstrap evidence has not been produced yet. It is pending workflow
+  evidence, not a request for the user to create the report.
+
+Agent action:
+
+- If `blockers` is empty and the current role is `product-planning`, continue
+  the workflow even when Railway, gcloud, EAS, or the pre-bootstrap
+  `pod_role_bootstrap` report are `missing`.
+- Do not ask the user to install optional CLIs or write report files when the
+  missing value is status-only.
+- If a later approved action requires one of these tools, rerun the relevant
+  role-specific setup/precheck and classify unresolved credential or account
+  requirements under the human-owned blocker rules.
+
 ## Role Identity Blockers
 
 Related blockers:

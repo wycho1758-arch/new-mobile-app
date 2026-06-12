@@ -10,16 +10,13 @@
 | `.agents/skills/<slug>/SKILL.md` | Active repo-local skill contracts |
 | `.codex/agents/<agent>.toml` | Active custom agent contracts |
 | `mobile-app-dev-team/10-github-artifact-workflow.md` | Current pod-isolated GitHub artifact handoff workflow |
-| `mobile-app-dev-team/12-ref-organization-goal-plan.md` | Goal and checkpoint plan for the reusable reference organization layer |
-| `mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md` | Improvement plan for running the team as OpenClaw cloud pods with autonomous mobile-app E2E |
 | `mobile-app-dev-team/14-native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
 | `mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
 | `mobile-app-dev-team/16-pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/projects/Wondermove-Inc/new-mobile-app` and pod-native skills |
 | `mobile-app-dev-team/17-orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
-| `mobile-app-dev-team/18-orbstack-pod-config-setup-runbook-plan.md` | Current owner/operator setup plan with official external documentation URLs for missing pod values |
 | `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md` | Current pod-native OpenClaw project bootstrap source for boram pod readiness, runtime-shaped as `/workspace/skills/project-bootstrap/SKILL.md` |
-| `mobile-app-dev-team/ref-organization/` | Reference organization reusable guidance, current-project examples, and migration crosswalk |
-| `mobile-app-dev-team/ref-organization/99-source-map-and-migration/old-to-new-crosswalk.md` | File-by-file migration plan from historical `team-doc/10-structured/**` identifiers into `ref-organization/`; source content is validated through root archive files |
+| `mobile-app-dev-team/ref-organization/` | Consolidated reference organization reusable guidance, current-project examples, and migration crosswalk |
+| `mobile-app-dev-team/ref-organization/99-source-map-and-migration/README.md` | Migration source priority, active-vs-historical rules, old-to-new crosswalk, and validator requirements for historical `team-doc/10-structured/**` identifiers |
 | `docs/plans/work-units/<work-unit-id>/` | Durable GitHub work-unit artifact root for role-pod handoff |
 | `TEAM_DOC_ARCHIVE_MANIFEST.json` | Root archive metadata for historical `team-doc/00-source/`, `team-doc/10-structured/`, and `_meta` paths |
 | `TEAM_DOC_ARCHIVE_BUNDLE.jsonl` | Root archive content bundle for historical `team-doc/00-source/`, `team-doc/10-structured/`, and `_meta` files |
@@ -31,7 +28,7 @@
 | Source | Use |
 | --- | --- |
 | `team-doc/10-structured/03-skills/mvp-skill-matrix.md` | Historical skill matrix identifier; content is validated through root archive files. Current active skill status is validated from `.agents/skills/` and `mobile-app-dev-team/04-skills-and-agents-matrix.md`. |
-| `team-doc/10-structured/03-skills/case-coverage-registry.md` | Historical Case A-H process identifier; content is validated through root archive files. Use `ref-organization/04-workflows-and-handoffs/scenario-overlays-a-h.md` for reusable guidance. |
+| `team-doc/10-structured/03-skills/case-coverage-registry.md` | Historical Case A-H process identifier; content is validated through root archive files. Use `ref-organization/04-workflows-and-handoffs/README.md` for reusable guidance. |
 
 ## Display Title To Operating Role Crosswalk
 
@@ -58,6 +55,17 @@
 | `mobile-qa-release` | historical source name | Do not list as active unless `.agents/skills/mobile-qa-release/SKILL.md` exists. Current active QA skills are `e2e-test` and `qa-railway-workflow`. |
 | `mobile-gatekeeper` | historical deterministic concept | Not an LLM skill in the current managed docs. Treat as deterministic required-check concept. |
 | `mobile-project-bootstrap-workflow` | historical/planned source name | No active repo-local skill in current `.agents/skills`. Current pod-native handling is `project-bootstrap` under `mobile-app-dev-team/09-pod-native-openclaw-skills/`, with runtime shape `/workspace/skills/project-bootstrap/SKILL.md`; Case A still requires human/operator coordination for live pod and external-platform proof. |
+
+## Completed/Superseded Plans
+
+| Archived Plan | Current Replacement |
+| --- | --- |
+| `mobile-app-dev-team/_archive/08-role-title-update-plan.md` | Display title handling is now current in the `Display Title To Operating Role Crosswalk` section above, `mobile-app-dev-team/01-team-composition.md`, and `mobile-app-dev-team/02-role-souls/` metadata. |
+| `mobile-app-dev-team/_archive/09-pod-native-openclaw-skill-plan.md` | Pod-native OpenClaw skill source now lives under `mobile-app-dev-team/09-pod-native-openclaw-skills/`. |
+| `mobile-app-dev-team/_archive/11-openclaw-codex-completion-hooks-plan.md` | Repo-local hook implementation now lives under `.codex/hooks/` and `.codex/hooks.json`; pod runtime-surface guidance lives in `mobile-app-dev-team/ref-organization/02-runtime-surfaces/README.md`. |
+| `mobile-app-dev-team/_archive/12-ref-organization-goal-plan.md` | Reference organization work is now represented by consolidated `mobile-app-dev-team/ref-organization/` section READMEs and this source map. |
+| `mobile-app-dev-team/_archive/13-pod-organization-e2e-improvement-plan.md` | Repo-local/offline portions are implemented by runtime validators, work-unit fixtures, pod-native skills, `14-native-e2e-strategy.md`, `15-human-ops-live-readiness-annex.md`, and `16-pod-environment-bootstrap.md`; live pod, EAS/Maestro, branch protection, and human approvals still require separate evidence. |
+| `mobile-app-dev-team/_archive/18-orbstack-pod-config-setup-runbook-plan.md` | Owner/operator setup flow and official reference URLs are folded into `16-pod-environment-bootstrap.md`; non-secret value inventory remains in `17-orbstack-pod-config-values.md`. |
 
 ## Stale Or Lower-Priority Sources
 

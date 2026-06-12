@@ -4,6 +4,7 @@ set -euo pipefail
 REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPO_CLONE_URL="${REPO_CLONE_URL:-https://github.com/Wondermove-Inc/new-mobile-app.git}"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
+SKILLS_ROOT="${PROJECT_BOOTSTRAP_SKILLS_ROOT:-/workspace/skills}"
 REPORT_PATH="${PROJECT_BOOTSTRAP_REPORT_PATH:-${REPORT_PATH:-/workspace/state/project-bootstrap-report.json}}"
 POD_ROLE_BOOTSTRAP_REPORT="${POD_ROLE_BOOTSTRAP_REPORT:-/workspace/state/pod-role-bootstrap-report.json}"
 STITCH_ADC_REPORT="${STITCH_ADC_REPORT:-/workspace/state/stitch-adc-setup-report.json}"
@@ -195,11 +196,11 @@ node - "$REPORT_PATH" \
   "$REPO_CLONE_URL" \
   "$CODEX_MANAGED_PATHS" \
   "$managed_path_status" \
-  "$(dir_status /workspace/skills/project-bootstrap)" \
-  "$(dir_status /workspace/skills/codex-cli-auth-setup)" \
-  "$(dir_status /workspace/skills/pod-role-bootstrap)" \
-  "$(dir_status /workspace/skills/stitch-adc-setup)" \
-  "$(dir_status /workspace/skills/eas-robot-auth-setup)" \
+  "$(dir_status "${SKILLS_ROOT%/}/project-bootstrap")" \
+  "$(dir_status "${SKILLS_ROOT%/}/codex-cli-auth-setup")" \
+  "$(dir_status "${SKILLS_ROOT%/}/pod-role-bootstrap")" \
+  "$(dir_status "${SKILLS_ROOT%/}/stitch-adc-setup")" \
+  "$(dir_status "${SKILLS_ROOT%/}/eas-robot-auth-setup")" \
   "$(command_status codex)" \
   "$(command_status gh)" \
   "$(command_status railway)" \

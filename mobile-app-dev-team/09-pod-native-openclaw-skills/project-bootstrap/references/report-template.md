@@ -131,3 +131,18 @@ token values, API keys, OAuth tokens, refresh tokens, passwords, Google ADC JSON
 service account JSON, database URLs, bearer token values, private key material,
 raw stdout/stderr from status commands, or rendered private-material-bearing
 manifests.
+
+## Interpretation Notes
+
+- Treat the report `blockers` array as the source for user-facing blockers.
+  A field value of `missing` outside that array can be status-only inventory.
+- `cli.railway`, `cli.gcloud`, and `cli.eas` are always recorded as status
+  inventory. For `product-planning`, `missing` values in those fields are not
+  blockers unless a later SoT-selected action requires the tool.
+- `reports.pod_role_bootstrap: missing` before
+  `/workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh` runs means the
+  report has not been generated yet. It is pending workflow evidence, not a
+  user-owned blocker.
+- `reports.stitch_adc_setup` is actionable only when
+  `role.requires_stitch` is true. `reports.eas_robot_auth_setup` is actionable
+  only when `role.requires_eas` is true.

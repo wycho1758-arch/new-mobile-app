@@ -40,6 +40,27 @@ Primary setup script:
   Railway, Atlassian, GitHub branch protection, or production readiness from
   local source validation or status-only reports.
 
+## Status-Only Missing Values
+
+The generated report contains both actionable blockers and status inventory.
+Agents must decide user-facing blockers from the `blockers` array, role flags,
+and workflow phase, not from the word `missing` alone.
+
+For a Product/Planning pod (`product-planning`):
+
+- `cli.railway: missing`, `cli.gcloud: missing`, and `cli.eas: missing` are
+  status-only inventory unless the current SoT or a later approved action makes
+  those tools required.
+- `reports.pod_role_bootstrap: missing` before step 6 is pending bootstrap
+  evidence, not a user blocker. Run `pod-role-bootstrap` only when the workflow
+  reaches that step and common blockers are absent.
+- Do not ask the user to install Railway, gcloud, or EAS CLI, or to create the
+  pod-role-bootstrap report, just because those status fields are `missing`.
+
+For Design and QA/Release pods, role-specific report requirements are controlled
+by `role.requires_stitch` and `role.requires_eas`. Missing Stitch or EAS setup
+reports become blockers only when the matching role flag is true.
+
 ## Required Project Defaults
 
 - Repository: `https://github.com/Wondermove-Inc/new-mobile-app.git`
@@ -220,11 +241,16 @@ exists for the exact action and evidence path.
 - Conditional MCPs are checked when selected: `expo`, `atlassian`, `node_repl`,
   and `playwright`.
 - Conditional CLIs/accounts are checked status-only: Railway, gcloud/ADC/Stitch
-  project, EAS/Expo, workspace Expo, GitHub auth, and Codex auth.
+  project, EAS/Expo, workspace Expo, GitHub auth, and Codex auth. A `missing`
+  status in this inventory is not a blocker unless the `blockers` array or the
+  current role-specific SoT makes it one.
 - API secret refs, Railway token refs, Google ADC, EXPO_TOKEN, App Store Connect,
   and Google Play credentials are recorded only as status/ref labels, never
   values.
-- `pod-role-bootstrap` report is present or blocked with a source-backed reason.
+- `pod-role-bootstrap` report is present after `pod-role-bootstrap` runs, or is
+  explicitly reported as pending/not-run before that workflow step. Do not treat
+  pre-bootstrap `reports.pod_role_bootstrap: missing` as a user blocker by
+  itself.
 - Design and QA/Release setup reports are present or source-backed not
   applicable.
 - Live external actions are blocked without `human-gate/v1`.
