@@ -5,6 +5,9 @@ will work on this Codex-managed mobile app template repository.
 
 It is source guidance only. It does not modify a live pod, GitHub setting,
 Secret, ConfigMap, EAS project, or Stitch project, and it does not prove actual OrbStack/OpenClaw pod execution.
+Before using it as an OrbStack canary handoff, run the read-only preflight in
+this document and stop on any missing required source, skill, repo, managed path,
+or credential status check.
 
 ## Source Of Truth
 
@@ -12,38 +15,402 @@ Secret, ConfigMap, EAS project, or Stitch project, and it does not prove actual 
 - `REPO_OPERATIONS.md` defines the Codex-only repo work policy for pods.
 - `PROJECT_ENVIRONMENT.md` defines current Codex MCP pins and runtime facts.
 - `.codex/config.toml` is the pinned MCP configuration source.
-- `09-pod-native-openclaw-skills/README.md` is the pod-native skill matrix.
+- `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md` is the
+  pod-native skill matrix.
+- `docs/TEMPLATE_VARIABLES.md` defines template variables and render timing.
+- `docs/CREDENTIALS.md` defines credential owners, injection paths, and
+  delegation limits.
+
+## OrbStack Pod Configuration Inputs
+
+Use this section as the handoff checklist for the person configuring an
+OrbStack/OpenClaw role pod. Values are grouped by where they are consumed.
+Do not paste token values, API keys, OAuth tokens, refresh tokens, passwords,
+private keys, or full secret-bearing config contents into reports or chat.
+
+### Configuration Channels
+
+Choose the delivery channel by data class. Do not collapse these values into
+one runtime dump.
+
+| Channel | Allowed Data | Restart Rule | Notes |
+| --- | --- | --- | --- |
+| ConfigMap or pod config | Non-secret bootstrap values only. | Pod-template variable changes require patch, rollout restart, readiness, and pod-internal preflight. | Use for role, repo path, public Expo config, and non-secret paths. |
+| Secret or tool auth | Credentials only. | Existing pods must restart after pod-template Secret reference changes. Mounted files may have refresh latency and still require process re-read. | Use for GitHub auth, Codex auth, Expo auth, database URL, API auth, Railway auth, ADC, ASC, and Google service account material. |
+| Workspace bootstrap file | Non-secret bootstrap config only. | No pod restart required, but existing long-running shell/Codex sessions must be discarded or re-source the file. | Keep it under `/workspace/state/` or another managed non-secret path. |
+| Volume mount | Non-secret config file or mounted private file. | Some runtimes refresh files without pod restart, but the target process must re-read the file. Prefer restart when consumer behavior is unknown. | Do not inline JSON credentials into process variables. Mount private files. |
+| Wrapper or `source` file | Non-secret next-exec/session values only. | Applies only to the next exec/session. Existing long-running sessions do not inherit changes. | Good for local canary checks, not proof that pod template is configured. |
+
+Default operating rule: if a value is injected through pod-template variables
+or references, patch configuration, rollout restart, wait for readiness, then
+run the pod-internal redacted read-only preflight again. OpenClaw config patches
+are not assumed to hot-reload unless that exact field is documented as
+hot-reloadable.
+
+Recommended canary sequence:
+
+```text
+config/private-material patch
+-> rollout restart
+-> readiness check
+-> pod-internal redacted read-only preflight
+-> pod-role-bootstrap
+```
+
+### Data Classification
+
+| Class | Values | Allowed Delivery |
+| --- | --- | --- |
+| Non-secret bootstrap config | `REPO_PATH`, `CODEX_MANAGED_PATHS`, `STATE_DIR`, `REPORT_PATH`, `EXPECTED_PNPM_VERSION`, `WM_ROLE`, `WM_EXPECTED_ROLE`, non-secret `REPO_CLONE_URL`, `REPO_REF`, `REPO_COMMIT`, `EXPO_OWNER`, `EAS_PROJECT_ID`, `API_PORT`, Railway Dockerfile/health paths | ConfigMap/pod config, workspace bootstrap file, wrapper/source file. |
+| Public Expo config | `APP_DISPLAY_NAME`, `APP_SLUG`, `APP_SCHEME`, `IOS_BUNDLE_IDENTIFIER`, `ANDROID_PACKAGE`, `API_URL` | ConfigMap/pod config or non-secret workspace bootstrap file. Never include bearer tokens, passwords, signing keys, or private endpoints. |
+| Secret/tool auth | `GITHUB_TOKEN`, Codex auth, `EXPO_TOKEN`, `DATABASE_URL`, `API_BEARER_TOKEN`, Railway auth, Google ADC, ASC key, Google service account JSON | Secret, secure store, tool auth, or mounted private file only. Report presence/status only. |
+
+### Repo Checkout And Role Identity
+
+| Key | Required When | What To Provide | Example |
+| --- | --- | --- | --- |
+| `REPO_PATH` | Optional override | Checkout path used by `pod-role-bootstrap`. Default is `/workspace/new-mobile-app`. | `/workspace/new-mobile-app` |
+| `REPO_CLONE_URL` | Required only when `REPO_PATH` is missing | Non-secret clone URL for this repository. Do not embed tokens in the URL. | `https://github.com/acme/new-mobile-app.git` |
+| `REPO_REF` or `REPO_COMMIT` | Recommended for canary repeatability | Branch, tag, or commit pin used by the checkout procedure. | `main`, `preview`, `abc1234` |
+| `WM_ROLE` | Required unless `/workspace/IDENTITY` exists | Role identity for the pod. | `mobile-app-dev`, `qa-release`, `design` |
+| `WM_EXPECTED_ROLE` | Recommended | Guardrail value that must match resolved role identity. | `qa-release` |
+| `/workspace/IDENTITY` | Alternative to `WM_ROLE` | First line contains the pod role. | `mobile-app-dev` |
+| `/workspace/CODEX_MANAGED_PATHS.md` | Required | Canonical managed-path registry. It must contain the managed path entry. | `- /workspace/new-mobile-app/` |
+| `CODEX_MANAGED_PATHS` | Optional script override | Use only for scripts that explicitly support it. Evidence must name the registry file checked. | `/workspace/CODEX_MANAGED_PATHS.md` |
+| `GITHUB_TOKEN` or `gh auth` | Required for private repo or PR work | GitHub auth material as secret/status only. | Secret value, never printed |
+
+`REPO_CLONE_URL` is a repo acquisition setting, not a mobile app runtime
+setting. If the repo already exists at `/workspace/new-mobile-app`, bootstrap
+may proceed without it. Private repository access should come from GitHub auth
+or a deploy secret, not from a token-bearing URL printed in logs.
+`/workspace/CODEX_MANAGED_PATHS.md` is the canonical registry. `CODEX_MANAGED_PATHS`
+may override the registry only for scripts that explicitly support it, and
+readiness evidence must name which registry file was checked.
+
+### Mobile Public Runtime Configuration
+
+These values become `EXPO_PUBLIC_*` entries for Expo. They are public client
+configuration compiled into the app bundle. They are not private, but they
+must never contain bearer tokens, passwords, signing keys, private endpoints,
+or other credentials.
+
+| Template Value | Runtime Env | What To Provide | Example |
+| --- | --- | --- | --- |
+| `APP_DISPLAY_NAME` | `EXPO_PUBLIC_APP_DISPLAY_NAME` | User-visible app name. | `Customer Mobile` |
+| `APP_SLUG` | `EXPO_PUBLIC_APP_SLUG` | Expo slug. | `customer-mobile` |
+| `APP_SCHEME` | `EXPO_PUBLIC_APP_SCHEME` | Deep link scheme. | `customermobile` |
+| `IOS_BUNDLE_IDENTIFIER` | `EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER` | iOS bundle identifier. | `com.customer.mobile` |
+| `ANDROID_PACKAGE` | `EXPO_PUBLIC_ANDROID_PACKAGE` | Android package/appId; also render `.maestro/home.yml` `appId`. | `com.customer.mobile` |
+| `API_URL` | `EXPO_PUBLIC_API_URL` | Public API base URL the app calls. | `https://api.customer.com` |
+
+Preview, release, and EAS job config fail when app display name, slug, scheme,
+API URL, iOS bundle identifier, or Android package are missing.
+Local-only placeholders such as `Mobile App Template` or `com.template.mobile`
+are not production/customer settings.
+
+### Expo And EAS Inputs
+
+| Key | Required When | What To Provide | Example |
+| --- | --- | --- | --- |
+| `EXPO_OWNER` | EAS project/account setup | Expo account or organization that owns the project. | `customer-org` |
+| `EAS_PROJECT_ID` | After `eas init` | EAS project UUID. Human owner runs `eas init`; Robot user does not own this step. | `00000000-0000-0000-0000-000000000000` |
+| `EXPO_TOKEN_SECRET_NAME` | EAS pod secret injection | Kubernetes Secret name referenced by pod manifests. | `clawpod-eas-qa-customer-mobile` |
+| `EXPO_TOKEN` | EAS CLI non-interactive auth | Expo Organization Robot user access token. Store only in Secret. | Secret value, never printed |
+
+`EXPO_TOKEN` may be delegated to agents only through Secret injection. Store
+account creation, billing, `eas init`, and production-risk decisions remain
+human-owned.
+
+### API And Railway Inputs
+
+These are required only when `apps/api` is part of the target setup or the pod
+must verify deployed backend reachability.
+
+| Key | Required When | What To Provide | Example |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | API runtime and migrations | PostgreSQL connection URL. Inject as secretRef/status-only, never plaintext. | `secretRef/status-only, apps/api only` |
+| `API_PORT` | API runtime override | API listen port. Default is `3000`. | `3000` |
+| `API_BEARER_TOKEN` | API runtime | Bearer token used by API auth checks. Inject as secretRef/status-only, never plaintext. | `secretRef/status-only, apps/api only` |
+| `RAILWAY_TOKEN` or `RAILWAY_API_TOKEN` | Railway CLI automation | Exactly one Railway auth token, if Railway operations are in scope. | `secretRef/status-only, Railway only` |
+| `RAILWAY_DOCKERFILE_PATH` | Railway API deployment | Dockerfile path for the API service. | `apps/api/Dockerfile` |
+| `RAILWAY_HEALTHCHECK_PATH` | Railway API deployment | Healthcheck path. | `/readyz` |
+
+Railway evidence may list project name, service name, deployment id, domain,
+health responses, exit status, and variable names. It must not include
+`DATABASE_URL`, `API_BEARER_TOKEN`, `RAILWAY_TOKEN`, or `RAILWAY_API_TOKEN`
+values.
+
+### Role-Specific External Inputs
+
+| Role | Input | When Needed | Handling |
+| --- | --- | --- | --- |
+| Design | Google Application Default Credentials and Stitch access | Before approved Stitch design handoff work | Mounted private file path or tool auth only; never inline ADC JSON. Verify with `stitch-adc-setup`; report status only. |
+| QA/Release | EAS CLI and `EXPO_TOKEN` presence | Before approved EAS/Maestro evidence run | Verify with `eas-robot-auth-setup`; report status only. |
+| QA/Release | Simulator/emulator/device or mobile-mcp path | Native evidence | Native readiness needs separate L2/L3 evidence, not just pod bootstrap. |
+| Release/Human owner | `EXPO_ASC_KEY_ID`, `EXPO_ASC_ISSUER_ID`, `.p8` private key | iOS submit | Human-owned; inject as EAS/k8s secrets, never commit files. |
+| Release/Human owner | Google Play service account JSON | Android submit after first manual upload | Human-owned; inject as secret file, never inline JSON. |
+
+Store account creation, agreements, billing, 2FA, payment cards, and first
+Google Play upload are human-only steps and must not be delegated to an agent.
+
+## Example Pod Handoff
+
+This is an example of the non-secret shape to provide to the OrbStack/OpenClaw
+operator. Replace placeholder values before use. Keep private values in the
+target secure store, not in committed files, chat, or command output.
+
+```bash
+# Non-secret repo and role config
+export REPO_PATH="/workspace/new-mobile-app"
+export REPO_CLONE_URL="https://github.com/acme/new-mobile-app.git"
+export REPO_REF="main"
+export WM_ROLE="qa-release"
+export WM_EXPECTED_ROLE="qa-release"
+export CODEX_MANAGED_PATHS="/workspace/CODEX_MANAGED_PATHS.md"
+export REPORT_PATH="/workspace/state/pod-role-bootstrap-report.json"
+
+# Public mobile app config; compiled into the app bundle
+export APP_DISPLAY_NAME="Customer Mobile"
+export APP_SLUG="customer-mobile"
+export APP_SCHEME="customermobile"
+export IOS_BUNDLE_IDENTIFIER="com.customer.mobile"
+export ANDROID_PACKAGE="com.customer.mobile"
+export API_URL="https://api.customer.com"
+
+# EAS and secret names
+export EXPO_OWNER="customer-org"
+export EAS_PROJECT_ID="00000000-0000-0000-0000-000000000000"
+export EXPO_TOKEN_SECRET_NAME="clawpod-eas-qa-customer-mobile"
+
+# API/Railway non-secret config, when apps/api is used
+export API_PORT="3000"
+export RAILWAY_DOCKERFILE_PATH="apps/api/Dockerfile"
+export RAILWAY_HEALTHCHECK_PATH="/readyz"
+```
+
+Credential inventory to create separately. These are labels and handling rules,
+not shell assignments:
+
+```text
+GITHUB_TOKEN: secretRef/tool-auth/status-only, never plaintext
+Codex auth: tool auth file/status-only, never print auth JSON
+EXPO_TOKEN: secretRef/status-only, never plaintext
+DATABASE_URL: secretRef/status-only, apps/api only
+API_BEARER_TOKEN: secretRef/status-only, apps/api only
+RAILWAY_TOKEN or RAILWAY_API_TOKEN: secretRef/status-only, Railway only
+Google ADC: mounted private file or gcloud ADC status-only, never inline JSON
+EXPO_ASC_KEY_ID: secretRef/status-only, iOS submit only
+EXPO_ASC_ISSUER_ID: secretRef/status-only, iOS submit only
+ASC_API_KEY: mounted private file, iOS submit only
+GOOGLE_SERVICE_ACCOUNT_KEY: mounted private file, Android submit only
+```
+
+Example managed path registry:
+
+```text
+# /workspace/CODEX_MANAGED_PATHS.md
+- /workspace/new-mobile-app/
+```
+
+Secret and ConfigMap rendering must stay separated by data class. Prefer a
+non-secret ConfigMap for public/mobile/bootstrap values and a Secret or tool
+auth path for private values. The current `infra/clawpod/secret.example.yaml`
+contains both `EXPO_TOKEN` and public `EXPO_PUBLIC_*` values for deployment
+convenience, so any rendered output from that file is private-material-bearing.
+
+Do not print rendered private-material-bearing manifests to chat, logs,
+evidence, or PR comments. Do not commit rendered manifests. If a human/ops owner
+renders one, they must do so from a trusted shell and record only key names,
+object names, exit status, and redacted status.
 
 ## Zero-To-Ready Sequence
 
 1. Pod ConfigMap and Secret material must exist before bootstrap starts.
    Secret values are never printed; reports use status only.
-2. Run `codex-cli-auth-setup` from `/workspace/skills/codex-cli-auth-setup/SKILL.md`
+2. Patch configuration through the correct channel. If pod-template variables
+   or references changed, rollout restart, wait for readiness, and discard or
+   re-source any old long-running sessions.
+3. Run read-only preflight and write
+   `${STATE_DIR:-/workspace/state}/bootstrap-preflight.json`. If any required
+   SoT file, skill directory, repo path, managed path entry, or credential
+   status check is missing, stop and request the missing artifact.
+4. Run `codex-cli-auth-setup` from `/workspace/skills/codex-cli-auth-setup/SKILL.md`
    to verify Codex CLI and auth readiness without printing secrets.
-3. Resolve role identity from `WM_ROLE` or `/workspace/IDENTITY`.
-4. Ensure the repo checkout exists at `/workspace/new-mobile-app`.
+5. Resolve role identity from `WM_ROLE` or `/workspace/IDENTITY`.
+6. Ensure the repo checkout exists at `${REPO_PATH:-/workspace/new-mobile-app}`.
    If it is missing, `REPO_CLONE_URL` must be provided by explicit pod config.
-5. Ensure `/workspace/CODEX_MANAGED_PATHS.md` contains the
-   `/workspace/new-mobile-app/` managed path entry. A pod is not ready for
-   Codex-managed repo work until that entry exists.
-6. Run `pod-role-bootstrap` from `/workspace/skills/pod-role-bootstrap/SKILL.md`.
-   It aligns `pnpm@9.15.9`, runs `pnpm install --frozen-lockfile`, runs
-   `node scripts/codex-preflight.mjs --pod --json`, and writes status only
-   evidence under `/workspace/state/`.
-7. Verify Codex MCP status from the checked-out repo using `.codex/config.toml`
+7. Ensure `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` contains
+   the normalized managed path entry for `${REPO_PATH:-/workspace/new-mobile-app}`.
+   A pod is not ready for Codex-managed repo work until that entry exists.
+8. Run `pod-role-bootstrap` from `/workspace/skills/pod-role-bootstrap/SKILL.md`.
+   It aligns pnpm using this source order: `package.json` `packageManager`,
+   confirmed against `PROJECT_ENVIRONMENT.md`, then `EXPECTED_PNPM_VERSION`
+   override only when explicitly source-backed. The current expected value is
+   `pnpm@9.15.9`. It then runs
+   `pnpm install --frozen-lockfile`, runs
+   `node scripts/codex-preflight.mjs --pod --json`, and writes status-only
+   evidence under `${STATE_DIR:-/workspace/state}` or the configured
+   `REPORT_PATH`.
+9. Verify Codex MCP status from the checked-out repo using `.codex/config.toml`
    as the pin source. Do not duplicate MCP versions in pod-local claims.
-8. Run role-specific checks when needed:
+10. Run role-specific checks when needed:
    - Design: `stitch-adc-setup` verifies Google ADC and Stitch MCP readiness.
    - QA/Release: `eas-robot-auth-setup` verifies EAS CLI and Expo robot auth
      readiness before any human-gated EAS/Maestro run.
+
+## Missing Or Blocked Criteria
+
+| Missing Condition | Required Action |
+| --- | --- |
+| Required SoT file is missing | Stop and request the missing repo artifact. Do not infer settings. |
+| Required pod-native skill directory is missing | Stop and request skill installation or the missing `/workspace/skills/<slug>` artifact. |
+| Repo path is missing | Clone only if non-secret `REPO_CLONE_URL` is explicitly configured; otherwise stop. |
+| Managed path entry is missing | Stop until the owner-approved `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` entry exists. |
+| Credential status is missing | Mark blocked or role-specific not applicable. Never work around by pasting plaintext credentials. |
+| Public Expo config is missing for preview, release, or EAS job config | Stop and request the missing public config value. Do not use template fallbacks for customer/release jobs. |
+| Role-specific capability is not needed | Record `not_applicable` with the role and source reason. |
+| Live external action is requested without approval | Stop until a `human-gate/v1` decision exists. |
+
+Role-specific `not_applicable` examples:
+
+| Role | Check | N/A When |
+| --- | --- | --- |
+| Product/Planning, Mobile Architect, Mobile App Dev, Backend/API Integrator | `eas-robot-auth-setup` | The work unit does not require EAS/Maestro evidence. |
+| Non-Design roles | `stitch-adc-setup` | The pod will not run Stitch design generation/export. |
+| Non-API work | `DATABASE_URL` and `API_BEARER_TOKEN` | `apps/api` is not used by the current work unit. |
+| Non-Railway work | Railway auth and Railway service paths | Railway deploy/log/health evidence is not in scope. |
+
+## Read-Only Preflight Commands
+
+Run these checks inside the configured pod or equivalent OrbStack workspace.
+The commands in this section are status checks only; they must not install
+dependencies, write repo-local result files, or prove external platform behavior.
+External platform behavior requires separate live evidence.
+
+```bash
+set -euo pipefail
+
+# Required source and skill presence
+REPO_PATH="${REPO_PATH:-/workspace/new-mobile-app}"
+REPO_PATH="${REPO_PATH%/}"
+MANAGED_PATH="${REPO_PATH}/"
+CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
+STATE_DIR="${STATE_DIR:-/workspace/state}"
+
+test -d "${REPO_PATH}"
+cd "${REPO_PATH}"
+test -f AGENTS.md
+test -f REPO_OPERATIONS.md
+test -f PROJECT_ENVIRONMENT.md
+test -f .codex/config.toml
+test -f docs/TEMPLATE_VARIABLES.md
+test -f docs/CREDENTIALS.md
+test -f mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+test -d mobile-app-dev-team/09-pod-native-openclaw-skills
+test -d /workspace/skills/codex-cli-auth-setup
+test -d /workspace/skills/pod-role-bootstrap
+grep -Fx -- "- ${MANAGED_PATH}" "${CODEX_MANAGED_PATHS}"
+
+# Role status
+test -n "${WM_ROLE:-}" || test -s /workspace/IDENTITY
+printf '%s\n' "${WM_ROLE:-$(head -n 1 /workspace/IDENTITY 2>/dev/null || true)}"
+
+# GitHub auth status only; do not store raw stdout/stderr as evidence
+gh auth status
+
+# Repo preflight without writing result files
+EXPECTED_PNPM_VERSION="$(
+  node -p "require('./package.json').packageManager.replace(/^pnpm@/, '')"
+)"
+node scripts/codex-preflight.mjs --pod --json --no-write
+
+# Codex MCP status only; do not store raw stdout/stderr as evidence
+codex mcp list
+```
+
+Do not store raw stdout/stderr from `gh`, `codex`, EAS, Stitch, or Railway
+status commands. Store only redacted summaries: command name, exit status, key
+names, object names, and status labels.
+
+Write the preflight result summary to
+`${STATE_DIR:-/workspace/state}/bootstrap-preflight.json` only after the
+read-only checks above have completed. The operator or wrapper that writes the
+summary creates `STATE_DIR`; the read-only command block above does not create
+directories. The file must contain no secret values.
+
+```json
+{
+  "schema": "bootstrap-preflight/v1",
+  "status": "pass | blocked",
+  "checked_at": "<iso-8601>",
+  "command": "read-only-preflight",
+  "result": {},
+  "blocker": "missing artifact or null",
+  "evidence_path": "${STATE_DIR:-/workspace/state}/bootstrap-preflight.json"
+}
+```
+
+Evidence may contain command names, exit statuses, key names, object names, and
+status labels. It must not contain token values, auth JSON, database URLs,
+bearer token values, private key material, raw stdout/stderr, or secret-bearing
+full config contents.
+
+## Bootstrap Execution Commands
+
+Run these only after the read-only preflight has no required blockers.
+
+```bash
+REPO_PATH="${REPO_PATH:-/workspace/new-mobile-app}"
+REPO_PATH="${REPO_PATH%/}"
+cd "${REPO_PATH}"
+EXPECTED_PNPM_VERSION="$(
+  node -p "require('./package.json').packageManager.replace(/^pnpm@/, '')"
+)"
+corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate
+pnpm install --frozen-lockfile
+node scripts/codex-preflight.mjs --pod --json
+```
+
+The final `codex-preflight` command writes repo-local status evidence by design.
+Do not run this block until missing SoT files, missing pod-native skills,
+missing managed path entries, and required credential-status blockers have been
+resolved or source-backed as role-specific `not_applicable`.
+
+For QA/Release EAS readiness:
+
+```bash
+bash /workspace/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh
+```
+
+For Design Stitch readiness:
+
+```bash
+bash /workspace/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh
+```
+
+## First Canary Evidence
+
+This document is a runbook, not proof that a pod is ready. First application of
+this runbook must target one canary pod only. Record separate redacted evidence
+for the canary before treating the process as a standard operating path.
+
+Required canary evidence:
+
+- redacted `${STATE_DIR:-/workspace/state}/bootstrap-preflight.json`;
+- rollout and readiness result when pod-template variables or references changed;
+- pod-internal read-only preflight result;
+- `pod-role-bootstrap` result;
+- role-specific check result, or source-backed `not_applicable` reason;
+- linked `human-gate/v1` decision before any live external action.
 
 ## Ready Definition
 
 A role pod is ready for repo work only when:
 
 - role identity is resolved;
-- `/workspace/new-mobile-app` exists;
-- `/workspace/CODEX_MANAGED_PATHS.md` contains `/workspace/new-mobile-app/`;
+- `${REPO_PATH:-/workspace/new-mobile-app}` exists;
+- `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` contains the
+  normalized managed path entry for `${REPO_PATH:-/workspace/new-mobile-app}`;
 - `pod-role-bootstrap` exits 0;
 - required role-specific pod-native checks either pass or are documented as
   not applicable;

@@ -15,6 +15,8 @@
 | `mobile-app-dev-team/14-native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
 | `mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
 | `mobile-app-dev-team/16-pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/new-mobile-app` and pod-native skills |
+| `mobile-app-dev-team/17-orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
+| `mobile-app-dev-team/18-orbstack-pod-config-setup-runbook-plan.md` | Current owner/operator setup plan with official external documentation URLs for missing pod values |
 | `mobile-app-dev-team/ref-organization/` | Reference organization reusable guidance, current-project examples, and migration crosswalk |
 | `mobile-app-dev-team/ref-organization/99-source-map-and-migration/old-to-new-crosswalk.md` | File-by-file migration plan from historical `team-doc/10-structured/**` identifiers into `ref-organization/`; source content is validated through root archive files |
 | `docs/plans/work-units/<work-unit-id>/` | Durable GitHub work-unit artifact root for role-pod handoff |
