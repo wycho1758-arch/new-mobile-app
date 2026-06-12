@@ -209,8 +209,10 @@ for (const relativePath of [
   `${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`,
   `${podRoleBootstrapSkillRoot}/references/report-template.md`,
   `${projectBootstrapSkillRoot}/SKILL.md`,
+  `${projectBootstrapSkillRoot}/scripts/project-bootstrap-agent-setup.sh`,
   `${projectBootstrapSkillRoot}/scripts/project-bootstrap-preflight.sh`,
   `${projectBootstrapSkillRoot}/references/report-template.md`,
+  'evals/skills/project-bootstrap-agent-setup-smoke.sh',
   `${easRobotAuthSetupSkillRoot}/SKILL.md`,
   `${easRobotAuthSetupSkillRoot}/scripts/eas-robot-auth-precheck.sh`,
   `${easRobotAuthSetupSkillRoot}/references/report-template.md`,
@@ -515,7 +517,12 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`, [
   'REPO_CLONE_URL',
   'gh auth status',
   '/workspace/CODEX_MANAGED_PATHS.md',
+  'managedPathsRegistry',
+  'missing ${CODEX_MANAGED_PATHS}',
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
+  'managed_path="${REPO_PATH%/}/"',
+  'grep -Fx -- "- ${managed_path}"',
+  'missing managed path entry for ${REPO_PATH}',
   'REPORT_PATH',
   '/workspace/state/pod-role-bootstrap-report.json',
   'corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate',
@@ -546,6 +553,7 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/references/report-template.md`, [
 ]);
 
 requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-bootstrap-preflight.sh', [
+  'project-bootstrap-agent-setup.sh',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
   'stitch-adc-setup',
@@ -571,18 +579,56 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   'human-gate/v1',
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
   '/workspace/CODEX_MANAGED_PATHS.md',
+  'derive the canonical role slug from the pod SOUL',
+  'Do not ask the user to choose a role slug',
+  'Do not ask the user to perform agent-owned setup',
+  'agent-owned setup before blocker report',
+  'register missing required MCPs',
+  'repair the managed-path registry',
+  'run role-specific status-only setup reports',
+  'agent must inspect and set up its own pod environment',
   'project-bootstrap-report.json',
 ]);
 
 requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guide.md`, [
   'Project Bootstrap Blocker Resolution Guide',
+  'Blocker Classification',
   'missing role identity',
   'pnpm-pin-mismatch',
   'git-identity-missing',
   'github-auth-unavailable',
   'codex-mcp-unavailable',
   'Agent/tool-use boundary',
+  'agent must set the identity itself',
+  'Do not ask the user to choose the role',
+  'Agent-owned setup actions',
+  'Agent-owned if approved source exists',
+  'Human-owned blockers',
   'Do not print token values',
+]);
+
+requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-agent-setup.sh`, [
+  'set -euo pipefail',
+  'project-bootstrap-agent-setup/v1',
+  'PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH',
+  'resolve_agent_role',
+  'repair_managed_path_registry',
+  'blocked_wrong_repo_path',
+  'register_mcp',
+  '@mobilenext/mobile-mcp@0.0.58',
+  'oraios/serena@v1.5.3',
+  'stitch-mcp@1.3.2',
+  'run_status_precheck',
+  'project-bootstrap-role.env',
+]);
+
+requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
+  'case_design_full_setup',
+  'case_wrong_repo_path_blocks_repair',
+  'case_missing_codex_orders_precheck',
+  'case_qa_role_report_generation',
+  'blocked_wrong_repo_path',
+  'project-bootstrap-agent-setup smoke passed',
 ]);
 
 requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [

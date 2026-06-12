@@ -8,11 +8,22 @@ description: Orchestrate WonderMove new-mobile-app setup inside an OpenClaw/OrbS
 Use this pod-native OpenClaw skill when an OrbStack `boram-*` role pod must be
 prepared for the WonderMove `new-mobile-app` repository before role work starts.
 This is an orchestration skill. It does not replace the role-specific pod skills.
+The agent must inspect and set up its own pod environment for non-secret,
+local, deterministic readiness items before asking the user for help. Do not ask
+the user to perform agent-owned setup such as role identity writing, managed
+path registry updates, status checks, local report directory creation, or
+repo-pinned non-secret config checks.
 
 Runtime shape:
 
 ```text
 /workspace/skills/project-bootstrap/SKILL.md
+```
+
+Primary setup script:
+
+```text
+/workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
 ```
 
 ## Safety Rules
@@ -61,9 +72,12 @@ copying unverified runtime files.
 
 ## Canonical Role Identity
 
-Use `SOUL.md` only to choose the role, then write the canonical runtime slug to
-pod identity. Do not write display titles or operating-role names such as
-`Mobile App Dev`, `Product/Planning`, `Design`, or `QA/Release` to `WM_ROLE`.
+The agent must derive the canonical role slug from the pod SOUL before the first
+preflight run, then write that slug to pod identity. Do not write display titles
+or operating-role names such as `Mobile App Dev`, `Product/Planning`, `Design`,
+or `QA/Release` to `WM_ROLE`. Do not ask the user to choose a role slug when a
+SOUL file, pod selector, or local role handoff already identifies the assigned
+role.
 
 | SOUL file | Canonical role slug |
 | --- | --- |
@@ -75,18 +89,28 @@ pod identity. Do not write display titles or operating-role names such as
 | `qa-release-soul.md` | `qa-release` |
 
 For the most reliable bootstrap path, set all role identity surfaces to the same
-canonical slug:
+canonical slug. This is non-secret setup work and should be done by the agent:
 
 ```bash
-export WM_ROLE="<canonical-role-slug>"
-export WM_EXPECTED_ROLE="<canonical-role-slug>"
-printf '%s\n' "<canonical-role-slug>" > /workspace/IDENTITY
+role_slug="<canonical-role-slug>"
+export WM_ROLE="${role_slug}"
+export WM_EXPECTED_ROLE="${role_slug}"
+printf '%s\n' "${role_slug}" > /workspace/IDENTITY
 ```
 
 `WM_ROLE` takes precedence over `/workspace/IDENTITY`. If both are configured,
 they must represent the same canonical role. `WM_EXPECTED_ROLE` is the supported
 guardrail for pod-native bootstrap scripts; do not rely on `EXPECTED_WM_ROLE`
 for this skill.
+
+If the pod does not contain any SOUL file, selector, or role handoff that lets
+the agent determine the role, keep `missing role identity` blocked and request a
+pod artifact refresh or role-source handoff. Do not convert that blocker into a
+question asking the user which role to pick.
+
+Do not ask the user to perform agent-owned setup. The agent must inspect and set
+up its own pod environment for non-secret role identity surfaces whenever the
+assigned role is already available from SOUL, selector, or handoff context.
 
 ## Workflow
 
@@ -100,7 +124,43 @@ export PROJECT_BOOTSTRAP_REPORT_PATH="/workspace/state/project-bootstrap-report.
 export PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="/workspace/state/project-bootstrap-blockers.md"
 ```
 
-2. Run the project readiness preflight:
+2. Resolve and apply agent-owned identity setup before preflight. Use the pod
+   SOUL, selector, or local role handoff to choose the canonical slug and write
+   it to every supported role surface. For a Product/Planning pod, the agent
+   must set this itself:
+
+```bash
+role_slug="product-planning"
+export WM_ROLE="${role_slug}"
+export WM_EXPECTED_ROLE="${role_slug}"
+printf '%s\n' "${role_slug}" > /workspace/IDENTITY
+```
+
+3. Run agent-owned setup before blocker report. This step performs only
+   non-secret, local, deterministic setup that the agent can do itself before
+   the user sees a blocker list:
+
+```bash
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
+```
+
+This script must:
+
+- repair the managed-path registry when the repo path is the known SoT path;
+- register missing required MCPs from repo-pinned non-secret commands;
+- run Codex CLI/auth status setup before `missing codex CLI` becomes terminal;
+- run role-specific status-only setup reports for Design and QA/Release when
+  their local setup skills exist;
+- write `/workspace/state/project-bootstrap-agent-setup-report.json`.
+
+The agent may source the generated role environment for the current shell before
+preflight:
+
+```bash
+source /workspace/state/project-bootstrap-role.env
+```
+
+4. Run the project readiness preflight:
 
 ```bash
 bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh
@@ -113,19 +173,19 @@ which actions the agent can perform with local tools/browser/MCP status checks
 versus which actions need user-owned credentials, account decisions, or
 `human-gate/v1`.
 
-3. If common blockers are absent, run Codex CLI/auth setup:
+5. If common blockers are absent, run Codex CLI/auth setup:
 
 ```bash
 bash /workspace/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh
 ```
 
-4. Run repo checkout/bootstrap:
+6. Run repo checkout/bootstrap:
 
 ```bash
 bash /workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh
 ```
 
-5. Re-run project readiness preflight after `pod-role-bootstrap` writes its
+7. Re-run project readiness preflight after `pod-role-bootstrap` writes its
 report. Then run role-specific checks when applicable:
 
 ```bash
@@ -136,7 +196,7 @@ bash /workspace/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh
 bash /workspace/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh
 ```
 
-6. Stop before any live external action unless a linked `human-gate/v1` approval
+8. Stop before any live external action unless a linked `human-gate/v1` approval
 exists for the exact action and evidence path.
 
 ## QC Checklist
@@ -152,7 +212,11 @@ exists for the exact action and evidence path.
   matrix README. These are recorded in the report as `repo_sot_files`.
 - `/workspace/CODEX_MANAGED_PATHS.md` contains the normalized repo path entry.
 - Required pod skills exist under `/workspace/skills`.
+- Agent-owned setup before blocker report has run and produced
+  `/workspace/state/project-bootstrap-agent-setup-report.json`.
 - Required MCPs are status-checked: `mobile-mcp`, `serena`, and `stitch`.
+- Missing required MCPs are registered from pinned repo SoT when Codex CLI is
+  available and no credential flow is required.
 - Conditional MCPs are checked when selected: `expo`, `atlassian`, `node_repl`,
   and `playwright`.
 - Conditional CLIs/accounts are checked status-only: Railway, gcloud/ADC/Stitch
@@ -172,6 +236,8 @@ exists for the exact action and evidence path.
 ## Done When
 
 - `/workspace/state/project-bootstrap-report.json` exists.
+- `/workspace/state/project-bootstrap-agent-setup-report.json` exists or is
+  source-backed not applicable for a pure read-only precheck.
 - Common blockers are empty or explicitly reported.
 - When common blockers exist,
   `/workspace/state/project-bootstrap-blockers.md` or
@@ -182,6 +248,22 @@ exists for the exact action and evidence path.
 - The report links or names the `pod-role-bootstrap`,
   `stitch-adc-setup`, and `eas-robot-auth-setup` reports when they are in scope.
 - No secret values or raw credential-bearing output are printed or persisted.
+
+## Agent-Owned Setup Contract
+
+The `project-bootstrap-agent-setup.sh` contract is intentionally narrow. It may
+set role identity, create state directories, repair the managed-path registry
+only for the canonical WonderMove repo path, register missing required MCPs from
+pinned repo configuration, and run role-specific status-only setup reports. It
+must not perform account creation,
+credential entry, branch protection changes, live deploys, EAS build/submit,
+Stitch generation/export, store submission, production release, or failed-gate
+risk acceptance.
+
+If a local setup action fails because a credential, account, cloud project,
+external authority, `human-gate/v1` approval, wrong repo path, or conflicting
+managed ownership is missing, keep that item as a blocker and include the
+blocker guide path in the report.
 
 See `references/report-template.md` for the expected report shape and
 `references/blocker-resolution-guide.md` for the blocker-resolution guide that
