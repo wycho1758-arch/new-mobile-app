@@ -225,6 +225,43 @@ evidence, or PR comments. Do not commit rendered manifests. If a human/ops owner
 renders one, they must do so from a trusted shell and record only key names,
 object names, exit status, and redacted status.
 
+### Operator Reference URLs
+
+These external references are operator aids only. They are not repo SoT, live
+pod evidence, or a substitute for `human-gate/v1` approval.
+
+- GitHub cloning a repository: https://docs.github.com/articles/cloning-a-repository
+- GitHub remote URL guidance: https://docs.github.com/en/get-started/git-basics/about-remote-repositories
+- Kubernetes ConfigMaps: https://kubernetes.io/docs/concepts/configuration/configmap/
+- Configure Pods with ConfigMaps: https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/
+- Kubernetes Secrets: https://kubernetes.io/docs/concepts/configuration/secret/
+- Kubernetes Deployments and rollout behavior: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+- `kubectl rollout`: https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/
+- `kubectl rollout restart`: https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_restart/
+- Expo environment variables: https://docs.expo.dev/guides/environment-variables/
+- EAS environment variables: https://docs.expo.dev/eas/environment-variables/
+- EAS overview: https://docs.expo.dev/eas/
+- Create first EAS build and initialize project: https://docs.expo.dev/build/setup/
+- EAS `projectId` behavior from `eas init`: https://docs.expo.dev/tutorial/eas/configure-development-build/
+- EAS CLI reference: https://docs.expo.dev/eas/cli/
+- Expo programmatic access: https://docs.expo.dev/accounts/programmatic-access/
+- Railway variables: https://docs.railway.com/variables
+- Railway CLI: https://docs.railway.com/cli
+- Railway variable command: https://docs.railway.com/cli/variable
+- Railway environments: https://docs.railway.com/cli/environment
+- How Application Default Credentials works: https://docs.cloud.google.com/docs/authentication/application-default-credentials
+- Set up Application Default Credentials: https://docs.cloud.google.com/docs/authentication/provide-credentials-adc
+- Google Cloud service accounts: https://docs.cloud.google.com/iam/docs/service-account-overview
+- Create Google Cloud service account keys: https://docs.cloud.google.com/iam/docs/keys-create-delete
+- Google Play Developer API service account setup: https://developers.google.com/android-publisher/getting_started
+- Apple App Store Connect API keys: https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api
+- Expo app credentials: https://docs.expo.dev/app-signing/app-credentials/
+- Expo iOS credentials: https://docs.expo.dev/app-signing/ios-credentials/
+- Expo Android credentials: https://docs.expo.dev/app-signing/android-credentials/
+- EAS Submit: https://docs.expo.dev/submit/introduction/
+- EAS Submit iOS: https://docs.expo.dev/submit/ios/
+- EAS Submit Android: https://docs.expo.dev/submit/android/
+
 ## Zero-To-Ready Sequence
 
 1. Pod ConfigMap and Secret material must exist before bootstrap starts.

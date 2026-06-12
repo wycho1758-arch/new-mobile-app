@@ -50,9 +50,9 @@ Use these verified sources for material decisions:
 | `mobile-app-dev-team/05-work-processes.md` | Current intake, design/API readiness, implementation, QA, and failure loop. |
 | `mobile-app-dev-team/06-gates-and-evidence.md` | Required gates, evidence rules, durable handoff, human gates. |
 | `mobile-app-dev-team/07-new-team-template-guide.md` | Existing new-team creation skeleton and validator-first expectation. |
-| `mobile-app-dev-team/09-pod-native-openclaw-skill-plan.md` | `/workspace/skills/<slug>/SKILL.md` pod-native OpenClaw skill boundary. |
+| `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md` | `/workspace/skills/<slug>/SKILL.md` pod-native OpenClaw skill boundary. |
 | `mobile-app-dev-team/10-github-artifact-workflow.md` | Pod-isolated GitHub branch/commit/PR work-unit handoff model. |
-| `mobile-app-dev-team/11-openclaw-codex-completion-hooks-plan.md` | `/workspace/codex-hooks` boundary and per-pod evidence limits. |
+| `mobile-app-dev-team/ref-organization/02-runtime-surfaces/pod-codex-completion-hooks.md` | `/workspace/codex-hooks` boundary and per-pod evidence limits. |
 | `mobile-app-dev-team/99-source-map.md` | Current/historical source crosswalk. |
 | `team-doc/10-structured/**` | Historical structured reference material to be migrated or rewritten later. |
 

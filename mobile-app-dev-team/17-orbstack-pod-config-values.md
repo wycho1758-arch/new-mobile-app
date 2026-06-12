@@ -14,8 +14,8 @@ this file.
 | Key | Current Value | Use | Source |
 | --- | --- | --- | --- |
 | `REPO_CLONE_URL` | `https://github.com/Wondermove-Inc/new-mobile-app.git` | Clone URL only when the repo is absent from the target pod. Must stay token-free. | `git remote get-url origin` |
-| `REPO_REF` | `feat/mobile-app-template` | Repeatable checkout branch for canary use when a commit pin is not required. | `git rev-parse --abbrev-ref HEAD` |
-| `REPO_COMMIT` | `ccff06faf01f8c553598a3cde7c997f69378f7d6` | Stronger repeatability pin for canary checkout. This is the current `HEAD` before uncommitted handoff doc changes; update after final commit if the pod must reproduce this document revision exactly. | `git rev-parse HEAD` |
+| `REPO_REF` | `docs/role-title-display-identity` | Repeatable checkout branch for canary use when a commit pin is not required. | `git rev-parse --abbrev-ref HEAD` |
+| `REPO_COMMIT` | `907d52b26fdd7ba959b59c597fb774f74828884e` | Stronger repeatability pin for canary checkout. This is the current committed `HEAD` before uncommitted doc cleanup changes; update after the final commit if the pod must reproduce this document revision exactly. | `git rev-parse HEAD` |
 | `REPO_PATH` | `/workspace/projects/Wondermove-Inc/new-mobile-app` | Default pod checkout path expected by bootstrap docs. Target pod may override it explicitly. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
 | `CODEX_MANAGED_PATHS` | `/workspace/CODEX_MANAGED_PATHS.md` | Default managed-path registry path. Target pod may override it only for scripts that support the override. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
 | Managed path entry | `- /workspace/projects/Wondermove-Inc/new-mobile-app/` | Owner-approved entry required before Codex-managed repo work. | `mobile-app-dev-team/16-pod-environment-bootstrap.md` |
@@ -86,3 +86,7 @@ canary handoff package, but it does not contain target-pod identity, live pod
 readiness, managed-path approval in the pod, `/workspace/skills` installation
 proof, `project-bootstrap` report proof, or credential status. Request those
 items from the owner/operator before running bootstrap.
+
+Use `16-pod-environment-bootstrap.md` as the active setup runbook for applying
+those values. It now carries the owner/operator reference URLs and first-canary
+evidence rules that supersede the earlier standalone setup plan.

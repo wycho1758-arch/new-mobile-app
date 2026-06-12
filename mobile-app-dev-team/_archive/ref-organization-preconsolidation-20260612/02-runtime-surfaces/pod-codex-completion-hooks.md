@@ -4,7 +4,8 @@ Status: current-project example
 Source class: reference
 Upstream SoT:
 
-- `mobile-app-dev-team/11-openclaw-codex-completion-hooks-plan.md`
+- `.codex/hooks/`
+- `.codex/hooks.json`
 - `mobile-app-dev-team/10-github-artifact-workflow.md`
 
 Downstream consumers:

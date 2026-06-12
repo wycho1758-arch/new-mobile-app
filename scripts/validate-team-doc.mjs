@@ -182,6 +182,7 @@ const projectBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/project-bootstr
 const easRobotAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/eas-robot-auth-setup`;
 const stitchAdcSetupSkillRoot = `${podNativeOpenClawSkillRoot}/stitch-adc-setup`;
 const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
+const completedPlanArchiveRoot = `${managedTeamDocRoot}/_archive`;
 
 for (const relativePath of [
   `${managedTeamDocRoot}/README.md`,
@@ -221,6 +222,50 @@ for (const relativePath of [
   `${stitchAdcSetupSkillRoot}/references/report-template.md`,
 ]) {
   if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: ${relativePath}`);
+}
+
+const completedPlanArchives = [
+  {
+    stalePath: `${managedTeamDocRoot}/08-role-title-update-plan.md`,
+    archivePath: `${completedPlanArchiveRoot}/08-role-title-update-plan.md`,
+    replacement: 'Display Title To Operating Role Crosswalk',
+  },
+  {
+    stalePath: `${managedTeamDocRoot}/09-pod-native-openclaw-skill-plan.md`,
+    archivePath: `${completedPlanArchiveRoot}/09-pod-native-openclaw-skill-plan.md`,
+    replacement: `${podNativeOpenClawSkillRoot}/`,
+  },
+  {
+    stalePath: `${managedTeamDocRoot}/11-openclaw-codex-completion-hooks-plan.md`,
+    archivePath: `${completedPlanArchiveRoot}/11-openclaw-codex-completion-hooks-plan.md`,
+    replacement: '.codex/hooks/',
+  },
+  {
+    stalePath: `${managedTeamDocRoot}/12-ref-organization-goal-plan.md`,
+    archivePath: `${completedPlanArchiveRoot}/12-ref-organization-goal-plan.md`,
+    replacement: `${refOrganizationRoot}/`,
+  },
+  {
+    stalePath: `${managedTeamDocRoot}/13-pod-organization-e2e-improvement-plan.md`,
+    archivePath: `${completedPlanArchiveRoot}/13-pod-organization-e2e-improvement-plan.md`,
+    replacement: '15-human-ops-live-readiness-annex.md',
+  },
+  {
+    stalePath: `${managedTeamDocRoot}/18-orbstack-pod-config-setup-runbook-plan.md`,
+    archivePath: `${completedPlanArchiveRoot}/18-orbstack-pod-config-setup-runbook-plan.md`,
+    replacement: '16-pod-environment-bootstrap.md',
+  },
+];
+
+for (const { stalePath, archivePath, replacement } of completedPlanArchives) {
+  if (exists(stalePath)) fail(`completed plan must be archived, not current top-level doc: ${stalePath}`);
+  if (!exists(archivePath)) fail(`missing archived completed plan: ${archivePath}`);
+  if (managedSkillMatrix && !read(`${managedTeamDocRoot}/99-source-map.md`).includes(archivePath)) {
+    fail(`source map missing completed plan archive entry: ${archivePath}`);
+  }
+  if (managedSkillMatrix && !read(`${managedTeamDocRoot}/99-source-map.md`).includes(replacement)) {
+    fail(`source map missing completed plan replacement crosswalk for ${archivePath}: ${replacement}`);
+  }
 }
 
 requireRootTerms('AGENTS.md', [
@@ -701,47 +746,20 @@ const refOrganizationSections = [
   '99-source-map-and-migration',
 ];
 
-for (const relativePath of [
+const refOrganizationRequiredFiles = [
   `${refOrganizationRoot}/README.md`,
   ...refOrganizationSections.map((section) => `${refOrganizationRoot}/${section}/README.md`),
-  `${refOrganizationRoot}/00-orientation-and-sot/current-project-vs-template.md`,
-  `${refOrganizationRoot}/00-orientation-and-sot/purpose.md`,
-  `${refOrganizationRoot}/00-orientation-and-sot/sot-priority.md`,
-  `${refOrganizationRoot}/02-runtime-surfaces/repo-local-codex-runtime.md`,
-  `${refOrganizationRoot}/02-runtime-surfaces/pod-native-openclaw-skills.md`,
-  `${refOrganizationRoot}/02-runtime-surfaces/pod-codex-completion-hooks.md`,
-  `${refOrganizationRoot}/02-runtime-surfaces/computer-use-and-tool-surfaces.md`,
-  `${refOrganizationRoot}/01-organization-model/team-shape.md`,
-  `${refOrganizationRoot}/01-organization-model/role-boundaries.md`,
-  `${refOrganizationRoot}/01-organization-model/gatekeeper-model.md`,
-  `${refOrganizationRoot}/03-role-contracts-and-capabilities/role-soul-template.md`,
-  `${refOrganizationRoot}/03-role-contracts-and-capabilities/role-capability-matrix.md`,
-  `${refOrganizationRoot}/03-role-contracts-and-capabilities/handoff-responsibilities.md`,
-  `${refOrganizationRoot}/04-workflows-and-handoffs/lifecycle-workflow.md`,
-  `${refOrganizationRoot}/04-workflows-and-handoffs/durable-github-work-unit.md`,
-  `${refOrganizationRoot}/04-workflows-and-handoffs/scenario-overlays-a-h.md`,
-  `${refOrganizationRoot}/04-workflows-and-handoffs/failure-loop.md`,
-  `${refOrganizationRoot}/05-skills-agents-and-tools/active-skill-agent-policy.md`,
-  `${refOrganizationRoot}/05-skills-agents-and-tools/skill-placement-policy.md`,
-  `${refOrganizationRoot}/05-skills-agents-and-tools/reviewer-researcher-boundaries.md`,
-  `${refOrganizationRoot}/05-skills-agents-and-tools/optional-tool-adoption.md`,
-  `${refOrganizationRoot}/06-gates-evidence-and-audit/required-gates.md`,
-  `${refOrganizationRoot}/06-gates-evidence-and-audit/evidence-rules.md`,
-  `${refOrganizationRoot}/06-gates-evidence-and-audit/human-gates.md`,
-  `${refOrganizationRoot}/06-gates-evidence-and-audit/audit-index.md`,
-  `${refOrganizationRoot}/07-repo-template-and-runtime/repo-target-tree.md`,
-  `${refOrganizationRoot}/07-repo-template-and-runtime/mobile-runtime.md`,
-  `${refOrganizationRoot}/07-repo-template-and-runtime/optional-api.md`,
-  `${refOrganizationRoot}/07-repo-template-and-runtime/ci-eas-railway.md`,
-  `${refOrganizationRoot}/08-new-organization-template/create-new-team-guide.md`,
-  `${refOrganizationRoot}/08-new-organization-template/variable-map.md`,
-  `${refOrganizationRoot}/08-new-organization-template/checklist.md`,
-  `${refOrganizationRoot}/99-source-map-and-migration/source-priority.md`,
-  `${refOrganizationRoot}/99-source-map-and-migration/historical-vs-active.md`,
-  `${refOrganizationRoot}/99-source-map-and-migration/old-to-new-crosswalk.md`,
-  `${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`,
-]) {
+];
+
+for (const relativePath of refOrganizationRequiredFiles) {
   if (!exists(relativePath)) fail(`missing ref-organization checkpoint document: ${relativePath}`);
+}
+
+const refOrganizationMarkdownFiles = listFiles(refOrganizationRoot, (file) => file.endsWith('.md'));
+if (refOrganizationMarkdownFiles.length !== refOrganizationRequiredFiles.length) {
+  fail(
+    `ref-organization must stay consolidated to ${refOrganizationRequiredFiles.length} markdown files; found ${refOrganizationMarkdownFiles.length}`
+  );
 }
 
 const refOrganizationStatusTerms = [
@@ -760,7 +778,7 @@ const allowedRefOrganizationStatuses = new Set([
   'active current SoT mirror',
 ]);
 
-for (const relativePath of listFiles(refOrganizationRoot, (file) => file.endsWith('.md'))) {
+for (const relativePath of refOrganizationMarkdownFiles) {
   const body = read(relativePath);
   const topLines = body.split('\n').slice(0, 40).join('\n');
   for (const term of refOrganizationStatusTerms) {
@@ -789,7 +807,7 @@ for (const relativePath of listFiles(refOrganizationRoot, (file) => file.endsWit
   }
 }
 
-const refOrganizationCrosswalk = `${refOrganizationRoot}/99-source-map-and-migration/old-to-new-crosswalk.md`;
+const refOrganizationCrosswalk = `${refOrganizationRoot}/99-source-map-and-migration/README.md`;
 if (exists(refOrganizationCrosswalk)) {
   const body = read(refOrganizationCrosswalk);
   const allowedCrosswalkStatuses = new Set([
@@ -839,7 +857,7 @@ if (exists(refOrganizationCrosswalk)) {
   }
 }
 
-requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`, [
+requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/README.md`, [
   'Last reviewed date',
   'computer-use/tool surfaces',
   'owner role or routing owner',
@@ -852,7 +870,7 @@ requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/validator-re
   'do not enumerate the live',
 ]);
 
-requireNoDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/validator-requirements.md`, [
+requireNoDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/README.md`, [
   'find team-doc/10-structured',
 ]);
 
@@ -866,7 +884,7 @@ requireNoDocTerms(refOrganizationCrosswalk, [
   'find team-doc/10-structured',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/repo-local-codex-runtime.md`, [
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/README.md`, [
   '.agents/skills/<skill-name>/SKILL.md',
   '.codex/agents/<agent-name>.toml',
   '.codex/hooks.json',
@@ -877,7 +895,7 @@ requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/repo-local-codex-run
   'not `/workspace/codex-hooks`',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/purpose.md`, [
+requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/README.md`, [
   'reusable reference-organization',
   'current WonderMove mobile project',
   'TEAM_DOC_ARCHIVE_MANIFEST.json',
@@ -886,7 +904,7 @@ requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/purpose.md`, [
   'future organizations',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/sot-priority.md`, [
+requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/README.md`, [
   'AGENTS.md',
   'PROJECT_ENVIRONMENT.md',
   '.agents/skills',
@@ -896,7 +914,7 @@ requireDocTerms(`${refOrganizationRoot}/00-orientation-and-sot/sot-priority.md`,
   'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-native-openclaw-skills.md`, [
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/README.md`, [
   '/workspace/skills/<slug>/SKILL.md',
   'mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
   'pod-native OpenClaw',
@@ -904,7 +922,7 @@ requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-native-openclaw-
   'source-only',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-codex-completion-hooks.md`, [
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/README.md`, [
   '/workspace/codex-hooks',
   'not `/workspace/skills/<slug>/SKILL.md`',
   'not `.codex/hooks`',
@@ -912,7 +930,7 @@ requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/pod-codex-completion
   'local repo/source validation does not prove actual OpenClaw system event delivery',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/computer-use-and-tool-surfaces.md`, [
+requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/README.md`, [
   'computer-use/tool surfaces',
   'owner role or routing owner',
   'allowed use cases',
@@ -921,7 +939,7 @@ requireDocTerms(`${refOrganizationRoot}/02-runtime-surfaces/computer-use-and-too
   'not a repo-local Codex artifact unless a SoT says so',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/01-organization-model/team-shape.md`, [
+requireDocTerms(`${refOrganizationRoot}/01-organization-model/README.md`, [
   'Display Title',
   'Operating Role',
   '6 LLM roles plus 1 non-LLM deterministic Gatekeeper',
@@ -930,7 +948,7 @@ requireDocTerms(`${refOrganizationRoot}/01-organization-model/team-shape.md`, [
   'non-LLM deterministic gates separately',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/01-organization-model/role-boundaries.md`, [
+requireDocTerms(`${refOrganizationRoot}/01-organization-model/README.md`, [
   'Product/Planning',
   'Design',
   'Mobile Architect',
@@ -942,7 +960,7 @@ requireDocTerms(`${refOrganizationRoot}/01-organization-model/role-boundaries.md
   'read-only reviewer',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/01-organization-model/gatekeeper-model.md`, [
+requireDocTerms(`${refOrganizationRoot}/01-organization-model/README.md`, [
   'Release Gatekeeper (System)',
   'non-LLM',
   'deterministic',
@@ -951,7 +969,7 @@ requireDocTerms(`${refOrganizationRoot}/01-organization-model/gatekeeper-model.m
   'cannot accept failed-gate risk',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/role-soul-template.md`, [
+requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/README.md`, [
   'Display Title',
   'Operating Role',
   'Authority Level',
@@ -965,7 +983,7 @@ requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/role-
   'Gatekeeper does not inherit this template',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/role-capability-matrix.md`, [
+requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/README.md`, [
   'Can Do',
   'Produces',
   'Must Handoff To',
@@ -983,7 +1001,7 @@ requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/role-
   'docs/plans/work-units/<work-unit-id>/',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/handoff-responsibilities.md`, [
+requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/README.md`, [
   'owner',
   'input artifact',
   'output artifact',
@@ -994,7 +1012,7 @@ requireDocTerms(`${refOrganizationRoot}/03-role-contracts-and-capabilities/hando
   'docs/plans/work-units/<work-unit-id>/',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/lifecycle-workflow.md`, [
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/README.md`, [
   'Intake And Planning',
   'Design Readiness',
   'API Readiness',
@@ -1005,7 +1023,7 @@ requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/lifecycle-work
   'docs/plans/work-units/<work-unit-id>/',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/durable-github-work-unit.md`, [
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/README.md`, [
   'GitHub branch/commit/PR',
   'docs/plans/work-units/<work-unit-id>/',
   'status: required | not-applicable | deferred/non-goal',
@@ -1023,7 +1041,7 @@ requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/durable-github
   '.evidence/local/',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/scenario-overlays-a-h.md`, [
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/README.md`, [
   'Case A',
   'Case B',
   'Case C',
@@ -1037,7 +1055,7 @@ requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/scenario-overl
   'current SoT',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/failure-loop.md`, [
+requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/README.md`, [
   'Failed check remains failed',
   'wm-gate-fix-advisor',
   'owning implementation workflow',
@@ -1047,7 +1065,7 @@ requireDocTerms(`${refOrganizationRoot}/04-workflows-and-handoffs/failure-loop.m
   'failed-gate risk acceptance',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/active-skill-agent-policy.md`, [
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/README.md`, [
   'actual `.agents/skills` directory',
   'active repo-local skill',
   'legacy mobile-* agents',
@@ -1055,7 +1073,7 @@ requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/active-skill-
   'repo skills remain authoritative',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/skill-placement-policy.md`, [
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/README.md`, [
   '.agents/skills/<skill-name>/SKILL.md',
   '/workspace/skills/<slug>/SKILL.md',
   '/workspace/codex-hooks',
@@ -1063,7 +1081,7 @@ requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/skill-placeme
   'not a repo-local Codex artifact unless a SoT says so',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/reviewer-researcher-boundaries.md`, [
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/README.md`, [
   'read-only',
   'source references',
   'must not recursively delegate',
@@ -1071,7 +1089,7 @@ requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/reviewer-rese
   'must not approve failed gates',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/optional-tool-adoption.md`, [
+requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/README.md`, [
   'optional',
   'recurring process gap',
   'SoT',
@@ -1079,7 +1097,7 @@ requireDocTerms(`${refOrganizationRoot}/05-skills-agents-and-tools/optional-tool
   'human gate',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/required-gates.md`, [
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/README.md`, [
   'pnpm run validate:team-doc',
   'pnpm run test:runtime',
   'pnpm turbo run lint test',
@@ -1091,7 +1109,7 @@ requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/required-gat
   'Release Gatekeeper (System)',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/evidence-rules.md`, [
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/README.md`, [
   'Done requires linked artifacts',
   'canonical evidence',
   '.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/',
@@ -1101,7 +1119,7 @@ requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/evidence-rul
   '.evidence/local/',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/human-gates.md`, [
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/README.md`, [
   'Production submit',
   'Payment',
   'PII',
@@ -1112,7 +1130,7 @@ requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/human-gates.
   'Accepting risk after a failed gate',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/audit-index.md`, [
+requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/README.md`, [
   'historical evidence',
   'current evidence',
   'source map',
@@ -1121,7 +1139,7 @@ requireDocTerms(`${refOrganizationRoot}/06-gates-evidence-and-audit/audit-index.
   'local validation does not prove actual OpenClaw pod execution',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/repo-target-tree.md`, [
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/README.md`, [
   'apps/mobile',
   'apps/api',
   'packages/contracts',
@@ -1131,7 +1149,7 @@ requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/repo-target
   'future organizations may have different repo layouts',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/mobile-runtime.md`, [
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/README.md`, [
   'Expo SDK 56',
   'React Native',
   'NativeWind',
@@ -1140,7 +1158,7 @@ requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/mobile-runt
   'current-project example',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/optional-api.md`, [
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/README.md`, [
   'apps/api',
   'packages/contracts',
   'single source of truth',
@@ -1150,7 +1168,7 @@ requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/optional-ap
   'optional',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/ci-eas-railway.md`, [
+requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/README.md`, [
   'quality gate',
   'pnpm run test:runtime',
   'pnpm turbo run lint test',
@@ -1160,7 +1178,7 @@ requireDocTerms(`${refOrganizationRoot}/07-repo-template-and-runtime/ci-eas-rail
   'does not prove full mobile release readiness',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/create-new-team-guide.md`, [
+requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/README.md`, [
   'Freeze Source Inputs',
   'Define Team Shape',
   'Write Role SOUL.md Files',
@@ -1171,7 +1189,7 @@ requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/create-new-
   'Reviewer(xhigh)',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/variable-map.md`, [
+requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/README.md`, [
   'organization_name',
   'repo_root',
   'managed_docs_root',
@@ -1181,7 +1199,7 @@ requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/variable-ma
   'evidence_paths',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/checklist.md`, [
+requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/README.md`, [
   'Source inputs frozen',
   'Runtime surfaces separated',
   'Roles and gates separated',
@@ -1190,7 +1208,7 @@ requireDocTerms(`${refOrganizationRoot}/08-new-organization-template/checklist.m
   'Validation commands passed',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/source-priority.md`, [
+requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/README.md`, [
   'AGENTS.md',
   'PROJECT_ENVIRONMENT.md',
   '.agents/skills',
@@ -1200,7 +1218,7 @@ requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/source-prior
   'TEAM_DOC_ARCHIVE_BUNDLE.jsonl',
 ]);
 
-requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/historical-vs-active.md`, [
+requireDocTerms(`${refOrganizationRoot}/99-source-map-and-migration/README.md`, [
   'active current SoT',
   'historical source',
   'current-project example',
@@ -1219,9 +1237,23 @@ requireDocTerms(`${managedTeamDocRoot}/README.md`, [
 requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
   'ref-organization',
   '12-ref-organization-goal-plan.md',
-  'old-to-new-crosswalk.md',
+  '99-source-map-and-migration/README.md',
   '16-pod-environment-bootstrap.md',
+  'Display Title To Operating Role Crosswalk',
+  'Chief Product Officer (CPO) / Product Delivery Lead',
+  'Mobile Architect / Technical Lead',
+  'Operating Role',
 ]);
+
+for (const match of read(`${managedTeamDocRoot}/99-source-map.md`).matchAll(/`([^`]*ref-organization\/[^`]+\.md)`/g)) {
+  const sourceMapPath = match[1];
+  const repoRelativePath = sourceMapPath.startsWith(`${managedTeamDocRoot}/`)
+    ? sourceMapPath
+    : `${managedTeamDocRoot}/${sourceMapPath}`;
+  if (!exists(repoRelativePath)) {
+    fail(`source map references missing ref-organization markdown path: ${sourceMapPath}`);
+  }
+}
 
 requireDocTerms(`${managedTeamDocRoot}/01-team-composition.md`, [
   '6 LLM roles plus 1 non-LLM deterministic Gatekeeper',
@@ -1246,13 +1278,13 @@ forbidDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
   'Do not invent OpenClaw skill names or package contracts in this document set',
 ]);
 
-requireDocTerms(`${managedTeamDocRoot}/08-role-title-update-plan.md`, [
+requireDocTerms(`${completedPlanArchiveRoot}/08-role-title-update-plan.md`, [
   'Chief Product Officer (CPO) / Product Delivery Lead',
   'Operating Role',
   'Do not use CTO as a runtime role, agent, fixture, SOUL identity, H1, or filename',
 ]);
 
-forbidDocTerms(`${managedTeamDocRoot}/08-role-title-update-plan.md`, [
+forbidDocTerms(`${managedTeamDocRoot}/01-team-composition.md`, [
   'CTO / Mobile Technical Lead',
   '# CTO / Mobile Technical Lead SOUL.md',
 ]);
