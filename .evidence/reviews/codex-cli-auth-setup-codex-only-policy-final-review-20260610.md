@@ -11,7 +11,7 @@ GO
 
 No Critical/High/Medium findings.
 
-The completed work matches the approved scope and user request. The skill documents the agent-neutral AGENTS.md policy using `this agent`, references `/workspace/CODEX_MANAGED_PATHS.md`, defaults to `/workspace/codex-hooks/codex-run`, and sets the GitHub checkout/managed path to `/workspace/new-mobile-app/`.
+The completed work matches the approved scope and user request. The skill documents the agent-neutral AGENTS.md policy using `this agent`, references `/workspace/CODEX_MANAGED_PATHS.md`, defaults to `/workspace/codex-hooks/codex-run`, and sets the GitHub checkout/managed path to `/workspace/projects/Wondermove-Inc/new-mobile-app/`.
 
 The validator has the planned positive assertions and rejects named Boram policy-subject forms, including a regex for `Boram` with MUST/SHOULD at policy-subject position.
 

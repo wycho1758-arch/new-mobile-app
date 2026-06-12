@@ -1594,7 +1594,7 @@ exec
     66	agent-neutral and describe `this agent`, `assistant`, or `the agent`, not a
     67	specific personal name. Codex-managed paths are listed in
     68	`/workspace/CODEX_MANAGED_PATHS.md`, and the repository checkout path for this
-    69	project is `/workspace/new-mobile-app/`. The default Codex hook wrapper is
+    69	project is `/workspace/projects/Wondermove-Inc/new-mobile-app/`. The default Codex hook wrapper is
     70	`/workspace/codex-hooks/codex-run` when available.
     71
     72	Do not print or commit auth tokens, API keys, OAuth tokens, refresh tokens,

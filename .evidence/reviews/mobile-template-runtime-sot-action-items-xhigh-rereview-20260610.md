@@ -65,7 +65,7 @@ GO. The prior NO_GO findings are resolved for the refreshed report as a planning
     {
       "command": "source review: prior MEDIUM finding, canonical pod checkout path",
       "status": "PASS",
-      "evidence": "Target uses `/workspace/new-mobile-app/` in the section 3 gap table, B2, and B6 at .evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:49, :87, and :91. REPO_OPERATIONS.md defines that canonical checkout path at REPO_OPERATIONS.md:83 through :90."
+      "evidence": "Target uses `/workspace/projects/Wondermove-Inc/new-mobile-app/` in the section 3 gap table, B2, and B6 at .evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:49, :87, and :91. REPO_OPERATIONS.md defines that canonical checkout path at REPO_OPERATIONS.md:83 through :90."
     },
     {
       "command": "source review: snapshot caveat",

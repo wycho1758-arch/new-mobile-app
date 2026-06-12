@@ -65,7 +65,7 @@
     },
     {
       "severity": "MEDIUM",
-      "summary": "Category B uses `/workspace/repo/new-mobile-app`, which conflicts with the current canonical Codex-managed checkout path `/workspace/new-mobile-app/`.",
+      "summary": "Category B uses `/workspace/repo/new-mobile-app`, which conflicts with the current canonical Codex-managed checkout path `/workspace/projects/Wondermove-Inc/new-mobile-app/`.",
       "source_refs": [
         ".evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:86",
         ".evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:90",
@@ -92,7 +92,7 @@
     {
       "command": "source review: Category B repo constraints",
       "status": "FAIL",
-      "evidence": "No secret values or customer identifiers were found in Category B, but B2 uses /workspace/repo/new-mobile-app while current root policy and codex-cli-auth-setup require /workspace/new-mobile-app/."
+      "evidence": "No secret values or customer identifiers were found in Category B, but B2 uses /workspace/repo/new-mobile-app while current root policy and codex-cli-auth-setup require /workspace/projects/Wondermove-Inc/new-mobile-app/."
     },
     {
       "command": "source review: boram measurement internal consistency",

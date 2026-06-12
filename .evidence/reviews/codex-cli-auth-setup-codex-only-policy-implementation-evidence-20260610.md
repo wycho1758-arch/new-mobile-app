@@ -30,7 +30,7 @@ Observed non-secret state:
 - `/workspace/AGENTS.md` uses `this agent MUST use Codex CLI as the execution engine`.
 - `/workspace/AGENTS.md` references `/workspace/CODEX_MANAGED_PATHS.md`.
 - `/workspace/AGENTS.md` defaults to `/workspace/codex-hooks/codex-run` when available.
-- `/workspace/CODEX_MANAGED_PATHS.md` currently contains examples only and does not include `/workspace/new-mobile-app/`.
+- `/workspace/CODEX_MANAGED_PATHS.md` currently contains examples only and does not include `/workspace/projects/Wondermove-Inc/new-mobile-app/`.
 - No git worktree under `/workspace` was observed during `find /workspace -maxdepth 4 -name .git`.
 
 Boundary: these observations describe the current boram-* pod state only. They do not prove other OpenClaw agents or future pods are configured.
@@ -43,16 +43,16 @@ After adding validator assertions and before updating the skill document, `pnpm 
 - `this agent MUST use Codex CLI as the execution engine`
 - `/workspace/CODEX_MANAGED_PATHS.md`
 - `/workspace/codex-hooks/codex-run`
-- `/workspace/new-mobile-app/`
+- `/workspace/projects/Wondermove-Inc/new-mobile-app/`
 - `Project path`
 
 ## Implementation summary
 
-- Added positive validator assertions requiring the codex-cli-auth-setup skill to document the OpenClaw AGENTS.md Codex-only repo policy, managed paths registry, hook wrapper, and `/workspace/new-mobile-app/` project path.
+- Added positive validator assertions requiring the codex-cli-auth-setup skill to document the OpenClaw AGENTS.md Codex-only repo policy, managed paths registry, hook wrapper, and `/workspace/projects/Wondermove-Inc/new-mobile-app/` project path.
 - Added forbidden-term checks for `Boram MUST`, `Boram must`, `Boram SHOULD`, and `Boram should`.
 - Added an explicit regex validator that fails if the skill uses `Boram` as the policy subject with MUST/SHOULD wording.
 - Added a new skill section with agent-neutral AGENTS.md guidance using `this agent`.
-- Added project path setup guidance that requires the GitHub repository checkout path and CODEX-managed path entry to be `/workspace/new-mobile-app/`.
+- Added project path setup guidance that requires the GitHub repository checkout path and CODEX-managed path entry to be `/workspace/projects/Wondermove-Inc/new-mobile-app/`.
 
 ## Verification
 
