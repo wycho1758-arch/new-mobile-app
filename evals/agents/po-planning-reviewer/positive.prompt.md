@@ -1,0 +1,1 @@
+Review this Product/Planning PRD-to-execution packet for scope discipline, task completeness, owner handoff boundaries, evidence links, and human-gate handling. Return findings-first prose and one machine-readable reviewer JSON envelope at the end. Do not edit files or mark failed gates as passed.

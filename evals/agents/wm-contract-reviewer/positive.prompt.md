@@ -1,0 +1,1 @@
+Review this wm-scoped API contract diff for packages/contracts SoT usage, schema drift, auth/session behavior, mock-vs-real alignment, source-cited findings, and owner handoff. Return findings-first prose and one machine-readable reviewer JSON envelope at the end. Do not edit files or mark failed gates as passed.

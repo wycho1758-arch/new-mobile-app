@@ -1,0 +1,28 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-mobile-dev-blocked-prereq",
+  "stage": "04-mobile-app",
+  "state": "planned",
+  "owner_role": "Mobile App Dev",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "wm-implementation-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [],
+  "handoff": {
+    "next_role": "QA/Release",
+    "next_artifact": "docs/plans/work-units/resolver-mobile-dev-blocked-prereq/05-qa-release/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "created"
+    }
+  ]
+}

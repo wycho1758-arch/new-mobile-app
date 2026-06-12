@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Product/Planning intake received a change request during active work: add partner invite-link expiry and auto-refund behavior to the current tournament registration slice. Classify whether this is within approved scope, a scope change, a human gate, or a non-goal before creating any update packet.

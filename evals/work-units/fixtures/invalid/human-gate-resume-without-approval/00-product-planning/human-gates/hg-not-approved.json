@@ -1,0 +1,19 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-not-approved",
+  "category": "failed-gate-risk",
+  "decision": "deferred",
+  "scope": "Invalid because in-progress resume requires approved decision.",
+  "decided_by": {
+    "name": "Taylor Kim",
+    "contact": "https://github.com/example-user",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/101#issuecomment-2006",
+  "decided_at": "2026-06-10T00:09:00.000Z",
+  "failed_check_reference": "https://github.com/example/mobile-app-template/actions/runs/2006/job/3006",
+  "residual_risk": [],
+  "evidence_links": [
+    ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md"
+  ]
+}

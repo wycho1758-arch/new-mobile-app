@@ -1,0 +1,26 @@
+{
+  "name": "pod mode skips gracefully without pod markers",
+  "mode": "pod",
+  "platform": "darwin",
+  "unameMachine": "arm64",
+  "env": {},
+  "files": {
+    "workspaceIdentity": "",
+    "codexConfigToml": true
+  },
+  "commands": {
+    "nodeVersion": { "status": 0, "stdout": "v22.22.2\n", "stderr": "" },
+    "pnpmVersion": { "status": 0, "stdout": "9.15.9\n", "stderr": "" },
+    "whichCodex": { "status": 1, "stdout": "", "stderr": "" },
+    "gitUserName": { "status": 1, "stdout": "", "stderr": "" },
+    "gitUserEmail": { "status": 1, "stdout": "", "stderr": "" },
+    "ghAuthStatus": { "status": 1, "stdout": "", "stderr": "" },
+    "chromiumPath": { "status": 1, "stdout": "", "stderr": "" },
+    "codexMcpList": { "status": 1, "stdout": "", "stderr": "" }
+  },
+  "candidates": [],
+  "expected": {
+    "status": "skipped",
+    "reason": "pod-markers-not-found"
+  }
+}

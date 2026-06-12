@@ -1,0 +1,25 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-reviewer-failed",
+  "current_stage": "04-mobile-app",
+  "current_state": "review-needed",
+  "owner_role": "Mobile App Dev",
+  "allowed_actions": [
+    "address-review-findings"
+  ],
+  "blocked_reasons": [
+    "reviewer-failed"
+  ],
+  "required_reviewer": {
+    "agent": "wm-implementation-reviewer",
+    "status": "failed",
+    "evidence": ".evidence/reviews/resolver-reviewer-failed-xhigh.md"
+  },
+  "required_human_gate": [],
+  "next_role": "Mobile App Dev",
+  "next_artifact": "docs/plans/work-units/resolver-reviewer-failed/04-mobile-app/README.md",
+  "evidence_required": [
+    "review-fix-evidence"
+  ],
+  "gatekeeper_mode": null
+}

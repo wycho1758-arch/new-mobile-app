@@ -1,0 +1,18 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-scope",
+  "category": "irreversible-scope-tradeoff",
+  "decision": "approved",
+  "scope": "Allow the bounded mobile implementation to continue after human scope review.",
+  "decided_by": {
+    "name": "Human Product Owner",
+    "contact": "product-owner@example.com",
+    "channel": "GitHub"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/issues/101#issuecomment-12345",
+  "decided_at": "2026-06-11T00:10:00.000Z",
+  "residual_risk": [],
+  "evidence_links": [
+    "docs/plans/work-units/resolver-human-gate-approved/00-product-planning/human-gates.md"
+  ]
+}

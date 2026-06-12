@@ -1,0 +1,33 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-reviewer-passed",
+  "stage": "00-product-planning",
+  "state": "review-needed",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "po-planning-reviewer",
+    "evidence": ".evidence/reviews/resolver-reviewer-passed-xhigh.md"
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/resolver-reviewer-passed/00-product-planning/README.md",
+      "kind": "planning-artifact"
+    }
+  ],
+  "handoff": {
+    "next_role": "Design",
+    "next_artifact": "docs/plans/work-units/resolver-reviewer-passed/01-design/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "created"
+    }
+  ]
+}

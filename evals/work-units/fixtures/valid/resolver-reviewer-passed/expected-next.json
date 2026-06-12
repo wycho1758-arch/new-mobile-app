@@ -1,0 +1,19 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-reviewer-passed",
+  "current_stage": "00-product-planning",
+  "current_state": "review-needed",
+  "owner_role": "Product/Planning",
+  "allowed_actions": [
+    "advance-to-next-role"
+  ],
+  "blocked_reasons": [],
+  "required_reviewer": null,
+  "required_human_gate": [],
+  "next_role": "Design",
+  "next_artifact": "docs/plans/work-units/resolver-reviewer-passed/01-design/README.md",
+  "evidence_required": [
+    "handoff-artifact"
+  ],
+  "gatekeeper_mode": null
+}

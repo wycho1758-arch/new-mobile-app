@@ -1,0 +1,15 @@
+{
+  "name": "invalid-mcp-latest",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".codex/config.toml",
+      "from": "@mobilenext/mobile-mcp@0.0.58",
+      "to": "@mobilenext/mobile-mcp@latest"
+    }
+  ],
+  "expectedErrors": [
+    "mobile-mcp must not use @latest"
+  ]
+}

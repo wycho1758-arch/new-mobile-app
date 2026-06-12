@@ -1,0 +1,15 @@
+{
+  "name": "invalid-stitch-mcp-latest",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".codex/config.toml",
+      "from": "stitch-mcp@1.3.2",
+      "to": "stitch-mcp@latest"
+    }
+  ],
+  "expectedErrors": [
+    "stitch-mcp must not use @latest"
+  ]
+}

@@ -1,0 +1,18 @@
+**Findings**
+
+1. **High: The proposed order is not SoT-compliant as the default order.**  
+   The current intended chain is `po-requirement-office-hours` -> `po-work-unit-planning-and-agent-sprint` -> `po-prd-to-execution` -> `po-planning-completeness-review`. The summary page shows that exact process order from rough request/broad intent through clarification, bounded work-unit sizing, PRD execution decomposition, then completeness review: [summary page](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/product-planning-operational-skills-summary-1374421079.md:34). The work-unit SoT also says `mobile-requirement-office-hours` “runs before this skill when the request is unclear,” and `mobile-prd-to-execution` runs after when the selected work unit is ready: [work-unit SoT](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md:186).
+
+2. **Medium: The proposed conditional order is compliant only as a feedback loop, not as a replacement chain.**  
+   Starting with `po-work-unit-planning-and-agent-sprint` is valid when the input is already a clarified requirement or PRD that is too broad for direct execution. The work-unit page says to use it when a clarified requirement or PRD is too large, before large Jira decomposition: [work-unit SoT](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md:51). If sizing exposes critical unknowns, routing back to requirement office-hours is consistent with the rule that unclear or scope-changing items go back to clarification or human decision: [completeness SoT](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-planning-completeness-review-1374519387.md:99).
+
+3. **Medium: `po-prd-to-execution` must not run after sizing until readiness is explicit.**  
+   The work-unit output allows handoff to PRD-to-execution “only after the selected work unit is clear enough for decomposition”: [work-unit SoT](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-product-planning-1373798422/mobile-work-unit-planning-and-agent-sprint-1374650456.md:67). The repo adapter preserves this: `po-prd-to-execution` is only for a ready PRD or bounded work unit and must route unclear requirements back to office-hours: [adapter](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-prd-to-execution/SKILL.md:19).
+
+**What Should Be Reported**
+
+Report the intended order as:
+
+`po-requirement-office-hours` when unclear -> `po-work-unit-planning-and-agent-sprint` for broad but sufficiently understood PRD/work-unit sizing -> `po-prd-to-execution` once ready -> `po-planning-completeness-review` before execution.
+
+The user’s order, `po-work-unit-planning-and-agent-sprint` -> `po-requirement-office-hours` -> `po-prd-to-execution`, should be reported as **conditionally SoT-compliant only when work-unit sizing starts from an apparently usable broad PRD and uncovers critical unknowns**. It should not be reported as the standard Product/Planning sequence. Human gates still stop progression.

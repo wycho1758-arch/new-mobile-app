@@ -1,0 +1,14 @@
+{
+  "name": "invalid-turbo-test-missing-build-dependency",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-delete",
+      "file": "turbo.json",
+      "path": ["tasks", "test", "dependsOn"]
+    }
+  ],
+  "expectedErrors": [
+    "turbo.json tasks.test.dependsOn must include ^build"
+  ]
+}

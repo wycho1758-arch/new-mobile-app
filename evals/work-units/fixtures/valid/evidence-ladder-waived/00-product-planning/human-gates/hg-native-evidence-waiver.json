@@ -1,0 +1,21 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-native-evidence-waiver",
+  "category": "failed-gate-risk",
+  "decision": "approved",
+  "scope": "Fixture-only acceptance of L1 evidence for an L2-required QA stage.",
+  "decided_by": {
+    "name": "Taylor Kim",
+    "contact": "https://github.com/example-user",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/105#issuecomment-5001",
+  "decided_at": "2026-06-11T00:10:00.000Z",
+  "failed_check_reference": "https://github.com/example/mobile-app-template/actions/runs/5001/job/9001",
+  "residual_risk": [
+    "Native evidence is still missing; production release remains blocked."
+  ],
+  "evidence_links": [
+    ".evidence/reviews/pr5-native-evidence-ladder-preimplementation-xhigh-20260611.md"
+  ]
+}

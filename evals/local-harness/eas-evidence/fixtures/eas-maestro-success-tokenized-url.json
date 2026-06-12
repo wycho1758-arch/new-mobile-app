@@ -1,0 +1,18 @@
+{
+  "build": {
+    "id": "build-fixture-android-001",
+    "status": "finished",
+    "platform": "android",
+    "profile": "e2e-test",
+    "gitCommitHash": "abc123fixture",
+    "artifacts": {
+      "applicationArchiveUrl": "https://artifacts.example.test/build.apk?token=fixture-token-to-redact&download=1",
+      "buildUrl": "https://expo.dev/accounts/example/projects/mobile-app-template/builds/build-fixture-android-001"
+    }
+  },
+  "maestro": {
+    "status": "passed",
+    "flowPath": ".maestro/home.yml",
+    "summary": "1 flow passed"
+  }
+}

@@ -1,0 +1,113 @@
+Findings: none.
+
+Verdict: GO. The PR1 preimplementation plan is acceptable to proceed to tests-first implementation. It stays bounded to a passive `wu-status/v1` validator/status machine plus sample status artifact, and it explicitly excludes PR2 human-gate envelopes, PR3 orchestration/next-action resolution, PR5 evidence ladder ingestion, live/native/EAS/pod/external platform work, and customer-specific identity work.
+
+The exact next permitted step is: start PR1 implementation by adding the RED fixtures/tests first for the work-unit status machine, before adding validator implementation.
+
+Residual risks remain: the worktree is dirty and contains concurrent planning/evidence files, so PR packaging must intentionally include or separate those files before opening a PR. The recorded local gates prove repo-local runtime checks only; they do not prove native, EAS, pod, branch-protection, webhook, Jira/Confluence, or other external platform state.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "85984dd41c776ddbed3b4784ba9b921ba60a93fb",
+    "target": "docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "team-doc/mobile-app-dev-team/05-work-processes.md",
+      "team-doc/mobile-app-dev-team/06-gates-and-evidence.md",
+      "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md",
+      "docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md",
+      "docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md",
+      ".evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md",
+      ".github/workflows/quality-gate.yml",
+      "package.json",
+      "docs/plans/work-units/README.md",
+      "docs/plans/work-units/sample-role-handoff/README.md"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "source review: SoT grounding",
+      "status": "PASS",
+      "evidence": "Plan cites required SoT at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:16 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:22; root and process SoT confirm runtime, TDD, gate, durable handoff, and evidence boundaries at AGENTS.md:8, AGENTS.md:13, AGENTS.md:37, PROJECT_ENVIRONMENT.md:201, PROJECT_ENVIRONMENT.md:206, REPO_OPERATIONS.md:90, team-doc/mobile-app-dev-team/05-work-processes.md:37, team-doc/mobile-app-dev-team/06-gates-and-evidence.md:3, and team-doc/mobile-app-dev-team/10-github-artifact-workflow.md:13."
+    },
+    {
+      "command": "source review: preimplementation-only scope",
+      "status": "PASS",
+      "evidence": "Plan states implementation is not authorized until xhigh GO at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:12; checkpoint states no PR1 implementation was started at .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:13."
+    },
+    {
+      "command": "source review: PR1 passive wu-status/v1 scope",
+      "status": "PASS",
+      "evidence": "Allowed PR1 work is limited to wu-status/v1, validator/fixtures, and sample status artifact at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:37 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:40; the goal plan defines PR1 as work-unit state machine work at docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md:121 through docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md:146."
+    },
+    {
+      "command": "source review: out-of-scope PR2/PR3/PR5/live/customer work",
+      "status": "PASS",
+      "evidence": "Plan excludes PR2, PR3, PR5, live EAS/pod/platform work, native proof overclaims, and customer-specific identifiers at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:43 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:50."
+    },
+    {
+      "command": "source review: TDD fixture adequacy",
+      "status": "PASS",
+      "evidence": "RED plan covers valid fixture, unknown schema, work_unit_id mismatch, illegal stage/state/owner combination, missing reviewer envelope, owner/reviewer self-approval, Gatekeeper misuse, append-only event mutation, and ignored evidence path at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:112 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:122."
+    },
+    {
+      "command": "source review: role and Gatekeeper boundaries",
+      "status": "PASS",
+      "evidence": "Plan rejects owner/reviewer self-approval and Gatekeeper as custom agent, SOUL owner, human approver, or LLM reviewer at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:89 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:92; Gatekeeper SoT confirms non-LLM deterministic limits at team-doc/mobile-app-dev-team/06-gates-and-evidence.md:16 through team-doc/mobile-app-dev-team/06-gates-and-evidence.md:22 and team-doc/mobile-app-dev-team/10-github-artifact-workflow.md:235 through team-doc/mobile-app-dev-team/10-github-artifact-workflow.md:250."
+    },
+    {
+      "command": "source review: planned done gates",
+      "status": "PASS",
+      "evidence": "Plan requires validator self-test, valid and invalid fixture behavior, test:runtime, CI path detection, PROJECT_ENVIRONMENT update, local harness, turbo lint/test, and final xhigh review at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:137 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:147; current CI and runtime docs show why validator path detection must be updated at .github/workflows/quality-gate.yml:26 and PROJECT_ENVIRONMENT.md:294 through PROJECT_ENVIRONMENT.md:304."
+    },
+    {
+      "command": "source review: current dirty worktree treated as packaging risk",
+      "status": "PASS",
+      "evidence": "Checkpoint classifies earlier checkpoint/evidence files and the Phase 0 team-doc diff as packaging risks, not PR1 implementation proof, at .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:81 through .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:83; plan records the same risk at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:160."
+    },
+    {
+      "command": "git status --short --branch",
+      "status": "PASS",
+      "evidence": "Read-only status showed the target plan and checkpoint as untracked, one unrelated modified team-doc file, and concurrent evidence files; targeted porcelain status showed only the PR1 plan and checkpoint dirty among planned PR1 implementation paths."
+    },
+    {
+      "command": "git ls-files scripts/validate-work-units.mjs scripts/lib/work-unit-machine.mjs evals/work-units/fixtures/*.json docs/plans/work-units/sample-role-handoff/status.json",
+      "status": "PASS",
+      "evidence": "Read-only check returned no tracked PR1 validator, fixture, or status.json implementation files; checkpoint also says PR1 implementation files are still not started at .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:73 through .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:75."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Not rerun by this read-only reviewer; checkpoint records exit 0 at .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:17 through .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:27 and post-fix exit 0 at .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:105 through .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:115."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Not rerun by this read-only reviewer; checkpoint records exit 0 at .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:39 through .evidence/reviews/pr1-work-unit-status-machine-preimplementation-checkpoint-20260610.md:49."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Not required before this preimplementation review because implementation has not started; plan requires it before PR packaging at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:146."
+    },
+    {
+      "command": "mobile-mcp / native / EAS / pod / external platform checks",
+      "status": "NOT_APPLICABLE",
+      "evidence": "PR1 plan excludes mobile UI/runtime, live EAS, pod rollout, webhooks, secrets, branch protection, bot accounts, platform images, and multi-pod drills at docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:47 through docs/plans/active/20260610-pr1-work-unit-status-machine-preimplementation-plan.md:49; local harness limits are documented at AGENTS.md:55 through AGENTS.md:60 and REPO_OPERATIONS.md:126 through REPO_OPERATIONS.md:128."
+    }
+  ],
+  "residual_risks": [
+    "The worktree is dirty with concurrent planning and evidence files; before PR packaging, rerun status and intentionally include or separate those files.",
+    "Recorded local runtime and harness gates prove repo-local rules only, not native, EAS, pod, branch-protection, webhook, Jira, Confluence, or external platform state.",
+    "Mobile UI, native, mobile-mcp, EAS, and API contract checks remain not applicable only while PR1 stays inside the planned passive runtime-validator scope."
+  ],
+  "next_action": "proceed"
+}
+```

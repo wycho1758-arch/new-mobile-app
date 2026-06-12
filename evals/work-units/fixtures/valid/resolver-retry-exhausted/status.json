@@ -1,0 +1,39 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-retry-exhausted",
+  "stage": "04-mobile-app",
+  "state": "blocked-gate",
+  "owner_role": "Mobile App Dev",
+  "attempt": 3,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "wm-implementation-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": ".evidence/reviews/resolver-retry-exhausted-checkpoint.md",
+      "kind": "failed-gate"
+    }
+  ],
+  "handoff": {
+    "next_role": "Mobile App Dev",
+    "next_artifact": "docs/plans/work-units/resolver-retry-exhausted/04-mobile-app/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "created"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-11T00:10:00.000Z",
+      "actor": "Release Gatekeeper (System)",
+      "action": "blocked-gate"
+    }
+  ]
+}

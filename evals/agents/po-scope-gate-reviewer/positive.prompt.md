@@ -1,0 +1,1 @@
+Review this Product/Planning scope decision for non-goals, deferred work, PRD acceptance-line mapping, external-runtime boundaries, and required human gates. Return findings-first prose and one machine-readable reviewer JSON envelope at the end. Do not edit files or mark failed gates as passed.

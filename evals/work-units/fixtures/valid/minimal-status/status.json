@@ -1,0 +1,33 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "minimal-status",
+  "stage": "00-product-planning",
+  "state": "review-needed",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "po-planning-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/minimal-status/00-product-planning/README.md",
+      "kind": "planning-artifact"
+    }
+  ],
+  "handoff": {
+    "next_role": "Design",
+    "next_artifact": "docs/plans/work-units/minimal-status/01-design/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-10T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "created"
+    }
+  ]
+}

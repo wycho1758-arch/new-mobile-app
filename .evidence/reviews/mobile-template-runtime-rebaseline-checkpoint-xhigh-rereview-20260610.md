@@ -1,0 +1,96 @@
+High: Human decision required. The checkpoint correctly stops before PR1+ because the runtime gate is red on root Claude artifacts, and cleanup of the untracked `CLAUDE.md` / `.claude/` worktree artifacts should not be done silently. Sources: `.evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:13`, `.evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:30`, `.evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:32`, `.evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:84`, `PROJECT_ENVIRONMENT.md:237`, `scripts/validate-runtime-artifacts.mjs:53`, `scripts/validate-runtime-artifacts.mjs:451`.
+
+No Critical findings.
+
+No Medium findings.
+
+No Low findings.
+
+Verdict: NEEDS_HUMAN. The review confirms the checkpoint’s conclusion: do not start PR1~PR7 or PR5 offline implementation while `pnpm run test:runtime` is red; ask the user whether to remove the untracked root Claude artifacts or keep them and remain blocked. I did not modify files. I did not run `pnpm run test:runtime` because the package `validate` script removes `.claude-state`; instead I ran the read-only validator directly and reproduced the expected failure on `CLAUDE.md` and `.claude/`.
+
+```json
+{
+  "verdict": "NEEDS_HUMAN",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "0d491381fef17f3a05857ae44ca67641bde6b295",
+    "target": ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md plus current worktree root CLAUDE.md/.claude/.claude-state state",
+    "paths_reviewed": [
+      ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md",
+      "CLAUDE.md",
+      ".claude/",
+      ".claude-state",
+      "PROJECT_ENVIRONMENT.md",
+      "AGENTS.md",
+      "package.json",
+      "scripts/validate-runtime-artifacts.mjs",
+      "docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md",
+      "team-doc/mobile-app-dev-team/06-gates-and-evidence.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "summary": "Runtime rebaseline remains blocked by untracked root Claude artifacts, and removal or retention is a human worktree ownership decision rather than a silent reviewer action.",
+      "source_refs": [
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:13",
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:30",
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:32",
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:43",
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:49",
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:84",
+        ".evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:88",
+        "PROJECT_ENVIRONMENT.md:237",
+        "PROJECT_ENVIRONMENT.md:241",
+        "scripts/validate-runtime-artifacts.mjs:53",
+        "scripts/validate-runtime-artifacts.mjs:451"
+      ],
+      "owner": "human"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "source review: checkpoint records pnpm run test:runtime failure",
+      "status": "PASS",
+      "evidence": "Checkpoint records `pnpm run test:runtime`, exit 1, and output from the validate step rejecting CLAUDE.md and .claude at .evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:13-35."
+    },
+    {
+      "command": "node scripts/validate-runtime-artifacts.mjs",
+      "status": "PASS",
+      "evidence": "Read-only direct validator reproduction exited 1 with the expected messages for `CLAUDE.md` and `.claude`; validator source defines those forbidden root artifacts at scripts/validate-runtime-artifacts.mjs:53 and checks them at scripts/validate-runtime-artifacts.mjs:451-452."
+    },
+    {
+      "command": "source review: active Codex runtime policy",
+      "status": "PASS",
+      "evidence": "PROJECT_ENVIRONMENT.md states root Claude runtime artifacts are not active Codex runtime and are rejected by the validator at PROJECT_ENVIRONMENT.md:237-241; AGENTS.md lists active Codex runtime paths at AGENTS.md:19-26 and runtime gate expectations at AGENTS.md:102-112."
+    },
+    {
+      "command": "source review: PR1+ and PR5 offline implementation gate ordering",
+      "status": "PASS",
+      "evidence": "The active plan requires `pnpm run test:runtime` to exit 0 before PR1 implementation begins unless explicitly skipped with the plan remaining blocked at docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md:84-90 and reiterates implementation beyond Phase 0 is gated on later rebaseline at docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md:402."
+    },
+    {
+      "command": "git status --short -- CLAUDE.md .claude .claude-state",
+      "status": "PASS",
+      "evidence": "Current worktree shows `?? .claude/` and `?? CLAUDE.md`; checkpoint also records those untracked artifacts at .evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:43-50."
+    },
+    {
+      "command": "git status --short -- apps packages .agents .codex evals scripts package.json PROJECT_ENVIRONMENT.md AGENTS.md docs/plans/active .evidence/reviews team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md",
+      "status": "PASS",
+      "evidence": "Current status shows modified/untracked docs, plans, and evidence only; no app/runtime implementation paths under apps, packages, .agents, .codex, evals, scripts, package.json, PROJECT_ENVIRONMENT.md, or AGENTS.md are changed. The checkpoint also states no PR1~PR7, PR5 offline, live EAS/native, pod rollout, webhook, Secret/token, branch protection, bot account, platform image, or multi-pod drill work started at .evidence/reviews/mobile-template-runtime-rebaseline-checkpoint-20260610.md:93."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_RUN",
+      "evidence": "Not rerun during this read-only review because package.json:21 shows the validate script removes `.claude-state`; the checkpoint-recorded failure was reviewed and the non-mutating validator subcheck was reproduced directly."
+    }
+  ],
+  "residual_risks": [
+    "Full `pnpm run test:runtime` remains red until the user decides whether to remove root `CLAUDE.md` and `.claude/` and the gate is rerun.",
+    "PR1~PR7 and PR5 offline implementation remain blocked until runtime rebaseline exits 0 or the user explicitly chooses to keep the artifacts and accept continued blockage.",
+    "This review did not prove app lint/test, local harness, mobile-mcp, native, or external platform readiness because no implementation scope has started and the current blocker is a root runtime artifact gate."
+  ],
+  "next_action": "ask_human"
+}
+```

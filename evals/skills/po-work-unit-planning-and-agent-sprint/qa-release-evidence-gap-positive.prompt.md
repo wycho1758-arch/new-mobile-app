@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Product/Planning intake received "QA gate failed." Produce a QA/Release evidence-gap routing packet with owner role, failed gate input artifact, expected output artifact, evidence path, readiness state, rework owner, and return path to Product/Planning when release risk remains.

@@ -1,0 +1,36 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-qa-native-required",
+  "stage": "05-qa-release",
+  "state": "in-progress",
+  "owner_role": "QA/Release",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "wm-implementation-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence_ladder": {
+    "required_level": "L2"
+  },
+  "evidence": [
+    {
+      "path": ".evidence/e2e-test/20260611-rn-web-only",
+      "kind": "rn-web-evidence"
+    }
+  ],
+  "handoff": {
+    "next_role": "Release Gatekeeper (System)",
+    "next_artifact": "docs/plans/work-units/resolver-qa-native-required/06-gatekeeper/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "QA/Release",
+      "action": "created"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "e50117f0350aa51bcea549276e25ad25cc904a37",
+    "target": "working-tree",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "package.json",
+      "docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md",
+      "docs/plans/active/20260611-pr4-pod-bootstrap-preimplementation-plan.md",
+      "scripts/codex-preflight.mjs",
+      "scripts/validate-team-doc.mjs",
+      "evals/local-harness/preflight/fixtures/pod.invalid-gh-auth.json",
+      "evals/local-harness/preflight/fixtures/pod.invalid-missing-role.json",
+      "evals/local-harness/preflight/fixtures/pod.invalid-pnpm-mismatch.json",
+      "evals/local-harness/preflight/fixtures/pod.invalid-role-mismatch.json",
+      "evals/local-harness/preflight/fixtures/pod.local-skip.json",
+      "evals/local-harness/preflight/fixtures/pod.valid-eas-present.json",
+      "evals/local-harness/preflight/fixtures/pod.valid-no-chromium.json",
+      "evals/local-harness/preflight/fixtures/pod.valid-pnpm-match.json",
+      "team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/README.md",
+      "team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md",
+      "team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh",
+      "team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/references/report-template.md",
+      ".evidence/reviews/mobile-template-runtime-direction-midcheck-xhigh-20260611.md",
+      ".evidence/reviews/mobile-template-runtime-direction-midcheck-xhigh-20260611.json",
+      ".evidence/reviews/pr4-pod-bootstrap-implementation-checkpoint-20260611.md"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git rev-parse HEAD",
+      "status": "PASS",
+      "evidence": "HEAD is e50117f0350aa51bcea549276e25ad25cc904a37, matching the requested baseline commit."
+    },
+    {
+      "command": "git diff --name-only && git ls-files --others --exclude-standard",
+      "status": "PASS",
+      "evidence": "Changed/untracked paths are limited to PR4 preflight, fixtures, pod-native source docs, validator, PROJECT_ENVIRONMENT.md, and review evidence."
+    },
+    {
+      "command": "source review: repo purpose and scope",
+      "status": "PASS",
+      "evidence": "AGENTS.md:8 defines the repo as the WonderMove mobile agents template runtime; docs/plans/active/20260611-pr4-pod-bootstrap-preimplementation-plan.md:93 excludes mobile app, API, contracts, live pod, live EAS, GitHub branch protection, webhook, platform provisioning, customer identifier, sensitive value, and production release changes."
+    },
+    {
+      "command": "source review: TDD evidence",
+      "status": "PASS",
+      "evidence": ".evidence/reviews/pr4-pod-bootstrap-implementation-checkpoint-20260611.md:21-31 records the RED self-test failure before implementation; scripts/codex-preflight.mjs:413-489 wires pod fixtures into self-test."
+    },
+    {
+      "command": "node scripts/codex-preflight.mjs --self-test --json",
+      "status": "PASS",
+      "evidence": "Rerun in this review exited 0 and reported ok=true for existing Codex fixtures plus all eight pod.*.json fixtures."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Rerun in this review exited 0 with 'Validated current team-doc managed docs.' Validator checks pod-role-bootstrap files and bash syntax at scripts/validate-team-doc.mjs:379-491."
+    },
+    {
+      "command": "bash -n team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh",
+      "status": "PASS",
+      "evidence": "Rerun in this review exited 0."
+    },
+    {
+      "command": "node scripts/codex-preflight.mjs --pod --json --no-write",
+      "status": "PASS",
+      "evidence": "Rerun in this review exited 0 with status=skipped, reason=pod-markers-not-found, and native_e2e_local=false."
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS",
+      "evidence": "Rerun in this review exited 0."
+    },
+    {
+      "command": "find . -maxdepth 1 \\( -name CLAUDE.md -o -name .claude -o -name .claude-state \\) -print",
+      "status": "PASS",
+      "evidence": "Rerun in this review produced no output."
+    },
+    {
+      "command": "secret-pattern scan over changed implementation/docs/fixtures",
+      "status": "PASS",
+      "evidence": "Rerun in this review produced no matches for the requested token/auth patterns over the scoped changed implementation, docs, fixtures, PROJECT_ENVIRONMENT.md, and midcheck prompt."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Recorded as exited 0 in .evidence/reviews/pr4-pod-bootstrap-implementation-checkpoint-20260611.md:46-54; not rerun here due read-only review scope."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Recorded as exited 0 in .evidence/reviews/pr4-pod-bootstrap-implementation-checkpoint-20260611.md:46-55; not rerun here due read-only review scope."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "PASS",
+      "evidence": "Recorded as exited 0 in .evidence/reviews/pr4-pod-bootstrap-implementation-checkpoint-20260611.md:46-56; not rerun here due read-only review scope."
+    },
+    {
+      "command": "mobile runtime/API/contracts review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No apps/mobile, apps/api, or packages/contracts changes were present; PR4 excludes those paths at docs/plans/active/20260611-pr4-pod-bootstrap-preimplementation-plan.md:93."
+    },
+    {
+      "command": "mobile-mcp/device or native E2E",
+      "status": "NOT_APPLICABLE",
+      "evidence": "PR4 explicitly disallows mobile-mcp/device execution and local Android E2E claims at docs/plans/active/20260611-pr4-pod-bootstrap-preimplementation-plan.md:136-142."
+    }
+  ],
+  "residual_risks": [
+    "Broad workspace gates were accepted from checkpoint evidence rather than rerun in this read-only final review.",
+    "Current evidence is repo-local only and does not prove actual OrbStack/OpenClaw pod execution, GitHub branch protection, EAS, webhook routing, live Confluence, platform provisioning, image build/push, mobile-mcp/device, or native device behavior.",
+    "PR packaging still needs the normal branch and PR process; this reviewer does not approve failed future gates or direct pushes to main."
+  ],
+  "next_action": "proceed"
+}

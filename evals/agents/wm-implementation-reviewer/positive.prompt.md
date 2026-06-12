@@ -1,0 +1,1 @@
+Review this wm-scoped implementation diff and evidence package for tests-first proof, affected paths, command results, source-cited findings, and PR readiness. Return findings-first prose and one machine-readable reviewer JSON envelope at the end. Do not edit files or mark failed gates as passed.

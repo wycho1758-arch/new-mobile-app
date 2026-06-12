@@ -1,0 +1,15 @@
+{
+  "name": "invalid-mobile-react-native-mismatch",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-set",
+      "file": "apps/mobile/package.json",
+      "path": ["dependencies", "react-native"],
+      "value": "0.86.0"
+    }
+  ],
+  "expectedErrors": [
+    "apps/mobile/package.json dependencies.react-native"
+  ]
+}

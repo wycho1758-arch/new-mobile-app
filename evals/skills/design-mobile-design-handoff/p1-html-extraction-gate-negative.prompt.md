@@ -1,0 +1,1 @@
+$design-mobile-design-handoff We have generated two Stitch images but Product/Planning has not approved the P1 HTML extraction packet with READY_FOR_EXECUTION yet. The skill must refuse extraction and must not call fetch_screen_code, download code.html, call SDK getHtml, persist htmlCode.downloadUrl, or publish option-a.html and option-b.html before P1 approval.

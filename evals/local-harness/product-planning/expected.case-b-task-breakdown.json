@@ -1,0 +1,123 @@
+{
+  "case": "B",
+  "sourcePageIds": [
+    "1373667425",
+    "1373798422"
+  ],
+  "tasks": [
+    {
+      "ownerRole": "Product/Planning",
+      "inputArtifact": "PRD fixture",
+      "outputArtifact": "scope decision log and role-scoped task packet",
+      "doneWhen": "Scope, non-goals, owner boundaries, and role handoff tasks are explicit.",
+      "evidencePath": "evals/local-harness/results/product-planning.json",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:9",
+        "prd.case-b.fixture.md:10",
+        "prd.case-b.fixture.md:11",
+        "prd.case-b.fixture.md:12"
+      ],
+      "openDecisions": "None for fixture; record new ambiguity before execution.",
+      "humanGate": false,
+      "nextRole": "Design"
+    },
+    {
+      "ownerRole": "Design",
+      "inputArtifact": "approved PRD acceptance criteria",
+      "outputArtifact": "screen inventory, five-state matrix, UX acceptance criteria",
+      "doneWhen": "Screen inventory and state matrix cover loading, empty, error, success, and permission states.",
+      "evidencePath": ".evidence/case-b/design-state-matrix.md",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:9"
+      ],
+      "openDecisions": "None for fixture; unresolved UX decisions return to Product/Planning.",
+      "humanGate": false,
+      "nextRole": "Mobile Architect"
+    },
+    {
+      "ownerRole": "Mobile Architect",
+      "inputArtifact": "screen inventory and API-needed marker",
+      "outputArtifact": "route/state impact and API contract review request",
+      "doneWhen": "Route, navigation, state ownership, and API dependency impacts are documented.",
+      "evidencePath": ".evidence/case-b/mobile-architecture-decision.md",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:9",
+        "prd.case-b.fixture.md:10"
+      ],
+      "openDecisions": "None for fixture; unresolved architecture choices are listed before API work.",
+      "humanGate": false,
+      "nextRole": "Backend/API Integrator"
+    },
+    {
+      "ownerRole": "Backend/API Integrator",
+      "inputArtifact": "API-needed marker",
+      "outputArtifact": "API contract, mock fixture, risk assessment",
+      "doneWhen": "Contract, mock fixture, auth/session behavior, and error mapping are ready for mobile implementation.",
+      "evidencePath": ".evidence/case-b/api-contract-fixture.json",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:10"
+      ],
+      "openDecisions": "None for fixture; unresolved API behavior blocks Mobile App Dev handoff.",
+      "humanGate": false,
+      "nextRole": "Mobile App Dev",
+      "apiNeeded": true
+    },
+    {
+      "ownerRole": "Mobile App Dev",
+      "inputArtifact": "design handoff and fixed API contract",
+      "outputArtifact": "implementation PR and unit/component test result",
+      "doneWhen": "Implementation PR includes tests, stable selectors, and linked evidence for the scoped slice.",
+      "evidencePath": ".evidence/case-b/mobile-implementation.json",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:9",
+        "prd.case-b.fixture.md:10"
+      ],
+      "openDecisions": "None for fixture; unresolved implementation assumptions return to the owning role.",
+      "humanGate": false,
+      "nextRole": "QA/Release"
+    },
+    {
+      "ownerRole": "QA/Release",
+      "inputArtifact": "implementation PR and acceptance criteria",
+      "outputArtifact": "Maestro/EAS evidence and failure classification if needed",
+      "doneWhen": "QA evidence proves acceptance criteria or classifies failures with the responsible owner.",
+      "evidencePath": ".evidence/case-b/qa-release-evidence.json",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:11"
+      ],
+      "openDecisions": "None for fixture; unresolved release risk returns to Product/Planning.",
+      "humanGate": false,
+      "nextRole": "Product/Planning"
+    },
+    {
+      "ownerRole": "Product/Planning",
+      "inputArtifact": "production submit request if later introduced",
+      "outputArtifact": "recorded human approval decision",
+      "doneWhen": "Human approval is recorded before production submit proceeds.",
+      "evidencePath": ".evidence/case-b/production-submit-human-approval.md",
+      "acceptanceRefs": [
+        "prd.case-b.fixture.md:12"
+      ],
+      "openDecisions": "Production submit decision remains open until human approval exists.",
+      "humanGate": true,
+      "humanGateCategory": "production submit",
+      "nextRole": "QA/Release"
+    }
+  ],
+  "requiredHumanGateCategories": [
+    "production submit",
+    "payment or money movement",
+    "PII or privacy-sensitive behavior",
+    "external messaging or email/SMS push",
+    "legal/terms/contracts",
+    "business approval",
+    "compliance/policy decision",
+    "Human Owner budget/business decision",
+    "irreversible scope tradeoff",
+    "accepting risk after a gate failure"
+  ],
+  "forbidden": {
+    "implementsCode": false,
+    "modifiesExternalRuntime": false
+  }
+}

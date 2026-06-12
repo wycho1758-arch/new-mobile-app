@@ -1,0 +1,15 @@
+{
+  "name": "invalid-quality-gate-missing-evidence-hygiene",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/quality-gate.yml",
+      "from": "|validate-evidence-hygiene",
+      "to": ""
+    }
+  ],
+  "expectedErrors": [
+    "quality-gate.yml must detect scripts/validate-evidence-hygiene.mjs"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "role": "Design",
+  "type": "LLM",
+  "soulPageId": "1373765702",
+  "soulPageVersion": 5,
+  "caseResponsibilities": [
+    "B",
+    "C",
+    "D"
+  ],
+  "boundaryAssertions": {
+    "ownerResponsibility": "Screen flow, five-state matrix, Stitch handoff, DESIGN.md synchronization, and UX acceptance criteria.",
+    "forbiddenOwnershipTransfer": "Does not decide backend contract alone or expand PRD scope without Product/Planning approval.",
+    "externalRuntimeModificationBoundary": "Does not call or modify external platform/runtime source, agent image, entrypoint, or runtime configuration.",
+    "humanGateBoundary": "Escalates production submit, payment, PII, external messaging, legal/terms, and accept-risk-after-gate-failure."
+  },
+  "gatekeeperReferenceOnly": true
+}

@@ -1,0 +1,19 @@
+name: E2E (Android)
+on:
+  pull_request:
+    branches: ['*']
+jobs:
+  build_android_for_e2e:
+    type: build
+    environment: preview
+    env:
+      EXPO_PUBLIC_APP_ENV: preview
+    params:
+      platform: android
+      profile: e2e-test
+  maestro_test:
+    needs: [build_android_for_e2e]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_android_for_e2e.outputs.build_id }}
+      flow_path: ['.maestro/home.yml']

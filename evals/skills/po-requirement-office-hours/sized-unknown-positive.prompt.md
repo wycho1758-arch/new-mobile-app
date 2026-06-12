@@ -1,0 +1,1 @@
+$po-requirement-office-hours Product/Planning work-unit sizing selected one MVP slice, but the selected-slice unknowns still block decomposition: acceptance signal, payment/refund policy owner, and PII masking expectation are unresolved. Clarify only these decision-blocking unknowns and return a readiness state.

@@ -1,0 +1,11 @@
+{
+  "name": "invalid-forbidden-local-path",
+  "valid": false,
+  "files": {
+    ".evidence/local/session/notes.md": "local evidence is not durable\n"
+  },
+  "expectedErrors": [
+    ".evidence/local/session/notes.md",
+    "forbidden evidence path"
+  ]
+}

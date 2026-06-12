@@ -1,0 +1,23 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-mobile-dev-blocked-prereq",
+  "current_stage": "04-mobile-app",
+  "current_state": "planned",
+  "owner_role": "Mobile App Dev",
+  "allowed_actions": [],
+  "blocked_reasons": [
+    "missing-design-handoff",
+    "missing-architecture-note",
+    "missing-api-contract"
+  ],
+  "required_reviewer": null,
+  "required_human_gate": [],
+  "next_role": "QA/Release",
+  "next_artifact": "docs/plans/work-units/resolver-mobile-dev-blocked-prereq/05-qa-release/README.md",
+  "evidence_required": [
+    "design-handoff",
+    "architecture-note",
+    "api-contract"
+  ],
+  "gatekeeper_mode": null
+}

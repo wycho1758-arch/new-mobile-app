@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Product/Planning intake received a practitioner proactive report about repeated QA evidence gaps. Triage it as REJECT, NON_GOAL, BACKLOG_CANDIDATE, SPRINT_IMPROVEMENT, HUMAN_DECISION_REQUIRED, or RUNTIME_CAPABILITY_BLOCKED. Preserve no-auto-execution: do not create Jira, code, scope, or SOUL changes automatically.

@@ -1,0 +1,25 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-human-gate-pending",
+  "current_stage": "04-mobile-app",
+  "current_state": "blocked-human",
+  "owner_role": "Mobile App Dev",
+  "allowed_actions": [],
+  "blocked_reasons": [
+    "human-gate-pending"
+  ],
+  "required_reviewer": null,
+  "required_human_gate": [
+    {
+      "gate_id": "hg-scope",
+      "category": "irreversible-scope-tradeoff",
+      "state": "pending"
+    }
+  ],
+  "next_role": "Mobile App Dev",
+  "next_artifact": "docs/plans/work-units/resolver-human-gate-pending/04-mobile-app/README.md",
+  "evidence_required": [
+    "human-gate-decision"
+  ],
+  "gatekeeper_mode": null
+}

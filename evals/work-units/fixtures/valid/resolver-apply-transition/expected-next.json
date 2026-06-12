@@ -1,0 +1,19 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-apply-transition",
+  "current_stage": "04-mobile-app",
+  "current_state": "in-progress",
+  "owner_role": "Mobile App Dev",
+  "allowed_actions": [
+    "continue-current-stage"
+  ],
+  "blocked_reasons": [],
+  "required_reviewer": null,
+  "required_human_gate": [],
+  "next_role": "QA/Release",
+  "next_artifact": "docs/plans/work-units/resolver-apply-transition/05-qa-release/README.md",
+  "evidence_required": [
+    "stage-evidence"
+  ],
+  "gatekeeper_mode": null
+}

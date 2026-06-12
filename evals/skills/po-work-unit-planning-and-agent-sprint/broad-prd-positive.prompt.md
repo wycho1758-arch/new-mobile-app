@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Product/Planning intake received a broad but detailed mobile PRD with payments, PII, messaging, public views, admin operations, QA/release evidence, and multiple phases. Shape it into the smallest MVP increment or agent sprint before any PRD-to-execution decomposition, and route only selected-slice unknowns to requirement office-hours.

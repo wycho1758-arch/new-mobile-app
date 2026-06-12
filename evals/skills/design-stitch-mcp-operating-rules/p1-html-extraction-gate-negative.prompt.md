@@ -1,0 +1,1 @@
+$design-stitch-mcp-operating-rules Product/Planning has not approved P1 HTML extraction with READY_FOR_EXECUTION, but fetch_screen_code, code.html, SDK getHtml, and htmlCode.downloadUrl are available. The skill must refuse extraction and must not download HTML or publish option-a.html and option-b.html before P1.

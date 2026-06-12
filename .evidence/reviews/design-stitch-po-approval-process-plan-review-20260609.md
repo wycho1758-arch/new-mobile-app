@@ -1,0 +1,28 @@
+**Findings**
+
+1. **High: The implementation work is not yet decomposed into complete execution tasks.**  
+The plan names files to update, but it does not define role-scoped tasks with owner role, input artifact, output artifact, Done-when criteria, evidence path/URL, open decisions, and next responsible role. Product/Planning requires those fields for every task, plus QA/Release coverage. Sources: review request “Planned skill changes”; [po-prd-to-execution/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-prd-to-execution/SKILL.md:31), [po-planning-completeness-review/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-planning-completeness-review/SKILL.md:35).
+
+2. **High: P0/P1 approval semantics need a stricter role boundary.**  
+Product/Planning can approve scope, evidence readiness, non-goals, and human-gate routing, but it should not become the Design approver or selected-option owner. The proposed P1 packet includes “selected candidate” and asks Product/Planning for `APPROVED_FOR_HTML_EXTRACTION`; that must be framed as “scope/evidence approval to proceed with extraction,” while Design still owns design quality and `design-reviewer` still reviews the handoff. Sources: [.codex/agents/po-planning-reviewer.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/agents/po-planning-reviewer.toml:8), [soul-md-design-1373765702.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702.md:246), [design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:43).
+
+3. **High: Human gates are named but not made blocking in the P0/P1 contract.**  
+`HUMAN_DECISION_REQUIRED` exists, but the plan should require an explicit gate-category matrix at P0 and P1 and forbid `APPROVED_FOR_STITCH_GENERATION` / `APPROVED_FOR_HTML_EXTRACTION` while production submit, payment, PII/privacy, external messaging, legal/terms, business/compliance, irreversible scope tradeoff, or accept-risk-after-gate-failure is unresolved. Sources: [po-requirement-office-hours/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-requirement-office-hours/SKILL.md:31), [soul-md-design-1373765702.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702.md:248).
+
+4. **Medium: Evidence paths for the new approval gates are underspecified.**  
+The plan defines final `design-pub-html/<YYYY-MM-DD>/` artifacts, but not where the P0 packet, P0 decision, P1 packet, P1 decision, model-selection limitation, eval results, and design-reviewer report are persisted. Done needs linked artifacts, not status text. Sources: [.codex/agents/po-planning-reviewer.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/agents/po-planning-reviewer.toml:15), [soul-md-design-1373765702.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-5-soul-md-템플릿-1373700138/soul-md-design-1373765702.md:225), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:19).
+
+5. **Medium: Eval coverage must explicitly fail the old immediate-extraction behavior.**  
+Current Design skill eval prompts still ask to generate and fetch HTML/images in one flow. The planned change needs tests first for: P0 denial blocks Stitch generation, P1 denial blocks `fetch_screen_code`/`code.html`, visuals-only artifacts before P1, exactly two options, manifest limitation recording, and design-reviewer handoff after publication. Sources: [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:7), [evals/skills/design-stitch-mcp-operating-rules/positive.prompt.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/skills/design-stitch-mcp-operating-rules/positive.prompt.md:1), [evals/skills/design-mobile-design-handoff/positive.prompt.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/skills/design-mobile-design-handoff/positive.prompt.md:1).
+
+6. **Medium: The Gemini 3.1 Pro preference is acceptable only as best-effort, not a hard requirement.**  
+Google supports Gemini 3.1 Pro for complex tasks, but the Stitch MCP generation schema surfaced in the official skill docs does not show a model/mode parameter in the generation call. Keep “prefer Gemini 3.1 Pro / thinking mode when the surface exposes it” and require manifest evidence when unavailable. Sources: Google Gemini 3.1 Pro blog , Google Stitch Skills generate-design docs .
+
+7. **Low: Future helper skills are not classified.**  
+`design-stitch-preflight` and `design-stitch-artifact-publisher` are mentioned as “possibly later,” but scope discipline requires them to be explicitly deferred/non-goal for this increment or decomposed with acceptance/evidence. Source: [.codex/agents/po-planning-reviewer.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/agents/po-planning-reviewer.toml:12).
+
+**Readiness**
+
+`NEEDS_REWORK` before implementation. The gate concept is directionally aligned with the existing Design/Stitch flow, especially because current skills extract HTML immediately after generation, but the Product/Planning packet is not yet complete enough to hand to implementation.
+
+No files were modified.

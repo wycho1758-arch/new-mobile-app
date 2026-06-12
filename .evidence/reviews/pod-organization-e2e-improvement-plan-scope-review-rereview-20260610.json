@@ -1,0 +1,119 @@
+{
+  "verdict": "NO_GO",
+  "reviewer": "po-scope-gate-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "b865c0c3387bb1a8d34f8acaac42386a2f1a896c",
+    "target": "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "team-doc/mobile-app-dev-team/00-sot-and-principles.md",
+      "team-doc/mobile-app-dev-team/01-team-composition.md",
+      "team-doc/mobile-app-dev-team/04-skills-and-agents-matrix.md",
+      "team-doc/mobile-app-dev-team/06-gates-and-evidence.md",
+      "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md",
+      "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md",
+      "package.json",
+      ".github/workflows/quality-gate.yml",
+      "apps/mobile/eas.json",
+      "apps/mobile/.eas/workflows/e2e-test-android.yml",
+      ".codex/config.toml",
+      "scripts/codex-preflight.mjs"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "summary": "Execution plan has a stale pod-tooling premise: it states pnpm is absent, but repo SoT requires pnpm@9.15.9 and the plan must treat the current condition as a version mismatch requiring pin enforcement.",
+      "source_refs": [
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:29",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:61",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:186",
+        "PROJECT_ENVIRONMENT.md:9",
+        "package.json:5"
+      ],
+      "owner": "Product/Planning"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "The external platform annex is outside repo execution authority and requires human/platform-owner validation before image, webhook, agent payload, Secret injection, branch protection, release environment, or bot-account work proceeds.",
+      "source_refs": [
+        "AGENTS.md:16",
+        "REPO_OPERATIONS.md:111",
+        "REPO_OPERATIONS.md:113",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:399",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:401",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:405",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:413",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:415"
+      ],
+      "owner": "human"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "Production submit, bot/token issuance, cost commitment, branch protection/release environment setup, and failed-gate-risk acceptance require recorded human owner decisions; Gatekeeper cannot replace human approval or accept failed-gate risk.",
+      "source_refs": [
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:14",
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:20",
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:55",
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:57",
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:62",
+        "team-doc/mobile-app-dev-team/06-gates-and-evidence.md:64",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:388",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:393",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:415",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:457"
+      ],
+      "owner": "human"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "The direction is aligned with the repo purpose and existing role model after corrections, but execution must remain bounded into PR slices with acceptance and evidence mapping before implementation.",
+      "source_refs": [
+        "AGENTS.md:8",
+        "team-doc/mobile-app-dev-team/01-team-composition.md:3",
+        "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md:91",
+        "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md:94",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:5",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:75",
+        "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:81"
+      ],
+      "owner": "Product/Planning"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "read-only line-numbered source review of listed local paths",
+      "status": "PASS",
+      "evidence": "All requested local paths were inspected with line numbers; source hierarchy and runtime facts are established by team-doc/mobile-app-dev-team/00-sot-and-principles.md:5 and PROJECT_ENVIRONMENT.md:9."
+    },
+    {
+      "command": "scope containment review",
+      "status": "FAIL",
+      "evidence": "Plan execution depends on platform/ops annex work outside repo authority and human validation: AGENTS.md:16, REPO_OPERATIONS.md:111, team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:399."
+    },
+    {
+      "command": "human-gate category review",
+      "status": "FAIL",
+      "evidence": "Production submit, budget/cost, token/bot authority, branch protection/release environment setup, and failed-gate-risk acceptance require recorded human decisions: team-doc/mobile-app-dev-team/06-gates-and-evidence.md:55, team-doc/mobile-app-dev-team/06-gates-and-evidence.md:57, team-doc/mobile-app-dev-team/06-gates-and-evidence.md:62, team-doc/mobile-app-dev-team/06-gates-and-evidence.md:64, team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:457."
+    },
+    {
+      "command": "work-unit size review",
+      "status": "PASS",
+      "evidence": "The plan decomposes the broad goal into PR1-PR7 slices and a staged execution order: team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:75 and team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:420."
+    },
+    {
+      "command": "deterministic gate authority review",
+      "status": "PASS",
+      "evidence": "The review did not reinterpret deterministic Gatekeeper pass/fail; SoT says Gatekeeper is non-LLM and cannot replace human approval: team-doc/mobile-app-dev-team/01-team-composition.md:17, team-doc/mobile-app-dev-team/06-gates-and-evidence.md:16, team-doc/mobile-app-dev-team/06-gates-and-evidence.md:20."
+    }
+  ],
+  "residual_risks": [
+    "Supplied redacted OrbStack facts were used only as non-JSON prose context; they were not converted into JSON source_refs.",
+    "No Kubernetes Secret or ConfigMap values were inspected or printed.",
+    "External platform state, GitHub branch protection, EAS submit readiness, and pod execution remain unproven by local source review."
+  ],
+  "next_action": "fix_findings"
+}

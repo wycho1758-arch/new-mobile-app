@@ -1,0 +1,28 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "different-id",
+  "stage": "00-product-planning",
+  "state": "review-needed",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "po-planning-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [],
+  "handoff": {
+    "next_role": "Design",
+    "next_artifact": "docs/plans/work-units/work-unit-id-mismatch/01-design/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-10T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "created"
+    }
+  ]
+}

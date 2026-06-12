@@ -1,0 +1,12 @@
+appId: {{ANDROID_PACKAGE}}
+---
+- launchApp
+- assertVisible:
+    id: home-title
+- assertVisible:
+    id: counter-value
+- tapOn:
+    id: counter-increment-button
+- assertVisible:
+    text: "Count: 1"
+    id: counter-value

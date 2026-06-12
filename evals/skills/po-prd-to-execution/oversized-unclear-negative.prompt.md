@@ -1,0 +1,1 @@
+Product/Planning intake received a full product PRD, but it is oversized and still contains unclear selected-slice unknowns. Do not run PRD-to-execution; route first to po-work-unit-planning-and-agent-sprint and then to po-requirement-office-hours only for blocking selected-slice unknowns.

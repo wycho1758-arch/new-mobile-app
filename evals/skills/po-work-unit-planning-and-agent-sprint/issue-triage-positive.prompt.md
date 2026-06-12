@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Product/Planning intake received an issue report: bracket seeding is wrong after a manual adjustment. Classify it as bug-fix, failure/rework, release-evidence-gap, human-gate, or symptom-without-evidence, and require owner, repro, expected-behavior source, evidence path, and gate impact before downstream work.

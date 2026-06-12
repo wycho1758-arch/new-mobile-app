@@ -1,0 +1,15 @@
+{
+  "name": "invalid-quality-gate-pnpm-action-version",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/quality-gate.yml",
+      "from": "- uses: pnpm/action-setup@v4",
+      "to": "- uses: pnpm/action-setup@v4\n        with: { version: 9 }"
+    }
+  ],
+  "expectedErrors": [
+    "quality-gate.yml must not set pnpm/action-setup version when package.json packageManager pins pnpm"
+  ]
+}

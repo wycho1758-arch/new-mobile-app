@@ -1,0 +1,58 @@
+{
+  "caseB": {
+    "tasks": [
+      {
+        "ownerRole": "Design",
+        "inputArtifact": "approved PRD acceptance criteria",
+        "outputArtifact": "screen inventory and state matrix",
+        "doneWhen": "Screen states are defined.",
+        "evidencePath": ".evidence/<task-id>.json",
+        "openDecisions": "None for fixture.",
+        "humanGate": false,
+        "nextRole": "Mobile Architect",
+        "apiNeeded": true
+      },
+      {
+        "ownerRole": "QA/Release",
+        "inputArtifact": "implementation PR and acceptance criteria",
+        "outputArtifact": "Maestro evidence",
+        "doneWhen": "QA evidence is linked.",
+        "evidencePath": ".evidence/case-b/qa-release-evidence.json",
+        "acceptanceRefs": [
+          "prd.case-b.fixture.md:11"
+        ],
+        "openDecisions": "None for fixture.",
+        "humanGate": false,
+        "nextRole": "Product/Planning"
+      }
+    ],
+    "requiredHumanGateCategories": [
+      "production submit",
+      "payment or money movement",
+      "PII or privacy-sensitive behavior",
+      "external messaging or email/SMS push",
+      "legal/terms/contracts",
+      "business approval",
+      "compliance/policy decision",
+      "Human Owner budget/business decision",
+      "irreversible scope tradeoff",
+      "accepting risk after a gate failure"
+    ],
+    "forbidden": {
+      "implementsCode": false,
+      "modifiesExternalRuntime": false
+    }
+  },
+  "expected": {
+    "valid": false,
+    "failures": [
+      {
+        "reason": "missing Case B task field",
+        "field": "acceptanceRefs"
+      },
+      {
+        "reason": "invalid Case B evidence path"
+      }
+    ]
+  }
+}

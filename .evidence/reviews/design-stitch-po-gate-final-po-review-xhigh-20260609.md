@@ -1,0 +1,18 @@
+**Findings**
+
+PASS. No material Product/Planning P0/P1 gate issue found.
+
+Design ownership remains with `design-*` skills: Stitch generation, image evidence, HTML extraction, publication, and handoff stay in Design workflow after the required gates [design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:35), [design-stitch-mcp-operating-rules/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-stitch-mcp-operating-rules/SKILL.md:24). Product/Planning is explicitly limited to scope/evidence, PRD fit, non-goals, evidence readiness, and human-gate routing, not design quality or selected-option ownership [po-planning-reviewer.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/agents/po-planning-reviewer.toml:17), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:196).
+
+P0 content and outcomes are covered before generation: purpose/reason, requested date, exactly two directions, non-goals, expected evidence, `DESIGN.md` decision, human gates, and the four readiness outcomes [design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:35), [20260609-stitch-mcp-activation-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/plans/active/20260609-stitch-mcp-activation-plan.md:74).
+
+P1 content is covered before HTML extraction, including actual image/design summary, PRD mapping, comparison, Design-selected rationale, alternate rejection/defer reason, risks/open decisions, and human gates [design-stitch-mcp-operating-rules/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-stitch-mcp-operating-rules/SKILL.md:31), [20260609-stitch-mcp-activation-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/plans/active/20260609-stitch-mcp-activation-plan.md:130).
+
+HTML extraction is blocked until P1 `READY_FOR_EXECUTION`, including `fetch_screen_code`, `code.html`, SDK `getHtml`, `htmlCode.downloadUrl`, and equivalents [design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:42), [design-stitch-mcp-operating-rules/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-stitch-mcp-operating-rules/SKILL.md:72), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:197).
+
+Validator/eval coverage enforces required P0/P1 fixtures and refusal behavior [validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:164), [validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:207). I reran `node scripts/validate-runtime-artifacts.mjs` and `git diff --check`; both passed.
+
+**Residual Risks**
+
+- `pnpm run test:runtime` and `pnpm run test:local-harness` were not rerun by me in this read-only review because `validate` includes cleanup behavior [package.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/package.json:21). I’m relying on your reported latest pass for those.
+- Stitch generation smoke is still pending Google Cloud ADC/project setup [20260609-stitch-mcp-activation-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/docs/plans/active/20260609-stitch-mcp-activation-plan.md:4).

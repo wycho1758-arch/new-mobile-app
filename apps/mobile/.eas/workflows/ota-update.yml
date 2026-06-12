@@ -1,0 +1,14 @@
+name: OTA update (preview)
+on:
+  push:
+    branches: ['preview']
+jobs:
+  publish_update:
+    type: update
+    environment: preview
+    env:
+      EXPO_PUBLIC_APP_ENV: preview
+    params:
+      channel: preview
+      platform: all
+      message: ${{ github.sha }}

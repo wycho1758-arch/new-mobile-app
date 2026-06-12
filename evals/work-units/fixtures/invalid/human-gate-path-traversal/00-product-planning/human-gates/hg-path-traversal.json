@@ -1,0 +1,18 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-path-traversal",
+  "category": "pii-privacy",
+  "decision": "deferred",
+  "scope": "Invalid because evidence_links contains path traversal.",
+  "decided_by": {
+    "name": "Taylor Kim",
+    "contact": "https://github.com/example-user",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/101#issuecomment-2005",
+  "decided_at": "2026-06-10T00:09:00.000Z",
+  "residual_risk": [],
+  "evidence_links": [
+    "../private-note.md"
+  ]
+}

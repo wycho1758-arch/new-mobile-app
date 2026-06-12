@@ -1,0 +1,95 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "cbb546760cc4a23b1d2479cd9187659ed693d9f5",
+    "target": "working-tree documentation change for docs/CODEX_MCP_ENVIRONMENT.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      ".codex/config.toml",
+      ".agents/skills/qa-railway-workflow/SKILL.md",
+      "docs/SETUP.md",
+      "docs/CREDENTIALS.md",
+      "docs/CODEX_MCP_ENVIRONMENT.md",
+      ".evidence/reviews/mcp-cli-setup-guide-plan-20260610.md",
+      ".evidence/reviews/mcp-cli-setup-guide-plan-review-20260610.md",
+      "package.json"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git status --short",
+      "status": "PASS",
+      "evidence": "Confirmed requested changed paths plus unrelated dirty/untracked paths; unrelated paths were not treated as authored by this task."
+    },
+    {
+      "command": "git diff -- docs/CODEX_MCP_ENVIRONMENT.md PROJECT_ENVIRONMENT.md .evidence/reviews/mcp-cli-setup-guide-plan-20260610.md .evidence/reviews/mcp-cli-setup-guide-plan-review-20260610.md",
+      "status": "PASS",
+      "evidence": "Diff shows only PROJECT_ENVIRONMENT.md is tracked-modified; guide and evidence files are new/untracked. PROJECT_ENVIRONMENT.md update is limited to guide pointer and Expo MCP auth wording."
+    },
+    {
+      "command": "nl -ba docs/CODEX_MCP_ENVIRONMENT.md | sed -n '1,760p'",
+      "status": "PASS",
+      "evidence": "Guide includes mobile-mcp, serena, stitch, expo, atlassian, node_repl, playwright, railway, gcloud, conditional EAS CLI, and workspace Expo CLI; excludes pencil and tavily; documents safety and verification boundaries."
+    },
+    {
+      "command": "nl -ba PROJECT_ENVIRONMENT.md | sed -n '1,380p'",
+      "status": "PASS",
+      "evidence": "Confirmed guide sync at PROJECT_ENVIRONMENT.md:5 and PROJECT_ENVIRONMENT.md:236, required MCPs at PROJECT_ENVIRONMENT.md:242, and Expo MCP auth wording at PROJECT_ENVIRONMENT.md:261."
+    },
+    {
+      "command": "nl -ba .codex/config.toml | sed -n '1,240p'",
+      "status": "PASS",
+      "evidence": "Confirmed pinned repo MCP commands for mobile-mcp, serena, and stitch match the guide."
+    },
+    {
+      "command": "nl -ba AGENTS.md | sed -n '1,130p'",
+      "status": "PASS",
+      "evidence": "Confirmed TDD/secrets/runtime boundaries, mobile-mcp policy, contracts SoT, and required verification commands."
+    },
+    {
+      "command": "rg -n \"pencil|tavily\" docs/CODEX_MCP_ENVIRONMENT.md PROJECT_ENVIRONMENT.md .codex/config.toml",
+      "status": "PASS",
+      "evidence": "Only docs/CODEX_MCP_ENVIRONMENT.md names pencil/tavily, and only as excluded MCPs; no required config exists in PROJECT_ENVIRONMENT.md or .codex/config.toml."
+    },
+    {
+      "command": "rg -n \"/Users/tw\\\\.kim|/Users/|\\.codex/plugins/cache|/opt/homebrew|/usr/local/bin\" docs/CODEX_MCP_ENVIRONMENT.md PROJECT_ENVIRONMENT.md .evidence/reviews/mcp-cli-setup-guide-plan-20260610.md .evidence/reviews/mcp-cli-setup-guide-plan-review-20260610.md",
+      "status": "PASS",
+      "evidence": "No user-local Codex cache path found in changed guide or PROJECT_ENVIRONMENT.md. Prior plan evidence mentions /usr/local/bin and /opt/homebrew binary observations only, not user-local cache paths."
+    },
+    {
+      "command": "rg -n \"railway up --service|eas build|eas submit|eas update|kubectl apply|docker compose|docker build|gcloud services enable|railway variable set|railway add|railway init|railway domain|pnpm --filter mobile e2e:web|pnpm --filter mobile e2e$\" docs/CODEX_MCP_ENVIRONMENT.md",
+      "status": "PASS",
+      "evidence": "Guide does not include live deploy/build/submit/setup mutation commands; only RN Web E2E command appears as scoped verification."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Review request reports exit 0: 11 skills, 13 agents, 4 hook events, team-doc validation, headless review helper self-test, and 44 hook fixture tests passed."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Review request reports exit 0, including nested test:runtime, pnpm turbo run lint test, mobile Jest 2 suites/5 tests, contracts test, API Vitest, and local harness all passed."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "PASS",
+      "evidence": "Covered by reported passing pnpm run test:local-harness; package.json:19 confirms local harness runs pnpm turbo run lint test."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Documentation/runtime setup guide change does not modify mobile UI/runtime behavior; AGENTS.md:109 requires mobile-mcp visual QA for mobile UI/runtime changes with a simulator/device."
+    }
+  ],
+  "residual_risks": [
+    "Expo, Railway, Google ADC, and Atlassian auth state remains target-machine/session-specific; the guide correctly requires verification in the actual target environment.",
+    "The verification command results were reviewed from the supplied review request rather than rerun in this read-only reviewer sandbox.",
+    "The new guide itself is not currently listed in PROJECT_ENVIRONMENT.md CI path filters; PROJECT_ENVIRONMENT.md changes do trigger local harness, and the guide requires manual runtime/local-harness verification when the guide changes."
+  ],
+  "next_action": "proceed"
+}

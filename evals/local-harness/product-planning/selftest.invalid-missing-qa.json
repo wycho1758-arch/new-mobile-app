@@ -1,0 +1,34 @@
+{
+  "caseB": {
+    "tasks": [
+      {
+        "ownerRole": "Product/Planning",
+        "inputArtifact": "PRD fixture",
+        "outputArtifact": "task packet",
+        "evidencePath": "result",
+        "humanGate": false,
+        "nextRole": "Design"
+      }
+    ],
+    "requiredHumanGateCategories": [
+      "production submit",
+      "payment or money movement",
+      "PII or privacy-sensitive behavior",
+      "external messaging or email/SMS push",
+      "legal/terms/contracts",
+      "business approval",
+      "compliance/policy decision",
+      "Human Owner budget/business decision",
+      "irreversible scope tradeoff",
+      "accepting risk after a gate failure"
+    ],
+    "forbidden": {
+      "implementsCode": false,
+      "modifiesExternalRuntime": false
+    }
+  },
+  "expected": {
+    "valid": false,
+    "reason": "missing QA/Release task"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "caseB": {
+    "tasks": [
+      {
+        "ownerRole": "QA/Release",
+        "inputArtifact": "implementation PR and acceptance criteria",
+        "outputArtifact": "Maestro/EAS evidence and failure classification if needed",
+        "evidencePath": ".evidence/<task-id>.json",
+        "humanGate": false,
+        "nextRole": "Product/Planning",
+        "apiNeeded": true
+      }
+    ],
+    "requiredHumanGateCategories": [
+      "production submit",
+      "payment or money movement",
+      "PII or privacy-sensitive behavior",
+      "external messaging or email/SMS push",
+      "legal/terms/contracts",
+      "business approval",
+      "compliance/policy decision",
+      "Human Owner budget/business decision",
+      "irreversible scope tradeoff",
+      "accepting risk after a gate failure"
+    ],
+    "forbidden": {
+      "implementsCode": false,
+      "modifiesExternalRuntime": false
+    }
+  },
+  "expected": {
+    "valid": false,
+    "reason": "missing Case B task field",
+    "fields": [
+      "doneWhen",
+      "openDecisions"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+$e2e-test Run the mobile E2E check for the current task. Create the test plan first, reset the prior tested instance, execute the planned steps, and record screenshots, console logs, and objective issue details under evidence.

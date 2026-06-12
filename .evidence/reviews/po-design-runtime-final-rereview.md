@@ -1,0 +1,12 @@
+**Findings**
+
+No unresolved findings in the requested scope.
+
+Prior issues appear resolved:
+
+- Validator now covers `po-design-reviewer` and `po-design-researcher` eval prompts via `poAgentEvalNames` and required fixture checks: [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:27), [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:134).
+- Harness README now states repo-local `po-*` adapters map back to source role skills or SOUL pages, and includes the Design adapter crosswalk: [evals/local-harness/README.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/README.md:15), [evals/local-harness/README.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/README.md:47).
+- `PROJECT_ENVIRONMENT.md` Codex Runtime nesting now separates repo skills, Design adapters, custom agents, and Stitch MCP runtime details coherently: [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:173), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:182), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:185), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:215).
+- `po-mobile-design-handoff` still covers Stitch workflow, `DESIGN.md` decision handling, objective UI/UX framing, 1-2 options, selected-option rationale, and HTML extraction via `code.html` or Stitch MCP fetch: [.agents/skills/po-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-mobile-design-handoff/SKILL.md:28), [.agents/skills/po-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-mobile-design-handoff/SKILL.md:35), [.agents/skills/po-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-mobile-design-handoff/SKILL.md:41).
+
+Verification note: I ran the underlying read-only validator directly. It fails only on root `CLAUDE.md` and `.claude`, matching the stated pre-existing failure. I did not run `pnpm run validate` because that script removes `.claude-state`, and I did not rerun `node scripts/test-local-harness.mjs --stage structure` because the script writes result files.

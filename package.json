@@ -1,12 +1,32 @@
 {
-  "name": "new-mobile-app-runtime",
+  "name": "mobile-app-template",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "devDependencies": {
+    "turbo": "^2.9.16"
+  },
+  "pnpm": {
+    "overrides": {
+      "lightningcss": "1.30.1"
+    }
+  },
   "scripts": {
-    "validate": "node scripts/validate-runtime-artifacts.mjs",
-    "test:hooks": "node scripts/test-hooks.mjs",
-    "test:openclaw": "node scripts/test-openclaw-packages.mjs",
-    "test": "npm run validate && npm run test:hooks && npm run test:openclaw",
-    "package:openclaw-skills": "node scripts/package-openclaw-skills.mjs"
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:runtime": "pnpm run validate && pnpm run validate:repo-operations && pnpm run validate:team-doc && pnpm run validate:work-units && pnpm run validate:work-unit-next && pnpm run validate:eas-evidence && pnpm run validate:project-environment && pnpm run validate:evidence-hygiene && pnpm run test:hooks",
+    "test:local-harness:preflight": "node scripts/clean-tree-guard.mjs --self-test && node scripts/codex-preflight.mjs --self-test && node scripts/codex-preflight.mjs",
+    "test:local-harness": "pnpm run test:local-harness:preflight && pnpm run test:runtime && pnpm turbo run lint test && node scripts/test-local-harness.mjs --self-test --stage all && node scripts/test-local-harness.mjs --stage all",
+    "sot:provenance-refresh:manual": "echo \"ADVISORY ONLY: not a test, not CI, and not required for test:runtime or test:local-harness. Refresh evals/local-harness/sot/snapshot.json provenance with page IDs, versions, fetched time, diff summary, reviewer evidence, and explicit user approval before any live Confluence publish.\"",
+    "validate": "node -e \"const fs=require('node:fs'); for (const p of ['.claude', '.claude-state']) fs.rmSync(p, { recursive: true, force: true })\" && node scripts/validate-runtime-artifacts.mjs && node scripts/codex-headless-review.mjs --self-test",
+    "validate:repo-operations": "node scripts/validate-repo-operations.mjs",
+    "validate:team-doc-archive": "node scripts/validate-team-doc-archive.mjs",
+    "validate:team-doc": "node scripts/validate-team-doc.mjs",
+    "validate:work-units": "node scripts/validate-work-units.mjs --self-test && node scripts/validate-work-units.mjs",
+    "validate:work-unit-next": "node scripts/work-unit-next.mjs --self-test",
+    "validate:eas-evidence": "node scripts/ingest-eas-evidence.mjs --self-test",
+    "validate:project-environment": "node scripts/validate-project-environment.mjs --self-test && node scripts/validate-project-environment.mjs",
+    "validate:evidence-hygiene": "node scripts/validate-evidence-hygiene.mjs --self-test && node scripts/validate-evidence-hygiene.mjs",
+    "test:hooks": "node scripts/test-hooks.mjs"
   }
 }

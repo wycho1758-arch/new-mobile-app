@@ -1,0 +1,45 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-apply-transition",
+  "stage": "04-mobile-app",
+  "state": "in-progress",
+  "owner_role": "Mobile App Dev",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "wm-implementation-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/resolver-apply-transition/01-design/handoff-index.md",
+      "kind": "design-handoff"
+    },
+    {
+      "path": "docs/plans/work-units/resolver-apply-transition/02-architecture/architecture-note.md",
+      "kind": "architecture-note"
+    },
+    {
+      "path": "docs/plans/work-units/resolver-apply-transition/03-contract-api/api-contract.md",
+      "kind": "api-contract"
+    },
+    {
+      "path": "docs/plans/work-units/resolver-apply-transition/04-mobile-app/implementation-summary.md",
+      "kind": "implementation-summary"
+    }
+  ],
+  "handoff": {
+    "next_role": "QA/Release",
+    "next_artifact": "docs/plans/work-units/resolver-apply-transition/05-qa-release/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "created"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "design pod reports Stitch local prerequisites without values",
+  "mode": "pod",
+  "platform": "linux",
+  "unameMachine": "aarch64",
+  "env": {
+    "WM_ROLE": "Design",
+    "WM_EXPECTED_ROLE": "Design",
+    "GOOGLE_APPLICATION_CREDENTIALS": "/fixture/adc.json",
+    "GOOGLE_CLOUD_PROJECT": "secret-project-123"
+  },
+  "files": {
+    "workspaceIdentity": "Design",
+    "codexConfigToml": true
+  },
+  "commands": {
+    "nodeVersion": { "status": 0, "stdout": "v22.22.2\n", "stderr": "" },
+    "pnpmVersion": { "status": 0, "stdout": "9.15.9\n", "stderr": "" },
+    "whichCodex": { "status": 0, "stdout": "/usr/local/bin/codex\n", "stderr": "" },
+    "gitUserName": { "status": 0, "stdout": "WonderMove Bot\n", "stderr": "" },
+    "gitUserEmail": { "status": 0, "stdout": "wm-bot@example.invalid\n", "stderr": "" },
+    "ghAuthStatus": { "status": 0, "stdout": "authenticated\n", "stderr": "" },
+    "chromiumPath": { "status": 0, "stdout": "/usr/bin/chromium\n", "stderr": "" },
+    "codexMcpList": { "status": 0, "stdout": "mobile-mcp\nstitch\n", "stderr": "" },
+    "googleAdcStatus": { "status": 0, "stdout": "/fixture/adc.json\n", "stderr": "" },
+    "googleCloudProjectStatus": { "status": 0, "stdout": "secret-project-123\n", "stderr": "" }
+  },
+  "candidates": [
+    {
+      "path": "/usr/local/bin/codex",
+      "exists": true,
+      "executable": true,
+      "fileOutput": "/usr/local/bin/codex: ELF 64-bit LSB executable, ARM aarch64",
+      "version": { "status": 0, "stdout": "codex-cli 0.137.0\n", "stderr": "" },
+      "execHelp": { "status": 0, "stdout": "Usage: codex exec [OPTIONS]\n", "stderr": "" },
+      "smoke": { "status": 0, "stdout": "LOCAL_CODEX_HEADLESS_OK\n", "stderr": "" }
+    }
+  ],
+  "expected": {
+    "status": "available",
+    "stitchStatus": "configured",
+    "forbiddenOutputs": [
+      "secret-project-123",
+      "/fixture/adc.json"
+    ]
+  }
+}

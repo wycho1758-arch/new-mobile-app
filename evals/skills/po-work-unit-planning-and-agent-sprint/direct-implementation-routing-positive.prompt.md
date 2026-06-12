@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Product/Planning intake received "implement this screen now." Check whether an accepted task packet exists and planning completeness is READY_FOR_EXECUTION. If it does, hand off to the downstream owner skill; if not, route to sizing or clarification first.

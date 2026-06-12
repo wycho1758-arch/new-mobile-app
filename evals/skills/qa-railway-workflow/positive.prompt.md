@@ -1,0 +1,1 @@
+$qa-railway-workflow Prepare Railway CLI deployment evidence for the mobile repo RN Web release candidate. Verify CLI install/login status, project/service/Postgres setup, redacted variables, Dockerfile deploy, public domain, `/livez` and `/readyz`, RN Web E2E with `EXPO_PUBLIC_API_URL`, and update PROJECT_ENVIRONMENT.md and evidence without exposing secrets.

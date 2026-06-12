@@ -1,0 +1,26 @@
+{
+  "name": "pod blocks missing role identity",
+  "mode": "pod",
+  "platform": "linux",
+  "unameMachine": "aarch64",
+  "env": {},
+  "files": {
+    "workspaceIdentity": "",
+    "codexConfigToml": true
+  },
+  "commands": {
+    "nodeVersion": { "status": 0, "stdout": "v22.22.2\n", "stderr": "" },
+    "pnpmVersion": { "status": 0, "stdout": "9.15.9\n", "stderr": "" },
+    "whichCodex": { "status": 0, "stdout": "/usr/local/bin/codex\n", "stderr": "" },
+    "gitUserName": { "status": 0, "stdout": "WonderMove Bot\n", "stderr": "" },
+    "gitUserEmail": { "status": 0, "stdout": "wm-bot@example.invalid\n", "stderr": "" },
+    "ghAuthStatus": { "status": 0, "stdout": "authenticated\n", "stderr": "" },
+    "chromiumPath": { "status": 0, "stdout": "/usr/bin/chromium\n", "stderr": "" },
+    "codexMcpList": { "status": 0, "stdout": "mobile-mcp\n", "stderr": "" }
+  },
+  "candidates": [],
+  "expected": {
+    "status": "blocked",
+    "blockerReason": "missing-role-identity"
+  }
+}

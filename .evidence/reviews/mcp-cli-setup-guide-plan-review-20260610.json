@@ -1,0 +1,122 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "b99b64c043f9fed7f0c97d946a27238e23b71ead",
+    "target": ".evidence/reviews/mcp-cli-setup-guide-plan-20260610.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      ".codex/config.toml",
+      "docs/SETUP.md",
+      "docs/CREDENTIALS.md",
+      ".agents/skills/qa-railway-workflow/SKILL.md",
+      ".evidence/reviews/mcp-cli-auth-inventory-review-corrected-20260610.md",
+      ".evidence/reviews/mcp-cli-auth-inventory-review-prompt-corrected-20260610.md",
+      ".evidence/reviews/mcp-cli-setup-guide-plan-20260610.md",
+      "package.json",
+      "apps/mobile/package.json"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "nl -ba AGENTS.md | sed -n '1,220p'",
+      "status": "PASS",
+      "evidence": "Confirmed repo rules for TDD, no secrets/customer identifiers, mobile-mcp policy, runtime verification, contracts SoT, and PR gates."
+    },
+    {
+      "command": "nl -ba PROJECT_ENVIRONMENT.md | sed -n '1,380p'",
+      "status": "PASS",
+      "evidence": "Confirmed runtime versions, required MCP list, Expo plugin-provided MCP section, Stitch gcloud prerequisites, Railway context, and CI/local harness implications."
+    },
+    {
+      "command": "nl -ba .codex/config.toml | sed -n '1,220p'",
+      "status": "PASS",
+      "evidence": "Confirmed pinned repo MCP config for mobile-mcp, serena, and stitch."
+    },
+    {
+      "command": "nl -ba docs/SETUP.md | sed -n '1,260p'",
+      "status": "PASS",
+      "evidence": "Confirmed post-clone setup, EAS human-gate ownership, and npx eas-cli init context."
+    },
+    {
+      "command": "nl -ba docs/CREDENTIALS.md | sed -n '1,260p'",
+      "status": "PASS",
+      "evidence": "Confirmed EXPO_TOKEN, store credential, and secret handling boundaries."
+    },
+    {
+      "command": "nl -ba .agents/skills/qa-railway-workflow/SKILL.md | sed -n '1,240p'",
+      "status": "PASS",
+      "evidence": "Confirmed Railway install/login/evidence workflow, secret redaction rules, and railway setup agent boundary."
+    },
+    {
+      "command": "nl -ba .evidence/reviews/mcp-cli-auth-inventory-review-corrected-20260610.md | sed -n '1,260p'",
+      "status": "PASS",
+      "evidence": "Confirmed prior reviewer evidence supports the MCP classification and target-session auth caveat."
+    },
+    {
+      "command": "nl -ba .evidence/reviews/mcp-cli-auth-inventory-review-prompt-corrected-20260610.md | sed -n '1,260p'",
+      "status": "PASS",
+      "evidence": "Confirmed prior corrected prompt identifies optional MCPs, auxiliary CLIs, and secret-like Tavily URL handling without reproducing the value."
+    },
+    {
+      "command": "nl -ba .evidence/reviews/mcp-cli-setup-guide-plan-20260610.md | sed -n '1,370p'",
+      "status": "PASS",
+      "evidence": "Confirmed plan scope, guide structure, implementation steps, human gates, and acceptance criteria are aligned with local SoT."
+    },
+    {
+      "command": "git status --short",
+      "status": "PASS",
+      "evidence": "Confirmed dirty worktree; plan accounts for unrelated changes and does not require clean baseline."
+    },
+    {
+      "command": "codex mcp list",
+      "status": "PASS",
+      "evidence": "Confirmed required MCPs are enabled in this reviewer session. Expo auth appeared session-dependent here, matching the plan's target-session verification caveat. Secret-like Tavily URL was not reproduced."
+    },
+    {
+      "command": "railway --version",
+      "status": "PASS",
+      "evidence": "Confirmed Railway CLI version 5.6.2 availability; login was not exercised in this read-only review."
+    },
+    {
+      "command": "gcloud --version",
+      "status": "PASS",
+      "evidence": "Confirmed Google Cloud SDK 554.0.0 availability; ADC/account commands were not exercised in this read-only review."
+    },
+    {
+      "command": "pnpm --filter mobile exec expo --version",
+      "status": "PASS",
+      "evidence": "Confirmed workspace Expo CLI reports 56.1.14."
+    },
+    {
+      "command": "pnpm --filter mobile exec eas --version",
+      "status": "PASS",
+      "evidence": "Confirmed the plan's expected local state: EAS CLI is not available in the mobile workspace."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "This review inspected a plan only and made no runtime artifact edits. The future implementation plan requires this when PROJECT_ENVIRONMENT.md or applicable runtime SoT changes."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "This review made no Codex runtime or local-harness-covered implementation changes. The future implementation plan includes conditional harness verification."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No app, backend, package, or runtime implementation changed in this plan review."
+    }
+  ],
+  "residual_risks": [
+    "Expo MCP auth state is session-specific; the guide must require codex mcp list verification in the actual target Codex environment.",
+    "Railway whoami and gcloud ADC/project/service enablement were intentionally not exercised here; the future guide must keep them as target-machine verification steps.",
+    "External official docs for Expo/EAS, Railway, Google Cloud, and Codex MCP help were not revalidated in this plan review; the future guide implementation step explicitly requires that check.",
+    "The worktree is dirty with unrelated changes, so future implementation must avoid implying a clean baseline or reverting unrelated files."
+  ],
+  "next_action": "proceed"
+}

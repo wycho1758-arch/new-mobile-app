@@ -1,0 +1,19 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-qa-native-required",
+  "current_stage": "05-qa-release",
+  "current_state": "in-progress",
+  "owner_role": "QA/Release",
+  "allowed_actions": [],
+  "blocked_reasons": [
+    "missing-evidence-level-L2"
+  ],
+  "required_reviewer": null,
+  "required_human_gate": [],
+  "next_role": "Release Gatekeeper (System)",
+  "next_artifact": "docs/plans/work-units/resolver-qa-native-required/06-gatekeeper/README.md",
+  "evidence_required": [
+    "native-evidence"
+  ],
+  "gatekeeper_mode": null
+}

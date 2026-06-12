@@ -1,0 +1,99 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "03b008afc44be1d017ee220d3004a95c3fcbed2e",
+    "target": "docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md",
+    "paths_reviewed": [
+      "docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md",
+      "docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md",
+      ".evidence/reviews/mobile-template-runtime-direction-midcheck-after-pr5-xhigh-20260611.md",
+      ".evidence/reviews/mobile-template-runtime-direction-midcheck-after-pr5-xhigh-20260611.json",
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "team-doc/mobile-app-dev-team/00-sot-and-principles.md",
+      "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md",
+      ".github/workflows/quality-gate.yml",
+      "package.json",
+      "apps/mobile/package.json",
+      ".codex/config.toml",
+      "evals/local-harness/sot/snapshot.json"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git rev-parse HEAD",
+      "status": "PASS",
+      "evidence": "Read-only baseline confirmed as 03b008afc44be1d017ee220d3004a95c3fcbed2e."
+    },
+    {
+      "command": "git status --short --branch",
+      "status": "PASS",
+      "evidence": "Read-only check confirmed branch feat/mobile-app-template ahead of origin/main with one untracked PR6 review-prompt evidence file."
+    },
+    {
+      "command": "source review: repo purpose and PR6 alignment",
+      "status": "PASS",
+      "evidence": "AGENTS.md:8 and docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md:18-32 define reusable template-runtime direction; PR6 plan follows that direction at docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:10-15."
+    },
+    {
+      "command": "source review: offline deterministic PR6 scope",
+      "status": "PASS",
+      "evidence": "docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:53-66 limits implementation to offline validators, runtime fact checks, CI path detection, and local snapshot metadata."
+    },
+    {
+      "command": "source review: forbidden live/external boundaries",
+      "status": "PASS",
+      "evidence": "docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:68-75 excludes live Confluence/Atlassian, Railway, EAS, GitHub issue creation, branch protection, webhooks, pods, devices, tokens, customer identifiers, and PR7 scope."
+    },
+    {
+      "command": "source review: PR6/PR7 sequencing",
+      "status": "PASS",
+      "evidence": "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:249-265 defines PR6 as SoT refresh/drift detection; team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:267-282 defines PR7 as Stitch/mobile-mcp/evidence hygiene hardening."
+    },
+    {
+      "command": "source review: TDD plan",
+      "status": "PASS",
+      "evidence": "docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:77-94 requires RED fixtures for packageManager drift, mobile dependency drift, MCP @latest/pin drift, quality-gate path detection, snapshot metadata, plus a valid no-network current-repo case."
+    },
+    {
+      "command": "source review: executable facts",
+      "status": "PASS",
+      "evidence": "package.json:5, package.json:17-29, apps/mobile/package.json:19-46, .codex/config.toml:1-12, .github/workflows/quality-gate.yml:17-32, and evals/local-harness/sot/snapshot.json:1-9 match the plan's claimed current facts."
+    },
+    {
+      "command": "source review: required implementation gates",
+      "status": "PASS",
+      "evidence": "docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:96-111 requires validator self-tests, repo/team doc validators, test:runtime, test:local-harness, turbo lint/test, diff check, Claude artifact absence check, and final reviewer evidence when runtime scripts or CI wiring change."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Plan-mode preimplementation review only; no PR6 implementation exists yet. The plan requires this gate after implementation at docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:104."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Plan-mode preimplementation review only; no runtime path changes have been made in this review. Required for PR6 runtime-script or package/CI wiring changes per AGENTS.md:108 and docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:105."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Plan-mode preimplementation review only; no implementation changes have been made. The plan requires this gate after implementation at docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:106."
+    },
+    {
+      "command": "live Confluence, Atlassian, Railway, EAS, GitHub issue creation, branch protection, webhook, pod rollout, Secret/token, device/mobile-mcp, release readiness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Explicitly out of PR6 scope per docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:68-75 and docs/plans/active/20260611-pr6-sot-drift-detection-preimplementation-plan.md:113-117."
+    }
+  ],
+  "residual_risks": [
+    "This is a plan review only; final GO for implementation still requires PR6 RED fixtures, validator wiring, command evidence, and final implementation reviewer evidence.",
+    "The plan deliberately keeps stale snapshot age advisory/non-blocking; any live Confluence refresh or publish remains a separate human-approved workflow.",
+    "CI runtime-change detection currently enumerates script names in .github/workflows/quality-gate.yml:26, so implementation must add any new PR6 top-level script names there as planned."
+  ],
+  "next_action": "proceed"
+}

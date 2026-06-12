@@ -1,0 +1,26 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-retry-exhausted",
+  "current_stage": "04-mobile-app",
+  "current_state": "blocked-gate",
+  "owner_role": "Mobile App Dev",
+  "allowed_actions": [],
+  "blocked_reasons": [
+    "retry-exhausted",
+    "failed-gate-risk-human-decision-required"
+  ],
+  "required_reviewer": null,
+  "required_human_gate": [
+    {
+      "gate_id": "failed-gate-risk",
+      "category": "failed-gate-risk",
+      "state": "pending"
+    }
+  ],
+  "next_role": "Mobile App Dev",
+  "next_artifact": "docs/plans/work-units/resolver-retry-exhausted/04-mobile-app/README.md",
+  "evidence_required": [
+    "human-gate-decision"
+  ],
+  "gatekeeper_mode": null
+}

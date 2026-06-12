@@ -1,0 +1,33 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-architecture-parallel",
+  "stage": "02-architecture",
+  "state": "in-progress",
+  "owner_role": "Mobile Architect",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "wm-implementation-reviewer",
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/resolver-architecture-parallel/02-architecture/README.md",
+      "kind": "architecture-note"
+    }
+  ],
+  "handoff": {
+    "next_role": "Backend/API Integrator",
+    "next_artifact": "docs/plans/work-units/resolver-architecture-parallel/03-contract-api/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Mobile Architect",
+      "action": "created"
+    }
+  ]
+}

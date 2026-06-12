@@ -1,0 +1,19 @@
+**Findings**
+
+Critical: None.
+
+High: Current worktree will block the proposed verification. Root `CLAUDE.md` and `.claude/` are present, and the runtime validator rejects root Claude artifacts. `pnpm run test:runtime` runs `validate`, which invokes [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:178); `PROJECT_ENVIRONMENT.md` documents the same rejection at [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:165). This must be accounted for before claiming the planned gates pass.
+
+Medium: The plan should explicitly include updating `$wm` review-routing docs if `scripts/codex-headless-review.mjs` is expanded to allow `po-*` agents. Today the helper allowlist is only `wm-*` at [scripts/codex-headless-review.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/codex-headless-review.mjs:7), and `$wm` documents only those agents at [.agents/skills/wm/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/wm/SKILL.md:49). Updating only the script and `PROJECT_ENVIRONMENT.md` risks runtime-doc drift.
+
+Medium: “Add eval fixtures first” is directionally correct, but the plan should state the exact assertions to add. The validator currently hard-requires existing skill fixtures only at [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:97), while new skill fixture checks are optional if files exist at [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:113). To satisfy TDD from [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:7), add hard checks for the four `po-*` skills and the three `po-*` read-only agents before implementation.
+
+Low: The `po-*` local names need an explicit SoT crosswalk. The Confluence source pages name the source skills `mobile-requirement-office-hours`, `mobile-work-unit-planning-and-agent-sprint`, `mobile-planning-completeness-review`, and `mobile-prd-to-execution` (pages `1374519364`, `1374650456`, `1374519387`, `1373634562`), while the task requires repo-local `po-*` names. Each new `SKILL.md`, `PROJECT_ENVIRONMENT.md`, and local harness snapshot update should make clear that `po-*` is the local Codex adapter slug for those Product/Planning sources, not a new standalone `mobile-product-planning-workflow` role wrapper. The current forbidden wrapper list includes `mobile-product-planning-workflow` at [evals/local-harness/sot/snapshot.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/sot/snapshot.json:210).
+
+**Scope Check**
+
+The proposed affected paths are runtime-only: `.agents/`, `.codex/`, `evals/`, `scripts/`, and `PROJECT_ENVIRONMENT.md`, matching the runtime paths in [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:13). No app/backend edits are planned, so no NativeWind UI selector, `packages/contracts`, or mobile-mcp visual QA requirement is triggered.
+
+**Evidence Expectations**
+
+Required evidence should include `pnpm run test:runtime` and `pnpm run test:local-harness`. The latter also runs workspace lint/test via [package.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/package.json:19). Record result paths under `evals/local-harness/results/` or `.evidence/`, and note that headless smoke is advisory, not an external platform proof, per [evals/local-harness/README.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/README.md:48).

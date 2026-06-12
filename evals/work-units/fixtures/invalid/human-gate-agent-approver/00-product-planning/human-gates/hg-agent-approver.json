@@ -1,0 +1,19 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-agent-approver",
+  "category": "failed-gate-risk",
+  "decision": "approved",
+  "scope": "Invalid because the approver is a reviewer agent.",
+  "decided_by": {
+    "name": "wm-implementation-reviewer",
+    "contact": "agent",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/101#issuecomment-2001",
+  "decided_at": "2026-06-10T00:09:00.000Z",
+  "failed_check_reference": "https://github.com/example/mobile-app-template/actions/runs/2001/job/3001",
+  "residual_risk": [],
+  "evidence_links": [
+    ".evidence/reviews/pr2-human-gate-envelope-preimplementation-xhigh-20260610.md"
+  ]
+}

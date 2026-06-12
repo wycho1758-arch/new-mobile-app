@@ -1,0 +1,17 @@
+{
+  "name": "dirty tree with allowed generated results",
+  "roots": [
+    {
+      "label": "MOBILE_APP_ROOT",
+      "statusLines": [
+        "?? evals/local-harness/results/preflight.json",
+        " M apps/mobile/app/index.tsx"
+      ],
+      "allowGeneratedResults": true,
+      "expectedClean": false,
+      "expectedUnexpected": [
+        " M apps/mobile/app/index.tsx"
+      ]
+    }
+  ]
+}

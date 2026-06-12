@@ -1,0 +1,17 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-not-applicable",
+  "current_stage": "03-contract-api",
+  "current_state": "not-applicable",
+  "owner_role": "Backend/API Integrator",
+  "allowed_actions": [],
+  "blocked_reasons": [
+    "stage-not-executable"
+  ],
+  "required_reviewer": null,
+  "required_human_gate": [],
+  "next_role": "Mobile App Dev",
+  "next_artifact": "docs/plans/work-units/resolver-not-applicable/04-mobile-app/README.md",
+  "evidence_required": [],
+  "gatekeeper_mode": null
+}

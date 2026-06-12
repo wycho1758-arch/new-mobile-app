@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eas-build-${AGENT_NAME}-${PROJECT_SLUG}
+  namespace: clawpod
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: workspace
+          emptyDir: {}
+      initContainers:
+        - name: clone
+          image: alpine/git
+          command:
+            - sh
+            - -c
+            - 'git clone --depth 1 --branch ${REPO_BRANCH} https://${REPO_DEPLOY_TOKEN}@${REPO_HOST}/${REPO_PATH}.git /workspace'
+          env:
+            - name: REPO_DEPLOY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ${REPO_DEPLOY_SECRET_NAME}
+                  key: REPO_DEPLOY_TOKEN
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: eas
+          image: node:22-bookworm
+          workingDir: /workspace/apps/mobile
+          command: ['sh', '-c', 'npx eas-cli@latest build --profile preview --platform android --non-interactive --no-wait']
+          envFrom:
+            - secretRef:
+                name: ${EXPO_TOKEN_SECRET_NAME}
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace

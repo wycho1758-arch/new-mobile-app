@@ -1,0 +1,101 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "bb0b6ffb347154946f18120aa34751b6a51856d1",
+    "target": "docs/plans/active/20260611-pr3-next-action-resolver-preimplementation-plan.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      ".gitignore",
+      "package.json",
+      "docs/plans/active/20260611-pr3-next-action-resolver-preimplementation-plan.md",
+      "docs/plans/active/20260610-wm-mobile-template-runtime-goal-plan.md",
+      "/Users/tw.kim/.claude/plans/luminous-snacking-moler.md",
+      ".evidence/reviews/pr2-human-gate-envelope-implementation-xhigh-rereview-20260610.md",
+      ".evidence/reviews/goal-plan-continuation-after-pr2-xhigh-rereview-20260610.md",
+      "team-doc/mobile-app-dev-team/06-gates-and-evidence.md",
+      "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md",
+      "docs/plans/work-units/README.md",
+      "scripts/lib/work-unit-machine.mjs",
+      "scripts/validate-work-units.mjs",
+      "evals/work-units/fixtures/"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git rev-parse HEAD",
+      "status": "PASS",
+      "evidence": "HEAD is bb0b6ffb347154946f18120aa34751b6a51856d1, matching the requested baseline."
+    },
+    {
+      "command": "git status --short --branch",
+      "status": "PASS",
+      "evidence": "Branch is feat/mobile-app-template; only an untracked PR3 review-prompt evidence file is visible."
+    },
+    {
+      "command": "source review: PR3 plan scope and resolver contract",
+      "status": "PASS",
+      "evidence": "Plan limits implementation to repo-internal offline resolver, fixtures, docs, and orchestration skill artifacts, and forbids live platform/customer/runtime scope."
+    },
+    {
+      "command": "source review: role, reviewer, human-gate, and Gatekeeper boundaries",
+      "status": "PASS",
+      "evidence": "Plan reuses existing PR1/PR2 validator rules and preserves deterministic Gatekeeper plus human-gate approval requirements."
+    },
+    {
+      "command": "source review: TDD and PR3 required gate plan",
+      "status": "PASS",
+      "evidence": "Plan requires RED fixtures before implementation and includes resolver self-test, validate-work-units, test:runtime, local harness, and turbo lint/test gates."
+    },
+    {
+      "command": "node scripts/validate-work-units.mjs --self-test",
+      "status": "PASS",
+      "evidence": "Exit 0: Validated work-unit status fixtures."
+    },
+    {
+      "command": "node scripts/validate-work-units.mjs",
+      "status": "PASS",
+      "evidence": "Exit 0: Validated work-unit status artifacts."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Exit 0: Validated current team-doc managed docs."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Not required for this preimplementation plan review; required during PR3 implementation. Also not run by this read-only reviewer because package.json:21 performs cleanup before validation."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Not required before implementation starts; required during PR3 implementation because runtime scripts, evals, .agents, and/or docs/plans paths will change."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No implementation source changes were reviewed; plan requires this before PR3 packaging once executable repo code changes exist."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "PR3 plan excludes mobile UI/runtime changes, so AGENTS.md mobile-mcp visual QA requirement is not triggered."
+    },
+    {
+      "command": "API contract drift review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "PR3 plan excludes apps/api and packages/contracts changes; no API contract drift is proposed."
+    }
+  ],
+  "residual_risks": [
+    "docs/plans/active/ is ignored, so the plan GO must be persisted under .evidence/reviews/pr3-next-action-resolver-preimplementation-xhigh-20260611.md before implementation begins.",
+    "The user-local Claude session plan is advisory and outside active Codex runtime; repo-local active plan and durable evidence should remain the execution record.",
+    "Full implementation gates were not run because this is a preimplementation plan review; they remain mandatory PR3 implementation evidence."
+  ],
+  "next_action": "proceed"
+}

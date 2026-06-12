@@ -1,0 +1,1 @@
+Review an existing Stitch MCP operating-rules handoff for missing execution-order explanation, credential leakage risk, two-option coverage, HTML/image artifacts, and design-pub-html publication gaps. Do not edit files.

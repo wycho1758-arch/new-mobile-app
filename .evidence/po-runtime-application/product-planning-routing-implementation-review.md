@@ -1,0 +1,11 @@
+**Findings**
+
+1. Blocking gate issue remains outside the Product/Planning routing update: `node scripts/validate-runtime-artifacts.mjs` fails because root `CLAUDE.md` and `.claude` are forbidden runtime artifacts. This is accurately represented in the evidence plan, which says those artifacts make runtime gates fail until owner-resolved. Sources: [validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:40), [product-planning-skill-routing-update-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/po-runtime-application/product-planning-skill-routing-update-plan.md:314). I reran it and it failed only with:
+   - `root Claude runtime artifact must not be present: CLAUDE.md`
+   - `root Claude runtime artifact must not be present: .claude`
+
+No blocking Product/Planning routing issues found.
+
+The implemented routing update aligns with the approved plan on the reviewed blockers: Product/Planning-first intake is encoded in the work-unit adapter, `po-*` adapters remain Product/Planning adapters rather than standalone role wrappers, direct implementation requests require accepted task readiness, review-only and proactive-report bypass risks have negative/positive eval fixtures, QA/Release evidence-gap ownership is represented, and expanded human-gate categories are covered in both adapter text and harness fixtures. Sources: [po-work-unit-planning-and-agent-sprint/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-work-unit-planning-and-agent-sprint/SKILL.md:8), [po-prd-to-execution/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-prd-to-execution/SKILL.md:21), [po-requirement-office-hours/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/po-requirement-office-hours/SKILL.md:31), [expected.case-b-task-breakdown.json](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/product-planning/expected.case-b-task-breakdown.json:80).
+
+Verification representation is accurate: `node scripts/test-local-harness.mjs --self-test --stage product-planning --json` passed with `ok: true` and no failures; `validate-runtime-artifacts` failed only on the two root Claude artifacts.

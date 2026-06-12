@@ -1,0 +1,21 @@
+{
+  "schema": "wm-next-action/v1",
+  "work_unit_id": "resolver-blocked-gate",
+  "current_stage": "04-mobile-app",
+  "current_state": "blocked-gate",
+  "owner_role": "Mobile App Dev",
+  "allowed_actions": [
+    "fix-failed-gate"
+  ],
+  "blocked_reasons": [
+    "gate-failed"
+  ],
+  "required_reviewer": null,
+  "required_human_gate": [],
+  "next_role": "Mobile App Dev",
+  "next_artifact": "docs/plans/work-units/resolver-blocked-gate/04-mobile-app/README.md",
+  "evidence_required": [
+    "failed-gate-fix-evidence"
+  ],
+  "gatekeeper_mode": null
+}

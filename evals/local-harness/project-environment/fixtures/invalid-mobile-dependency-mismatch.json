@@ -1,0 +1,15 @@
+{
+  "name": "invalid-mobile-dependency-mismatch",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-set",
+      "file": "apps/mobile/package.json",
+      "path": ["dependencies", "expo"],
+      "value": "~57.0.0"
+    }
+  ],
+  "expectedErrors": [
+    "apps/mobile/package.json dependencies.expo"
+  ]
+}

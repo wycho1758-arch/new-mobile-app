@@ -1,0 +1,11 @@
+{
+  "mutateRole": "Product/Planning",
+  "caseResponsibilities": [
+    "Z"
+  ],
+  "expected": {
+    "valid": false,
+    "reason": "missing valid Case A-H responsibility"
+  }
+}
+

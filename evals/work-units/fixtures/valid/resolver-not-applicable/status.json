@@ -1,0 +1,33 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-not-applicable",
+  "stage": "03-contract-api",
+  "state": "not-applicable",
+  "owner_role": "Backend/API Integrator",
+  "attempt": 1,
+  "reviewer": {
+    "required": false,
+    "status": "not-applicable",
+    "agent": null,
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/resolver-not-applicable/03-contract-api/README.md",
+      "kind": "non-goal"
+    }
+  ],
+  "handoff": {
+    "next_role": "Mobile App Dev",
+    "next_artifact": "docs/plans/work-units/resolver-not-applicable/04-mobile-app/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Backend/API Integrator",
+      "action": "not-applicable"
+    }
+  ]
+}

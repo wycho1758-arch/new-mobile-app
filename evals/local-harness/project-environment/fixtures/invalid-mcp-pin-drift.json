@@ -1,0 +1,15 @@
+{
+  "name": "invalid-mcp-pin-drift",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": "PROJECT_ENVIRONMENT.md",
+      "from": "@mobilenext/mobile-mcp@0.0.58",
+      "to": "@mobilenext/mobile-mcp@0.0.59"
+    }
+  ],
+  "expectedErrors": [
+    "mobile-mcp pin"
+  ]
+}

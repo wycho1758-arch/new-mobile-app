@@ -1,0 +1,33 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-gatekeeper",
+  "stage": "06-gatekeeper",
+  "state": "in-progress",
+  "owner_role": "Release Gatekeeper (System)",
+  "attempt": 1,
+  "reviewer": {
+    "required": false,
+    "status": "not-applicable",
+    "agent": null,
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/resolver-gatekeeper/06-gatekeeper/README.md",
+      "kind": "gatekeeper-checklist"
+    }
+  ],
+  "handoff": {
+    "next_role": "Product/Planning",
+    "next_artifact": "docs/plans/work-units/resolver-gatekeeper/07-pr/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Release Gatekeeper (System)",
+      "action": "created"
+    }
+  ]
+}

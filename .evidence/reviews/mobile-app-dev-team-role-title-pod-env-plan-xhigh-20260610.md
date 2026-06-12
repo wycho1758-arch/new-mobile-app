@@ -1,0 +1,17 @@
+**Findings**
+
+- **Medium:** EKS target wording is directionally correct, but the update should explicitly record EKS as an accepted operating-target correction/source in `99-source-map.md`. The repo sources I inspected show `infra/clawpod/` as k8s examples, while the exported canary evidence is OrbStack-local, so docs must not imply EKS was proven by local inspection. Sources: [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:29), [first-agent-runtime-e2e-canary-plan](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522.md:266), observed fact: local kubectl context `orbstack`.
+
+- **Medium:** `ontology-bridge` exclusion should be made enforceable, not only described. The corrected plan excludes it from target architecture, but the validator direction should also reject `ontology-bridge` in target/SOUL/runtime sections, allowing it only in source-map or local-observation notes as “excluded.” Source: observed fact that the local test pod had `agent` and `ontology-bridge`; current validator term checks do not cover this yet: [scripts/validate-team-doc.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc.mjs:289).
+
+- **Low:** Keep `/workspace/.npm-global/bin/codex`, `/root/.codex`, and Codex version text explicitly marked as local pod observations. There is already version drift between older canary evidence and the current observed pod fact, so the plan’s “not immutable production guarantee” wording is necessary. Sources: [canary plan](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-9-검증-근거-감사-기록-1373667446/2026-06-08-first-agent-runtime-e2e-canary-plan-1374912522.md:273), observed fact: local pod Codex CLI `0.139.0`.
+
+**Accuracy**
+
+The core separation is accurate. It aligns with the existing runtime path decision: Codex CLI native repo skills use `.agents/skills`, custom agents/hooks live under `.codex`, and generated-agent pod skills use `/workspace/skills`. Sources: [runtime-path-decision](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/role-specific-codex-runtime-1374289964/runtime-path-decision-1374289985.md:18), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:15), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:201).
+
+The corrected plan also fixes the current draft’s ambiguous `사용 가능한 Skills/Agents` wording, which currently mixes repo-local `.agents/skills` and `.codex/agents` into each role block. Source: [08-role-title-update-plan.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/mobile-app-dev-team/08-role-title-update-plan.md:31).
+
+**Readiness**
+
+Verdict: **ready to use as the next document update direction with the two medium guardrails added**: explicit EKS source attribution and enforceable `ontology-bridge` exclusion. No HIGH blocking issue found in the corrected separation of Pod Agent runtime skills vs Codex CLI skills/agents, and the plan no longer treats `/Users/tw.kim/...` or host Codex paths as pod/EKS runtime paths.

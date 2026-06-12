@@ -1,0 +1,39 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "resolver-reviewer-failed",
+  "stage": "04-mobile-app",
+  "state": "review-needed",
+  "owner_role": "Mobile App Dev",
+  "attempt": 2,
+  "reviewer": {
+    "required": true,
+    "status": "failed",
+    "agent": "wm-implementation-reviewer",
+    "evidence": ".evidence/reviews/resolver-reviewer-failed-xhigh.md"
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/resolver-reviewer-failed/04-mobile-app/README.md",
+      "kind": "implementation-summary"
+    }
+  ],
+  "handoff": {
+    "next_role": "Mobile App Dev",
+    "next_artifact": "docs/plans/work-units/resolver-reviewer-failed/04-mobile-app/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-11T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "created"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-11T00:10:00.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "review-failed"
+    }
+  ]
+}

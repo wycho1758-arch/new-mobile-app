@@ -1,0 +1,15 @@
+{
+  "name": "invalid-mobile-tailwindcss-mismatch",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "json-set",
+      "file": "apps/mobile/package.json",
+      "path": ["devDependencies", "tailwindcss"],
+      "value": "^4.4.0"
+    }
+  ],
+  "expectedErrors": [
+    "apps/mobile/package.json devDependencies.tailwindcss"
+  ]
+}

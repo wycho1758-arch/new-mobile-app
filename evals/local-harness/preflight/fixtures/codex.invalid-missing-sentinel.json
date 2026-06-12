@@ -1,0 +1,32 @@
+{
+  "name": "invalid codex smoke without sentinel",
+  "unameMachine": "arm64",
+  "candidates": [
+    {
+      "path": "/opt/homebrew/bin/codex",
+      "exists": true,
+      "executable": true,
+      "fileOutput": "/opt/homebrew/bin/codex: Mach-O 64-bit executable arm64",
+      "version": {
+        "status": 0,
+        "stdout": "codex-cli 0.137.0\n",
+        "stderr": ""
+      },
+      "execHelp": {
+        "status": 0,
+        "stdout": "Usage: codex exec [OPTIONS]\n",
+        "stderr": ""
+      },
+      "smoke": {
+        "status": 0,
+        "stdout": "some other output\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "expected": {
+    "status": "skipped",
+    "rejectionReason": "smoke-sentinel-missing"
+  }
+}
+

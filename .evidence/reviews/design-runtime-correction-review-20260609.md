@@ -1,0 +1,23 @@
+**Findings**
+
+Medium: Source crosswalk is incomplete for the “moved existing Design handoff skill.” The new adapter cites `mobile-design-handoff` as the source skill and Design SOUL `1373765702`, but the actual mirrored `mobile-design-handoff` source page is `1373765661`. The harness README also labels `mobile-design-handoff` with `1373765702`, which is the Design SOUL page, not the skill page. This makes source alignment ambiguous for future audits of the moved skill.
+Sources: [.agents/skills/design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:13), [evals/local-harness/README.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/evals/local-harness/README.md:48), [mobile-design-handoff-1373765661.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/team-doc/00-source/mobile-app-dev-team-1373012374/01-mobile-app-조직-1373700097/01-4-skills-1373667362/mobile-design-handoff-1373765661.md:2), [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:281).
+
+Medium: `DESIGN.md` handoff publication guidance still points to `docs/design-references/` or a generic hosting location, while the corrected runtime contract requires project-root `design-pub-html/<YYYY-MM-DD>/` with Option A/B HTML, images, `manifest.json`, and `handoff.md`. Because Design SOUL makes repository-root `DESIGN.md` the design-system SoT and the new handoff skill requires an explicit DESIGN.md decision, this should be reconciled or explicitly documented as runtime-policy override.
+Sources: [DESIGN.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/DESIGN.md:55), [.agents/skills/design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:40), [.agents/skills/design-stitch-mcp-operating-rules/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-stitch-mcp-operating-rules/SKILL.md:33), [PROJECT_ENVIRONMENT.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/PROJECT_ENVIRONMENT.md:192).
+
+**Confirmations**
+
+The main design-* correction is otherwise aligned: the handoff skill requires approved inputs, objective UI/UX framing, DESIGN.md keep/update/block handling, exactly two Stitch options, A/B HTML and image extraction, dated publication, five-state matrix, accessibility, implementation constraints, UX acceptance, and `design-reviewer` review. Platform fit is also covered: NativeWind/RN primitives/semantic tokens for mobile, shadcn-compatible semantics only for Stitch HTML or optional web console.
+Sources: [.agents/skills/design-mobile-design-handoff/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-mobile-design-handoff/SKILL.md:29), [.agents/skills/design-stitch-mcp-operating-rules/SKILL.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.agents/skills/design-stitch-mcp-operating-rules/SKILL.md:17), [AGENTS.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/AGENTS.md:11).
+
+The custom agents are read-only, require source references, and prohibit recursive delegation. The headless helper and validator now allow/check `design-reviewer` and `design-researcher`.
+Sources: [.codex/agents/design-reviewer.toml](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.codex/agents/design-reviewer.toml:4), [scripts/codex-headless-review.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/codex-headless-review.mjs:7), [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:28).
+
+**Readiness**
+
+Not fully ready aside from the known `CLAUDE.md` / `.claude` validator blocker because the two source/SoT drift items above remain. I also confirmed read-only that `node scripts/validate-runtime-artifacts.mjs` currently fails only on those root Claude artifacts, matching the recorded evidence; I do not recommend deleting them without an explicit owner decision.
+Sources: [scripts/validate-runtime-artifacts.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-runtime-artifacts.mjs:229), [.evidence/stitch-mcp-activation-plan/summary.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/stitch-mcp-activation-plan/summary.md:41).
+
+Residual external gap: actual Stitch generation/image smoke remains pending Google Cloud ADC/project setup, so no runtime correction should claim real Stitch output beyond the contract/evidence wiring yet.
+Source: [.evidence/stitch-mcp-activation-plan/summary.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/stitch-mcp-activation-plan/summary.md:57).

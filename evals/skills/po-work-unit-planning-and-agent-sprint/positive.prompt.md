@@ -1,0 +1,1 @@
+$po-work-unit-planning-and-agent-sprint Shape this broad PRD into a bounded MVP increment, vertical slice, agent sprint goal, handoff package, evidence requirements, and proactive-report triage decision.

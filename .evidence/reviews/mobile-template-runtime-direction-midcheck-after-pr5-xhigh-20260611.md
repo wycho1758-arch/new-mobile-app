@@ -1,0 +1,119 @@
+Critical: none.
+
+High: none.
+
+Medium: none.
+
+Low: none.
+
+No blocking scope issues found. The current direction remains aligned with the repo SoT: this is explicitly a “mobile app template runtime for WonderMove mobile agents,” not a one-off customer app build (`AGENTS.md:8`, `team-doc/mobile-app-dev-team/00-sot-and-principles.md:21`). The active constraints also preserve template reuse by forbidding hardcoded customer app names, bundle IDs, API URLs, tokens, and credentials (`AGENTS.md:14`, `PROJECT_ENVIRONMENT.md:32-40`, `PROJECT_ENVIRONMENT.md:125-140`).
+
+PR1 through PR5 move the intended outcomes in the right direction. PR1 adds durable work-unit state; PR2 adds auditable human-gate decisions; PR3 adds deterministic next-action resolution; PR4 adds pod bootstrap/preflight readiness checks; PR5 adds the native evidence ladder and offline EAS evidence ingest. Those map directly to durable handoff, role boundaries, executable agent standards, RN Web/native evidence separation, ClawPod readiness, and SoT/evidence hygiene (`team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:85-247`, `package.json:17-29`, `scripts/lib/work-unit-machine.mjs:77-105`, `scripts/lib/work-unit-machine.mjs:253-284`, `scripts/work-unit-next.mjs:126-150`, `scripts/codex-preflight.mjs:376-387`).
+
+PR6 is the next eligible repo-internal slice. The plan identifies PR6 as SoT refresh/drift detection and PR7 as evidence hygiene/Stitch/mobile-mcp hardening (`team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:249-282`). Continuing to PR6 does not require a human/ops gate as long as it stays offline and repo-internal.
+
+No live-readiness claims are currently allowed. Live EAS auth/commands, EXPO_TOKEN use, mobile-mcp/device execution, pod rollout, webhook routing, Secret/token provisioning, branch protection, platform image work, Confluence publish, and release/production submit remain human/ops-gated or explicitly not proven (`team-doc/mobile-app-dev-team/14-native-e2e-strategy.md:84-94`, `REPO_OPERATIONS.md:136-141`, `PROJECT_ENVIRONMENT.md:301-315`, `.evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md:66-80`).
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "067ad4c4da9b5340de52316222f2f48c1ed752ba",
+    "target": "575bfc304c346a5b9d0d864074f6c5744672628f",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "package.json",
+      ".github/workflows/quality-gate.yml",
+      "team-doc/mobile-app-dev-team/00-sot-and-principles.md",
+      "team-doc/mobile-app-dev-team/06-gates-and-evidence.md",
+      "team-doc/mobile-app-dev-team/10-github-artifact-workflow.md",
+      "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md",
+      "team-doc/mobile-app-dev-team/14-native-e2e-strategy.md",
+      ".evidence/mobile-qa-env-requirements/orbstack-boram-linux-sot-check.md",
+      ".evidence/reviews/pr1-work-unit-status-machine-implementation-xhigh-final-rereview-20260610.md",
+      ".evidence/reviews/pr2-human-gate-envelope-implementation-xhigh-rereview-20260610.md",
+      ".evidence/reviews/pr3-next-action-resolver-implementation-xhigh-20260611.md",
+      ".evidence/reviews/pr4-pod-bootstrap-implementation-final-xhigh-20260611.md",
+      ".evidence/reviews/pr5-native-evidence-ladder-implementation-final-xhigh-20260611.md",
+      ".evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md",
+      "scripts/lib/work-unit-machine.mjs",
+      "scripts/work-unit-next.mjs",
+      "scripts/codex-preflight.mjs",
+      "scripts/ingest-eas-evidence.mjs"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git status --short --branch",
+      "status": "PASS",
+      "evidence": "Read-only review confirmed branch feat/mobile-app-template at PR5 target with no tracked working-tree diff; one untracked review-prompt evidence file is present."
+    },
+    {
+      "command": "git log --oneline -8",
+      "status": "PASS",
+      "evidence": "Read-only review confirmed recent commits include PR1 fdb10d8, PR2 7d74634, PR3 0d2afa1, PR4 cf3bdbe, and PR5 575bfc3."
+    },
+    {
+      "command": "source review: repo purpose and customer-specific boundary",
+      "status": "PASS",
+      "evidence": "AGENTS.md:8 and team-doc/mobile-app-dev-team/00-sot-and-principles.md:21 define the repo as a mobile app template runtime; AGENTS.md:14 and PROJECT_ENVIRONMENT.md:125-140 forbid hardcoded customer identifiers, URLs, tokens, or credentials."
+    },
+    {
+      "command": "source review: PR1-PR5 direction and outcomes",
+      "status": "PASS",
+      "evidence": "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:85-247 defines PR1-PR5 as status validation, human-gate decisions, next-action resolver, pod bootstrap, and native evidence ladder work; PR1-PR5 final reviews record GO verdicts with no findings."
+    },
+    {
+      "command": "source review: tests-first and evidence",
+      "status": "PASS",
+      "evidence": "PR1, PR2, PR3, PR4, and PR5 final reviews cite RED/GREEN or checkpoint evidence; PR5 checkpoint records RED failures before implementation at .evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md:23-43 and post-implementation gate exits 0 at lines 45-58."
+    },
+    {
+      "command": "source review: mobile runtime and API contract boundaries",
+      "status": "PASS",
+      "evidence": "AGENTS.md:17, AGENTS.md:86-99, and PROJECT_ENVIRONMENT.md:94-101 preserve NativeWind/RN primitive and packages/contracts boundaries; git show path review showed PR1-PR5 primarily changed runtime validators, fixtures, docs, and evidence, not customer app UI or ad-hoc API contracts."
+    },
+    {
+      "command": "source review: PR6 then PR7 sequencing",
+      "status": "PASS",
+      "evidence": "team-doc/mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md:249-265 defines PR6 as SoT refresh/drift detection; lines 267-282 define PR7 as Stitch preflight, mobile-mcp pin drift, and evidence hygiene."
+    },
+    {
+      "command": "source review: live/external platform claim boundary",
+      "status": "PASS",
+      "evidence": "team-doc/mobile-app-dev-team/14-native-e2e-strategy.md:84-94, REPO_OPERATIONS.md:136-141, PROJECT_ENVIRONMENT.md:301-315, and .evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md:66-80 forbid or defer live EAS, token use, mobile-mcp/device, pod rollout, webhook, branch protection, Confluence publish, and release claims without human/ops approval."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Accepted from PR5 checkpoint evidence: .evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md:45-58 records exit 0 after implementation; package.json:17 composes the current runtime validators."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Accepted from PR5 checkpoint evidence: .evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md:45-58 records exit 0; AGENTS.md:107-108 requires this for Codex runtime changes."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "PASS",
+      "evidence": "Accepted from PR5 checkpoint evidence: .evidence/reviews/pr5-native-evidence-ladder-implementation-checkpoint-20260611.md:45-58 records exit 0; AGENTS.md:106 requires workspace lint/test before PR."
+    },
+    {
+      "command": "live EAS, EXPO_TOKEN, native device, mobile-mcp, pod rollout, webhook, Secret/token provisioning, branch protection, Confluence publish, release readiness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Not applicable to repo-internal PR6 planning; these actions require human/ops approval or remain unproven per team-doc/mobile-app-dev-team/14-native-e2e-strategy.md:84-94 and REPO_OPERATIONS.md:136-141."
+    }
+  ],
+  "residual_risks": [
+    "The review accepted broad PR5 gate results from recorded checkpoint evidence rather than rerunning potentially mutating workspace commands in read-only reviewer mode.",
+    "Current evidence proves repo-local runtime behavior only; it does not prove live OrbStack/OpenClaw execution, live EAS state, native device behavior, mobile-mcp output, branch protection, webhook routing, Confluence publication, or release readiness.",
+    "PR6 must remain offline and deterministic; any online SoT refresh, platform change, token provisioning, or branch-protection work requires separate human/ops approval and evidence."
+  ],
+  "next_action": "proceed"
+}
+```

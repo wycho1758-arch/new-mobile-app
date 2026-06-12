@@ -1,0 +1,7 @@
+{
+  "fixtureRoot": "evals/local-harness/product-planning",
+  "expected": {
+    "valid": true
+  }
+}
+
