@@ -32,12 +32,13 @@ write_status_report() {
   local blocker="$5"
   local preflight_json="${6:-}"
 
-  node - "$REPORT_PATH" "$role" "$REPO_PATH" "$EXPECTED_PNPM_VERSION" "$status" "$repo_acquisition" "$managed_path" "$preflight_status" "$blocker" "$preflight_json" <<'NODE'
+  node - "$REPORT_PATH" "$role" "$REPO_PATH" "$CODEX_MANAGED_PATHS" "$EXPECTED_PNPM_VERSION" "$status" "$repo_acquisition" "$managed_path" "$preflight_status" "$blocker" "$preflight_json" <<'NODE'
 const fs = require('node:fs');
 const [
   reportPath,
   role,
   repoPath,
+  managedPathsRegistry,
   expectedPnpmVersion,
   status,
   repoAcquisition,
@@ -63,7 +64,7 @@ const report = {
   repo_path: repoPath,
   repo_acquisition: repoAcquisition,
   managed_path: {
-    registry: '/workspace/CODEX_MANAGED_PATHS.md',
+    registry: managedPathsRegistry,
     status: managedPath,
   },
   package_manager: {
@@ -109,18 +110,19 @@ ensure_repo_checkout() {
 
 check_managed_path() {
   if [[ ! -r "${CODEX_MANAGED_PATHS}" ]]; then
-    write_status_report "blocked" "${repo_acquisition}" "missing registry" "skipped" "missing /workspace/CODEX_MANAGED_PATHS.md"
-    echo "pod-role-bootstrap failed: missing /workspace/CODEX_MANAGED_PATHS.md" >&2
+    write_status_report "blocked" "${repo_acquisition}" "missing registry" "skipped" "missing ${CODEX_MANAGED_PATHS}"
+    echo "pod-role-bootstrap failed: missing ${CODEX_MANAGED_PATHS}" >&2
     exit 1
   fi
 
-  if grep -Eq "^-[[:space:]]*${REPO_PATH}/?[[:space:]]*$" "${CODEX_MANAGED_PATHS}"; then
+  managed_path="${REPO_PATH%/}/"
+  if grep -Fx -- "- ${managed_path}" "${CODEX_MANAGED_PATHS}" >/dev/null 2>&1; then
     printf '%s\n' "present"
     return
   fi
 
-  write_status_report "blocked" "${repo_acquisition}" "missing managed path entry" "skipped" "missing managed path entry for /workspace/projects/Wondermove-Inc/new-mobile-app"
-  echo "pod-role-bootstrap failed: missing managed path entry in /workspace/CODEX_MANAGED_PATHS.md" >&2
+  write_status_report "blocked" "${repo_acquisition}" "missing managed path entry" "skipped" "missing managed path entry for ${REPO_PATH}"
+  echo "pod-role-bootstrap failed: missing managed path entry in ${CODEX_MANAGED_PATHS}" >&2
   exit 1
 }
 

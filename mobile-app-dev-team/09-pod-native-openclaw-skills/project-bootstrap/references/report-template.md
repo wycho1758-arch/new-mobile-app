@@ -3,6 +3,41 @@
 Use this template for `/workspace/state/project-bootstrap-report.json` or for a
 human-readable summary derived from it.
 
+The agent-owned setup phase writes
+`/workspace/state/project-bootstrap-agent-setup-report.json` before this
+preflight report. That report has this shape:
+
+```json
+{
+  "schema": "project-bootstrap-agent-setup/v1",
+  "status": "completed | blocked",
+  "role": {
+    "resolved": "product-planning | design | mobile-architect | mobile-app-dev | backend-api-integrator | qa-release | missing",
+    "status": "configured | not_resolved",
+    "identity_path": "/workspace/IDENTITY",
+    "env_path": "/workspace/state/project-bootstrap-role.env"
+  },
+  "managed_path": {
+    "registry": "/workspace/CODEX_MANAGED_PATHS.md",
+    "repo_path": "/workspace/projects/Wondermove-Inc/new-mobile-app/",
+    "canonical_repo_path": "/workspace/projects/Wondermove-Inc/new-mobile-app/",
+    "status": "present | repaired | blocked_wrong_repo_path"
+  },
+  "codex_cli_setup": "not_needed | available_after_precheck | missing_after_precheck | codex_cli_precheck_missing",
+  "mcp": {
+    "mobile_mcp": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
+    "serena": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
+    "stitch": "already_configured | registered | registration_unverified | codex_cli_missing | blocked"
+  },
+  "reports": {
+    "stitch_adc_setup": "not_applicable | already_present | generated | script_missing | not_generated",
+    "eas_robot_auth_setup": "not_applicable | already_present | generated | script_missing | not_generated"
+  },
+  "preflight": "not_run | pass | blocked | script_missing",
+  "reporting": "status only; no credential values, raw auth output, ADC JSON, database URLs, bearer tokens, or private keys"
+}
+```
+
 ```json
 {
   "schema": "project-bootstrap/v1",

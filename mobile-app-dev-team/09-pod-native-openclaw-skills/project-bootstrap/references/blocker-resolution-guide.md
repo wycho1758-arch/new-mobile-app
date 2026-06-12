@@ -12,6 +12,8 @@ The agent pod is a Linux virtualized computer and most tools are expected to
 already be installed. The agent should use available CLI, browser, and MCP tools
 for status checks, local file inspection, non-secret config generation, and
 safe verification before asking the user to act.
+The agent must not ask the user to perform setup that the agent can complete
+with local tools and non-secret inputs.
 
 The agent may:
 
@@ -37,6 +39,52 @@ The agent must not:
 - Do not install broad system tools unless an explicit project-bootstrap step
   requires that installation. Prefer existing pod tools and pinned repo config.
 
+## Agent-owned setup actions
+
+Before reporting a blocker to the user, the agent must inspect and set up every
+non-secret local environment item it can safely control:
+
+- Role identity: derive the canonical role from the pod SOUL, selector, or local
+  role handoff, then write `WM_ROLE`, `WM_EXPECTED_ROLE`, and
+  `/workspace/IDENTITY`.
+- Managed path registry: if `/workspace/CODEX_MANAGED_PATHS.md` is missing or
+  lacks the canonical WonderMove repo path, create or update it with the
+  normalized non-secret repo path entry. Do not repair unknown or conflicting
+  repo paths.
+- Report paths: create `/workspace/state` and any configured report/blocker
+  output directory.
+- Local status checks: run non-secret version, file, git, `gh auth status`, and
+  `codex mcp list` checks, recording only status labels.
+- Repo-pinned non-secret config: inspect `.codex/config.toml` and
+  `PROJECT_ENVIRONMENT.md`; when a pinned, credential-free MCP/tool setup is
+  defined there, run the setup or produce the exact local command without asking
+  the user to do it manually.
+
+Do not ask the user to choose the role, write `/workspace/IDENTITY`, create
+local state directories, run status commands, or copy non-secret managed-path
+entries.
+
+## Human-owned blockers
+
+Only ask the user or platform owner for actions that require human authority,
+credentials, account decisions, paid/external platform choices, or a linked
+`human-gate/v1`. Keep these as blockers until the human-owned input exists.
+Never request secret values in chat; ask for mounted/managed credentials or an
+interactive login path instead.
+
+## Blocker Classification
+
+| Classification | Examples | Required handling |
+| --- | --- | --- |
+| Agent-owned | Role identity from SOUL/selector/handoff, `/workspace/state` directories, `/workspace/CODEX_MANAGED_PATHS.md`, required MCP registration from pinned repo SoT, role-specific status-only setup reports | The agent runs the local setup before reporting blockers. |
+| Agent-owned if approved source exists | Git identity from an approved local handoff, GitHub CLI setup when auth material is already mounted, repo clone when a non-secret clone URL is known, conditional MCP registration when selected by SoT | The agent uses the approved local source. If the source is absent or ambiguous, keep a human-owned blocker. |
+| Human-owned blockers | Account login, credential provisioning, cloud project authority, store credentials, billing choices, branch protection, production release, failed-gate risk acceptance, missing pod artifact refresh | The agent gives the generated Markdown guide and waits for the external authority or artifact to exist. |
+
+The default order is: run
+`/workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh`,
+source `/workspace/state/project-bootstrap-role.env` when present, rerun
+preflight, and only then report unresolved blockers to the user.
+
 ## Role Identity Blockers
 
 Related blockers:
@@ -50,26 +98,35 @@ Related blockers:
 
 Resolution:
 
-1. Choose the canonical role slug from the assigned SOUL:
+1. The agent must set the identity itself when the assigned SOUL, pod selector,
+   or local role handoff already identifies the role. Do not ask the user to choose the role in that case.
+2. Use the canonical role slug from the assigned SOUL:
    - `product-planning`
    - `design`
    - `mobile-architect`
    - `mobile-app-dev`
    - `backend-api-integrator`
    - `qa-release`
-2. Set all configured role surfaces to the same canonical slug:
+3. Set all configured role surfaces to the same canonical slug:
 
 ```bash
-export WM_ROLE="<canonical-role-slug>"
-export WM_EXPECTED_ROLE="<canonical-role-slug>"
-printf '%s\n' "<canonical-role-slug>" > /workspace/IDENTITY
+role_slug="<canonical-role-slug>"
+export WM_ROLE="${role_slug}"
+export WM_EXPECTED_ROLE="${role_slug}"
+printf '%s\n' "${role_slug}" > /workspace/IDENTITY
 ```
 
-Agent action:
+Agent-owned setup actions:
 
 - If the assigned pod role is unambiguous from a user instruction, pod selector,
-  or local role handoff file, the agent may prepare the non-secret commands.
-- If the role is ambiguous, ask the user to choose the canonical slug.
+  SOUL file, or local role handoff file, the agent should run the non-secret
+  setup commands and rerun the read-only preflight.
+
+Human-owned blockers:
+
+- If the role is ambiguous because no SOUL file, selector, or role handoff is
+  available, request a pod artifact refresh or role-source handoff. Do not ask
+  the user to choose the role as a substitute for missing pod identity evidence.
 
 ## Package Manager Blockers
 
@@ -92,8 +149,10 @@ Agent action:
 
 - The agent may verify `package.json`, `pnpm-lock.yaml`, `corepack --version`,
   and current `pnpm --version`.
-- The agent should tell the user that running `pod-role-bootstrap` will activate
-  the pinned pnpm and install dependencies.
+- The agent should run `pod-role-bootstrap` when the setup flow reaches that
+  step and the user has authorized bootstrap execution. That script activates
+  the pinned pnpm and installs dependencies. Do not ask the user to manually
+  choose a pnpm version.
 
 ## Git Identity Blockers
 
@@ -114,8 +173,10 @@ Agent action:
 
 - The agent may check current values with `git config --global --get user.name`
   and `git config --global --get user.email`.
-- The agent must not invent an email address. Ask the user or use an approved
-  org standard if one is explicitly available in the pod handoff.
+- If an approved local handoff or org-standard source already provides the
+  author identity, the agent may set it directly.
+- The agent must not invent an email address. If no approved source exists,
+  keep a human-owned blocker and provide this guide.
 
 ## GitHub Auth Blockers
 
@@ -133,6 +194,8 @@ Resolution:
 Agent action:
 
 - The agent may run `gh auth status`.
+- If local authenticated CLI state or mounted auth material already exists, the
+  agent may complete non-secret verification and setup-git steps.
 - The agent may open a browser/device-login flow only with a human present for
   credential entry.
 - The agent must not paste tokens, OAuth codes, or private auth output into
@@ -159,9 +222,11 @@ Resolution:
 
 Agent action:
 
-- The agent may inspect `.codex/config.toml`, run `codex mcp list`, and report
-  configured/missing status.
-- The agent may prepare exact non-secret setup commands from repo-pinned config.
+- The agent must inspect `.codex/config.toml`, run `codex mcp list`, and
+  register missing required MCPs when the pinned command is credential-free.
+- The agent may prepare exact non-secret setup commands from repo-pinned config
+  only when Codex CLI itself is unavailable or registration fails for a
+  source-backed reason.
 - The agent must not use `@latest` when a pinned version exists in SoT.
 - The agent must not print ADC JSON or auth files.
 
@@ -187,8 +252,10 @@ Resolution:
 Agent action:
 
 - The agent may check file and directory presence.
-- The agent may prepare a non-secret managed-path patch or command for user
-  review.
+- The agent must repair the managed-path registry when the repo path is the
+  canonical WonderMove SoT path and there is no conflicting managed ownership.
+- If `REPO_PATH` points anywhere else, keep it blocked as a wrong repo path
+  instead of adding the override to `/workspace/CODEX_MANAGED_PATHS.md`.
 - If clone is required, `REPO_CLONE_URL` must be non-secret and token-free.
 
 ## Role-Specific Setup Report Blockers
@@ -207,7 +274,7 @@ Resolution:
 
 Agent action:
 
-- The agent may run status-only setup prechecks when their skill is present and
+- The agent must run status-only setup prechecks when their skill is present and
   the action is not a live external operation.
 - Credentials remain secret/status-only. Missing credentials require a human or
   platform owner.

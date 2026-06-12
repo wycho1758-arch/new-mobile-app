@@ -174,6 +174,7 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-s
 requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md', [
   'name: project-bootstrap',
   '/workspace/skills/project-bootstrap/SKILL.md',
+  'project-bootstrap-agent-setup.sh',
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
   '/workspace/CODEX_MANAGED_PATHS.md',
   'PROJECT_ENVIRONMENT.md',
@@ -181,6 +182,14 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstra
   'references/blocker-resolution-guide.md',
   'PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH',
   'project-bootstrap-blockers.md',
+  'derive the canonical role slug from the pod SOUL',
+  'Do not ask the user to choose a role slug',
+  'Do not ask the user to perform agent-owned setup',
+  'agent-owned setup before blocker report',
+  'register missing required MCPs',
+  'repair the managed-path registry',
+  'run role-specific status-only setup reports',
+  'agent must inspect and set up its own pod environment',
   'qa-release',
   'mobile-mcp',
   'serena',
@@ -191,12 +200,18 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstra
 
 requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md', [
   'Project Bootstrap Blocker Resolution Guide',
+  'Blocker Classification',
   'missing role identity',
   'pnpm-pin-mismatch',
   'git-identity-missing',
   'github-auth-unavailable',
   'codex-mcp-unavailable',
   'Agent/tool-use boundary',
+  'agent must set the identity itself',
+  'Do not ask the user to choose the role',
+  'Agent-owned setup actions',
+  'Agent-owned if approved source exists',
+  'Human-owned blockers',
   'Do not print token values',
 ]);
 
