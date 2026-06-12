@@ -1300,6 +1300,19 @@ for (const [roleFile, displayTitle, operatingRole, authorityLevel] of [
   ]);
 }
 
+for (const [roleFile, displayTitle, operatingRole] of [
+  ['product-planning-soul.md', 'Chief Product Officer (CPO) / Product Delivery Lead', 'Product/Planning'],
+  ['design-soul.md', 'Product Designer', 'Design'],
+  ['mobile-architect-soul.md', 'Mobile Architect / Technical Lead', 'Mobile Architect'],
+  ['mobile-app-dev-soul.md', 'Mobile App Developer', 'Mobile App Dev'],
+  ['backend-api-integrator-soul.md', 'Backend/API Engineer', 'Backend/API Integrator'],
+  ['qa-release-soul.md', 'QA/Release Engineer', 'QA/Release'],
+]) {
+  requireDocTerms(`${managedTeamDocRoot}/02-role-souls/${roleFile}`, [
+    `You are the ${displayTitle} operating under the ${operatingRole} runtime role`,
+  ]);
+}
+
 requireDocTerms(`${managedTeamDocRoot}/06-gates-and-evidence.md`, [
   'Release Gatekeeper (System)',
   'Railway Boundary',

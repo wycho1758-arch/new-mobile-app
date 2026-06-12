@@ -1,0 +1,49 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "800242e4ce07a0ab4985b6293b2115c0655a6c28",
+    "target": "read-only impact report for proposed role-title documentation change under mobile-app-dev-team/02-role-souls",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "mobile-app-dev-team/08-role-title-update-plan.md",
+      "mobile-app-dev-team/02-role-souls/design-soul.md",
+      "mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md",
+      "mobile-app-dev-team/02-role-souls/qa-release-soul.md",
+      "mobile-app-dev-team/03-role-capability-matrix.md",
+      "mobile-app-dev-team/04-skills-and-agents-matrix.md",
+      "scripts/validate-team-doc.mjs",
+      "scripts/lib/work-unit-machine.mjs",
+      "scripts/codex-headless-review.mjs",
+      "scripts/codex-preflight.mjs",
+      "evals/work-units/fixtures/valid/resolver-role-filter/status.json",
+      "evals/work-units/fixtures/valid/resolver-role-filter/expected-next.json"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "pnpm run validate:team-doc",
+      "status": "PASS",
+      "evidence": "Command exited 0 and printed: Validated current mobile-app-dev-team managed docs."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Not run for this read-only impact-report scope; required for an actual final implementation per PROJECT_ENVIRONMENT.md:14 and mobile-app-dev-team/08-role-title-update-plan.md:91."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Not run for this read-only impact-report scope; conditionally required for runtime-facing implementation changes per PROJECT_ENVIRONMENT.md:17 and mobile-app-dev-team/08-role-title-update-plan.md:93."
+    }
+  ],
+  "residual_risks": [
+    "A future implementation that changes only Display Title/body wording remains low impact, but the PR must still rerun documented gates after the actual diff.",
+    "Changing Operating Role, SOUL H1s, skill or agent slugs, status.owner_role values, fixtures, or reviewer owner enums would become a runtime migration and must update validators, fixtures, resolver expectations, and preflight routing together.",
+    "No mobile UI/runtime paths were reviewed because the scoped proposal is documentation/runtime-role metadata only."
+  ],
+  "next_action": "proceed"
+}
