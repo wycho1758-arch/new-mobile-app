@@ -24,7 +24,8 @@ collect non-secret values and status-only credential refs
 -> rollout restart when pod-template variables or references changed
 -> wait for readiness
 -> run pod-internal redacted read-only preflight
--> stop on blockers or run pod-role-bootstrap
+-> stop on blockers or run project-bootstrap
+-> run pod-role-bootstrap only after project-bootstrap has no required blockers
 -> record redacted evidence
 ```
 
@@ -52,7 +53,7 @@ different branch or commit:
 - `REPO_CLONE_URL`: `https://github.com/Wondermove-Inc/new-mobile-app.git`
 - `REPO_REF`: `feat/mobile-app-template`
 - `REPO_COMMIT`: `ccff06faf01f8c553598a3cde7c997f69378f7d6`
-- `REPO_PATH`: `/workspace/new-mobile-app`
+- `REPO_PATH`: `/workspace/projects/Wondermove-Inc/new-mobile-app`
 
 If the repo already exists in the target pod, do not clone. If it is missing,
 clone only from a non-secret URL and use GitHub auth or deploy credentials via a
@@ -69,7 +70,7 @@ Owner/operator must ensure the target pod registry exists and contains the
 normalized repo path:
 
 ```bash
-REPO_PATH="${REPO_PATH:-/workspace/new-mobile-app}"
+REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPO_PATH="${REPO_PATH%/}"
 MANAGED_PATH="${REPO_PATH}/"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
@@ -83,6 +84,7 @@ not ready for Codex-managed repo work without this registry entry.
 
 The target pod must contain these runtime artifacts:
 
+- `/workspace/skills/project-bootstrap`
 - `/workspace/skills/codex-cli-auth-setup`
 - `/workspace/skills/pod-role-bootstrap`
 
@@ -219,6 +221,11 @@ exist, then runs a read-only preflight that checks:
 - Required `/workspace/skills/*` directories in the pod.
 - Repo path presence.
 - Normalized managed path entry.
+- `PROJECT_ENVIRONMENT.md` consistency for repo runtime facts.
+- Required MCP names: `mobile-mcp`, `serena`, and `stitch`; conditional MCPs:
+  `expo`, `atlassian`, `node_repl`, and `playwright`.
+- Auxiliary CLI status for `codex`, GitHub auth, Railway, `gcloud`, EAS, and
+  workspace Expo when in scope.
 - Credential status checks as status-only or role-specific N/A.
 
 The preflight result must be written to
@@ -253,8 +260,11 @@ names, object names, and status labels.
 
 ## Step 12 - Bootstrap Execution Gate
 
-Run `pod-role-bootstrap` only after read-only preflight passes or role-specific
-N/A is justified. The bootstrap may install dependencies and write redacted
+Run `project-bootstrap` first after read-only preflight passes or role-specific
+N/A is justified. It writes redacted project-level evidence to
+`${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}`.
+Run `pod-role-bootstrap` only after the project-level report has no required
+blockers. The role bootstrap may install dependencies and write redacted
 state/evidence under `${STATE_DIR:-/workspace/state}` or configured
 `REPORT_PATH`.
 
@@ -263,6 +273,7 @@ Evidence required for the first canary:
 - Redacted `bootstrap-preflight.json`.
 - Rollout/readiness result when pod-template values or references changed.
 - Pod-internal preflight result.
+- `project-bootstrap` result.
 - `pod-role-bootstrap` result.
 - Role-specific pass or N/A reason.
 - `human-gate/v1` before any live external action.
@@ -275,6 +286,9 @@ Before handoff, reviewer must confirm:
   requests.
 - The runbook uses official URLs for external setup steps.
 - `REPO_PATH`, `CODEX_MANAGED_PATHS`, and `STATE_DIR` overrides are respected.
+- `/workspace/skills/project-bootstrap` and
+  `${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}`
+  are included in the first canary path.
 - Managed path check normalizes trailing slash.
 - Restart/readiness/preflight sequence is present.
 - Raw status-command output and rendered private manifests are forbidden.

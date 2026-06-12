@@ -14,9 +14,10 @@
 | `mobile-app-dev-team/13-pod-organization-e2e-improvement-plan.md` | Improvement plan for running the team as OpenClaw cloud pods with autonomous mobile-app E2E |
 | `mobile-app-dev-team/14-native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
 | `mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
-| `mobile-app-dev-team/16-pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/new-mobile-app` and pod-native skills |
+| `mobile-app-dev-team/16-pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/projects/Wondermove-Inc/new-mobile-app` and pod-native skills |
 | `mobile-app-dev-team/17-orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
 | `mobile-app-dev-team/18-orbstack-pod-config-setup-runbook-plan.md` | Current owner/operator setup plan with official external documentation URLs for missing pod values |
+| `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md` | Current pod-native OpenClaw project bootstrap source for boram pod readiness, runtime-shaped as `/workspace/skills/project-bootstrap/SKILL.md` |
 | `mobile-app-dev-team/ref-organization/` | Reference organization reusable guidance, current-project examples, and migration crosswalk |
 | `mobile-app-dev-team/ref-organization/99-source-map-and-migration/old-to-new-crosswalk.md` | File-by-file migration plan from historical `team-doc/10-structured/**` identifiers into `ref-organization/`; source content is validated through root archive files |
 | `docs/plans/work-units/<work-unit-id>/` | Durable GitHub work-unit artifact root for role-pod handoff |
@@ -56,7 +57,7 @@
 | `mobile-api-contract` | historical source name | Do not list as active unless `.agents/skills/mobile-api-contract/SKILL.md` exists. Current active path is `mobile-backend-api-integrator-workflow` plus `packages/contracts`. |
 | `mobile-qa-release` | historical source name | Do not list as active unless `.agents/skills/mobile-qa-release/SKILL.md` exists. Current active QA skills are `e2e-test` and `qa-railway-workflow`. |
 | `mobile-gatekeeper` | historical deterministic concept | Not an LLM skill in the current managed docs. Treat as deterministic required-check concept. |
-| `mobile-project-bootstrap-workflow` | historical/planned source name | No active repo-local skill in current `.agents/skills`. Case A remains human/operator plus Product/Planning coordination. |
+| `mobile-project-bootstrap-workflow` | historical/planned source name | No active repo-local skill in current `.agents/skills`. Current pod-native handling is `project-bootstrap` under `mobile-app-dev-team/09-pod-native-openclaw-skills/`, with runtime shape `/workspace/skills/project-bootstrap/SKILL.md`; Case A still requires human/operator coordination for live pod and external-platform proof. |
 
 ## Stale Or Lower-Priority Sources
 

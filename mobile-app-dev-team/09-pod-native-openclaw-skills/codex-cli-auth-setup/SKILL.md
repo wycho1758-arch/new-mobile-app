@@ -42,9 +42,9 @@ is routed through Codex CLI.
 
 Project path setup:
 
-- GitHub repository checkout path: `/workspace/new-mobile-app/`
+- GitHub repository checkout path: `/workspace/projects/Wondermove-Inc/new-mobile-app/`
 - Codex-managed paths registry: `/workspace/CODEX_MANAGED_PATHS.md`
-- Required managed path entry: `/workspace/new-mobile-app/`
+- Required managed path entry: `/workspace/projects/Wondermove-Inc/new-mobile-app/`
 - Default Codex hook wrapper: `/workspace/codex-hooks/codex-run`
 
 Use this registry shape:
@@ -56,12 +56,12 @@ Add repository or directory paths here. Any task targeting these paths must be
 executed through Codex CLI according to the root repo operations policy in
 `REPO_OPERATIONS.md` and the runtime instructions in `AGENTS.md`.
 
-- /workspace/new-mobile-app/
+- /workspace/projects/Wondermove-Inc/new-mobile-app/
 ```
 
 When checking an existing OpenClaw pod, inspect AGENTS.md,
 `REPO_OPERATIONS.md`, and `/workspace/CODEX_MANAGED_PATHS.md` without reading
-secrets. The policy setup is not complete until `/workspace/new-mobile-app/`
+secrets. The policy setup is not complete until `/workspace/projects/Wondermove-Inc/new-mobile-app/`
 is present in the managed-paths registry and repository work is routed through
 the configured Codex hook wrapper.
 

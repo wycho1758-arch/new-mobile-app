@@ -46,11 +46,11 @@ not match the resolved role, hard fail.
 1. Resolve the role and verify or acquire the repo checkout path.
 
 ```bash
-export REPO_PATH="${REPO_PATH:-/workspace/new-mobile-app}"
+export REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 bash /workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh
 ```
 
-The default checkout path is `/workspace/new-mobile-app`. If that directory is
+The default checkout path is `/workspace/projects/Wondermove-Inc/new-mobile-app`. If that directory is
 missing, `REPO_CLONE_URL` must be configured by the pod environment. The
 bootstrap may run `gh auth status` as a redacted GitHub readiness check when
 the GitHub CLI is available. It does not print the clone URL token material or
@@ -58,7 +58,7 @@ any token value.
 
 The checkout is not ready for Codex-managed repo work until
 `/workspace/CODEX_MANAGED_PATHS.md` contains the managed path entry for
-`/workspace/new-mobile-app/`. If the entry is missing, bootstrap writes a
+`/workspace/projects/Wondermove-Inc/new-mobile-app/`. If the entry is missing, bootstrap writes a
 status-only blocker report and exits non-zero instead of claiming readiness.
 
 2. Align package manager selection with the repo SoT.
@@ -101,7 +101,7 @@ whose `/workspace/CODEX_MANAGED_PATHS.md` policy is not ready.
 ## Done When
 
 - role resolution succeeds
-- the repo checkout exists at `/workspace/new-mobile-app`
+- the repo checkout exists at `/workspace/projects/Wondermove-Inc/new-mobile-app`
 - the checkout came from an existing directory or explicit `REPO_CLONE_URL`
 - `/workspace/CODEX_MANAGED_PATHS.md` contains the managed path entry
 - pnpm is aligned to `pnpm@9.15.9`

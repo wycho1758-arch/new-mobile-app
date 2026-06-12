@@ -154,7 +154,7 @@ requireTerms('REPO_OPERATIONS.md', [
   'scripts/validate-evidence-hygiene.mjs',
   'Codex-only Repo Work Policy',
   '/workspace/CODEX_MANAGED_PATHS.md',
-  '/workspace/new-mobile-app/',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
 ]);
 
@@ -167,8 +167,23 @@ requireFile('TEAM_DOC_ARCHIVE_BUNDLE.jsonl');
 requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'REPO_OPERATIONS.md',
   '/workspace/CODEX_MANAGED_PATHS.md',
-  '/workspace/new-mobile-app/',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
+]);
+
+requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md', [
+  'name: project-bootstrap',
+  '/workspace/skills/project-bootstrap/SKILL.md',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app',
+  '/workspace/CODEX_MANAGED_PATHS.md',
+  'PROJECT_ENVIRONMENT.md',
+  'repo_sot_files',
+  'qa-release',
+  'mobile-mcp',
+  'serena',
+  'stitch',
+  'human-gate/v1',
+  'status only',
 ]);
 
 forbidTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
