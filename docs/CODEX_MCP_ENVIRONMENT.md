@@ -9,7 +9,7 @@ runtime repositories.
 
 For fresh OpenClaw role pods, start with
 `mobile-app-dev-team/16-pod-environment-bootstrap.md`. Pod readiness requires
-the checkout at `/workspace/new-mobile-app`, the matching entry in
+the checkout at `/workspace/projects/Wondermove-Inc/new-mobile-app`, the matching entry in
 `/workspace/CODEX_MANAGED_PATHS.md`, and `pod-role-bootstrap` status-only
 evidence before this repo-local MCP guide is treated as actionable inside the
 pod.

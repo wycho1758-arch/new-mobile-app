@@ -52,7 +52,7 @@ different branch or commit:
 - `REPO_CLONE_URL`: `https://github.com/Wondermove-Inc/new-mobile-app.git`
 - `REPO_REF`: `feat/mobile-app-template`
 - `REPO_COMMIT`: `ccff06faf01f8c553598a3cde7c997f69378f7d6`
-- `REPO_PATH`: `/workspace/new-mobile-app`
+- `REPO_PATH`: `/workspace/projects/Wondermove-Inc/new-mobile-app`
 
 If the repo already exists in the target pod, do not clone. If it is missing,
 clone only from a non-secret URL and use GitHub auth or deploy credentials via a
@@ -69,7 +69,7 @@ Owner/operator must ensure the target pod registry exists and contains the
 normalized repo path:
 
 ```bash
-REPO_PATH="${REPO_PATH:-/workspace/new-mobile-app}"
+REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPO_PATH="${REPO_PATH%/}"
 MANAGED_PATH="${REPO_PATH}/"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"

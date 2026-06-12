@@ -1,6 +1,6 @@
 **Medium Findings**
 
-1. Clone-on-demand still needs a canonical configured clone source and `/workspace/CODEX_MANAGED_PATHS.md` readiness contract before implementation. The plan prompt says `pod-role-bootstrap` should add clone-on-demand and secret-safe GitHub status checks, but the cited repo policy requires Codex-managed paths to be declared in `/workspace/CODEX_MANAGED_PATHS.md`, the checkout path to be `/workspace/new-mobile-app/`, and reports to stay redacted. The observed pod state in the prompt says `/workspace/new-mobile-app` is missing and `/workspace/CODEX_MANAGED_PATHS.md` has no `/workspace/new-mobile-app/` entry, while the current bootstrap script hard-fails when the repo path is absent. This is a runtime/docs architecture blocker unless the plan explicitly requires a non-secret configured clone source and a readiness check that either verifies the managed path entry or reports blocked.
+1. Clone-on-demand still needs a canonical configured clone source and `/workspace/CODEX_MANAGED_PATHS.md` readiness contract before implementation. The plan prompt says `pod-role-bootstrap` should add clone-on-demand and secret-safe GitHub status checks, but the cited repo policy requires Codex-managed paths to be declared in `/workspace/CODEX_MANAGED_PATHS.md`, the checkout path to be `/workspace/projects/Wondermove-Inc/new-mobile-app/`, and reports to stay redacted. The observed pod state in the prompt says `/workspace/projects/Wondermove-Inc/new-mobile-app` is missing and `/workspace/CODEX_MANAGED_PATHS.md` has no `/workspace/projects/Wondermove-Inc/new-mobile-app/` entry, while the current bootstrap script hard-fails when the repo path is absent. This is a runtime/docs architecture blocker unless the plan explicitly requires a non-secret configured clone source and a readiness check that either verifies the managed path entry or reports blocked.
 
 2. M0 baseline isolation remains under-specified for the current dirty tree. The prior review recorded that the dirty state includes SoT and runtime/gate files broader than a simple path migration, and current read-only `git status --short` still shows broad pre-existing changes. Because AGENTS requires TDD/validator-first and PR gate evidence, and REPO_OPERATIONS requires linked evidence with exit status for runtime/docs changes, this plan should not proceed into M1 until M0 inventory, isolation/commit strategy, and rerun baseline evidence are explicit.
 
@@ -10,7 +10,7 @@
 
 **Positive Effect If Fixed**
 
-If those two Medium issues are corrected, the plan has a clear positive effect. It targets documented drift: repo SoT already defines pod-native skill paths, but the matrix still says OpenClaw skills are deferred; the 09 README lists only two skills; `pod-bootstrap.sh` fails when `/workspace/new-mobile-app` is absent; doc 13 still references `/workspace/repo`; and the existing validator misses those mismatches. The validator-first approach is directionally sound once clone-source/readiness and M0 isolation are made explicit.
+If those two Medium issues are corrected, the plan has a clear positive effect. It targets documented drift: repo SoT already defines pod-native skill paths, but the matrix still says OpenClaw skills are deferred; the 09 README lists only two skills; `pod-bootstrap.sh` fails when `/workspace/projects/Wondermove-Inc/new-mobile-app` is absent; doc 13 still references `/workspace/repo`; and the existing validator misses those mismatches. The validator-first approach is directionally sound once clone-source/readiness and M0 isolation are made explicit.
 
 ```json
 {
@@ -104,7 +104,7 @@ If those two Medium issues are corrected, the plan has a clear positive effect. 
     {
       "command": "nl -ba REPO_OPERATIONS.md | sed -n '80,105p'",
       "status": "PASS",
-      "evidence": "Confirmed Codex-managed path, /workspace/new-mobile-app checkout path, redacted reporting, and evidence requirements."
+      "evidence": "Confirmed Codex-managed path, /workspace/projects/Wondermove-Inc/new-mobile-app checkout path, redacted reporting, and evidence requirements."
     },
     {
       "command": "nl -ba PROJECT_ENVIRONMENT.md | sed -n '215,226p'",

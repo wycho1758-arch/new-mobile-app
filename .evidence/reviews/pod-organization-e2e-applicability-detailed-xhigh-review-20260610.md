@@ -1813,7 +1813,7 @@ exec
     80	agent-neutral and describe `this agent`, `assistant`, or `the agent`, not a
     81	specific personal name. Codex-managed paths are listed in
     82	`/workspace/CODEX_MANAGED_PATHS.md`, and the repository checkout path for this
-    83	project is `/workspace/new-mobile-app/`. The default Codex hook wrapper is
+    83	project is `/workspace/projects/Wondermove-Inc/new-mobile-app/`. The default Codex hook wrapper is
     84	`/workspace/codex-hooks/codex-run` when available.
     85
     86	Do not print or commit auth tokens, API keys, OAuth tokens, refresh tokens,
@@ -2320,7 +2320,7 @@ exec
     97	  'legacy Confluence-shaped corpus',
     98	  'Codex-only Repo Work Policy',
     99	  '/workspace/CODEX_MANAGED_PATHS.md',
-   100	  '/workspace/new-mobile-app/',
+   100	  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
    101	  '/workspace/codex-hooks/codex-run',
    102	]);
    103
@@ -2332,7 +2332,7 @@ exec
    109	requireTerms('team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
    110	  'REPO_OPERATIONS.md',
    111	  '/workspace/CODEX_MANAGED_PATHS.md',
-   112	  '/workspace/new-mobile-app/',
+   112	  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
    113	  '/workspace/codex-hooks/codex-run',
    114	]);
    115

@@ -8,7 +8,7 @@ human-readable summary derived from it.
   "schema": "pod-role-bootstrap/v1",
   "status": "ready | blocked",
   "role": "<resolved WM_ROLE or /workspace/IDENTITY first line>",
-  "repo_path": "/workspace/new-mobile-app",
+  "repo_path": "/workspace/projects/Wondermove-Inc/new-mobile-app",
   "repo_acquisition": "existing | cloned | missing REPO_CLONE_URL",
   "managed_path": {
     "registry": "/workspace/CODEX_MANAGED_PATHS.md",
@@ -42,7 +42,7 @@ The `repo_acquisition` field records whether the checkout already existed,
 was cloned from explicit pod configuration, or was blocked because
 `REPO_CLONE_URL` was missing. The `managed_path` field records whether
 `/workspace/CODEX_MANAGED_PATHS.md` contains the required
-`/workspace/new-mobile-app/` entry.
+`/workspace/projects/Wondermove-Inc/new-mobile-app/` entry.
 
 Do not include auth token values, API keys, OAuth tokens, refresh tokens,
 passwords, full auth JSON, or full secret-bearing config contents.

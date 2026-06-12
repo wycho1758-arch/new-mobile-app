@@ -32,7 +32,7 @@ Changed paths:
 
 1. Clone-on-demand now requires explicit `REPO_CLONE_URL`, writes
    `repo_acquisition`, and blocks readiness unless `/workspace/CODEX_MANAGED_PATHS.md`
-   contains `/workspace/new-mobile-app/`.
+   contains `/workspace/projects/Wondermove-Inc/new-mobile-app/`.
 2. Baseline dirty state was rechecked before implementation. `git status --short`
    was clean at the start of this resumed work.
 
@@ -41,7 +41,7 @@ Changed paths:
 - `AGENTS.md:5` defines pod-native `/workspace/skills/<slug>/SKILL.md` runtime shape and `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/` source.
 - `AGENTS.md:13` requires tests or validators before implementation changes.
 - `AGENTS.md:57` through `AGENTS.md:60` define local harness limits and say it does not prove OpenClaw packaging behavior.
-- `REPO_OPERATIONS.md:85` through `REPO_OPERATIONS.md:95` define Codex-only pod repo work, `/workspace/CODEX_MANAGED_PATHS.md`, `/workspace/new-mobile-app/`, `/workspace/codex-hooks/codex-run`, and redacted status reporting.
+- `REPO_OPERATIONS.md:85` through `REPO_OPERATIONS.md:95` define Codex-only pod repo work, `/workspace/CODEX_MANAGED_PATHS.md`, `/workspace/projects/Wondermove-Inc/new-mobile-app/`, `/workspace/codex-hooks/codex-run`, and redacted status reporting.
 - `REPO_OPERATIONS.md:135` through `REPO_OPERATIONS.md:140` define local harness requirement and non-claim limits.
 - `PROJECT_ENVIRONMENT.md:219` through `PROJECT_ENVIRONMENT.md:225` define `$wm` SoT-grounded planning and review evidence.
 
@@ -52,8 +52,8 @@ container still showed:
 
 - `/workspace/skills/codex-cli-auth-setup/SKILL.md` exists.
 - `pod-role-bootstrap`, `eas-robot-auth-setup`, and `stitch-adc-setup` are absent from the live pod.
-- `/workspace/new-mobile-app` is missing.
-- `/workspace/CODEX_MANAGED_PATHS.md` contains only template comments and no `/workspace/new-mobile-app/` entry.
+- `/workspace/projects/Wondermove-Inc/new-mobile-app` is missing.
+- `/workspace/CODEX_MANAGED_PATHS.md` contains only template comments and no `/workspace/projects/Wondermove-Inc/new-mobile-app/` entry.
 
 This implementation updates repo source/docs/validators only. It does not claim
 the live pod has been updated.

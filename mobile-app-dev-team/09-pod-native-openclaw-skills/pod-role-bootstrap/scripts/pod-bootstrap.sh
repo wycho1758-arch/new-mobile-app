@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_PATH="${REPO_PATH:-/workspace/new-mobile-app}"
+REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPORT_PATH="${REPORT_PATH:-/workspace/state/pod-role-bootstrap-report.json}"
 EXPECTED_PNPM_VERSION="${EXPECTED_PNPM_VERSION:-9.15.9}"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
@@ -119,7 +119,7 @@ check_managed_path() {
     return
   fi
 
-  write_status_report "blocked" "${repo_acquisition}" "missing managed path entry" "skipped" "missing managed path entry for /workspace/new-mobile-app"
+  write_status_report "blocked" "${repo_acquisition}" "missing managed path entry" "skipped" "missing managed path entry for /workspace/projects/Wondermove-Inc/new-mobile-app"
   echo "pod-role-bootstrap failed: missing managed path entry in /workspace/CODEX_MANAGED_PATHS.md" >&2
   exit 1
 }

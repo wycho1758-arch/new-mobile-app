@@ -406,7 +406,7 @@ requireDocTerms(`${codexCliAuthSetupSkillRoot}/SKILL.md`, [
   'Do not duplicate the full root policy',
   '/workspace/CODEX_MANAGED_PATHS.md',
   '/workspace/codex-hooks/codex-run',
-  '/workspace/new-mobile-app/',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   'Project path',
   '/workspace/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh',
   '--dangerously-bypass-approvals-and-sandbox',
@@ -510,7 +510,7 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/scripts/pod-bootstrap.sh`, [
   'REPO_CLONE_URL',
   'gh auth status',
   '/workspace/CODEX_MANAGED_PATHS.md',
-  '/workspace/new-mobile-app',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app',
   'REPORT_PATH',
   '/workspace/state/pod-role-bootstrap-report.json',
   'corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate',
@@ -1323,7 +1323,7 @@ requireDocTerms(`${managedTeamDocRoot}/99-source-map.md`, [
 
 requireDocTerms(`${managedTeamDocRoot}/16-pod-environment-bootstrap.md`, [
   '# Pod Environment Bootstrap',
-  '/workspace/new-mobile-app',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app',
   '/workspace/CODEX_MANAGED_PATHS.md',
   'REPO_CLONE_URL',
   'codex-cli-auth-setup',

@@ -154,7 +154,7 @@ requireTerms('REPO_OPERATIONS.md', [
   'scripts/validate-evidence-hygiene.mjs',
   'Codex-only Repo Work Policy',
   '/workspace/CODEX_MANAGED_PATHS.md',
-  '/workspace/new-mobile-app/',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
 ]);
 
@@ -167,7 +167,7 @@ requireFile('TEAM_DOC_ARCHIVE_BUNDLE.jsonl');
 requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'REPO_OPERATIONS.md',
   '/workspace/CODEX_MANAGED_PATHS.md',
-  '/workspace/new-mobile-app/',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app/',
   '/workspace/codex-hooks/codex-run',
 ]);
 

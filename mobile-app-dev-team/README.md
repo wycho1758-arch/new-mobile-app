@@ -26,7 +26,7 @@ Confluence 원본 export, 구조화 참조, `_meta` 감사 기록은 root
 | `13-pod-organization-e2e-improvement-plan.md` | Pod 조직(boram-* 패턴)으로 모바일 앱 E2E를 무인 수행하기 위한 개선 계획 |
 | `14-native-e2e-strategy.md` | RN Web, EAS/Maestro, human-device/mobile-mcp 증거 사다리와 native 증거 경계 |
 | `15-human-ops-live-readiness-annex.md` | human/ops 승인 뒤에만 가능한 live readiness 작업의 승인·증거·금지 claim annex |
-| `16-pod-environment-bootstrap.md` | fresh OpenClaw role pod의 `/workspace/new-mobile-app` zero-to-ready 부트스트랩 순서와 OrbStack pod 설정값 체크리스트 |
+| `16-pod-environment-bootstrap.md` | fresh OpenClaw role pod의 `/workspace/projects/Wondermove-Inc/new-mobile-app` zero-to-ready 부트스트랩 순서와 OrbStack pod 설정값 체크리스트 |
 | `17-orbstack-pod-config-values.md` | 현재 repo SoT에서 확인 가능한 OrbStack role pod 설정 실제값과 owner/operator가 추가 제공해야 하는 누락값 목록 |
 | `18-orbstack-pod-config-setup-runbook-plan.md` | 누락 설정값을 수집·적용하기 위한 공식 문서 URL 포함 owner/operator runbook 계획 |
 | `ref-organization/` | Reference organization 재사용 가이드와 current-project example |

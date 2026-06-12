@@ -79,7 +79,7 @@ No Critical or High findings. The plan does honor the core concern: root-owned p
       "evidence": "Confirmed role boundaries, task field requirements, QA/Release ownership, P0/P1 sequencing, and HTML extraction gate language are existing SoT constraints."
     },
     {
-      "command": "rg -n \"REPO_OPERATIONS|Codex-only Repo Work Policy|CODEX_MANAGED_PATHS|/workspace/new-mobile-app|validate:team-doc|00-source|10-structured\" AGENTS.md PROJECT_ENVIRONMENT.md package.json scripts team-doc .agents .codex docs -g '!node_modules'",
+      "command": "rg -n \"REPO_OPERATIONS|Codex-only Repo Work Policy|CODEX_MANAGED_PATHS|/workspace/projects/Wondermove-Inc/new-mobile-app|validate:team-doc|00-source|10-structured\" AGENTS.md PROJECT_ENVIRONMENT.md package.json scripts team-doc .agents .codex docs -g '!node_modules'",
       "status": "PASS",
       "evidence": "Confirmed existing references and validator coupling relevant to the proposed root policy ownership shift."
     },
