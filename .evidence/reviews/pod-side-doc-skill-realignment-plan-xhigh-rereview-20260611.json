@@ -89,7 +89,7 @@
     {
       "command": "nl -ba REPO_OPERATIONS.md | sed -n '80,105p'",
       "status": "PASS",
-      "evidence": "Confirmed Codex-managed path, /workspace/new-mobile-app checkout path, redacted reporting, and evidence requirements."
+      "evidence": "Confirmed Codex-managed path, /workspace/projects/Wondermove-Inc/new-mobile-app checkout path, redacted reporting, and evidence requirements."
     },
     {
       "command": "nl -ba PROJECT_ENVIRONMENT.md | sed -n '215,226p'",

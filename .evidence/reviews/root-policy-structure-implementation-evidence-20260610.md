@@ -32,7 +32,7 @@ multiple prior `.evidence/reviews/*` files, and
   - Pod-native `codex-cli-auth-setup` skill no longer duplicates the full root
     policy.
   - The skill references `REPO_OPERATIONS.md` and retains pod setup facts:
-    `/workspace/new-mobile-app/`, `/workspace/CODEX_MANAGED_PATHS.md`,
+    `/workspace/projects/Wondermove-Inc/new-mobile-app/`, `/workspace/CODEX_MANAGED_PATHS.md`,
     `/workspace/codex-hooks/codex-run`.
   - `README.md` and `99-source-map.md` identify `REPO_OPERATIONS.md` as the
     root-owned repo-wide operating policy.

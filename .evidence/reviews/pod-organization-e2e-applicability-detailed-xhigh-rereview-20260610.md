@@ -1842,7 +1842,7 @@ be routed through Codex CLI. The pod-local AGENTS.md policy should stay
 agent-neutral and describe `this agent`, `assistant`, or `the agent`, not a
 specific personal name. Codex-managed paths are listed in
 `/workspace/CODEX_MANAGED_PATHS.md`, and the repository checkout path for this
-project is `/workspace/new-mobile-app/`. The default Codex hook wrapper is
+project is `/workspace/projects/Wondermove-Inc/new-mobile-app/`. The default Codex hook wrapper is
 `/workspace/codex-hooks/codex-run` when available.
 
 Do not print or commit auth tokens, API keys, OAuth tokens, refresh tokens,

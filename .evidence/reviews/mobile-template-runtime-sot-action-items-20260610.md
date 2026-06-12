@@ -46,7 +46,7 @@ Missing or mismatched vs the template-runtime pod contract:
 
 | Gap | Observed | SoT reference |
 | --- | --- | --- |
-| No repo clone | no `/workspace/new-mobile-app/` checkout; `CODEX_MANAGED_PATHS.md` empty | doc 13 pod contract; REPO_OPERATIONS Codex-only policy (canonical path `/workspace/new-mobile-app/`) |
+| No repo clone | no `/workspace/projects/Wondermove-Inc/new-mobile-app/` checkout; `CODEX_MANAGED_PATHS.md` empty | doc 13 pod contract; REPO_OPERATIONS Codex-only policy (canonical path `/workspace/projects/Wondermove-Inc/new-mobile-app/`) |
 | Role mismatch | `AGENT_ROLE` = "CTO - Tech strategy & engineering"; no `WM_ROLE` env | 6 wm roles in `01-team-composition.md`; PR4 bootstrap asserts `WM_ROLE` |
 | pnpm drift | pnpm **10.33.3** on pod vs SoT **9.15.9** | gap G9 in doc 13 — now empirically confirmed on a live pod |
 | No GitHub credential confirmed | only `OPENAI_CODEX_AUTH_JSON` Secret visible in pod env; no `GITHUB_TOKEN`/`REPO_DEPLOY_TOKEN` | `infra/clawpod/secret.example.yaml`, doc 13 platform annex |
@@ -84,11 +84,11 @@ Order is fixed by doc 13 Part E. PR1 is already in its implementation review loo
 | # | Action | Detail |
 | --- | --- | --- |
 | B1 | Provision a GitHub credential on the pod | Add `GITHUB_TOKEN` (or `REPO_DEPLOY_TOKEN` per `infra/clawpod/secret.example.yaml`) to `boram-vf7sbm-agent-secrets`; verify `gh auth status` inside the pod. Without this, clone/PR flows cannot run. |
-| B2 | Clone the template repo into the pod | `git clone https://github.com/Wondermove-Inc/new-mobile-app.git /workspace/new-mobile-app` (token-auth) — the canonical checkout path per `REPO_OPERATIONS.md` Codex-only Repo Work Policy — then register `/workspace/new-mobile-app/` in `/workspace/CODEX_MANAGED_PATHS.md`. |
+| B2 | Clone the template repo into the pod | `git clone https://github.com/Wondermove-Inc/new-mobile-app.git /workspace/projects/Wondermove-Inc/new-mobile-app` (token-auth) — the canonical checkout path per `REPO_OPERATIONS.md` Codex-only Repo Work Policy — then register `/workspace/projects/Wondermove-Inc/new-mobile-app/` in `/workspace/CODEX_MANAGED_PATHS.md`. |
 | B3 | Role alignment for sample validation | Keep boram's CTO identity for org duties; for template validation runs, set `WM_ROLE` (start with `mobile-dev` or `qa`) via StatefulSet env or session-scoped export, aligned with `/workspace/IDENTITY.md` expectations defined in PR4. Document that boram is a sample/validation pod, not a production wm role pod. |
 | B4 | Pin pnpm on the pod | `corepack prepare pnpm@9.15.9 --activate` as interim fix for G9; durable fix is the agent image rebuild (C1). Verify `pnpm install --frozen-lockfile` succeeds in the clone. |
 | B5 | Deliver `pod-role-bootstrap` after A4 lands | Reuse the proven b64/zip skill delivery pattern from `codex-cli-auth-setup` (`/workspace/codex-cli-auth-setup.skill.b64` precedent) into `/workspace/skills/pod-role-bootstrap/`; then run `node scripts/codex-preflight.mjs --pod` in the clone and store the readiness report as evidence. |
-| B6 | Smoke the gates inside the pod | In `/workspace/new-mobile-app`: `pnpm run test:runtime` and `pnpm turbo run lint test` via Codex CLI (per Codex-only policy). Record results to `.evidence/`. This is the delivery acceptance test. |
+| B6 | Smoke the gates inside the pod | In `/workspace/projects/Wondermove-Inc/new-mobile-app`: `pnpm run test:runtime` and `pnpm turbo run lint test` via Codex CLI (per Codex-only policy). Record results to `.evidence/`. This is the delivery acceptance test. |
 
 ### Category C — Platform/Ops (P1, outside this repo; doc 13 Phases 3–8)
 

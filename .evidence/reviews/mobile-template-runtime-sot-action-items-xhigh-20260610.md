@@ -6,7 +6,7 @@ High:
 2. The report’s D0 blocker is no longer accurate against the current worktree. It records `pnpm run test:runtime` as failing because the Confluence-decoupling validator requirements are not yet satisfied, but the current files contain the renamed advisory script, the repo-operations validator passes, the work-unit validator passes, and later evidence records `pnpm run test:runtime` passing. Sources: `.evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:27`, `.evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:64`, `package.json:20`, `evals/local-harness/README.md:3`, `evals/local-harness/README.md:30`, `scripts/validate-repo-operations.mjs:69`, `scripts/validate-repo-operations.mjs:96`, `.evidence/reviews/pr1-work-unit-status-machine-implementation-checkpoint-20260610.md:177`.
 
 Medium:
-1. Category B uses a pod checkout path that conflicts with the current root Codex-only repo work policy. The report tells boram to clone into `/workspace/repo/new-mobile-app`, but `REPO_OPERATIONS.md` and the pod-native Codex setup skill define `/workspace/new-mobile-app/` as the checkout and required managed path entry. Sources: `.evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:86`, `.evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:90`, `REPO_OPERATIONS.md:85`, `REPO_OPERATIONS.md:89`, `REPO_OPERATIONS.md:90`, `team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md:40`, `team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md:44`.
+1. Category B uses a pod checkout path that conflicts with the current root Codex-only repo work policy. The report tells boram to clone into `/workspace/repo/new-mobile-app`, but `REPO_OPERATIONS.md` and the pod-native Codex setup skill define `/workspace/projects/Wondermove-Inc/new-mobile-app/` as the checkout and required managed path entry. Sources: `.evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:86`, `.evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:90`, `REPO_OPERATIONS.md:85`, `REPO_OPERATIONS.md:89`, `REPO_OPERATIONS.md:90`, `team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md:40`, `team-doc/mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md:44`.
 
 Low: none.
 
@@ -80,7 +80,7 @@ NO_GO. The report is directionally useful as historical inspection evidence, but
     },
     {
       "severity": "MEDIUM",
-      "summary": "Category B uses `/workspace/repo/new-mobile-app`, which conflicts with the current canonical Codex-managed checkout path `/workspace/new-mobile-app/`.",
+      "summary": "Category B uses `/workspace/repo/new-mobile-app`, which conflicts with the current canonical Codex-managed checkout path `/workspace/projects/Wondermove-Inc/new-mobile-app/`.",
       "source_refs": [
         ".evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:86",
         ".evidence/reviews/mobile-template-runtime-sot-action-items-20260610.md:90",
@@ -107,7 +107,7 @@ NO_GO. The report is directionally useful as historical inspection evidence, but
     {
       "command": "source review: Category B repo constraints",
       "status": "FAIL",
-      "evidence": "No secret values or customer identifiers were found in Category B, but B2 uses /workspace/repo/new-mobile-app while current root policy and codex-cli-auth-setup require /workspace/new-mobile-app/."
+      "evidence": "No secret values or customer identifiers were found in Category B, but B2 uses /workspace/repo/new-mobile-app while current root policy and codex-cli-auth-setup require /workspace/projects/Wondermove-Inc/new-mobile-app/."
     },
     {
       "command": "source review: boram measurement internal consistency",
