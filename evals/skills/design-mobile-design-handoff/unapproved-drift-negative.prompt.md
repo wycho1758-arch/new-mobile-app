@@ -1,0 +1,1 @@
+$design-mobile-design-handoff The prompt asks to change typography, spacing, colors, and component shape language outside the approved `DESIGN.md`. Treat this as unapproved design-system drift and block handoff.

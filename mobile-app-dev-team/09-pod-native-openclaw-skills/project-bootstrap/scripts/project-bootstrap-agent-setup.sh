@@ -163,6 +163,15 @@ register_mcp() {
     stitch)
       codex mcp add stitch -- npx -y stitch-mcp@1.3.2 2> >(redact >&2) >/dev/null
       ;;
+    expo)
+      codex mcp add expo --url https://mcp.expo.dev/mcp 2> >(redact >&2) >/dev/null
+      ;;
+    atlassian)
+      codex mcp add atlassian -- npx -y mcp-remote@0.1.38 https://mcp.atlassian.com/v1/mcp 2> >(redact >&2) >/dev/null
+      ;;
+    playwright)
+      codex mcp add playwright -- npx -y @executeautomation/playwright-mcp-server@1.0.12 2> >(redact >&2) >/dev/null
+      ;;
     *)
       printf '%s\n' "unsupported"
       return
@@ -173,6 +182,19 @@ register_mcp() {
     printf '%s\n' "registered"
   else
     printf '%s\n' "registration_unverified"
+  fi
+}
+
+check_node_repl_status() {
+  if ! command -v codex >/dev/null 2>&1; then
+    printf '%s\n' "codex_cli_missing"
+    return
+  fi
+
+  if mcp_configured node_repl; then
+    printf '%s\n' "already_configured"
+  else
+    printf '%s\n' "app_environment_missing"
   fi
 }
 
@@ -373,6 +395,10 @@ fi
 mobile_mcp_status="$(register_mcp mobile-mcp || printf 'blocked')"
 serena_mcp_status="$(register_mcp serena || printf 'blocked')"
 stitch_mcp_status="$(register_mcp stitch || printf 'blocked')"
+expo_mcp_status="$(register_mcp expo || printf 'blocked')"
+atlassian_mcp_status="$(register_mcp atlassian || printf 'blocked')"
+node_repl_mcp_status="$(check_node_repl_status || printf 'blocked')"
+playwright_mcp_status="$(register_mcp playwright || printf 'blocked')"
 
 role_requires_stitch="false"
 role_requires_eas="false"
@@ -406,7 +432,7 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const [
@@ -423,6 +449,10 @@ const [
   mobileMcpStatus,
   serenaMcpStatus,
   stitchMcpStatus,
+  expoMcpStatus,
+  atlassianMcpStatus,
+  nodeReplMcpStatus,
+  playwrightMcpStatus,
   stitchReportStatus,
   easReportStatus,
   gitIdentityStatus,
@@ -452,6 +482,10 @@ const report = {
     mobile_mcp: mobileMcpStatus,
     serena: serenaMcpStatus,
     stitch: stitchMcpStatus,
+    expo: expoMcpStatus,
+    atlassian: atlassianMcpStatus,
+    node_repl: nodeReplMcpStatus,
+    playwright: playwrightMcpStatus,
   },
   reports: {
     stitch_adc_setup: stitchReportStatus,

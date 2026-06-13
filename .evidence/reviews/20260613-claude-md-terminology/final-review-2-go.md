@@ -1,0 +1,111 @@
+No Critical, High, or Medium findings remain. Verdict: GO.
+
+LOW: `mobile-app-dev-team/00-sot-and-principles.md:38` still contains the known `.clode/agents` typo/scope issue, but the same file tracks it as pending reconciliation at `mobile-app-dev-team/00-sot-and-principles.md:42`. Non-blocking.
+
+LOW: `CLAUDE.md` contains a useful Claude-port terminology pointer at `CLAUDE.md:46`, but it is intentionally transient because `CLAUDE.md` is ignored at `.gitignore:7` and root Claude artifacts are transient per `PROJECT_ENVIRONMENT.md:270`. Non-blocking.
+
+The remediation checks out: terminology is single-concept and SoT-aligned in `REPO_OPERATIONS.md:97`, `REPO_OPERATIONS.md:109`, `REPO_OPERATIONS.md:123`, and `REPO_OPERATIONS.md:132`, matching `AGENTS.md:21`, `AGENTS.md:22`, `PROJECT_ENVIRONMENT.md:218`, and `REPO_OPERATIONS.md:78`. The validator guard is intact at `scripts/validate-repo-operations.mjs:161`; `node scripts/validate-repo-operations.mjs` exited 0. H1, H2, M1, and M2 are closed by the cited persisted evidence. `.gitignore` matches HEAD and contains `.claude/` at `.gitignore:8`.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "afd9208adde3c1721c0ea7c5ea0e87af96e2b926",
+    "target": "working-tree documentation and evidence remediation",
+    "paths_reviewed": [
+      "REPO_OPERATIONS.md",
+      "scripts/validate-repo-operations.mjs",
+      "mobile-app-dev-team/04-skills-and-agents-matrix.md",
+      "mobile-app-dev-team/00-sot-and-principles.md",
+      ".gitignore",
+      "CLAUDE.md",
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "scripts/codex-headless-review.mjs",
+      ".evidence/reviews/20260613-claude-md-terminology/gates.md",
+      ".evidence/reviews/20260613-claude-md-terminology/tdd.md",
+      ".evidence/reviews/20260613-claude-md-terminology/plan-review.md",
+      ".evidence/reviews/20260613-claude-md-terminology/final-review-1-nogo.md",
+      ".evidence/research/20260613-codex-claude-skill-agent-paths.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "LOW",
+      "summary": "Known .clode/agents typo and Codex-scope wording remain in 00-sot-and-principles.md, but the same file explicitly tracks the required reconciliation as a follow-up and points canonical terminology back to REPO_OPERATIONS.md.",
+      "source_refs": [
+        "mobile-app-dev-team/00-sot-and-principles.md:38",
+        "mobile-app-dev-team/00-sot-and-principles.md:39",
+        "mobile-app-dev-team/00-sot-and-principles.md:42"
+      ],
+      "owner": "Product/Planning"
+    },
+    {
+      "severity": "LOW",
+      "summary": "CLAUDE.md terminology pointer is transient by design; durable canonical terminology is in tracked REPO_OPERATIONS.md while CLAUDE.md remains gitignored.",
+      "source_refs": [
+        "CLAUDE.md:46",
+        "CLAUDE.md:50",
+        ".gitignore:7",
+        "PROJECT_ENVIRONMENT.md:270"
+      ],
+      "owner": "Product/Planning"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "node scripts/validate-repo-operations.mjs",
+      "status": "PASS",
+      "evidence": "Reran read-only; exit 0. Guarded terminology requireTerms block is present at scripts/validate-repo-operations.mjs:161-173."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "PASS",
+      "evidence": "Persisted gate evidence records exit 0 at .evidence/reviews/20260613-claude-md-terminology/gates.md:35-44; required by AGENTS.md:106."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Persisted gate evidence records exit 0 at .evidence/reviews/20260613-claude-md-terminology/gates.md:46-58; required by AGENTS.md:107."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Persisted gate evidence records exit 0 at .evidence/reviews/20260613-claude-md-terminology/gates.md:13-33; required for changed mobile-app-dev-team/** and scripts/validate-repo-operations.mjs paths by PROJECT_ENVIRONMENT.md:369-377."
+    },
+    {
+      "command": "Reviewer envelope extraction for plan-review.md and final-review-1-nogo.md",
+      "status": "PASS",
+      "evidence": "Read-only equivalent extraction found one final fenced JSON envelope in each file; extractor contract is scripts/codex-headless-review.mjs:91-99, with envelopes at .evidence/reviews/20260613-claude-md-terminology/plan-review.md:28 and .evidence/reviews/20260613-claude-md-terminology/final-review-1-nogo.md:19."
+    },
+    {
+      "command": "TDD red-green evidence review",
+      "status": "PASS",
+      "evidence": "RED exit 1 and GREEN exit 0 are persisted at .evidence/reviews/20260613-claude-md-terminology/tdd.md:8-44, covering the new guard."
+    },
+    {
+      "command": ".gitignore vs HEAD",
+      "status": "PASS",
+      "evidence": "git diff --exit-code -- .gitignore exited 0; working .gitignore contains CLAUDE.md, .claude/, and .claude-state/ at .gitignore:7-9."
+    },
+    {
+      "command": "Mobile UI/runtime boundary review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed diff touches docs and scripts only; no Expo Router, React Native screen, NativeWind, semantic token, or testID selector changes. Mobile visual QA is required for mobile UI/runtime changes per AGENTS.md:109-110."
+    },
+    {
+      "command": "API contract drift review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed diff does not touch apps/api, apps/mobile API calls, or packages/contracts. Contract SoT rule remains AGENTS.md:86."
+    }
+  ],
+  "residual_risks": [
+    "The .clode/agents typo/scope wording remains intentionally deferred as a tracked LOW follow-up.",
+    "CLAUDE.md is ignored/transient, so durable terminology must remain in tracked REPO_OPERATIONS.md.",
+    "Persisted gate evidence proves repo-local commands only; it does not prove external GitHub branch protection, Confluence, EAS, pod, or device behavior."
+  ],
+  "next_action": "proceed"
+}
+```

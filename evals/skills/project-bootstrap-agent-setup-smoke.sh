@@ -7,6 +7,12 @@ PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/
 NODE_BIN_DIR="$(dirname "$(command -v node)")"
 NO_CODEX_PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin"
 
+make_node_only_bin() {
+  local bin_dir="$1"
+  mkdir -p "${bin_dir}"
+  ln -sf "$(command -v node)" "${bin_dir}/node"
+}
+
 make_fake_codex() {
   local bin_dir="$1"
   cat > "${bin_dir}/codex" <<'SH'
@@ -353,8 +359,9 @@ set -euo pipefail
 printf 'codex precheck ran\n' > "${STATE_DIR}/codex-precheck-ran"
 SH
   chmod +x "${tmpdir}/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh"
+  make_node_only_bin "${tmpdir}/node-bin"
 
-  PATH="${NO_CODEX_PATH}" \
+  PATH="${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   STATE_DIR="${tmpdir}/state" \
   IDENTITY_PATH="${tmpdir}/IDENTITY" \
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
@@ -610,6 +617,7 @@ case_product_planning_status_only_missing_preflight() {
     "${repo_path}/docs" \
     "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
     AGENTS.md \
@@ -624,7 +632,7 @@ case_product_planning_status_only_missing_preflight() {
   done
   printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
 
-  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
   REPO_PATH="${repo_path}" \
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
@@ -638,8 +646,7 @@ case_product_planning_status_only_missing_preflight() {
 	  WM_EXPECTED_ROLE="product-planning" \
 	  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
 
-	  assert_json_field "${report_path}" "r.status === 'ready_for_bootstrap'"
-	  assert_json_field "${report_path}" "Array.isArray(r.blockers) && r.blockers.length === 0"
+	  assert_json_field "${report_path}" "r.status === 'blocked'"
 	  assert_json_field "${report_path}" "r.user_summary.language.requested === 'auto'"
 	  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'en-US'"
 	  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
@@ -647,6 +654,22 @@ case_product_planning_status_only_missing_preflight() {
 	  assert_json_field "${report_path}" "r.role.normalized === 'product-planning' && r.role.requires_stitch === false && r.role.requires_eas === false"
 	  assert_json_field "${report_path}" "r.cli.railway === 'missing' && r.cli.gcloud === 'missing' && r.cli.eas === 'missing'"
 	  assert_json_field "${report_path}" "r.reports.pod_role_bootstrap === 'missing'"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP expo')"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP atlassian')"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP node_repl')"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP playwright')"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing required CLI railway')"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing required CLI gcloud')"
+	  assert_json_field "${report_path}" "!r.blockers.includes('missing required CLI eas')"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "project environment tools"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Expo MCP"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Atlassian MCP"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Playwright MCP"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Railway CLI"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud CLI"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "EAS CLI is the only baseline exception"
+	  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required MCP expo"
+	  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required CLI railway"
 }
 
 case_project_preflight_blocks_on_pod_role_report_blocked() {
@@ -793,7 +816,8 @@ case_project_preflight_guides_missing_sot_and_mcp() {
   assert_file_contains "${blockers_md_path}" "## Action needed"
   assert_file_contains "${blockers_md_path}" "approved project file source"
   assert_file_contains "${blockers_md_path}" ".codex/config.toml"
-  assert_file_contains "${blockers_md_path}" "approved MCP/tool-auth config"
+  assert_file_contains "${blockers_md_path}" "pinned repo config"
+  assert_file_contains "${blockers_md_path}" "OAuth/login"
   assert_file_contains "${blockers_md_path}" "Do not install arbitrary tools"
   assert_file_contains "${blockers_md_path}" 'Do not use `@latest`'
   assert_file_contains "${blockers_md_path}" "I will recheck the project files"
@@ -827,8 +851,9 @@ case_project_preflight_guides_missing_codex_cli() {
     : > "${repo_path}/${file}"
   done
   printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+  make_node_only_bin "${tmpdir}/node-bin"
 
-  PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  PATH="${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   REPO_PATH="${repo_path}" \
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
@@ -993,7 +1018,7 @@ JSON
 
 # full blocker matrix coverage labels for validate-team-doc:
 # role identity; repo/managed path; Git identity; CLI/runtime; package-manager;
-# package manager mismatch; MCP; conditional login/auth; GitHub auth;
+# package manager mismatch; MCP; approved MCP/tool-auth config; conditional login/auth; GitHub auth;
 # secure credentials/API/Railway; public non-secret app config;
 # human-gate/v1; nested pod role report.
 # Language contract literals: PROJECT_BOOTSTRAP_USER_LANGUAGE=ko,

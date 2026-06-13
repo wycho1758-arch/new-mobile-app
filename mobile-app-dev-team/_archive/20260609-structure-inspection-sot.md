@@ -1,5 +1,9 @@
 # 구조 점검 보고서 — SoT 기준: 프로젝트 = 정답, Confluence = 정정 대상
 
+> Archived: current runtime facts and validation policy now live in
+> `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, and the active validators under
+> `scripts/`. Keep this file as historical inspection evidence only.
+
 - 작성일: 2026-06-09
 - 대상: `new-mobile-app` (branch `feat/mobile-app-template`)
 - 점검 도구: serena MCP(활성화 확인) + read-only 점검(Read/Bash/Confluence fetch)
@@ -102,6 +106,7 @@ Confluence 페이지(`Role-specific Codex Runtime` 1374289964, `01-4. Skills` 13
 ## 5. 검증
 - `node scripts/validate-runtime-artifacts.mjs` → exit 0(통과) 확인.
 - 2026-06-09 현재 `pnpm run test:runtime`, `pnpm run test:local-harness` 통과 확인.
-- 본 보고서 발행 후 경로 존재 확인: `docs/plans/20260609-structure-inspection-sot.md`.
+- 본 보고서 발행 당시 경로: `docs/plans/20260609-structure-inspection-sot.md`.
+  현재 아카이브 경로: `mobile-app-dev-team/_archive/20260609-structure-inspection-sot.md`.
 - (후속, 본 보고서 범위 아님) 백로그 실행 시 `pnpm run test:runtime`,
   `pnpm run test:local-harness` green 유지.

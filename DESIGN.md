@@ -3,7 +3,7 @@
 > **Owner**: Design agent
 > **Authoring tool**: Google Stitch (sole authoring tool — DEC-021). All design work originates from Stitch export (ZIP `code.html` or Stitch MCP fetch). No other design tools produce canonical output for this repo.
 > **Sync rule**: When a project design system is finalized, update the semantic tokens in this file AND the corresponding CSS variable values in `apps/mobile/global.css` together in the same PR. These two files are a single source of truth — never update one without the other.
-> **Reference**: `docs/design-references/` contains a vendored copy of awesome-design-md for DESIGN.md authoring examples (MIT, see LICENSE and NOTICE).
+> **Reference**: `docs/design-references/` contains a vendored copy of awesome-design-md for DESIGN.md authoring examples (MIT, see LICENSE and NOTICE); runtime and skills do not consume this corpus.
 
 ---
 

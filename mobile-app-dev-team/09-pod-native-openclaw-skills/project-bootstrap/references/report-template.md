@@ -27,7 +27,11 @@ preflight report. That report has this shape:
   "mcp": {
     "mobile_mcp": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
     "serena": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
-    "stitch": "already_configured | registered | registration_unverified | codex_cli_missing | blocked"
+    "stitch": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
+    "expo": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
+    "atlassian": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
+    "node_repl": "already_configured | app_environment_missing | codex_cli_missing | blocked",
+    "playwright": "already_configured | registered | registration_unverified | codex_cli_missing | blocked"
   },
   "reports": {
     "stitch_adc_setup": "not_applicable | already_present | generated | script_missing | not_generated",
@@ -95,13 +99,14 @@ preflight report. That report has this shape:
     "required": {
       "mobile_mcp": "configured | missing | skipped",
       "serena": "configured | missing | skipped",
-      "stitch": "configured | missing | skipped"
-    },
-    "conditional": {
+      "stitch": "configured | missing | skipped",
       "expo": "configured | missing | skipped",
       "atlassian": "configured | missing | skipped",
       "node_repl": "configured | missing | skipped",
       "playwright": "configured | missing | skipped"
+    },
+    "baseline_exception": {
+      "eas_cli": "status_only_until_eas_workflow_selected"
     }
   },
   "cli": {
@@ -241,9 +246,11 @@ Future JSON reports may add more `user_summary` fields with the same shape:
 
 - Treat the report `blockers` array as the source for user-facing blockers.
   A field value of `missing` outside that array can be status-only inventory.
-- `cli.railway`, `cli.gcloud`, and `cli.eas` are always recorded as status
-  inventory. For `product-planning`, `missing` values in those fields are not
-  blockers unless a later SoT-selected action requires the tool.
+- `expo`, `atlassian`, `node_repl`, `playwright`, `railway`, and `gcloud` are
+  required for project-bootstrap readiness. Missing values in those fields must
+  appear in the `blockers` array.
+- `cli.eas` is recorded as status inventory and remains the baseline exception
+  unless QA/Release EAS work or another approved EAS action is selected.
 - `reports.pod_role_bootstrap: missing` before
   `/workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh` runs means the
   report has not been generated yet. It is pending workflow evidence, not a

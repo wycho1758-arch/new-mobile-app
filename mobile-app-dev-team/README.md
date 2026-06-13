@@ -35,7 +35,9 @@ Confluence 원본 export, 구조화 참조, `_meta` 감사 기록은 root
 | --- | --- |
 | `_archive/12-ref-organization-goal-plan.md` | `ref-organization/` consolidated section READMEs and `99-source-map.md` |
 | `_archive/13-pod-organization-e2e-improvement-plan.md` | Repo-local/offline portions are implemented in runtime validators, pod-native skills, `14-native-e2e-strategy.md`, `15-human-ops-live-readiness-annex.md`, and `16-pod-environment-bootstrap.md`; live pod/EAS/Maestro/human approval remains evidence-gated. |
+| `_archive/20260609-structure-inspection-sot.md` | `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, and active validators under `scripts/` |
 | `_archive/18-orbstack-pod-config-setup-runbook-plan.md` | `16-pod-environment-bootstrap.md` and `17-orbstack-pod-config-values.md` |
+| `_archive/orbstack-pod-operator-input-request.md` | `17-orbstack-pod-config-values.md` |
 
 ## 운영 원칙
 

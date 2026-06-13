@@ -357,8 +357,19 @@ requirePresent('missing /workspace/skills/project-bootstrap', projectBootstrapSk
 requirePresent('missing /workspace/skills/codex-cli-auth-setup', codexCliAuthSetupSkill);
 requirePresent('missing /workspace/skills/pod-role-bootstrap', podRoleBootstrapSkill);
 if (codexCli !== 'available') blockers.push('missing codex CLI');
-for (const [name, status] of [['mobile-mcp', mobileMcp], ['serena', serenaMcp], ['stitch', stitchMcp]]) {
+for (const [name, status] of [
+  ['mobile-mcp', mobileMcp],
+  ['serena', serenaMcp],
+  ['stitch', stitchMcp],
+  ['expo', expoMcp],
+  ['atlassian', atlassianMcp],
+  ['node_repl', nodeReplMcp],
+  ['playwright', playwrightMcp],
+]) {
   if (status !== 'configured') blockers.push(`missing required MCP ${name}`);
+}
+for (const [name, status] of [['railway', railwayCli], ['gcloud', gcloudCli]]) {
+  if (status !== 'available') blockers.push(`missing required CLI ${name}`);
 }
 if (roleRequiresStitch === 'true') {
   requirePresent('missing /workspace/skills/stitch-adc-setup', stitchAdcSetupSkill);
@@ -464,6 +475,11 @@ function buildBlockerContext() {
     .filter((blocker) => blocker.startsWith('missing required MCP '))
     .map((blocker) => blocker.replace('missing required MCP ', ''));
   const hasMissingRequiredMcp = missingRequiredMcps.length > 0;
+  const missingRequiredClis = blockers
+    .filter((blocker) => blocker.startsWith('missing required CLI '))
+    .map((blocker) => blocker.replace('missing required CLI ', ''));
+  const hasMissingRequiredCli = missingRequiredClis.length > 0;
+  const hasProjectEnvironmentTools = hasMissingRequiredMcp || hasMissingRequiredCli;
   const hasMissingPodSkill = hasAny((blocker) => blocker.startsWith('missing /workspace/skills/'));
   const hasPackageManager = nestedBlockers.has('pnpm-pin-mismatch') || hasAny((blocker) => /package manager/i.test(blocker));
   const hasConditionalAuth = nestedBlockers.has('conditional-auth-unavailable');
@@ -486,6 +502,9 @@ function buildBlockerContext() {
     hasMissingCodexCli,
     missingRequiredMcps,
     hasMissingRequiredMcp,
+    missingRequiredClis,
+    hasMissingRequiredCli,
+    hasProjectEnvironmentTools,
     hasMissingPodSkill,
     hasPackageManager,
     hasConditionalAuth,
@@ -555,6 +574,9 @@ function buildEnglishResult(ctx, language) {
   if (ctx.hasPackageManager) {
     lines.push('- Package manager status was checked against `package.json`, `pnpm-lock.yaml`, `corepack --version`, and `pnpm --version`; the repo pin is `pnpm@9.15.9`.');
   }
+  if (ctx.hasProjectEnvironmentTools) {
+    lines.push('- Missing project environment tools must be ready before project-bootstrap can pass. The required baseline includes Expo MCP, Atlassian MCP, node_repl, Playwright MCP, Railway CLI, and gcloud CLI. EAS CLI is the only baseline exception.');
+  }
 
 	  lines.push(
 	    '',
@@ -568,8 +590,8 @@ function buildEnglishResult(ctx, language) {
   if (ctx.hasMissingRepoSot || ctx.hasMissingPodSkill || ctx.hasManagedPath || ctx.hasRoleIdentity) {
     nextActions.push('I will recheck the project files, required pod skills, managed path, and repo SoT, then rerun setup and preflight.');
   }
-  if (ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
-    nextActions.push('I will rerun version checks, Codex CLI checks, MCP checks, and bootstrap/preflight after the approved runtime or tool-auth source exists.');
+  if (ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasMissingRequiredCli || ctx.hasPackageManager) {
+    nextActions.push('I will rerun version checks, Codex CLI checks, MCP/CLI checks, agent-owned pinned MCP registration, setup, and project-bootstrap preflight after the approved runtime or tool-auth source exists.');
   }
   if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth || ctx.hasPublicAppConfig) {
     nextActions.push('I will run the relevant redacted status-only setup report and continue only from status labels, not secret values.');
@@ -604,7 +626,10 @@ function buildEnglishResult(ctx, language) {
 	    userRequests.push('Ask the platform owner for a platform owner refresh of the pod image/runtime or an approved Codex CLI artifact. Do not manually add unapproved binaries.');
 	  }
 	  if (ctx.hasMissingRequiredMcp) {
-	    userRequests.push(`Ask the platform owner for approved MCP/tool-auth config for: ${ctx.missingRequiredMcps.join(', ')}. Do not install arbitrary tools. Do not use \`@latest\`.`);
+	    userRequests.push(`For MCPs that I can add from pinned repo config, I will do that first. For the remaining MCP/tool-auth items (${ctx.missingRequiredMcps.join(', ')}), be present for OAuth/login when needed or ask the platform owner to restore the Codex app/plugin environment. Do not install arbitrary tools. Do not use \`@latest\`.`);
+	  }
+	  if (ctx.hasMissingRequiredCli) {
+	    userRequests.push(`Ask the platform owner to provide or approve the required CLI setup for: ${ctx.missingRequiredClis.join(', ')}. For Railway or Google login, use the real login surface or secure token/ADC source only; do not send secrets in chat.`);
 	  }
 	  if (ctx.hasPackageManager) {
 	    userRequests.push('Do not choose a pnpm version. Ask for platform/runtime refresh only if the pinned package-manager setup cannot run in the pod.');
@@ -665,6 +690,7 @@ function buildKoreanResult(ctx, language) {
   if (ctx.hasMissingPodSkill) lines.push('- 필요한 pod skill 아티팩트가 누락되어 platform owner 확인이 필요합니다.');
   if (ctx.hasMissingCodexCli) lines.push('- Codex CLI/runtime 상태가 준비되지 않았습니다.');
   if (ctx.hasMissingRequiredMcp) lines.push(`- MCP 설정이 누락되었습니다: ${ctx.missingRequiredMcps.join(', ')}.`);
+  if (ctx.hasMissingRequiredCli) lines.push(`- 프로젝트 환경 도구가 누락되었습니다: ${ctx.missingRequiredClis.join(', ')}. EAS CLI만 기본 예외입니다.`);
   if (ctx.hasPackageManager) lines.push('- package-manager 상태를 확인했습니다. repo SoT는 `package.json`과 `pnpm-lock.yaml`이며 pin은 `pnpm@9.15.9`입니다.');
   if (ctx.hasPublicAppConfig) lines.push('- 공개 앱 설정(public non-secret app config) 출처가 필요합니다.');
   if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth) lines.push('- 보안 credential source 또는 conditional login/auth 준비가 필요합니다.');
@@ -675,7 +701,7 @@ function buildKoreanResult(ctx, language) {
     '### 이미 확인한 내용',
     '',
     '- repo path, 관리 경로, 프로젝트 파일, pod skill, Codex CLI, MCP, 생성 보고서 경로를 상태값으로 확인했습니다.',
-    '- GitHub auth, Git identity, package manager mismatch, 조건부 인증, 공개 앱 설정, API/Railway 보안 소스, human-gate 상태를 비밀값 없이 분류했습니다.',
+    '- GitHub auth, Git identity, package manager mismatch, MCP/CLI, 조건부 인증, 공개 앱 설정, API/Railway 보안 소스, human-gate 상태를 비밀값 없이 분류했습니다.',
   );
   if (ctx.hasPackageManager) {
     lines.push('- `package.json`, `pnpm-lock.yaml`, `corepack --version`, `pnpm --version`를 기준으로 package-manager 상태를 확인합니다.');
@@ -696,8 +722,8 @@ function buildKoreanResult(ctx, language) {
   if (ctx.hasGithubAuthUnavailable || ctx.hasGitIdentityMissing) {
     nextActions.push('GitHub 연결 상태를 확인하고, 인증이 끝난 뒤 `gh auth setup-git` 및 승인된 Git identity 적용을 진행하겠습니다.');
   }
-  if (ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
-    nextActions.push('Codex CLI/runtime, MCP, package-manager 버전 확인을 다시 실행하겠습니다. 사용자에게 pnpm 버전을 고르게 하지 않습니다.');
+  if (ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasMissingRequiredCli || ctx.hasPackageManager) {
+    nextActions.push('Codex CLI/runtime, MCP/CLI, package-manager 버전 확인과 가능한 pinned MCP 등록을 다시 실행하겠습니다. 사용자에게 pnpm 버전을 고르게 하지 않습니다.');
   }
   if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth || ctx.hasPublicAppConfig) {
     nextActions.push('승인된 source가 준비되면 redacted status-only setup report를 다시 만들고 비밀값 없이 다음 단계를 진행하겠습니다.');
@@ -722,8 +748,8 @@ function buildKoreanResult(ctx, language) {
   if (ctx.hasMissingRepoSot) {
     userRequests.push('누락된 프로젝트 파일의 올바른 checkout 또는 승인된 파일 source를 제공해 주세요.');
   }
-  if (ctx.hasMissingPodSkill || ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
-    userRequests.push('platform owner에게 pod artifact, Codex CLI/runtime, MCP/tool-auth, 또는 `pnpm@9.15.9` 기반 package-manager setup refresh를 요청해 주세요.');
+  if (ctx.hasMissingPodSkill || ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasMissingRequiredCli || ctx.hasPackageManager) {
+    userRequests.push('제가 pinned repo config로 추가할 수 있는 MCP는 먼저 처리하겠습니다. 그래도 남는 MCP/tool-auth, node_repl 앱 환경, Railway/gcloud CLI 또는 `pnpm@9.15.9` 기반 package-manager setup은 platform owner refresh나 실제 로그인 화면 승인이 필요합니다.');
   }
   if (ctx.hasPublicAppConfig) {
     userRequests.push('공개 앱 설정 source만 제공해 주세요. 비밀 endpoint, token, signing key는 보내지 마세요.');
@@ -784,6 +810,13 @@ if (blockers.length) {
     `- Required MCP mobile-mcp: ${mobileMcp}`,
     `- Required MCP serena: ${serenaMcp}`,
     `- Required MCP stitch: ${stitchMcp}`,
+    `- Required MCP expo: ${expoMcp}`,
+    `- Required MCP atlassian: ${atlassianMcp}`,
+    `- Required MCP node_repl: ${nodeReplMcp}`,
+    `- Required MCP playwright: ${playwrightMcp}`,
+    `- Required CLI railway: ${railwayCli}`,
+    `- Required CLI gcloud: ${gcloudCli}`,
+    `- EAS CLI baseline exception: ${easCli}`,
     `- Pod role bootstrap report: ${podRoleBootstrapReport}`,
     '',
     '## Support Reference',
@@ -842,12 +875,13 @@ const report = {
       mobile_mcp: mobileMcp,
       serena: serenaMcp,
       stitch: stitchMcp,
-    },
-    conditional: {
       expo: expoMcp,
       atlassian: atlassianMcp,
       node_repl: nodeReplMcp,
       playwright: playwrightMcp,
+    },
+    baseline_exception: {
+      eas_cli: 'status_only_until_eas_workflow_selected',
     },
   },
   cli: {

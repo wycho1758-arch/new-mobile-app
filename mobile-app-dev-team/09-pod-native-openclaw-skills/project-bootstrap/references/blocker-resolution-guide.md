@@ -55,10 +55,10 @@ non-secret local environment item it can safely control:
   output directory.
 - Local status checks: run non-secret version, file, git, `gh auth status`, and
   `codex mcp list` checks, recording only status labels.
-- Repo-pinned non-secret config: inspect `.codex/config.toml` and
-  `PROJECT_ENVIRONMENT.md`; when a pinned, credential-free MCP/tool setup is
-  defined there, run the setup or produce the exact local command without asking
-  the user to do it manually.
+- Repo-pinned non-secret config: inspect `.codex/config.toml`,
+  `PROJECT_ENVIRONMENT.md`, and `docs/CODEX_MCP_ENVIRONMENT.md`; when a pinned,
+  credential-free MCP/tool setup is defined there, run the setup or produce the
+  exact local command without asking the user to do it manually.
 
 Do not ask the user to choose the role, write `/workspace/IDENTITY`, create
 local state directories, run status commands, or copy non-secret managed-path
@@ -117,7 +117,7 @@ Minimum user request, and the next step where the agent can continue.
 | Classification | Examples | Required handling |
 | --- | --- | --- |
 | Agent-owned | Role identity from SOUL/selector/handoff, `/workspace/state` directories, `/workspace/CODEX_MANAGED_PATHS.md`, required MCP registration from pinned repo SoT, role-specific status-only setup reports | The agent runs the local setup before reporting blockers. |
-| Agent-owned if approved source exists | Git identity from an approved local handoff, GitHub CLI setup when auth material is already mounted, repo clone when a non-secret clone URL is known, conditional MCP registration when selected by SoT | The agent uses the approved local source. If the source is absent or ambiguous, keep a human-owned blocker. |
+| Agent-owned if approved source exists | Git identity from an approved local handoff, GitHub CLI setup when auth material is already mounted, repo clone when a non-secret clone URL is known, required MCP registration from pinned SoT when the setup is credential-free | The agent uses the approved local source. If the source is absent or ambiguous, keep a human-owned blocker. |
 | Human-owned blockers | Account login, credential provisioning, cloud project authority, store credentials, billing choices, branch protection, production release, failed-gate risk acceptance, missing pod artifact refresh | The agent gives the generated Markdown guide and waits for the external authority or artifact to exist. |
 
 ## Full Blocker Matrix
@@ -131,7 +131,7 @@ The full blocker matrix includes these families:
 | Git identity | `git-identity-missing` | Use one approved public name/email source; do not invent values. |
 | CLI/runtime | missing Codex CLI, invalid runtime | Run approved precheck; ask platform owner refresh or approved Codex CLI artifact only if still blocked. |
 | package-manager | `pnpm-pin-mismatch`, package manager mismatch | Verify `package.json`, `pnpm-lock.yaml`, `corepack --version`, and `pnpm --version`; use `pod-role-bootstrap` to activate `pnpm@9.15.9`. |
-| MCP | missing required MCP or selected conditional MCP | Compare `codex mcp list` with repo SoT and register pinned credential-free config when possible. |
+| MCP | missing required MCP | Compare `codex mcp list` with repo SoT and register pinned credential-free config when possible. |
 | conditional login/auth | provider login or mounted auth requirement | Open or guide the real login surface when possible; the user enters credentials there. |
 | GitHub auth | `github-auth-unavailable` | Tell the user that GitHub connection is needed, open or guide GitHub login, then run setup-git after auth. |
 | secure credentials/API/Railway | API/Railway secret source, ADC/Stitch/EAS credential report | Ask for Secret, secure store, tool auth, mounted file, or human-present login. |
@@ -180,20 +180,24 @@ Do not ask the user to perform agent-owned setup. The do-not-ask cases include
 report directories, role identity writing, canonical managed-path repair,
 pinned credential-free MCP registration, and pnpm pin alignment.
 
-## Status-Only Missing Values
+## Required Environment And Status-Only Values
 
 Not every `missing` status in `/workspace/state/project-bootstrap-report.json`
 is a blocker. The agent must report user-facing blockers from the report
 `blockers` array and the current workflow phase.
 
-Status-only examples:
+Project-bootstrap required baseline:
 
-- `cli.railway: missing` is a tool inventory result. It is not a
-  Product/Planning bootstrap blocker unless an approved Railway action is in
-  scope.
-- `cli.gcloud: missing` is a tool inventory result. It is not a
-  Product/Planning bootstrap blocker and is relevant only when Design/Stitch
-  setup is selected by SoT.
+- `mcp.expo`, `mcp.atlassian`, `mcp.node_repl`, and `mcp.playwright` are
+  required, along with `mobile-mcp`, `serena`, and `stitch`.
+- `cli.railway: missing` is a bootstrap blocker. The agent may check status and
+  use an approved platform source, but install/login/token work remains
+  human/platform-owned.
+- `cli.gcloud: missing` is a bootstrap blocker. The agent may check status, but
+  install, ADC login, project selection, and service enablement remain
+  human/platform-owned.
+- `cli.eas: missing` is the baseline exception. It is status-only until
+  QA/Release EAS work or another approved EAS action is selected.
 - `cli.eas: missing` is a tool inventory result. It is not a Product/Planning
   bootstrap blocker and is relevant only when QA/Release EAS work is selected
   by SoT.
@@ -204,13 +208,13 @@ Status-only examples:
 Agent action:
 
 - If `blockers` is empty and the current role is `product-planning`, continue
-  the workflow even when Railway, gcloud, EAS, or the pre-bootstrap
-  `pod_role_bootstrap` report are `missing`.
+  the workflow even when EAS or the pre-bootstrap `pod_role_bootstrap` report
+  are `missing`.
 - If a generated `pod-role-bootstrap` report is present and blocked, treat the
   nested report as the current workflow blocker even when the earlier common
   project preflight was ready to run bootstrap.
-- Do not ask the user to install optional CLIs or write report files when the
-  missing value is status-only.
+- Do not ask the user to write report files when the missing value is
+  status-only.
 - If a later approved action requires one of these tools, rerun the relevant
   role-specific setup/precheck and classify unresolved credential or account
   requirements under the human-owned blocker rules.
@@ -347,14 +351,17 @@ Related blockers:
 - `missing required MCP mobile-mcp`
 - `missing required MCP serena`
 - `missing required MCP stitch`
-- missing conditional MCP status for `expo`, `atlassian`, `node_repl`, or
-  `playwright`
+- `missing required MCP expo`
+- `missing required MCP atlassian`
+- `missing required MCP node_repl`
+- `missing required MCP playwright`
 
 Resolution:
 
 - Compare `codex mcp list` with repo `.codex/config.toml` and
   `PROJECT_ENVIRONMENT.md`.
-- Required project MCPs are `mobile-mcp`, `serena`, and `stitch`.
+- Required project MCPs are `mobile-mcp`, `serena`, `stitch`, `expo`,
+  `atlassian`, `node_repl`, and `playwright`.
 - Some MCP auth, such as Expo or Google ADC/Stitch, may require human-owned
   login or mounted credential files.
 
@@ -362,6 +369,11 @@ Agent action:
 
 - The agent must inspect `.codex/config.toml`, run `codex mcp list`, and
   register missing required MCPs when the pinned command is credential-free.
+- The agent may register `expo`, `atlassian`, and `playwright` from pinned repo
+  config. Expo OAuth and Atlassian remote auth still require user presence when
+  the real login surface appears.
+- `node_repl` is Codex app/plugin environment owned. Do not invent a repo-local
+  path or copy another user's absolute app path.
 - The agent may prepare exact non-secret setup commands from repo-pinned config
   only when Codex CLI itself is unavailable or registration fails for a
   source-backed reason.
@@ -463,6 +475,33 @@ Agent action:
 - Run redacted status checks only after the approved secure source exists.
 - Record status, presence, file mode, object names, and key names only. Do not
   print secret values.
+
+## Railway And gcloud CLI Blockers
+
+Related blockers:
+
+- `missing required CLI railway`
+- `missing required CLI gcloud`
+
+Resolution:
+
+- Railway CLI is required for project-bootstrap readiness because this repo has
+  Railway QA/API evidence workflows. Login/token setup remains human/platform
+  owned.
+- gcloud CLI is required for project-bootstrap readiness because Stitch uses
+  Google ADC and project state. ADC login, project selection, and service
+  enablement remain human/platform owned.
+- EAS CLI is the only baseline exception and stays status-only until EAS work is
+  selected.
+
+Agent action:
+
+- Check `railway --version`, `railway whoami`, `gcloud --version`, and
+  `gcloud config get-value project` as status-only when available.
+- Use browser/computer-use to open or guide the real login surface when possible
+  and a human is present.
+- Never ask for Railway tokens, Google ADC JSON, service account JSON, OAuth
+  codes, or private project credentials in chat.
 
 ## Role-Specific Setup Report Blockers
 

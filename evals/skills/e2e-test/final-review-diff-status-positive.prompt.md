@@ -1,0 +1,1 @@
+$e2e-test Plan and run scoped E2E evidence, record canonical evidence under `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/`, request final reviewer verification, and report `git diff` plus `git status --short`.

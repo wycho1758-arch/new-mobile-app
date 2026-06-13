@@ -181,6 +181,22 @@ function validateSnapshot(errors, snapshot) {
       errors.push(`snapshot pages[${index}].version must be a positive integer`);
     }
   });
+  const taxonomyNotes = snapshot.skillTaxonomy?.taxonomyNotes;
+  if (!taxonomyNotes || typeof taxonomyNotes !== 'object' || Array.isArray(taxonomyNotes)) {
+    errors.push('snapshot skillTaxonomy.taxonomyNotes must document source-page taxonomy mappings');
+  } else {
+    for (const term of [
+      'Confluence/MVP source-page namespace',
+      'not .agents/skills runtime drift',
+      'po-prd-to-execution',
+      'design-mobile-design-handoff',
+      'project-bootstrap',
+    ]) {
+      if (!JSON.stringify(taxonomyNotes).includes(term)) {
+        errors.push(`snapshot skillTaxonomy.taxonomyNotes missing mapping term: ${term}`);
+      }
+    }
+  }
 }
 
 export function validateProjectEnvironment(files = readFileMap()) {
@@ -275,6 +291,15 @@ export function validateProjectEnvironment(files = readFileMap()) {
   }
   if (!environment.includes('validate:evidence-hygiene')) {
     errors.push('PROJECT_ENVIRONMENT.md must document validate:evidence-hygiene');
+  }
+  if (!environment.includes('tracked Claude Code helper artifacts')) {
+    errors.push('PROJECT_ENVIRONMENT.md must distinguish tracked Claude Code helper artifacts from transient Claude local state');
+  }
+  if (
+    /requires these root paths to remain\s+covered by `\.gitignore`/.test(environment)
+    || /`CLAUDE\.md`\s+- `\.claude\/`\s+- `\.claude-state\/`/.test(environment)
+  ) {
+    errors.push('PROJECT_ENVIRONMENT.md must not describe tracked CLAUDE.md as gitignored transient state');
   }
   if (!repoOperations.includes('validate:project-environment')) {
     errors.push('REPO_OPERATIONS.md must include validate:project-environment in active runtime composition');

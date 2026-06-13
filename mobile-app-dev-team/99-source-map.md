@@ -65,7 +65,9 @@
 | `mobile-app-dev-team/_archive/11-openclaw-codex-completion-hooks-plan.md` | Repo-local hook implementation now lives under `.codex/hooks/` and `.codex/hooks.json`; pod runtime-surface guidance lives in `mobile-app-dev-team/ref-organization/02-runtime-surfaces/README.md`. |
 | `mobile-app-dev-team/_archive/12-ref-organization-goal-plan.md` | Reference organization work is now represented by consolidated `mobile-app-dev-team/ref-organization/` section READMEs and this source map. |
 | `mobile-app-dev-team/_archive/13-pod-organization-e2e-improvement-plan.md` | Repo-local/offline portions are implemented by runtime validators, work-unit fixtures, pod-native skills, `14-native-e2e-strategy.md`, `15-human-ops-live-readiness-annex.md`, and `16-pod-environment-bootstrap.md`; live pod, EAS/Maestro, branch protection, and human approvals still require separate evidence. |
+| `mobile-app-dev-team/_archive/20260609-structure-inspection-sot.md` | Current runtime facts and validation policy live in `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, and active validators under `scripts/`; this report is historical inspection evidence. |
 | `mobile-app-dev-team/_archive/18-orbstack-pod-config-setup-runbook-plan.md` | Owner/operator setup flow and official reference URLs are folded into `16-pod-environment-bootstrap.md`; non-secret value inventory remains in `17-orbstack-pod-config-values.md`. |
+| `mobile-app-dev-team/_archive/orbstack-pod-operator-input-request.md` | Current non-secret OrbStack role pod value handoff and owner/operator input list live in `17-orbstack-pod-config-values.md`. |
 
 ## Stale Or Lower-Priority Sources
 

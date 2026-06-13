@@ -40,22 +40,43 @@ Primary setup script:
   Railway, Atlassian, GitHub branch protection, or production readiness from
   local source validation or status-only reports.
 
-## Status-Only Missing Values
+## Required Environment And Status-Only Values
 
 The generated report contains both actionable blockers and status inventory.
 Agents must decide user-facing blockers from the `blockers` array, role flags,
 and workflow phase, not from the word `missing` alone.
 
+For every pod role, these project environment entries are required before
+`project-bootstrap` can pass:
+
+- Required MCPs: `mobile-mcp`, `serena`, `stitch`, `expo`, `atlassian`,
+  `node_repl`, and `playwright`.
+- Required CLIs: `railway` and `gcloud`.
+- EAS CLI is the baseline exception. `cli.eas: missing` is status-only until
+  QA/Release EAS work or another approved EAS action is selected.
+
+The agent must first perform non-secret setup that it can own:
+
+- register pinned MCPs from repo SoT for `mobile-mcp`, `serena`, `stitch`,
+  `expo`, `atlassian`, and `playwright`;
+- rerun status checks and `project-bootstrap` preflight after setup changes;
+- report only the remaining human/platform-owned blockers.
+
+Human/platform-owned examples:
+
+- `expo` OAuth login or account approval;
+- Atlassian remote auth if the target session requires it;
+- `node_repl` restoration through the Codex app/plugin environment;
+- Railway CLI install/login or secure token source;
+- gcloud CLI install, Google ADC login, project selection, or Stitch service
+  enablement.
+
 For a Product/Planning pod (`product-planning`):
 
-- `cli.railway: missing`, `cli.gcloud: missing`, and `cli.eas: missing` are
-  status-only inventory unless the current SoT or a later approved action makes
-  those tools required.
 - `reports.pod_role_bootstrap: missing` before step 6 is pending bootstrap
   evidence, not a user blocker. Run `pod-role-bootstrap` only when the workflow
   reaches that step and common blockers are absent.
-- Do not ask the user to install Railway, gcloud, or EAS CLI, or to create the
-  pod-role-bootstrap report, just because those status fields are `missing`.
+- Do not ask the user to create the pod-role-bootstrap report manually.
 
 For Design and QA/Release pods, role-specific report requirements are controlled
 by `role.requires_stitch` and `role.requires_eas`. Missing Stitch or EAS setup
@@ -207,7 +228,8 @@ bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.s
 This script must:
 
 - repair the managed-path registry when the repo path is the known SoT path;
-- register missing required MCPs from repo-pinned non-secret commands;
+- register missing required MCPs from repo-pinned non-secret commands when the
+  registration is agent-owned;
 - run Codex CLI/auth status setup before `missing codex CLI` becomes terminal;
 - run role-specific status-only setup reports for Design and QA/Release when
   their local setup skills exist;
@@ -282,15 +304,17 @@ exists for the exact action and evidence path.
 - Required pod skills exist under `/workspace/skills`.
 - Agent-owned setup before blocker report has run and produced
   `/workspace/state/project-bootstrap-agent-setup-report.json`.
-- Required MCPs are status-checked: `mobile-mcp`, `serena`, and `stitch`.
+- Required MCPs are status-checked: `mobile-mcp`, `serena`, `stitch`, `expo`,
+  `atlassian`, `node_repl`, and `playwright`.
 - Missing required MCPs are registered from pinned repo SoT when Codex CLI is
-  available and no credential flow is required.
-- Conditional MCPs are checked when selected: `expo`, `atlassian`, `node_repl`,
-  and `playwright`.
-- Conditional CLIs/accounts are checked status-only: Railway, gcloud/ADC/Stitch
-  project, EAS/Expo, workspace Expo, GitHub auth, and Codex auth. A `missing`
-  status in this inventory is not a blocker unless the `blockers` array or the
-  current role-specific SoT makes it one.
+  available and no credential flow or app-owned runtime restoration is required.
+- Required CLIs are status-checked: Railway and gcloud. Missing values are
+  blockers, but installation, account login, ADC, project selection, and secure
+  token sources remain human/platform-owned.
+- EAS/Expo account details, workspace Expo, GitHub auth, and Codex auth are
+  checked status-only unless the `blockers` array or current role-specific SoT
+  makes them actionable. EAS CLI remains the baseline exception until EAS work
+  is selected.
 - Git identity is configured only from an approved non-secret local source such
   as `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus
   `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus
@@ -339,7 +363,7 @@ exists for the exact action and evidence path.
 The `project-bootstrap-agent-setup.sh` contract is intentionally narrow. It may
 set role identity, create state directories, repair the managed-path registry
 only for the canonical WonderMove repo path, register missing required MCPs from
-pinned repo configuration, and run role-specific status-only setup reports. It
+pinned repo configuration when agent-owned, and run role-specific status-only setup reports. It
 must not perform account creation,
 credential entry, branch protection changes, live deploys, EAS build/submit,
 Stitch generation/export, store submission, production release, or failed-gate

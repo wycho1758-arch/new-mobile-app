@@ -1,0 +1,1 @@
+$design-stitch-mcp-operating-rules Use Stitch MCP with an approved fork reason. Capture the baseline, source/hash, new project id/share link, fork reason, drift check, prompt, and reviewer verdict path in `manifest.json`.

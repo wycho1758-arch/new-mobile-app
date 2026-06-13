@@ -86,14 +86,16 @@ Official sources to check before running live Railway commands:
     - Health check results.
     - Runtime variables by name only.
     - Evidence path.
-14. Record evidence:
+14. Record canonical evidence:
     - Commands and exit status.
     - Project/service/deployment IDs.
     - Domain.
     - Health responses.
     - RN Web E2E result.
-    - Residual scope: native Maestro/mobile-mcp and store submit are outside RN Web-only evidence.
-15. Request read-only reviewer verification before Done.
+    - Residual scope and release proof limits: native Maestro/mobile-mcp and store submit are outside RN Web-only evidence.
+15. Treat failed deployment, failed health checks, secret risk, service risk, or failed release gate as blocked unless Product/Planning or human approval explicitly records the risk decision. QA/Release must not convert failed deployment evidence into release approval.
+16. Request the final reviewer before reporting Done.
+17. Report material `git diff` and full `git status --short` in the user summary.
 
 ## Boundaries
 
@@ -102,6 +104,7 @@ Official sources to check before running live Railway commands:
 - Do not accept billing, production, privacy, legal, payment, or post-failure release risk without recorded human approval.
 - Do not print or persist secrets. If a secret is accidentally exposed in command output, rotate it and record only that rotation occurred.
 - Do not treat a passing Railway deploy as mobile release readiness unless required mobile/RN Web evidence also exists.
+- Do not report completion before final reviewer evidence, `git diff`, and `git status --short`.
 
 ## Required Evals
 

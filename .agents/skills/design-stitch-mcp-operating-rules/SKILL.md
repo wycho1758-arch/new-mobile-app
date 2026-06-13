@@ -18,14 +18,14 @@ Use this skill with `design-mobile-design-handoff` whenever Stitch MCP is used t
 ## Required Sequence
 
 1. Explain the execution order to the user before running Stitch.
-2. Load the approved plan or requirement, current `DESIGN.md`, selected design reference, target route, platform, non-goals, and requested publication date.
+2. Load the approved plan or requirement, current `DESIGN.md`, selected design reference, target route, platform, non-goals, requested publication date, and selected design-system baseline fields: `design_system_baseline`, `design_md_source_path_or_url`, `design_md_hash_or_version`, `stitch_project_id_or_share_link`, `extends_existing_project`, `fork_reason`, `drift_check_result`, and `design_reviewer_verdict_path`.
 3. Reframe the request objectively in UI/UX terms: user goal, task flow, information architecture, hierarchy, interaction model, accessibility, and measurable acceptance signal.
 4. Confirm the `DESIGN.md` decision before Stitch generation: `KEEP_EXISTING_DESIGN_MD`, `UPDATE_DESIGN_MD_REQUIRED`, or `BLOCKED_BY_DESIGN_SYSTEM_DECISION`.
 5. Build the P0 Product/Planning approval packet before Stitch generation. Include artifact purpose and reason, exactly two proposed design directions, non-goals, expected artifact paths, requested date, DESIGN.md decision, and human-gate matrix.
 6. Stop until Product/Planning records scope/evidence approval for the Design Stitch generation task. Valid P0 outcomes use existing Product/Planning readiness language: `READY_FOR_EXECUTION`, `NEEDS_REWORK`, `HUMAN_DECISION_REQUIRED`, or `BLOCKED_BY_RUNTIME_CAPABILITY`. Product/Planning approves scope, non-goals, evidence readiness, and human-gate routing only; it does not approve Design quality or own the selected option.
 7. Confirm Stitch MCP uses the pinned repo config, Google Application Default Credentials, and a project value without printing credentials, tokens, `.env`, or Google credential content.
-8. Create or select a Stitch project and apply the design-system context from `DESIGN.md` and the selected reference.
-9. Apply prompt enhancement before any Stitch generation: structure the prompt around platform, content, page/screen structure, information hierarchy, interactions, states, and UI/UX terminology; avoid duplicating DESIGN.md token values in generation prompts.
+8. Create or select a Stitch project and apply the design-system context from `DESIGN.md` and the selected reference. Continue in the same Stitch project when extending an approved design; if a new project is needed, require an approved fork with `fork_reason`, `drift_check_result`, and `design_reviewer_verdict_path`.
+9. Apply prompt enhancement before any Stitch generation: structure the prompt around platform, content, page/screen structure, information hierarchy, interactions, states, and UI/UX terminology; avoid duplicating DESIGN.md token values in generation prompts. Use a prompt template and cite an official source for Stitch behavior when external tool requirements are uncertain.
 10. Prefer Gemini 3.1 Pro, Pro, or Thinking mode as a best-effort model/mode request when the Stitch UI, MCP surface, or tool schema exposes model selection. Record requested model/mode, exposed tool capability, actual returned model/mode when available, and any limitation in `manifest.json`.
 11. Generate exactly two design directions, Option A and Option B. Each option must cover all approved screens and the five required states.
 12. Before P1, fetch or save image/visual evidence only. Do not call or persist HTML extraction through Stitch MCP `fetch_screen_code`, official ZIP `code.html`, SDK `getHtml`, `htmlCode.downloadUrl`, or equivalent screen metadata that stores HTML download paths.
@@ -51,10 +51,26 @@ The manifest records requested date, actual generation timestamp, Stitch project
 
 The manifest also records P0/P1 Product/Planning decision artifact paths, requested Stitch model/mode, actual model/mode when returned, model/mode selection capability, and any limitation when Gemini 3.1 Pro or Thinking mode cannot be selected through the available Stitch surface.
 
+The manifest must also record design-system continuity fields:
+
+- `design_system_baseline`
+- `design_md_source_path_or_url`
+- `design_md_hash_or_version`
+- `stitch_project_id_or_share_link`
+- `extends_existing_project`
+- `fork_reason`
+- `drift_check_result`
+- `design_reviewer_verdict_path`
+
+Use the same Stitch project for approved design extensions. A different Stitch project requires an approved fork, `fork_reason`, `drift_check_result`, and Design reviewer evidence. Stop on unapproved design-system drift.
+
 ## Design Constraints
 
 - Stitch is the canonical authoring tool.
 - `DESIGN.md` is the design-system source of truth.
+- The same Stitch project must be used for extensions unless there is an approved fork.
+- Any design-system drift must be explicitly recorded and reviewed before handoff.
+- The Stitch prompt template must preserve the selected baseline, five states, screen inventory, and non-goals.
 - Use shadcn-compatible component semantics for Stitch HTML artifacts when useful, but do not require shadcn/ui in React Native screens.
 - Mobile implementation handoff must remain NativeWind, React Native primitives, semantic tokens, and stable testID oriented.
 - Every screen must include default, loading, empty, error, and permission-denied states.

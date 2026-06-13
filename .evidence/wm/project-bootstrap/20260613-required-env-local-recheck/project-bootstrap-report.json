@@ -1,0 +1,107 @@
+{
+  "schema": "project-bootstrap/v1",
+  "status": "blocked",
+  "user_summary": {
+    "language": {
+      "requested": "ko",
+      "current_user_hint": "ko-KR",
+      "selected": "ko",
+      "fallback_reason": null
+    }
+  },
+  "repo": {
+    "clone_url_status": "configured_non_secret",
+    "path": "/Users/tw.kim/Documents/AGA/test/new-mobile-app",
+    "path_status": "present",
+    "managed_path": {
+      "registry": "/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/wm/project-bootstrap/20260613-required-env-local-recheck/CODEX_MANAGED_PATHS.md",
+      "status": "present"
+    }
+  },
+  "role": {
+    "resolved": "mobile-app-dev",
+    "normalized": "mobile-app-dev",
+    "canonical": "canonical",
+    "workspace_identity": "missing",
+    "workspace_identity_canonical": "not_configured",
+    "workspace_identity_match": "not_configured",
+    "expected": "match",
+    "expected_canonical": "canonical",
+    "requires_stitch": false,
+    "requires_eas": false
+  },
+  "repo_sot_files": {
+    "AGENTS.md": "present",
+    "REPO_OPERATIONS.md": "present",
+    "PROJECT_ENVIRONMENT.md": "present",
+    ".codex/config.toml": "present",
+    "docs/TEMPLATE_VARIABLES.md": "present",
+    "docs/CREDENTIALS.md": "present",
+    "mobile-app-dev-team/09-pod-native-openclaw-skills/README.md": "present"
+  },
+  "pod_skills": {
+    "project_bootstrap": "present",
+    "codex_cli_auth_setup": "present",
+    "pod_role_bootstrap": "present",
+    "stitch_adc_setup": "present",
+    "eas_robot_auth_setup": "present"
+  },
+  "mcp": {
+    "required": {
+      "mobile_mcp": "missing",
+      "serena": "missing",
+      "stitch": "missing",
+      "expo": "missing",
+      "atlassian": "missing",
+      "node_repl": "missing",
+      "playwright": "missing"
+    },
+    "baseline_exception": {
+      "eas_cli": "status_only_until_eas_workflow_selected"
+    }
+  },
+  "cli": {
+    "codex": "available",
+    "gh": "available",
+    "railway": "available",
+    "gcloud": "available",
+    "eas": "missing",
+    "pnpm": "available"
+  },
+  "external_status_refs": {
+    "expo_owner": "missing",
+    "eas_project_id": "missing",
+    "expo_token_secret_ref": "missing",
+    "railway_auth_ref": "missing",
+    "google_cloud_project": "missing",
+    "api_secret_ref": "missing",
+    "human_gate_v1": "missing"
+  },
+  "reports": {
+    "pod_role_bootstrap": "missing",
+    "stitch_adc_setup": "not_applicable",
+    "eas_robot_auth_setup": "not_applicable"
+  },
+  "nested_reports": {
+    "pod_role_bootstrap": {
+      "status": "missing",
+      "blockers": []
+    }
+  },
+  "blocker_guide": {
+    "path": "/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/wm/project-bootstrap/20260613-required-env-local-recheck/project-bootstrap-blockers.md",
+    "status": "written",
+    "reference": "/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+    "reference_status": "present"
+  },
+  "blockers": [
+    "missing required MCP mobile-mcp",
+    "missing required MCP serena",
+    "missing required MCP stitch",
+    "missing required MCP expo",
+    "missing required MCP atlassian",
+    "missing required MCP node_repl",
+    "missing required MCP playwright"
+  ],
+  "reporting": "status only; no auth token values, raw credential output, ADC JSON, database URLs, bearer tokens, or private keys"
+}

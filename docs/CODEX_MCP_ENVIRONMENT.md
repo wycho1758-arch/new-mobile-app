@@ -45,18 +45,18 @@ Configure or verify these MCP servers:
 | `mobile-mcp` | Local mobile visual QA/device automation | Yes | No `codex mcp login`; stdio server |
 | `serena` | Symbolic code navigation | Yes | No `codex mcp login`; stdio server |
 | `stitch` | Design handoff/generation/export | Yes | No `codex mcp login`; requires Google ADC for actual Stitch use |
-| `expo` | Official Expo MCP/plugin workflows | Conditional | `codex mcp login expo` OAuth |
-| `atlassian` | Jira/Confluence/internal knowledge | Conditional | Remote/plugin-specific auth |
-| `node_repl` | Codex app/browser/plugin support | Conditional | Codex app managed |
-| `playwright` | MCP browser automation support | Conditional | No `codex mcp login`; stdio server |
+| `expo` | Official Expo MCP/plugin workflows | Yes | `codex mcp login expo` OAuth |
+| `atlassian` | Jira/Confluence/internal knowledge | Yes | Remote/plugin-specific auth |
+| `node_repl` | Codex app/browser/plugin support | Yes | Codex app managed |
+| `playwright` | MCP browser automation support | Yes | No `codex mcp login`; stdio server |
 
 Configure or verify these auxiliary CLIs:
 
 | CLI | Scope | Required |
 | --- | --- | --- |
-| `railway` | `$qa-railway-workflow` deploy/evidence operations | Conditional |
-| `gcloud` | Stitch Google Cloud prerequisites | Conditional for Stitch |
-| `eas` / `eas-cli` | EAS init/build/submit/update operations | Conditional |
+| `railway` | `$qa-railway-workflow` deploy/evidence operations | Yes |
+| `gcloud` | Stitch Google Cloud prerequisites | Yes |
+| `eas` / `eas-cli` | EAS init/build/submit/update operations | Conditional baseline exception |
 | workspace `expo` CLI | Project Expo commands | Yes through `apps/mobile` dependencies |
 
 Excluded from this repo guide:
@@ -76,7 +76,8 @@ because it can contain API-key-like material.
 - `EXPO_PUBLIC_*` values are public client config, not secrets. Still never put
   bearer tokens, signing keys, passwords, or private endpoints in them.
 - Do not use `@latest` for repo-required MCPs. Use the pinned commands from
-  `.codex/config.toml`.
+  `.codex/config.toml`. `expo` uses the fixed remote MCP URL
+  `https://mcp.expo.dev/mcp`.
 - Do not run `railway setup agent` for this repo unless a human explicitly asks
   for Railway-owned agent integration. The repo-local Railway workflow forbids
   it by default because it can modify broader tool configuration.
@@ -128,6 +129,19 @@ Expected repo-required entries:
 - `mobile-mcp`
 - `serena`
 - `stitch`
+- `expo`
+- `atlassian`
+- `node_repl`
+- `playwright`
+
+Expected required CLI surfaces:
+
+- `railway`
+- `gcloud`
+
+Baseline exception:
+
+- EAS CLI remains conditional until EAS work is selected.
 
 Inspect each required MCP:
 
@@ -310,7 +324,7 @@ codex mcp get expo
 codex mcp list
 ```
 
-If missing, add the remote MCP:
+If missing, add the remote MCP from repo SoT:
 
 ```bash
 codex mcp add expo --url https://mcp.expo.dev/mcp
@@ -352,10 +366,10 @@ Purpose:
 
 - Jira, Confluence, and internal knowledge workflows when needed.
 
-Add if selected and missing:
+Add if missing:
 
 ```bash
-codex mcp add atlassian -- npx -y mcp-remote https://mcp.atlassian.com/v1/mcp
+codex mcp add atlassian -- npx -y mcp-remote@0.1.38 https://mcp.atlassian.com/v1/mcp
 ```
 
 Verify:
@@ -371,8 +385,9 @@ Expected outcome:
 - `codex mcp list` may show `Auth: Unsupported`; remote auth can be handled by
   the MCP/plugin/server flow.
 
-Only enable this MCP when Jira/Confluence or company knowledge integration is
-part of the workflow.
+This MCP is required for project-bootstrap readiness so Jira/Confluence or
+company knowledge workflows do not stop later on missing MCP setup. Remote auth
+can still require user presence in the real login surface.
 
 ## `node_repl`
 
@@ -400,10 +415,10 @@ Purpose:
 
 - MCP browser automation support.
 
-Add if selected and missing:
+Add if missing:
 
 ```bash
-codex mcp add playwright -- npx -y @executeautomation/playwright-mcp-server
+codex mcp add playwright -- npx -y @executeautomation/playwright-mcp-server@1.0.12
 ```
 
 Verify:
@@ -438,7 +453,8 @@ Purpose:
 - API service deployment, Postgres/service checks, variables, domains, logs,
   health checks, and RN Web E2E API URL handoff.
 
-Railway is not a Codex MCP in this repo.
+Railway is not a Codex MCP in this repo. It is required for project-bootstrap
+readiness, but install/login/token setup remains human/platform-owned.
 
 Verify:
 
@@ -488,7 +504,8 @@ Purpose:
 - Conditional local EAS operations such as `eas init`, build, submit, update,
   credentials, and EAS environment/secret management.
 
-EAS CLI is not required for baseline MCP registration. Current local state can
+EAS CLI is the baseline exception and is not required for project-bootstrap
+readiness unless EAS work is selected. Current local state can
 be checked with:
 
 ```bash
@@ -531,7 +548,9 @@ legacy `expo` binary as authoritative for this repo.
 
 Purpose:
 
-- Google Cloud prerequisite for Stitch.
+- Google Cloud prerequisite for Stitch. gcloud is required for
+  project-bootstrap readiness, but ADC login, project selection, and service
+  enablement remain human/platform-owned.
 
 Verify CLI:
 

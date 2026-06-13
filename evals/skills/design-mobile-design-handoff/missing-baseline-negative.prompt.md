@@ -1,0 +1,1 @@
+$design-mobile-design-handoff Generate Stitch screens for an approved feature, but there is no selected `DESIGN.md` or `design.md` baseline. Stop before Stitch generation and request the design-system decision.

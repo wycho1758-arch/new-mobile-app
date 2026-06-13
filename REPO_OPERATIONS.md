@@ -94,6 +94,69 @@ Do not print or commit auth tokens, API keys, OAuth tokens, refresh tokens,
 passwords, or full secret-bearing config contents. Reports must use redacted
 status, presence, file mode, and key-name summaries only.
 
+## Skill, Agent, And AGENTS.md Terminology
+
+This section is the canonical, single-concept definition for the overloaded terms
+`skill`, `agent`, and `AGENTS.md`. Each term maps to exactly one concept. A runtime
+location is only where that one concept lives; it is not a separate concept. These
+path definitions are grounded in the repo SoT (`AGENTS.md`, `PROJECT_ENVIRONMENT.md`)
+as the binding authority, and they align with the official Codex and Claude Code
+documentation as recorded in the research evidence at
+`.evidence/research/20260613-codex-claude-skill-agent-paths.md` (source URLs and
+per-claim verdicts). Repo policy authority is unchanged and still follows the
+narrowest-owner model in this file and `AGENTS.md`.
+
+### Skill (one concept)
+
+A skill is a capability folder whose required entrypoint is a `SKILL.md` file
+(markdown with a `name`/`description` YAML frontmatter). The same single skill concept
+is deployed in three locations:
+
+- Codex CLI repo skill: `.agents/skills/<name>/SKILL.md`
+- Claude Code skill: `.claude/skills/<name>/SKILL.md`
+- Pod-native OpenClaw skill: `/workspace/skills/<slug>/SKILL.md` at runtime, authored
+  under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/`
+
+Claude Code ports are deferred unless an approved porting plan creates them. The
+Codex CLI repo skill path remains authoritative for active local runtime
+validation.
+
+The phrase "pod agent skills" means pod-native OpenClaw skills (this skill concept),
+not custom agents.
+
+### Custom agent (one concept)
+
+A custom agent is a named, specialized subagent definition. The same single agent
+concept is stored in two locations:
+
+- Codex CLI custom agent: `.codex/agents/<name>.toml` (TOML; the internal `name` field
+  is the identity source of truth, the filename is conventional)
+- Claude Code custom agent: `.claude/agents/<name>.md` (markdown; standard path only; currently not generated)
+
+### AGENTS.md (a distinct third concept)
+
+`AGENTS.md` is the plain custom-instructions standard a coding agent reads before
+work. It is `not a skill and not a custom agent`. In this repo `AGENTS.md` is also the
+mandatory agent execution-rules entrypoint per the Policy Ownership Map.
+
+### Directory trap
+
+The directory name does not match the concept. `.agents/` holds skills, while
+`.codex/agents/` holds custom agents. This asymmetry is the documented official
+convention; do not place agents under `.agents/` or skills under `.codex/agents/`.
+
+### Non-artifact usages (not the concepts above)
+
+- Operating role / pod role: an organizational LLM role (the six operating roles plus
+  the non-LLM Gatekeeper), not a `.codex/agents` artifact.
+- Agent/Task dispatch tool: a runtime invocation mechanism, not a stored artifact.
+
+### Standard versus authority
+
+Official vendor documentation is the upstream standard for these path definitions.
+Repo policy precedence is unchanged: `AGENTS.md` first, then `PROJECT_ENVIRONMENT.md`,
+then `REPO_OPERATIONS.md`, then role and team docs.
+
 ## Evidence Gates
 
 Done requires linked evidence, not status-only prose. For runtime and docs

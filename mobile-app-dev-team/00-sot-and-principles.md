@@ -36,3 +36,11 @@
 - historical skill 이름은 `99-source-map.md`에서만 crosswalk로 다룬다.
 - active repo skill은 실제 `.agents/skills/<slug>/SKILL.md`가 있는 것만 인정한다.
 - `.clode/agents`는 현재 repo runtime path가 아니다. 실제 custom agent path는 `.codex/agents`이다.
+- 용어 정의(`skill`/`agent`/`AGENTS.md` 단일 개념, `.agents/` vs `.codex/agents/`
+  디렉터리 함정)의 canonical source는 `REPO_OPERATIONS.md`의 "Skill, Agent, And
+  AGENTS.md Terminology" 섹션이다.
+- Pending reconciliation (tracked follow-up): 위 `.clode/agents` 줄은 (1) 오타
+  `.clode` → `.claude`, (2) Codex 런타임 범위 한정이라는 점을 명시 reconcile해야 한다.
+  공식 Claude Code 경로 `.claude/agents/<name>.md`·`.claude/skills/<name>/SKILL.md`는
+  Claude 런타임 표준이며, canonical 정의는 `REPO_OPERATIONS.md` 용어 섹션을 따른다.
+  이 줄의 claim 자체 수정은 명시적 reconcile 결정 후 별도 변경에서 처리한다.

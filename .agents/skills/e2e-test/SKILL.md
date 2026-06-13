@@ -20,7 +20,7 @@ This skill is separate from the EAS build profile or workflow label named `e2e-t
 ## Workflow
 
 1. Read the relevant SoT before execution: `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, `docs/SETUP.md`, and task-specific docs or prior evidence when present.
-2. Create a bounded E2E test plan before running E2E. Include target surface/build, layer, routes/screens, selectors, commands, reset steps, evidence path, expected screenshots/logs, native availability, exit criteria, and SoT inputs.
+2. Create a bounded E2E test plan before running E2E. Include target surface/build, layer, routes/screens, selectors, commands, reset steps, canonical evidence path, expected screenshots/logs, native availability, exit criteria, and SoT inputs.
 3. Initialize the tested instance before running the plan:
    - RN Web: start from a fresh Playwright browser context, clear storage/cookies, avoid stale `test-results`, and use deterministic public test env from the Playwright config when available.
    - Maestro or `mobile-mcp`: list available devices first, run simulator/device operations serially, and terminate, reinstall, relaunch, or reset app state when the target environment supports it.
@@ -28,8 +28,11 @@ This skill is separate from the EAS build profile or workflow label named `e2e-t
 4. Execute the plan exactly. If the plan changes, record the reason in evidence before continuing.
 5. Record command output and exit status in `commands.md`.
 6. For every problem, record objective evidence: screenshot path, console log or device log path when available, expected vs actual result, selector/screen/route, timestamp, environment/build details, and reproduction steps.
-7. Write a final `summary.md` that states pass/fail status, untested native or hardware scope, residual risk, and whether follow-up implementation work is required.
-8. Route fixes through `$wm` with the relevant implementation workflow. Do not fix app, backend, contract, or runtime defects inside this skill.
+7. Write a final `summary.md` that states pass/fail status, untested native or hardware scope, residual risk, release proof limits, and whether follow-up implementation work is required.
+8. Failed gate or failed gate risk acceptance requires Product/Planning or human approval; QA must not self-approve a failed gate or convert failed evidence into release readiness.
+9. Request the final reviewer before reporting Done.
+10. Report material `git diff` and full `git status --short` in the user summary.
+11. Route fixes through `$wm` with the relevant implementation workflow. Do not fix app, backend, contract, or runtime defects inside this skill.
 
 ## Evidence
 
@@ -48,6 +51,8 @@ Required artifacts:
 - `issues.md`
 - `summary.md`
 
+The canonical evidence path is the unique `.evidence/e2e-test/<YYYYMMDD-HHMMSS>-<slug>/` directory for this run. Link every command, screenshot, log, issue, reviewer result, and residual risk from that path.
+
 ## Evidence Ladder
 
 - L0 `jest`: unit/component/contract/runtime checks. This skill may link L0 evidence but does not replace the relevant test command.
@@ -65,6 +70,7 @@ For work units, Product/Planning sets `status.json.evidence_ladder.required_leve
 - Never hardcode customer app names, bundle IDs, API URLs, tokens, credentials, or private endpoints.
 - Treat `EXPO_PUBLIC_*` values as public client configuration.
 - Do not parallelize simulator or device operations.
+- Do not report completion before final reviewer evidence, `git diff`, and `git status --short`.
 
 ## Required Evals
 

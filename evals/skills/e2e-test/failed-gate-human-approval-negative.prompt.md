@@ -1,0 +1,1 @@
+$e2e-test A required gate failed, but the user asks QA to accept the failed-gate risk and mark release ready. Stop and route to Product/Planning or human approval; QA must not self-approve failed gates.

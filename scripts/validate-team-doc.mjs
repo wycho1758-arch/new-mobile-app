@@ -181,6 +181,7 @@ const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootst
 const projectBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/project-bootstrap`;
 const easRobotAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/eas-robot-auth-setup`;
 const stitchAdcSetupSkillRoot = `${podNativeOpenClawSkillRoot}/stitch-adc-setup`;
+const codexRoleWorkflowSkillRoot = `${podNativeOpenClawSkillRoot}/codex-role-workflow`;
 const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
 const completedPlanArchiveRoot = `${managedTeamDocRoot}/_archive`;
 
@@ -301,6 +302,7 @@ for (const relativePath of [
   `${stitchAdcSetupSkillRoot}/SKILL.md`,
   `${stitchAdcSetupSkillRoot}/scripts/stitch-adc-precheck.sh`,
   `${stitchAdcSetupSkillRoot}/references/report-template.md`,
+  `${codexRoleWorkflowSkillRoot}/SKILL.md`,
 ]) {
   if (!exists(relativePath)) fail(`missing managed mobile app dev team doc: ${relativePath}`);
 }
@@ -371,11 +373,18 @@ requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'project-bootstrap',
   'eas-robot-auth-setup',
   'stitch-adc-setup',
+  'codex-role-workflow',
   '## Per-Role Required Pod Skills',
   'Product/Planning',
   'QA/Release',
   'Design',
   'Do not place repo-local Codex CLI artifacts here',
+  '| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
+  '| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
+  '| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
+  '| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |',
+  '| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `eas-robot-auth-setup`, `codex-role-workflow` |',
 ]);
 
 function requirePodNativeSkill(relativePath, slug, scriptName, requiredTerms = []) {
@@ -728,6 +737,60 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapSupportOnlyRawBlockerTerms,
   ...projectBootstrapBrowserComputerUseLoginTerms,
+]);
+
+requireDocTerms(`${codexRoleWorkflowSkillRoot}/SKILL.md`, [
+  'name: codex-role-workflow',
+  'description:',
+  '/workspace/skills/codex-role-workflow/SKILL.md',
+  'status only',
+  'Role identity',
+  'WM_ROLE',
+  '/workspace/IDENTITY',
+  'repo-local Codex skills',
+  '.agents/skills/<skill-name>/SKILL.md',
+  '.codex/agents/<agent-name>.toml',
+  'Product/Planning',
+  'Design',
+  'Mobile Architect',
+  'Mobile App Dev',
+  'Backend/API Integrator',
+  'QA/Release',
+  'po-work-unit-planning-and-agent-sprint',
+  'design-mobile-design-handoff',
+  'mobile-architect-workflow',
+  'mobile-app-dev-workflow',
+  'mobile-backend-api-integrator-workflow',
+  'e2e-test',
+  'qa-railway-workflow',
+  'wm-implementation-reviewer',
+  'wm-contract-reviewer',
+  'po-planning-reviewer',
+  'design-reviewer',
+  '00-product-planning',
+  '01-design',
+  '02-architecture',
+  '03-contract-api',
+  '04-mobile-app',
+  '05-qa-release',
+  'codex-role-workflow/v1',
+  'ready | blocked | not_applicable',
+  'Do not print auth token values',
+  'human gate',
+  'external proof',
+  'git diff',
+  'git status --short',
+]);
+
+requireNoDocTerms(`${codexRoleWorkflowSkillRoot}/SKILL.md`, [
+  'cat ~/.codex/auth.json',
+  'cat /root/.codex/auth.json',
+  'print(data)',
+  'json.dumps(data',
+  'OPENAI_API_KEY=',
+  'EXPO_TOKEN=',
+  'GITHUB_TOKEN=',
+  'GOOGLE_APPLICATION_CREDENTIALS=',
 ]);
 
 requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guide.md`, [
@@ -1479,6 +1542,8 @@ requireDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
   'legacy mobile-* agents',
   'Pod-native OpenClaw skills',
   '09-pod-native-openclaw-skills/README.md',
+  '| `mobile-architect-workflow` | Mobile Architect / Technical Lead | Mobile Architect | Architecture planning, ADR, route/state impact, API co-sign, releaseability, and role-boundary handoff |',
+  '`codex-role-workflow`',
 ]);
 
 forbidDocTerms(`${managedTeamDocRoot}/04-skills-and-agents-matrix.md`, [
@@ -1540,7 +1605,7 @@ requireDocTerms(`${managedTeamDocRoot}/02-role-souls/design-soul.md`, [
 ]);
 
 requireDocTerms(`${managedTeamDocRoot}/02-role-souls/mobile-architect-soul.md`, [
-  'No dedicated repo-local skill is currently assigned to this role',
+  'mobile-architect-workflow',
   'pod-role-bootstrap',
   'docs/plans/work-units/<work-unit-id>/',
   'evidence_ladder',

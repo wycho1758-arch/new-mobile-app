@@ -1,0 +1,103 @@
+Critical: none.
+
+High: none.
+
+Medium: none.
+
+Low:
+- The TypeScript best-practices index has a stale summary count: it says “25 patterns across 7 categories,” but the visible index lists 24 linked patterns across 6 categories. This is non-blocking because all referenced files are present and no removed rule is linked, but it should be corrected for accuracy. Source refs: `.claude/skills/best-practices/rules/ts-index.md:10`, `.claude/skills/best-practices/rules/ts-index.md:12`, `.claude/skills/best-practices/rules/ts-index.md:24`, `.claude/skills/best-practices/rules/ts-index.md:30`, `.claude/skills/best-practices/rules/ts-index.md:39`, `.claude/skills/best-practices/rules/ts-index.md:49`, `.claude/skills/best-practices/rules/ts-index.md:58`.
+
+Scope and gate review: the adopted skills match the approved independent-skill plan; `package.json:21` matches the authorized scope addendum; `.codex/` and `.agents/` are not part of the tracked diff; the implementation evidence records the runtime validation, codex self-test, and `.claude/` survival check as passing. Mobile visual QA is not applicable because no mobile UI/runtime files changed.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "4539cc3bfe9e81660f58185b6b8ed3afed98d7e5",
+    "target": "working-tree:.claude-independent-skill-adoption+package-json-validate",
+    "paths_reviewed": [
+      ".claude/skills/brief-gatekeeper/",
+      ".claude/skills/code-quality/",
+      ".claude/skills/best-practices/",
+      "CLAUDE.md",
+      "package.json",
+      ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md",
+      "PROJECT_ENVIRONMENT.md",
+      "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md",
+      "mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md",
+      "mobile-app-dev-team/02-role-souls/"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "LOW",
+      "summary": "The TypeScript best-practices index summary is stale: it claims 25 patterns across 7 categories, while the visible index lists 24 linked patterns across 6 categories. No dangling removed-rule references were found, so this is documentation accuracy only.",
+      "source_refs": [
+        ".claude/skills/best-practices/rules/ts-index.md:10",
+        ".claude/skills/best-practices/rules/ts-index.md:12",
+        ".claude/skills/best-practices/rules/ts-index.md:24",
+        ".claude/skills/best-practices/rules/ts-index.md:30",
+        ".claude/skills/best-practices/rules/ts-index.md:39",
+        ".claude/skills/best-practices/rules/ts-index.md:49",
+        ".claude/skills/best-practices/rules/ts-index.md:58"
+      ],
+      "owner": "implementation"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "source inspection: approved plan and scope addendum",
+      "status": "PASS",
+      "evidence": "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:11, /Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:118, /Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:128"
+    },
+    {
+      "command": "git diff --name-only .codex .agents CLAUDE.md .claude package.json",
+      "status": "PASS",
+      "evidence": "Only package.json is tracked in the diff; package.json:21 matches the authorized validate-script change."
+    },
+    {
+      "command": "rg forbidden independence/governance patterns across the three new skills",
+      "status": "PASS",
+      "evidence": "No matches for write executors, wrong Serena namespace, /code-review, .agents/skills dependency, Context7, or shadcn residues in the new skill content; code-quality read-only/Serena namespace at .claude/skills/code-quality/SKILL.md:5 and .claude/skills/code-quality/SKILL.md:20."
+    },
+    {
+      "command": "source inspection: code-quality Clean Architecture, TDD, Expo RN, packages/contracts",
+      "status": "PASS",
+      "evidence": ".claude/skills/code-quality/SKILL.md:17, .claude/skills/code-quality/SKILL.md:23, .claude/skills/code-quality/SKILL.md:212, .claude/skills/code-quality/SKILL.md:238, .claude/skills/code-quality/SKILL.md:336"
+    },
+    {
+      "command": "source inspection: best-practices user-invocable leaf, curated rules, six-role index",
+      "status": "PASS",
+      "evidence": ".claude/skills/best-practices/SKILL.md:5, .claude/skills/best-practices/SKILL.md:17, .claude/skills/best-practices/SKILL.md:39, .claude/skills/best-practices/rules/_role-index.md:11, .claude/skills/best-practices/rules/_role-index.md:21, .claude/skills/best-practices/rules/_role-index.md:31, .claude/skills/best-practices/rules/_role-index.md:40, .claude/skills/best-practices/rules/_role-index.md:51"
+    },
+    {
+      "command": "node scripts/validate-runtime-artifacts.mjs",
+      "status": "PASS",
+      "evidence": ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:123"
+    },
+    {
+      "command": "node scripts/codex-headless-review.mjs --self-test",
+      "status": "PASS",
+      "evidence": ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:128"
+    },
+    {
+      "command": "validate deleter-removed confirmation",
+      "status": "PASS",
+      "evidence": ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:131, .evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:136"
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed paths are .claude skill docs, CLAUDE.md inventory, and package.json validate config only; no mobile UI/runtime files changed."
+    }
+  ],
+  "residual_risks": [
+    ".claude/ and CLAUDE.md remain gitignored by repo-owner policy, so tracking via force-add, unignore, or generator remains an owner decision rather than an implementation defect; see .gitignore:7 and .gitignore:8.",
+    "This read-only review did not rerun mutating validation scripts; it relied on recorded gate evidence in .evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:123.",
+    "scripts/validate-runtime-artifacts.mjs validates Codex runtime artifacts under .agents and ignore policy for root Claude artifacts, not the detailed content of these independent .claude skills; see scripts/validate-runtime-artifacts.mjs:152 and scripts/validate-runtime-artifacts.mjs:504."
+  ],
+  "next_action": "proceed"
+}
+```

@@ -30,6 +30,7 @@ translation table.
 | `project-bootstrap` | `/workspace/skills/project-bootstrap/SKILL.md` | Orchestrate project-level boram pod readiness by checking the repo path, managed path, required pod skills, required/conditional MCPs, external CLI/account status, role-specific setup reports, and human gates without exposing secrets. |
 | `eas-robot-auth-setup` | `/workspace/skills/eas-robot-auth-setup/SKILL.md` | Verify QA/Release EAS CLI and Expo robot auth readiness as status only before any human-gated EAS/Maestro run. |
 | `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify Design Google ADC and Stitch MCP readiness as status only before any approved Stitch handoff run. |
+| `codex-role-workflow` | `/workspace/skills/codex-role-workflow/SKILL.md` | Resolve a role pod to allowed repo-local Codex skills, reviewers, durable artifact stage, stop conditions, and status-only next action without doing role work. |
 
 ## Per-Role Required Pod Skills
 
@@ -40,9 +41,9 @@ It is not the normal user-facing execution order; normal setup uses
 
 | Operating Role | Required pod-native skills |
 | --- | --- |
-| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap` |
-| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup` |
-| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap` |
-| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap` |
-| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap` |
-| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `eas-robot-auth-setup` |
+| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
+| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
+| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
+| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
+| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
+| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `eas-robot-auth-setup`, `codex-role-workflow` |
