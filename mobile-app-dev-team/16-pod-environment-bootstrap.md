@@ -81,6 +81,9 @@ config/private-material patch
 | `/workspace/IDENTITY` | Alternative to `WM_ROLE` | First line contains the pod role. | `mobile-app-dev` |
 | `/workspace/CODEX_MANAGED_PATHS.md` | Required | Canonical managed-path registry. It must contain the managed path entry. | `- /workspace/projects/Wondermove-Inc/new-mobile-app/` |
 | `CODEX_MANAGED_PATHS` | Optional script override | Use only for scripts that explicitly support it. Evidence must name the registry file checked. | `/workspace/CODEX_MANAGED_PATHS.md` |
+| `PROJECT_BOOTSTRAP_GIT_USER_NAME` / `PROJECT_BOOTSTRAP_GIT_USER_EMAIL` | Required when pod Git identity is missing and an approved org identity exists | Complete non-secret approved Git author identity pair for this pod. The agent may set `git config --global` from this pair. | `WonderMove Pod Agent` / `pod-agent@example.invalid` |
+| `WM_GIT_USER_NAME` / `WM_GIT_USER_EMAIL` | Alternative approved Git identity source | Complete non-secret approved role/pod Git author identity pair. Do not invent values or mix with another source family. | `WonderMove QA Pod` / `qa-pod@example.invalid` |
+| `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH` | Optional local handoff path | File containing one complete approved `KEY=value` Git identity pair. Do not include private material or partial values intended to combine with env vars. | `/workspace/state/git-identity.env` |
 | `GITHUB_TOKEN` or `gh auth` | Required for private repo or PR work | GitHub auth material as secret/status only. | Secret value, never printed |
 
 `REPO_CLONE_URL` is a repo acquisition setting, not a mobile app runtime
@@ -286,6 +289,9 @@ pod evidence, or a substitute for `human-gate/v1` approval.
    `PROJECT_ENVIRONMENT.md` checks, and `human-gate/v1` policy checks. It writes
    status-only evidence to
    `${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}`.
+   If the generated `pod-role-bootstrap` report is present and blocked,
+   `project-bootstrap` must surface that nested blocked status instead of
+   presenting the pod as fully ready.
 5. Treat `codex-cli-auth-setup` and `pod-role-bootstrap` as
    dependency/internal setup contracts for normal setup. Run them directly only
    for advanced recovery, focused diagnostics, or when `project-bootstrap`
@@ -312,6 +318,7 @@ pod evidence, or a substitute for `human-gate/v1` approval.
 | Required pod-native skill directory is missing | Stop and request skill installation or the missing `/workspace/skills/<slug>` artifact. |
 | Repo path is missing | Clone only if non-secret `REPO_CLONE_URL` is explicitly configured; otherwise stop. |
 | Managed path entry is missing | Stop until the owner-approved `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` entry exists. |
+| Git identity is missing | If approved `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, approved `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or one complete approved pair in `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH` exists, let `project-bootstrap` set Git config. Otherwise request approved non-secret identity values. |
 | Credential status is missing | Mark blocked or role-specific not applicable. Never work around by pasting plaintext credentials. |
 | Public Expo config is missing for preview, release, or EAS job config | Stop and request the missing public config value. Do not use template fallbacks for customer/release jobs. |
 | Role-specific capability is not needed | Record `not_applicable` with the role and source reason. |

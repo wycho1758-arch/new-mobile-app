@@ -214,6 +214,7 @@ node - "$REPORT_PATH" \
   "$(mcp_status atlassian)" \
   "$(mcp_status node_repl)" \
   "$(mcp_status playwright)" \
+  "$POD_ROLE_BOOTSTRAP_REPORT" \
   "$(file_status "${POD_ROLE_BOOTSTRAP_REPORT}")" \
   "$(file_status "${STITCH_ADC_REPORT}")" \
   "$(file_status "${EAS_ROBOT_AUTH_REPORT}")" \
@@ -271,6 +272,7 @@ const [
   atlassianMcp,
   nodeReplMcp,
   playwrightMcp,
+  podRoleBootstrapReportPath,
   podRoleBootstrapReport,
   stitchAdcReport,
   easRobotAuthReport,
@@ -287,6 +289,34 @@ const [
 
 const blockers = [];
 const tokenBearingCloneUrl = /:\/\/[^/\s]+@/.test(repoCloneUrl) || /(?:token|password|secret|key)=/i.test(repoCloneUrl);
+
+function readNestedReport(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) {
+    return { status: 'missing', blockers: [] };
+  }
+  try {
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const nestedBlockers = new Set();
+    if (Array.isArray(parsed?.preflight?.blockers)) {
+      for (const blocker of parsed.preflight.blockers) {
+        if (typeof blocker === 'string' && blocker) nestedBlockers.add(blocker);
+      }
+    }
+    if (Array.isArray(parsed?.preflight?.result?.blockers)) {
+      for (const blocker of parsed.preflight.result.blockers) {
+        if (typeof blocker?.reason === 'string' && blocker.reason) nestedBlockers.add(blocker.reason);
+      }
+    }
+    return {
+      status: typeof parsed?.status === 'string' ? parsed.status : 'unknown',
+      blockers: [...nestedBlockers],
+    };
+  } catch {
+    return { status: 'unreadable', blockers: [] };
+  }
+}
+
+const podRoleBootstrapNestedReport = readNestedReport(podRoleBootstrapReportPath);
 
 function requirePresent(label, value) {
   if (value !== 'present') blockers.push(label);
@@ -334,6 +364,7 @@ if (roleRequiresEas === 'true') {
   requirePresent('missing /workspace/skills/eas-robot-auth-setup', easRobotAuthSetupSkill);
   if (easRobotAuthReport !== 'present') blockers.push('missing eas-robot-auth-setup report');
 }
+if (podRoleBootstrapNestedReport.status === 'blocked') blockers.push('pod-role-bootstrap blocked');
 
 const blockerGuide = {
   path: blockerGuidePath,
@@ -455,6 +486,9 @@ const report = {
     pod_role_bootstrap: podRoleBootstrapReport,
     stitch_adc_setup: roleRequiresStitch === 'true' ? stitchAdcReport : 'not_applicable',
     eas_robot_auth_setup: roleRequiresEas === 'true' ? easRobotAuthReport : 'not_applicable',
+  },
+  nested_reports: {
+    pod_role_bootstrap: podRoleBootstrapNestedReport,
   },
   blocker_guide: blockerGuide,
   blockers,

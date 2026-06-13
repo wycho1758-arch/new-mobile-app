@@ -244,6 +244,15 @@ exists for the exact action and evidence path.
   project, EAS/Expo, workspace Expo, GitHub auth, and Codex auth. A `missing`
   status in this inventory is not a blocker unless the `blockers` array or the
   current role-specific SoT makes it one.
+- Git identity is configured only from an approved non-secret local source such
+  as `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus
+  `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus
+  `WM_GIT_USER_EMAIL`, or `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. Use a complete
+  name/email pair from one approved source; do not compose identity values
+  across source families. Do not invent name/email values.
+- GitHub auth setup is status-only. If authenticated `gh` state or approved
+  mounted auth material exists, the agent may run `gh auth setup-git`; otherwise
+  keep `github-auth-unavailable` as a human/platform blocker.
 - API secret refs, Railway token refs, Google ADC, EXPO_TOKEN, App Store Connect,
   and Google Play credentials are recorded only as status/ref labels, never
   values.
@@ -251,6 +260,9 @@ exists for the exact action and evidence path.
   explicitly reported as pending/not-run before that workflow step. Do not treat
   pre-bootstrap `reports.pod_role_bootstrap: missing` as a user blocker by
   itself.
+- If the generated `pod-role-bootstrap` report is present and blocked,
+  `project-bootstrap` must surface `pod-role-bootstrap blocked` and the nested
+  status-only blocker reasons in the project report.
 - Design and QA/Release setup reports are present or source-backed not
   applicable.
 - Live external actions are blocked without `human-gate/v1`.
