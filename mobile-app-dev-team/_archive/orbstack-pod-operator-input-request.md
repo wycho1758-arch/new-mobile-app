@@ -1,5 +1,10 @@
 # OrbStack Pod Operator Input Request
 
+> Archived: this request was folded into
+> `mobile-app-dev-team/17-orbstack-pod-config-values.md`. Use that file for the
+> current non-secret OrbStack role pod value handoff and owner/operator input
+> list.
+
 This document defines the next documentation update to make before handing
 OrbStack/OpenClaw pod setup to an owner/operator.
 

@@ -117,6 +117,10 @@ is deployed in three locations:
 - Pod-native OpenClaw skill: `/workspace/skills/<slug>/SKILL.md` at runtime, authored
   under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/`
 
+Claude Code ports are deferred unless an approved porting plan creates them. The
+Codex CLI repo skill path remains authoritative for active local runtime
+validation.
+
 The phrase "pod agent skills" means pod-native OpenClaw skills (this skill concept),
 not custom agents.
 
@@ -127,7 +131,7 @@ concept is stored in two locations:
 
 - Codex CLI custom agent: `.codex/agents/<name>.toml` (TOML; the internal `name` field
   is the identity source of truth, the filename is conventional)
-- Claude Code custom agent: `.claude/agents/<name>.md` (markdown)
+- Claude Code custom agent: `.claude/agents/<name>.md` (markdown; standard path only; currently not generated)
 
 ### AGENTS.md (a distinct third concept)
 

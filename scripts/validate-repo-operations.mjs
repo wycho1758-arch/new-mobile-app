@@ -159,6 +159,12 @@ requireTerms('REPO_OPERATIONS.md', [
 ]);
 
 requireTerms('REPO_OPERATIONS.md', [
+  'Claude Code custom agent: `.claude/agents/<name>.md`',
+  'standard path only; currently not generated',
+  'Claude Code ports are deferred',
+]);
+
+requireTerms('REPO_OPERATIONS.md', [
   '## Skill, Agent, And AGENTS.md Terminology',
   '.agents/skills/<name>/SKILL.md',
   '.claude/skills/<name>/SKILL.md',
@@ -177,6 +183,20 @@ requireConfluenceDependencyBoundary();
 
 requireFile('TEAM_DOC_ARCHIVE_MANIFEST.json');
 requireFile('TEAM_DOC_ARCHIVE_BUNDLE.jsonl');
+
+requireTerms('README.md', [
+  'AGENTS.md',
+  'PROJECT_ENVIRONMENT.md',
+  'REPO_OPERATIONS.md',
+  'DESIGN.md',
+  'mobile-app-dev-team/',
+]);
+
+requireTerms('DESIGN.md', [
+  'docs/design-references/',
+  'DESIGN.md authoring examples',
+  'runtime and skills do not consume this corpus',
+]);
 
 requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md', [
   'REPO_OPERATIONS.md',
