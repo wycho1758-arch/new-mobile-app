@@ -33,6 +33,10 @@ preflight report. That report has this shape:
     "stitch_adc_setup": "not_applicable | already_present | generated | script_missing | not_generated",
     "eas_robot_auth_setup": "not_applicable | already_present | generated | script_missing | not_generated"
   },
+  "git": {
+    "identity": "already_configured | configured_from_approved_source | missing_approved_source | partial_approved_source | invalid_approved_source | configuration_unverified | git_missing",
+    "github_auth": "setup_git_completed | setup_git_failed | missing | gh_missing"
+  },
   "preflight": "not_run | pass | blocked | script_missing",
   "reporting": "status only; no credential values, raw auth output, ADC JSON, database URLs, bearer tokens, or private keys"
 }
@@ -114,6 +118,12 @@ preflight report. That report has this shape:
     "stitch_adc_setup": "present | missing | not_applicable",
     "eas_robot_auth_setup": "present | missing | not_applicable"
   },
+  "nested_reports": {
+    "pod_role_bootstrap": {
+      "status": "ready | blocked | missing | unknown | unreadable",
+      "blockers": ["status-only blocker reason"]
+    }
+  },
   "blocker_guide": {
     "path": "/workspace/state/project-bootstrap-blockers.md",
     "status": "written | not_applicable",
@@ -132,6 +142,35 @@ service account JSON, database URLs, bearer token values, private key material,
 raw stdout/stderr from status commands, or rendered private-material-bearing
 manifests.
 
+## Generated Blocker Markdown Shape
+
+When the report is blocked, `/workspace/state/project-bootstrap-blockers.md`
+must begin with a user-facing summary before raw technical blockers:
+
+```markdown
+## User-understandable result
+
+<Plain-language current state.>
+
+## What the agent already checked
+
+- <Status-only local checks and agent-owned setup already attempted.>
+
+## Minimum user request
+
+- <Only the smallest non-secret value, missing artifact, or human-present auth
+  action needed.>
+
+## Next agent action
+
+<How the agent can continue after that input exists.>
+```
+
+Future JSON reports may add a `user_summary` object with the same shape:
+`current_state`, `agent_checked`, `minimum_user_request`, and
+`next_agent_action`. Until that exists, the generated Markdown is the user-facing
+contract.
+
 ## Interpretation Notes
 
 - Treat the report `blockers` array as the source for user-facing blockers.
@@ -143,6 +182,10 @@ manifests.
   `/workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh` runs means the
   report has not been generated yet. It is pending workflow evidence, not a
   user-owned blocker.
+- `reports.pod_role_bootstrap: present` with
+  `nested_reports.pod_role_bootstrap.status: blocked` is a current workflow
+  blocker. The project report must not be treated as fully ready until the nested
+  pod-role report is ready or source-backed not applicable.
 - `reports.stitch_adc_setup` is actionable only when
   `role.requires_stitch` is true. `reports.eas_robot_auth_setup` is actionable
   only when `role.requires_eas` is true.

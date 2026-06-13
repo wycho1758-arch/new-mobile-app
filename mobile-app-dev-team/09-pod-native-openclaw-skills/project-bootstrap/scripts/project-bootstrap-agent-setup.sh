@@ -14,6 +14,7 @@ STITCH_ADC_PRECHECK="${STITCH_ADC_PRECHECK:-/workspace/skills/stitch-adc-setup/s
 EAS_ROBOT_AUTH_PRECHECK="${EAS_ROBOT_AUTH_PRECHECK:-/workspace/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh}"
 STITCH_ADC_REPORT="${STITCH_ADC_REPORT:-${STATE_DIR}/stitch-adc-setup-report.json}"
 EAS_ROBOT_AUTH_REPORT="${EAS_ROBOT_AUTH_REPORT:-${STATE_DIR}/eas-robot-auth-setup-report.json}"
+GIT_IDENTITY_PATH="${PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH:-}"
 
 redact() {
   sed -E 's/(token|key|secret|password|credential)([=: ][^ ]+)/\1=***REDACTED***/Ig'
@@ -194,6 +195,156 @@ run_status_precheck() {
   fi
 }
 
+strip_wrapping_quotes() {
+  local value="$1"
+  value="${value%$'\r'}"
+  if [[ "${value}" == \"*\" && "${value}" == *\" ]]; then
+    value="${value:1:${#value}-2}"
+  elif [[ "${value}" == \'*\' && "${value}" == *\' ]]; then
+    value="${value:1:${#value}-2}"
+  fi
+  printf '%s' "${value}"
+}
+
+load_git_identity_file() {
+  local file_path="$1"
+  local key value
+  [[ -n "${file_path}" && -r "${file_path}" ]] || return 0
+  while IFS='=' read -r key value || [[ -n "${key}" ]]; do
+    case "${key}" in
+      PROJECT_BOOTSTRAP_GIT_USER_NAME|WM_GIT_USER_NAME)
+        if [[ "${key}" == "PROJECT_BOOTSTRAP_GIT_USER_NAME" ]]; then
+          git_identity_file_project_name="$(strip_wrapping_quotes "${value}")"
+        else
+          git_identity_file_wm_name="$(strip_wrapping_quotes "${value}")"
+        fi
+        ;;
+      PROJECT_BOOTSTRAP_GIT_USER_EMAIL|WM_GIT_USER_EMAIL)
+        if [[ "${key}" == "PROJECT_BOOTSTRAP_GIT_USER_EMAIL" ]]; then
+          git_identity_file_project_email="$(strip_wrapping_quotes "${value}")"
+        else
+          git_identity_file_wm_email="$(strip_wrapping_quotes "${value}")"
+        fi
+        ;;
+    esac
+  done < "${file_path}"
+}
+
+select_git_identity_pair() {
+  local saw_identity="false"
+  local project_name project_email wm_name wm_email
+  project_name="$(strip_wrapping_quotes "${PROJECT_BOOTSTRAP_GIT_USER_NAME:-}")"
+  project_email="$(strip_wrapping_quotes "${PROJECT_BOOTSTRAP_GIT_USER_EMAIL:-}")"
+  wm_name="$(strip_wrapping_quotes "${WM_GIT_USER_NAME:-}")"
+  wm_email="$(strip_wrapping_quotes "${WM_GIT_USER_EMAIL:-}")"
+
+  if [[ -n "${project_name}" || -n "${project_email}" ]]; then
+    saw_identity="true"
+    if [[ -n "${project_name}" && -n "${project_email}" ]]; then
+      approved_git_name="${project_name}"
+      approved_git_email="${project_email}"
+      return 0
+    fi
+  fi
+
+  if [[ -n "${wm_name}" || -n "${wm_email}" ]]; then
+    saw_identity="true"
+    if [[ -n "${wm_name}" && -n "${wm_email}" ]]; then
+      approved_git_name="${wm_name}"
+      approved_git_email="${wm_email}"
+      return 0
+    fi
+  fi
+
+  if [[ -n "${git_identity_file_project_name}" || -n "${git_identity_file_project_email}" ]]; then
+    saw_identity="true"
+    if [[ -n "${git_identity_file_project_name}" && -n "${git_identity_file_project_email}" ]]; then
+      approved_git_name="${git_identity_file_project_name}"
+      approved_git_email="${git_identity_file_project_email}"
+      return 0
+    fi
+  fi
+
+  if [[ -n "${git_identity_file_wm_name}" || -n "${git_identity_file_wm_email}" ]]; then
+    saw_identity="true"
+    if [[ -n "${git_identity_file_wm_name}" && -n "${git_identity_file_wm_email}" ]]; then
+      approved_git_name="${git_identity_file_wm_name}"
+      approved_git_email="${git_identity_file_wm_email}"
+      return 0
+    fi
+  fi
+
+  if [[ "${saw_identity}" == "true" ]]; then
+    return 1
+  fi
+  return 2
+}
+
+configure_git_identity() {
+  local selection_status
+  if ! command -v git >/dev/null 2>&1; then
+    printf '%s\n' "git_missing"
+    return
+  fi
+
+  if git config --get user.name >/dev/null 2>&1 && git config --get user.email >/dev/null 2>&1; then
+    printf '%s\n' "already_configured"
+    return
+  fi
+
+  approved_git_name=""
+  approved_git_email=""
+  git_identity_file_project_name=""
+  git_identity_file_project_email=""
+  git_identity_file_wm_name=""
+  git_identity_file_wm_email=""
+  load_git_identity_file "${GIT_IDENTITY_PATH}"
+
+  selection_status=0
+  select_git_identity_pair || selection_status="$?"
+  if [[ "${selection_status}" -ne 0 ]]; then
+    case "${selection_status}" in
+      1)
+        printf '%s\n' "partial_approved_source"
+        ;;
+      *)
+        printf '%s\n' "missing_approved_source"
+        ;;
+    esac
+    return
+  fi
+  if [[ "${approved_git_email}" != *@* ]]; then
+    printf '%s\n' "invalid_approved_source"
+    return
+  fi
+
+  git config --global user.name "${approved_git_name}"
+  git config --global user.email "${approved_git_email}"
+  if git config --get user.name >/dev/null 2>&1 && git config --get user.email >/dev/null 2>&1; then
+    printf '%s\n' "configured_from_approved_source"
+  else
+    printf '%s\n' "configuration_unverified"
+  fi
+}
+
+configure_github_auth() {
+  if ! command -v gh >/dev/null 2>&1; then
+    printf '%s\n' "gh_missing"
+    return
+  fi
+
+  if ! gh auth status >/dev/null 2> >(redact >&2); then
+    printf '%s\n' "missing"
+    return
+  fi
+
+  if gh auth setup-git >/dev/null 2> >(redact >&2); then
+    printf '%s\n' "setup_git_completed"
+  else
+    printf '%s\n' "setup_git_failed"
+  fi
+}
+
 mkdir -p "${STATE_DIR}" "$(dirname "${REPORT_PATH}")"
 
 role_status="not_resolved"
@@ -239,6 +390,9 @@ if [[ "${role_requires_eas}" == "true" ]]; then
   eas_report_status="$(run_status_precheck "${EAS_ROBOT_AUTH_PRECHECK}" "${EAS_ROBOT_AUTH_REPORT}")"
 fi
 
+git_identity_status="$(configure_git_identity || printf 'blocked')"
+github_auth_status="$(configure_github_auth || printf 'blocked')"
+
 preflight_status="not_run"
 if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   if [[ -x "${PREFLIGHT_SCRIPT}" ]]; then
@@ -252,7 +406,7 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$stitch_report_status" "$eas_report_status" "$preflight_status" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const [
@@ -271,6 +425,8 @@ const [
   stitchMcpStatus,
   stitchReportStatus,
   easReportStatus,
+  gitIdentityStatus,
+  githubAuthStatus,
   preflightStatus,
 ] = process.argv.slice(2);
 
@@ -300,6 +456,10 @@ const report = {
   reports: {
     stitch_adc_setup: stitchReportStatus,
     eas_robot_auth_setup: easReportStatus,
+  },
+  git: {
+    identity: gitIdentityStatus,
+    github_auth: githubAuthStatus,
   },
   preflight: preflightStatus,
   reporting: 'status only; no credential values, raw auth output, ADC JSON, database URLs, bearer tokens, or private keys',

@@ -14,6 +14,13 @@ uses for secret-safe checks and reusable readiness reports. Invoke
 `codex-cli-auth-setup` or `pod-role-bootstrap` directly only for advanced recovery paths
 or focused diagnostics.
 
+When setup is blocked, pod agents must give a user-understandable result instead
+of raw blocker names. The result must explain what happened, what the agent can
+still do with local CLI/browser/computer-use/MCP tools, the minimum request/action
+needed from the user, and how the agent continues afterward. Use
+`project-bootstrap/references/blocker-resolution-guide.md` for the detailed
+translation table.
+
 ## Current Skills
 
 | Skill | Runtime Shape | Purpose |

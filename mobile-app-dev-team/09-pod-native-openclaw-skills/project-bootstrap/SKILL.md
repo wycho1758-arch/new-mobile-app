@@ -194,6 +194,14 @@ which actions the agent can perform with local tools/browser/MCP status checks
 versus which actions need user-owned credentials, account decisions, or
 `human-gate/v1`.
 
+The final blocked response must be a user-understandable result, not only raw
+blocker names. It must include the current state in plain language, agent-owned
+actions already checked or still possible, the minimum user request, and the
+next step where the agent can continue. When the nested pod role report is in
+scope, say that `pod-role-bootstrap` generates `/workspace/state/pod-role-bootstrap-report.json` and `project-bootstrap`
+surfaces that status in the project report. Do not ask the user to create that
+report file manually.
+
 5. If common blockers are absent, run Codex CLI/auth setup:
 
 ```bash
@@ -244,6 +252,15 @@ exists for the exact action and evidence path.
   project, EAS/Expo, workspace Expo, GitHub auth, and Codex auth. A `missing`
   status in this inventory is not a blocker unless the `blockers` array or the
   current role-specific SoT makes it one.
+- Git identity is configured only from an approved non-secret local source such
+  as `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus
+  `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus
+  `WM_GIT_USER_EMAIL`, or `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. Use a complete
+  name/email pair from one approved source; do not compose identity values
+  across source families. Do not invent name/email values.
+- GitHub auth setup is status-only. If authenticated `gh` state or approved
+  mounted auth material exists, the agent may run `gh auth setup-git`; otherwise
+  keep `github-auth-unavailable` as a human/platform blocker.
 - API secret refs, Railway token refs, Google ADC, EXPO_TOKEN, App Store Connect,
   and Google Play credentials are recorded only as status/ref labels, never
   values.
@@ -251,6 +268,9 @@ exists for the exact action and evidence path.
   explicitly reported as pending/not-run before that workflow step. Do not treat
   pre-bootstrap `reports.pod_role_bootstrap: missing` as a user blocker by
   itself.
+- If the generated `pod-role-bootstrap` report is present and blocked,
+  `project-bootstrap` must surface `pod-role-bootstrap blocked` and the nested
+  status-only blocker reasons in the project report.
 - Design and QA/Release setup reports are present or source-backed not
   applicable.
 - Live external actions are blocked without `human-gate/v1`.
