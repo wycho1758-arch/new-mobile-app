@@ -280,6 +280,9 @@ requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'source-only',
   '/workspace/skills/<slug>/SKILL.md',
   'Normal user-facing setup starts from `project-bootstrap`',
+  'user-understandable result',
+  'minimum request/action',
+  'blocker-resolution-guide.md',
   'dependency/internal setup contracts',
   'advanced recovery paths',
   'codex-cli-auth-setup',
@@ -631,6 +634,10 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   'Do not ask the user to choose a role slug',
   'Do not ask the user to perform agent-owned setup',
   'agent-owned setup before blocker report',
+  'user-understandable result',
+  'minimum user request',
+  'agent can continue',
+  'pod-role-bootstrap` generates `/workspace/state/pod-role-bootstrap-report.json`',
   'register missing required MCPs',
   'repair the managed-path registry',
   'run role-specific status-only setup reports',
@@ -651,11 +658,39 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guid
   'Do not ask the user to choose the role',
   'Agent-owned setup actions',
   'Agent-owned if approved source exists',
+  'Human-readable blocker table',
+  'Minimum user request',
+  'agent can continue',
+  'browser/device login with human present',
   'PROJECT_BOOTSTRAP_GIT_USER_NAME',
   'PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH',
   '`pod-role-bootstrap` report is present and blocked',
   'Human-owned blockers',
   'Do not print token values',
+]);
+
+requireDocTerms(`${projectBootstrapSkillRoot}/references/report-template.md`, [
+  'User-understandable result',
+  'What the agent already checked',
+  'Minimum user request',
+  'Next agent action',
+  'user_summary',
+]);
+
+requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-preflight.sh`, [
+  'User-understandable result',
+  'Minimum user request',
+  'Next agent action',
+  'approved non-secret Git identity pair',
+  'human-present `gh auth login`',
+  'browser/device login',
+]);
+
+requireDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
+  'human-readable blocker translation',
+  'approved non-secret Git identity pair',
+  'human-present GitHub auth action',
+  'Do not ask the user to create `/workspace/state/pod-role-bootstrap-report.json`',
 ]);
 
 requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-agent-setup.sh`, [
@@ -690,6 +725,9 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   'case_github_auth_setup_git_when_authenticated',
   'case_github_auth_missing_skips_setup_git',
   'case_project_preflight_blocks_on_pod_role_report_blocked',
+  'User-understandable result',
+  'Minimum user request',
+  'human-present `gh auth login`',
   'blocked_wrong_repo_path',
   'project-bootstrap-agent-setup smoke passed',
 ]);
@@ -1486,6 +1524,10 @@ requireDocTerms(`${managedTeamDocRoot}/16-pod-environment-bootstrap.md`, [
   'PROJECT_BOOTSTRAP_GIT_USER_NAME',
   'PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH',
   'pod-role-bootstrap` report is present and blocked',
+  'approved non-secret Git identity pair',
+  'browser/computer-use',
+  'human-present `gh auth login`',
+  'minimum request',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
   'project-bootstrap',

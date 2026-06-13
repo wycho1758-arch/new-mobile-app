@@ -72,6 +72,18 @@ credentials, account decisions, paid/external platform choices, or a linked
 Never request secret values in chat; ask for mounted/managed credentials or an
 interactive login path instead.
 
+## Human-readable blocker table
+
+Use this table to convert raw blockers into a user-understandable result. The
+agent report must include what happened, what the agent can still do, the
+Minimum user request, and the next step where the agent can continue.
+
+| Raw blocker | Plain-language meaning | Minimum user request | Next agent action |
+| --- | --- | --- | --- |
+| `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Provide one approved non-secret Git identity pair through `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. | Configure Git from that one approved source and rerun bootstrap. |
+| `github-auth-unavailable` | The GitHub CLI has no usable authenticated state or approved mounted/managed auth source. | Confirm approved mounted/managed auth exists, or be present for `gh auth login` / browser/device login with human present. Never send tokens in chat. | Run status-only GitHub checks, run `gh auth setup-git` only when authenticated state exists, then rerun bootstrap. |
+| `pod-role-bootstrap blocked` | `project-bootstrap` found that the generated `pod-role-bootstrap` report is present but not ready. | Resolve the nested blocker requests only; do not create report files manually. | Rerun `pod-role-bootstrap`, then rerun `project-bootstrap` preflight. |
+
 ## Blocker Classification
 
 | Classification | Examples | Required handling |

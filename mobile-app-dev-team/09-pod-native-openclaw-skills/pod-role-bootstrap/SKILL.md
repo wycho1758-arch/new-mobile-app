@@ -105,6 +105,14 @@ Preflight blockers are interpreted as follows:
 - `no-valid-codex-binary`: ensure `codex --version`, `codex exec --help`, and
   the read-only headless smoke command work from the resolved `codex` path.
 
+Blocked output must include a human-readable blocker translation. For
+`git-identity-missing`, request only one approved non-secret Git identity pair or
+an approved local handoff path, then let the agent configure Git and rerun
+bootstrap. For `github-auth-unavailable`, request only an approved mounted or
+managed GitHub auth source, or a human-present GitHub auth action such as
+`gh auth login` where the human enters credentials. Do not ask the user to create `/workspace/state/pod-role-bootstrap-report.json`; this skill writes that
+report itself.
+
 4. Write the readiness report under `/workspace/state/`.
 
 The default report path is:

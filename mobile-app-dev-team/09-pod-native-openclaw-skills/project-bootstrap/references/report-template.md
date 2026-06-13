@@ -142,6 +142,35 @@ service account JSON, database URLs, bearer token values, private key material,
 raw stdout/stderr from status commands, or rendered private-material-bearing
 manifests.
 
+## Generated Blocker Markdown Shape
+
+When the report is blocked, `/workspace/state/project-bootstrap-blockers.md`
+must begin with a user-facing summary before raw technical blockers:
+
+```markdown
+## User-understandable result
+
+<Plain-language current state.>
+
+## What the agent already checked
+
+- <Status-only local checks and agent-owned setup already attempted.>
+
+## Minimum user request
+
+- <Only the smallest non-secret value, missing artifact, or human-present auth
+  action needed.>
+
+## Next agent action
+
+<How the agent can continue after that input exists.>
+```
+
+Future JSON reports may add a `user_summary` object with the same shape:
+`current_state`, `agent_checked`, `minimum_user_request`, and
+`next_agent_action`. Until that exists, the generated Markdown is the user-facing
+contract.
+
 ## Interpretation Notes
 
 - Treat the report `blockers` array as the source for user-facing blockers.

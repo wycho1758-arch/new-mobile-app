@@ -76,6 +76,15 @@ assert_json_field() {
   node -e "const r=require(process.argv[1]); if (!(${expression})) { console.error('assertion failed:', process.argv[2]); process.exit(1); }" "${report}" "${expression}"
 }
 
+assert_file_contains() {
+  local file="$1"
+  local expected="$2"
+  if ! grep -F -- "${expected}" "${file}" >/dev/null 2>&1; then
+    printf 'assertion failed: expected %s to contain %s\n' "${file}" "${expected}" >&2
+    exit 1
+  fi
+}
+
 case_design_full_setup() {
   local tmpdir
   tmpdir="$(mktemp -d)"
@@ -431,11 +440,12 @@ case_product_planning_status_only_missing_preflight() {
 }
 
 case_project_preflight_blocks_on_pod_role_report_blocked() {
-  local tmpdir repo_path report_path pod_report_path
+  local tmpdir repo_path report_path pod_report_path blockers_md_path
   tmpdir="$(mktemp -d)"
   repo_path="${tmpdir}/repo"
   report_path="${tmpdir}/state/project-bootstrap-report.json"
   pod_report_path="${tmpdir}/state/pod-role-bootstrap-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
   mkdir -p \
     "${tmpdir}/bin" \
     "${tmpdir}/state" \
@@ -480,7 +490,7 @@ JSON
   REPO_PATH="${repo_path}" \
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
-  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
   POD_ROLE_BOOTSTRAP_REPORT="${pod_report_path}" \
   WM_ROLE="product-planning" \
@@ -493,6 +503,14 @@ JSON
   assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('git-identity-missing')"
   assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('github-auth-unavailable')"
   assert_json_field "${report_path}" "r.blockers.includes('pod-role-bootstrap blocked')"
+  assert_file_contains "${blockers_md_path}" "## User-understandable result"
+  assert_file_contains "${blockers_md_path}" "The pod role bootstrap report exists, but the pod is not ready yet."
+  assert_file_contains "${blockers_md_path}" "## What the agent already checked"
+  assert_file_contains "${blockers_md_path}" "## Minimum user request"
+  assert_file_contains "${blockers_md_path}" "approved non-secret Git identity pair"
+  assert_file_contains "${blockers_md_path}" 'human-present `gh auth login`'
+  assert_file_contains "${blockers_md_path}" "browser/device login"
+  assert_file_contains "${blockers_md_path}" "## Next agent action"
 }
 
 case_design_full_setup

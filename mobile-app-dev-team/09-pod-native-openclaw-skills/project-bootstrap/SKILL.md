@@ -194,6 +194,14 @@ which actions the agent can perform with local tools/browser/MCP status checks
 versus which actions need user-owned credentials, account decisions, or
 `human-gate/v1`.
 
+The final blocked response must be a user-understandable result, not only raw
+blocker names. It must include the current state in plain language, agent-owned
+actions already checked or still possible, the minimum user request, and the
+next step where the agent can continue. When the nested pod role report is in
+scope, say that `pod-role-bootstrap` generates `/workspace/state/pod-role-bootstrap-report.json` and `project-bootstrap`
+surfaces that status in the project report. Do not ask the user to create that
+report file manually.
+
 5. If common blockers are absent, run Codex CLI/auth setup:
 
 ```bash

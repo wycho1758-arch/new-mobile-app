@@ -318,11 +318,18 @@ pod evidence, or a substitute for `human-gate/v1` approval.
 | Required pod-native skill directory is missing | Stop and request skill installation or the missing `/workspace/skills/<slug>` artifact. |
 | Repo path is missing | Clone only if non-secret `REPO_CLONE_URL` is explicitly configured; otherwise stop. |
 | Managed path entry is missing | Stop until the owner-approved `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` entry exists. |
-| Git identity is missing | If approved `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, approved `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or one complete approved pair in `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH` exists, let `project-bootstrap` set Git config. Otherwise request approved non-secret identity values. |
+| Git identity is missing | If approved `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, approved `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or one complete approved pair in `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH` exists, let `project-bootstrap` set Git config. Otherwise request one approved non-secret Git identity pair. |
 | Credential status is missing | Mark blocked or role-specific not applicable. Never work around by pasting plaintext credentials. |
 | Public Expo config is missing for preview, release, or EAS job config | Stop and request the missing public config value. Do not use template fallbacks for customer/release jobs. |
 | Role-specific capability is not needed | Record `not_applicable` with the role and source reason. |
 | Live external action is requested without approval | Stop until a `human-gate/v1` decision exists. |
+
+For the common `git-identity-missing` plus `github-auth-unavailable` case,
+report a minimum request instead of raw blocker names: ask for one approved
+non-secret Git identity pair and either approved mounted/managed GitHub auth or
+the user's presence for human-present `gh auth login` / browser/device login.
+The agent may use browser/computer-use to open the auth flow, but the user must
+enter credentials. After that, the agent reruns the status checks and bootstrap.
 
 Role-specific `not_applicable` examples:
 
