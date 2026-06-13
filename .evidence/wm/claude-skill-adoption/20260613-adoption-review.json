@@ -1,0 +1,165 @@
+**High Findings**
+
+1. `brief-gatekeeper` is not independent. It actively routes to an external `/role-architect` workflow, including “Role Architect 호출” in the main flow and an explicit `/role-architect` command in the procedure. That violates the approved independence constraint that adopted skills complete from their own `SKILL.md` and references only. Sources: `.claude/skills/brief-gatekeeper/SKILL.md:50`, `.claude/skills/brief-gatekeeper/SKILL.md:131`, `.claude/skills/brief-gatekeeper/SKILL.md:146`, `.claude/skills/brief-gatekeeper/references/procedure.md:211`, `.claude/skills/brief-gatekeeper/references/procedure.md:214`, plan lines `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:11`.
+
+2. `code-quality` has dangling/cross-skill references, so it is not self-contained. `failure-messages.md` links to `../../planner/references/clean-architecture.md` and names `.claude/skills/planner/references/clean-architecture.md`; those files are absent in this repo. It also points users to `.claude/skills/best-practices/` and `/solve`, which violates the “no route/ref to other skills” adoption constraint. Sources: `.claude/skills/code-quality/references/failure-messages.md:300`, `.claude/skills/code-quality/references/failure-messages.md:346`, `.claude/skills/code-quality/references/failure-messages.md:347`, `.claude/skills/code-quality/references/failure-messages.md:348`.
+
+3. `best-practices` is not fully curated to the Expo RN repo stack. The adopted rules still include source-project/web-specific material: `test-infrastructure` references `admin-api`, `billing-api`, `admin-portal`, `npm`, and `npx`; `ts-validation-zod-schema` keeps a “Next.js API route example”; React rules include browser DOM/window and HTML anchor/div examples. This conflicts with the request to keep RN-applicable React, backend/contracts, and test infrastructure curated for this repo. Sources: `.claude/skills/best-practices/rules/test-infrastructure.md:3`, `.claude/skills/best-practices/rules/test-infrastructure.md:7`, `.claude/skills/best-practices/rules/test-infrastructure.md:13`, `.claude/skills/best-practices/rules/ts-validation-zod-schema.md:70`, `.claude/skills/best-practices/rules/react-rerender-transitions.md:21`, `.claude/skills/best-practices/rules/react-components-composition.md:26`.
+
+**Medium Findings**
+
+4. The requested changes are ignored by Git, so PR readiness is not proven. `.gitignore` ignores both `CLAUDE.md` and `.claude/`, and `git status --short --ignored -- .claude CLAUDE.md .codex .agents` reports `!! .claude/` and `!! CLAUDE.md`. This means the reviewed additions are local ignored files unless the implementation explicitly unignores or force-adds them. Sources: `.gitignore:7`, `.gitignore:8`, AGENTS PR expectation `AGENTS.md:104`.
+
+5. No implementation evidence file with validation command results was provided for this adoption. The only scoped evidence under `.evidence/wm/claude-skill-adoption/` is the review prompt, while repo DoD expects applicable verification before PR. Sources: `.evidence/wm/claude-skill-adoption/20260613-adoption-review-prompt.md:1`, `AGENTS.md:106`, `AGENTS.md:107`.
+
+**Low Findings**
+
+6. `code-quality` still contains Python examples despite the declared stack context being Expo RN + TypeScript + `packages/contracts`. This is less severe than the dangling references, but it is another curation mismatch. Source: `.claude/skills/code-quality/references/failure-messages.md:122`.
+
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "afd9208",
+    "target": "ignored-worktree:.claude/skills/{brief-gatekeeper,code-quality,best-practices},CLAUDE.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md",
+      "mobile-app-dev-team/02-role-souls",
+      ".gitignore",
+      "CLAUDE.md",
+      ".claude/skills/brief-gatekeeper",
+      ".claude/skills/code-quality",
+      ".claude/skills/best-practices",
+      ".evidence/wm/claude-skill-adoption/20260613-adoption-review-prompt.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "summary": "brief-gatekeeper actively routes to Role Architect and /role-architect, violating the independent skill adoption contract.",
+      "source_refs": [
+        ".claude/skills/brief-gatekeeper/SKILL.md:50",
+        ".claude/skills/brief-gatekeeper/SKILL.md:131",
+        ".claude/skills/brief-gatekeeper/SKILL.md:146",
+        ".claude/skills/brief-gatekeeper/references/procedure.md:214",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:11"
+      ],
+      "owner": "implementation"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "code-quality is not self-contained because failure-messages references missing planner clean-architecture files and other skills/commands.",
+      "source_refs": [
+        ".claude/skills/code-quality/references/failure-messages.md:300",
+        ".claude/skills/code-quality/references/failure-messages.md:346",
+        ".claude/skills/code-quality/references/failure-messages.md:347",
+        ".claude/skills/code-quality/references/failure-messages.md:348"
+      ],
+      "owner": "implementation"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "best-practices retains source-project/web-specific and Next.js/browser examples, so the rule library is not fully curated to Expo RN + TypeScript + contracts.",
+      "source_refs": [
+        ".claude/skills/best-practices/rules/test-infrastructure.md:3",
+        ".claude/skills/best-practices/rules/test-infrastructure.md:7",
+        ".claude/skills/best-practices/rules/test-infrastructure.md:13",
+        ".claude/skills/best-practices/rules/ts-validation-zod-schema.md:70",
+        ".claude/skills/best-practices/rules/react-rerender-transitions.md:21",
+        ".claude/skills/best-practices/rules/react-components-composition.md:26"
+      ],
+      "owner": "implementation"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "CLAUDE.md and .claude/ are ignored, so the reviewed additions are not PR-ready tracked changes as presented.",
+      "source_refs": [
+        ".gitignore:7",
+        ".gitignore:8",
+        "AGENTS.md:104"
+      ],
+      "owner": "implementation"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "No scoped implementation evidence with validation command results was found for this adoption.",
+      "source_refs": [
+        ".evidence/wm/claude-skill-adoption/20260613-adoption-review-prompt.md:1",
+        "AGENTS.md:106",
+        "AGENTS.md:107"
+      ],
+      "owner": "implementation"
+    },
+    {
+      "severity": "LOW",
+      "summary": "code-quality retains Python examples despite the declared Expo RN + TypeScript stack context.",
+      "source_refs": [
+        ".claude/skills/code-quality/references/failure-messages.md:122"
+      ],
+      "owner": "implementation"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "git rev-parse --short HEAD",
+      "status": "PASS",
+      "evidence": "Baseline commit is afd9208."
+    },
+    {
+      "command": "git status --short -- .codex .agents",
+      "status": "PASS",
+      "evidence": ".codex and .agents show no scoped working-tree changes."
+    },
+    {
+      "command": "git status --short --ignored -- .claude CLAUDE.md .codex .agents && git check-ignore -v .claude/skills/brief-gatekeeper/SKILL.md .claude/skills/code-quality/SKILL.md .claude/skills/best-practices/SKILL.md CLAUDE.md",
+      "status": "FAIL",
+      "evidence": ".claude/ and CLAUDE.md are ignored by .gitignore lines 7-8."
+    },
+    {
+      "command": "rg forbidden independence/governance patterns across .claude/skills/{brief-gatekeeper,code-quality,best-practices} and CLAUDE.md",
+      "status": "FAIL",
+      "evidence": "Found active Role Architect routing, dangling planner references, and cross-skill/command references."
+    },
+    {
+      "command": "find .claude/skills/best-practices/rules -maxdepth 1 -type f -name '*.md' | wc -l",
+      "status": "PASS",
+      "evidence": "Rules directory contains 60 markdown files including _role-index.md."
+    },
+    {
+      "command": "find .claude/skills/best-practices/rules -maxdepth 1 for excluded Go/Python/Rust/react-server/react-bundle/react-js-passive-events/ts-nextjs-api-route-typing filenames",
+      "status": "PASS",
+      "evidence": "No excluded rule filenames were present."
+    },
+    {
+      "command": "Ruby local markdown target scan for _sections.md, react-index.md, ts-index.md",
+      "status": "PASS",
+      "evidence": "No missing local markdown targets were found in those three index files."
+    },
+    {
+      "command": "rg stack-curation patterns across best-practices and code-quality",
+      "status": "FAIL",
+      "evidence": "Found Next.js API route, DOM/window, source-project test infrastructure, and Python examples."
+    },
+    {
+      "command": "find .evidence/wm/claude-skill-adoption -maxdepth 4 -type f",
+      "status": "FAIL",
+      "evidence": "Only the review prompt was present; no scoped validation result evidence was found."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile UI, selector, native runtime, or visual behavior path changed in the requested scope."
+    }
+  ],
+  "residual_risks": [
+    "Because .claude and CLAUDE.md are ignored, this review inspected local filesystem content rather than a normal tracked diff.",
+    "Full workspace gates were not rerun during this read-only review; the content findings must be fixed before command evidence can establish PR readiness.",
+    "The existing .claude Codex-port restructuring was intentionally treated as out of scope per the review request."
+  ],
+  "next_action": "fix_findings"
+}
+```

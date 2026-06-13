@@ -50,7 +50,7 @@ const legacyMobileReviewerNames = [
   'mobile-docs-researcher',
   'mobile-gate-fix-advisor',
 ];
-const ignoredRootClaudeArtifacts = ['CLAUDE.md', '.claude', '.claude-state'];
+const ignoredRootClaudeArtifacts = ['.claude-state'];
 const expandedHumanGateCategories = [
   'production submit',
   'payment or money movement',

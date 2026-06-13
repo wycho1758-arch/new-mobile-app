@@ -1,0 +1,157 @@
+High findings:
+
+1. Scope is not confined to the requested paths. There is a tracked `package.json` change altering the `validate` script to stop removing `.claude`, while the review request says the adoption scope is `.claude/` plus `CLAUDE.md` and the approved plan says `.codex`/`.agents` are read-only with adoption confined to `.claude`. This is out-of-scope for the requested implementation and changes runtime validation behavior.
+Sources: `package.json:21`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:14`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:118`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:125`.
+
+2. The requested `.claude/` and `CLAUDE.md` additions are ignored by Git, so they are not PR-ready as normal tracked changes. `git check-ignore` reports all three new skill `SKILL.md` files ignored by `.gitignore:8` and `CLAUDE.md` ignored by `.gitignore:7`; `git diff -- .claude CLAUDE.md .agents .codex` is empty. Unless the owner explicitly chooses force-add/unignore or a generator path, the adoption will not land in a normal PR.
+Sources: `.gitignore:7`, `.gitignore:8`, `CLAUDE.md:25`, `CLAUDE.md:32`.
+
+3. `code-quality` violates its own read-only governance contract. It declares that it “never edits code, runs gates, or self-approves,” but its “When NOT to Use” section says “Simple typo fixes → Edit directly,” and its “Refactoring Session” workflow instructs “Apply appropriate patterns,” “Verify tests still pass,” and “Document changes.” That conflicts with the approved plan’s read-only analysis-only constraint for this skill.
+Sources: `.claude/skills/code-quality/SKILL.md:20`, `.claude/skills/code-quality/SKILL.md:22`, `.claude/skills/code-quality/SKILL.md:190`, `.claude/skills/code-quality/SKILL.md:247`, `.claude/skills/code-quality/SKILL.md:252`, `.claude/skills/code-quality/SKILL.md:253`, `.claude/skills/code-quality/SKILL.md:254`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:55`.
+
+Medium findings:
+
+4. PR evidence is incomplete for readiness. The implementation evidence records static grep/tree checks, but root verification gates required by repo policy are not recorded as passing for this final state. This is especially important because the work currently includes a tracked validation-script change and ignored deliverables.
+Sources: `.evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:18`, `.evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:42`, `AGENTS.md:106`, `AGENTS.md:107`, `PROJECT_ENVIRONMENT.md:14`.
+
+Passed checks / non-findings:
+
+The three skill directories currently exist on disk. `best-practices` has `user-invocable: true`, 60 rule files including `_role-index.md`, and the excluded Go/Python/Rust/react-server/react-bundle/passive-events/Next.js API route filenames are absent. `code-quality` includes TDD and Clean Architecture content, uses `mcp__serena__*`, and I found no `shadcn` content in the reviewed skills. `.codex/` and `.agents/` have no tracked diff in the scoped check.
+
+Residual risks:
+
+The existing `.claude` Codex-port restructuring was intentionally treated as out of scope. I did not run mutating validation commands from this read-only review. Mobile visual QA is not applicable because this is not a mobile UI/runtime change.
+
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "4539cc3",
+    "target": "ignored-worktree:.claude/skills/{brief-gatekeeper,code-quality,best-practices},CLAUDE.md plus tracked package.json diff",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md",
+      "mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md",
+      "CLAUDE.md",
+      ".gitignore",
+      "package.json",
+      ".claude/skills/brief-gatekeeper/SKILL.md",
+      ".claude/skills/code-quality/SKILL.md",
+      ".claude/skills/code-quality/references/failure-messages.md",
+      ".claude/skills/best-practices/SKILL.md",
+      ".claude/skills/best-practices/rules/_role-index.md",
+      ".claude/skills/best-practices/rules/_sections.md",
+      ".claude/skills/best-practices/rules/react-index.md",
+      ".claude/skills/best-practices/rules/ts-index.md",
+      ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "summary": "Tracked package.json validation-script change is outside the requested .claude/ plus CLAUDE.md adoption scope.",
+      "source_refs": [
+        "package.json:21",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:14",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:118",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:125"
+      ],
+      "owner": "implementation"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "The requested .claude skill additions and CLAUDE.md are ignored by Git, so they are not PR-ready tracked changes as presented.",
+      "source_refs": [
+        ".gitignore:7",
+        ".gitignore:8",
+        "CLAUDE.md:25",
+        "CLAUDE.md:32"
+      ],
+      "owner": "repo-owner"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "code-quality contains mutating/refactoring workflow instructions despite its read-only skill contract.",
+      "source_refs": [
+        ".claude/skills/code-quality/SKILL.md:20",
+        ".claude/skills/code-quality/SKILL.md:22",
+        ".claude/skills/code-quality/SKILL.md:190",
+        ".claude/skills/code-quality/SKILL.md:247",
+        ".claude/skills/code-quality/SKILL.md:252",
+        ".claude/skills/code-quality/SKILL.md:253",
+        ".claude/skills/code-quality/SKILL.md:254",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:55"
+      ],
+      "owner": "skill-author"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "Final PR-readiness evidence does not record required root verification gates passing for the current state.",
+      "source_refs": [
+        ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:18",
+        ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:42",
+        "AGENTS.md:106",
+        "AGENTS.md:107",
+        "PROJECT_ENVIRONMENT.md:14"
+      ],
+      "owner": "implementation"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "git status --short; git diff -- package.json; nl -ba package.json | sed -n '14,24p'",
+      "status": "FAIL",
+      "evidence": "package.json has a tracked validate-script change outside the requested changed/added paths."
+    },
+    {
+      "command": "git status --short --ignored .claude CLAUDE.md .agents .codex; git check-ignore -v .claude/skills/code-quality/SKILL.md .claude/skills/best-practices/SKILL.md .claude/skills/brief-gatekeeper/SKILL.md CLAUDE.md",
+      "status": "FAIL",
+      "evidence": ".claude/ and CLAUDE.md are ignored by .gitignore, and scoped git diff output is empty."
+    },
+    {
+      "command": "find .claude/skills/brief-gatekeeper .claude/skills/code-quality .claude/skills/best-practices -maxdepth 3 -type f | sort",
+      "status": "PASS",
+      "evidence": "Requested skill files exist on disk in the current workspace."
+    },
+    {
+      "command": "rg forbidden independence/governance patterns across .claude/skills/{brief-gatekeeper,code-quality,best-practices} and CLAUDE.md",
+      "status": "FAIL",
+      "evidence": "No forbidden executor/Context7/old Serena namespace was found, but code-quality still contains direct edit/refactoring/test-verification workflow instructions."
+    },
+    {
+      "command": "find .claude/skills/best-practices/rules -maxdepth 1 -type f | wc -l",
+      "status": "PASS",
+      "evidence": "best-practices has 60 files under rules, including _role-index.md."
+    },
+    {
+      "command": "find .claude/skills/best-practices/rules for excluded Go/Python/Rust/react-server/react-bundle/react-js-passive-events/ts-nextjs-api-route-typing filenames",
+      "status": "PASS",
+      "evidence": "No excluded rule filenames were present."
+    },
+    {
+      "command": "content verification for code-quality Clean Architecture, TDD, shadcn exclusion, Expo RN + TypeScript + packages/contracts context",
+      "status": "PASS",
+      "evidence": "Required code-quality content is present and shadcn was not found; governance contradiction is reported separately."
+    },
+    {
+      "command": "git diff --name-only -- .agents .codex",
+      "status": "PASS",
+      "evidence": ".agents and .codex have no scoped tracked diff."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile UI/runtime screen changes are in scope for this .claude skill adoption review."
+    }
+  ],
+  "residual_risks": [
+    "Because .claude and CLAUDE.md are ignored, this review inspected local filesystem content rather than a normal tracked PR diff.",
+    "The existing .claude Codex-port restructuring was intentionally treated as out of scope.",
+    "Root gates were not claimed as passing from this read-only review; the implementation evidence only records static verification commands."
+  ],
+  "next_action": "fix_findings"
+}
+```

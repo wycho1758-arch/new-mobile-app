@@ -1,0 +1,172 @@
+Critical findings: none.
+
+High findings:
+
+1. The requested `.claude/` and `CLAUDE.md` deliverables are ignored by Git, so this is not PR-ready as a normal tracked adoption. `.gitignore` ignores `CLAUDE.md` and `.claude/`, while `CLAUDE.md` now documents the independent adopted skills that are supposed to land. This matches the plan’s note that tracking is a repo-owner policy decision, so the implementation cannot be considered ready until the owner chooses force-add, unignore, or generator-path adoption.
+Sources: `.gitignore:7`, `.gitignore:8`, `CLAUDE.md:25`, `CLAUDE.md:38`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:133`.
+
+2. Scope is still not clean against the review request’s stated changed paths. The worktree has a tracked `package.json` validation-script change, and `test:runtime` depends on that script. The plan addendum records later authorization for this exact change, but the original hard scope and implementation review request list only `.claude/` and `CLAUDE.md`; this needs explicit owner acceptance in the PR scope.
+Sources: `package.json:17`, `package.json:21`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:14`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:116`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:125`, `/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:130`.
+
+Medium findings:
+
+3. `best-practices` still contains contract-drift guidance in `ts-validation-zod-schema.md`. The “Correct” example defines `createUserSchema` locally and then uses it to validate an API response, despite repo policy requiring shared API/domain schemas from `packages/contracts`. For this repo, the example should import/use the shared contract schema instead of teaching a local mobile-client schema for API response validation.
+Sources: `.claude/skills/best-practices/rules/ts-validation-zod-schema.md:46`, `.claude/skills/best-practices/rules/ts-validation-zod-schema.md:58`, `.claude/skills/best-practices/rules/ts-validation-zod-schema.md:70`, `.claude/skills/best-practices/rules/ts-validation-zod-schema.md:83`, `AGENTS.md:86`, `AGENTS.md:99`, `PROJECT_ENVIRONMENT.md:180`, `PROJECT_ENVIRONMENT.md:181`.
+
+4. Final PR gate evidence is incomplete. The evidence records partial runtime checks (`validate-runtime-artifacts`, `codex-headless-review`, and a targeted `.claude` survival check), but not the required root gates `pnpm turbo run lint test`, `pnpm run test:runtime`, and conditional `pnpm run test:local-harness` for this final state. Tests-first evidence is also not shown for the tracked validation-script behavior change.
+Sources: `.evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:123`, `.evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:133`, `AGENTS.md:13`, `AGENTS.md:106`, `AGENTS.md:108`, `PROJECT_ENVIRONMENT.md:14`, `PROJECT_ENVIRONMENT.md:17`.
+
+Low findings: none.
+
+Passed checks / non-findings:
+
+The three skill directories exist locally. `code-quality` uses the required `mcp__serena__*` namespace and is currently framed as independent/read-only; it includes TDD and architecture review content. `best-practices` is `user-invocable: true`, has 60 rule files, includes `_role-index.md`, maps the six repo roles, and excludes the requested Go/Python/Rust/Next.js/web-only rule filenames. No prohibited executor names, Context7 dependency, old Serena namespace, or shadcn content were found in the reviewed new skill trees. `.agents/` and `.codex/` have no tracked diff.
+
+Residual risk: this review inspected ignored local filesystem content, not a normal PR diff. Mobile visual QA is not applicable because no mobile UI/runtime screen changed.
+
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "4539cc3bfe9e81660f58185b6b8ed3afed98d7e5",
+    "target": "worktree:.claude/skills/{brief-gatekeeper,code-quality,best-practices},CLAUDE.md plus tracked package.json diff",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md",
+      "mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md",
+      ".gitignore",
+      "package.json",
+      "CLAUDE.md",
+      ".claude/skills/brief-gatekeeper/SKILL.md",
+      ".claude/skills/brief-gatekeeper/references/handoff-schema.md",
+      ".claude/skills/code-quality/SKILL.md",
+      ".claude/skills/code-quality/references/failure-messages.md",
+      ".claude/skills/best-practices/SKILL.md",
+      ".claude/skills/best-practices/rules/_role-index.md",
+      ".claude/skills/best-practices/rules/_sections.md",
+      ".claude/skills/best-practices/rules/react-index.md",
+      ".claude/skills/best-practices/rules/ts-index.md",
+      ".claude/skills/best-practices/rules/ts-validation-zod-schema.md",
+      ".claude/skills/best-practices/rules/test-infrastructure.md",
+      ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "summary": ".claude/ and CLAUDE.md are ignored by Git, so the requested skill adoption is not PR-ready as normal tracked changes.",
+      "source_refs": [
+        ".gitignore:7",
+        ".gitignore:8",
+        "CLAUDE.md:25",
+        "CLAUDE.md:38",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:133"
+      ],
+      "owner": "repo-owner"
+    },
+    {
+      "severity": "HIGH",
+      "summary": "A tracked package.json validation-script change is present outside the review request's stated changed paths, despite later plan addendum authorization.",
+      "source_refs": [
+        "package.json:17",
+        "package.json:21",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:14",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:116",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:125",
+        "/Users/tw.kim/.claude/plans/documents-aga-test-openclaw-cloud-claud-merry-harp.md:130"
+      ],
+      "owner": "repo-owner"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "best-practices ts-validation-zod-schema still demonstrates a local API response schema instead of importing shared schemas from packages/contracts.",
+      "source_refs": [
+        ".claude/skills/best-practices/rules/ts-validation-zod-schema.md:46",
+        ".claude/skills/best-practices/rules/ts-validation-zod-schema.md:58",
+        ".claude/skills/best-practices/rules/ts-validation-zod-schema.md:70",
+        ".claude/skills/best-practices/rules/ts-validation-zod-schema.md:83",
+        "AGENTS.md:86",
+        "AGENTS.md:99",
+        "PROJECT_ENVIRONMENT.md:180",
+        "PROJECT_ENVIRONMENT.md:181"
+      ],
+      "owner": "backend-api-integrator"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "Final evidence does not record required root gates or tests-first evidence for the tracked validation-script behavior change.",
+      "source_refs": [
+        ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:123",
+        ".evidence/wm/claude-skill-adoption/20260613-implementation-evidence.md:133",
+        "AGENTS.md:13",
+        "AGENTS.md:106",
+        "AGENTS.md:108",
+        "PROJECT_ENVIRONMENT.md:14",
+        "PROJECT_ENVIRONMENT.md:17"
+      ],
+      "owner": "implementation"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "git status --ignored --short -- .claude CLAUDE.md package.json .agents .codex; git check-ignore -v .claude/skills/code-quality/SKILL.md .claude/skills/best-practices/SKILL.md .claude/skills/brief-gatekeeper/SKILL.md CLAUDE.md",
+      "status": "FAIL",
+      "evidence": ".gitignore:7 ignores CLAUDE.md and .gitignore:8 ignores .claude/, so the requested deliverables are local ignored content."
+    },
+    {
+      "command": "git diff -- package.json; nl -ba package.json | sed -n '14,24p'",
+      "status": "FAIL",
+      "evidence": "package.json:21 changes validate behavior outside the review request's listed paths; plan lines 128-131 authorize it, creating a scope decision for the owner."
+    },
+    {
+      "command": "git diff --name-only -- .agents .codex",
+      "status": "PASS",
+      "evidence": ".agents and .codex have no tracked scoped diff."
+    },
+    {
+      "command": "find .claude/skills/brief-gatekeeper .claude/skills/code-quality .claude/skills/best-practices -maxdepth 3 -type f | sort",
+      "status": "PASS",
+      "evidence": "Requested new skill trees exist locally in the current filesystem."
+    },
+    {
+      "command": "rg forbidden independence/governance patterns across .claude/skills/{brief-gatekeeper,code-quality,best-practices} and CLAUDE.md",
+      "status": "PASS",
+      "evidence": "No dev-executor, design-executor, bug-fixer, Context7 dependency, old Serena namespace, shadcn content, or /code-review routing was found in the reviewed skill trees."
+    },
+    {
+      "command": "find .claude/skills/best-practices/rules -maxdepth 1 -type f | wc -l; excluded filename scan",
+      "status": "PASS",
+      "evidence": "best-practices has 60 rule files and no Go/Python/Rust/react-server/react-bundle/react-js-passive-events/ts-nextjs-api-route-typing filenames."
+    },
+    {
+      "command": "markdown local-link existence check for reviewed SKILL.md, reference, and index files",
+      "status": "PASS",
+      "evidence": "No missing local markdown links were found in the checked files."
+    },
+    {
+      "command": "contract drift review for .claude/skills/best-practices/rules/ts-validation-zod-schema.md",
+      "status": "FAIL",
+      "evidence": "The API response validation example defines and uses a local schema instead of importing the shared packages/contracts schema."
+    },
+    {
+      "command": "evidence review for pnpm run test:runtime, pnpm turbo run lint test, pnpm run test:local-harness, and tests-first sequencing",
+      "status": "FAIL",
+      "evidence": "Implementation evidence records partial node-level checks only; required root gates and tests-first evidence for package.json behavior are not recorded for final PR readiness."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile UI/runtime screen changes are in scope for this .claude skill adoption review."
+    }
+  ],
+  "residual_risks": [
+    "The ignored .claude and CLAUDE.md files were reviewed from local filesystem state rather than a normal tracked PR diff.",
+    "The existing .claude Codex-port restructuring was intentionally treated as out of scope.",
+    "Root gates were not rerun by this read-only reviewer; gate status depends on implementation evidence, which is incomplete for PR readiness."
+  ],
+  "next_action": "fix_findings"
+}
+```
