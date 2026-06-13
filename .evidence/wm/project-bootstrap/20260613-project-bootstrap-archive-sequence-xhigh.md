@@ -1,0 +1,148 @@
+**Findings**
+
+Critical: none.
+
+High: none.
+
+Medium: none.
+
+Low: none.
+
+The current SoT supports the proposed user-facing order with caveats: after required pod/config/secret material exists, the normal user-facing path is clone/acquire the repo, then run `project-bootstrap` as the single setup entry point. The SoT also preserves `codex-cli-auth-setup` and `pod-role-bootstrap` as dependency/internal contracts used by `project-bootstrap`, not normal peer steps. Source support: `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:11`, `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:31`, `mobile-app-dev-team/16-pod-environment-bootstrap.md:8`, `mobile-app-dev-team/16-pod-environment-bootstrap.md:281`, `mobile-app-dev-team/16-pod-environment-bootstrap.md:289`.
+
+Archive decision: no current pod-native setup skill is archive-worthy. `project-bootstrap` remains the user-facing entry point; `codex-cli-auth-setup` and `pod-role-bootstrap` remain internal/common dependencies; `eas-robot-auth-setup` remains a QA/Release role-specific status dependency; `stitch-adc-setup` remains a Design role-specific status dependency. Source support: `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:21`, `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:8`, `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md:8`, `mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md:8`, `mobile-app-dev-team/09-pod-native-openclaw-skills/eas-robot-auth-setup/SKILL.md:8`, `mobile-app-dev-team/09-pod-native-openclaw-skills/stitch-adc-setup/SKILL.md:8`.
+
+Validation run: `node scripts/validate-team-doc.mjs` passed. Broader PR gates remain a merge-readiness responsibility, but were not needed to answer this read-only SoT confirmation.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "a27a1a1eb8c6017aa07a9321f6aab773f5043513",
+    "target": "working-tree on docs/role-title-display-identity",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/README.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-setup/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/eas-robot-auth-setup/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/stitch-adc-setup/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/16-pod-environment-bootstrap.md",
+      "scripts/validate-team-doc.mjs",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh"
+    ]
+  },
+  "findings": [],
+  "archive_decision": {
+    "project-bootstrap": {
+      "recommendation": "keep",
+      "reason": "Standard user-facing setup entry point and orchestration skill.",
+      "source_refs": [
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:11",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:8",
+        "mobile-app-dev-team/16-pod-environment-bootstrap.md:281"
+      ]
+    },
+    "codex-cli-auth-setup": {
+      "recommendation": "keep",
+      "reason": "Dependency/internal Codex CLI/auth readiness contract, with direct use limited to recovery or diagnostics.",
+      "source_refs": [
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:11",
+        "mobile-app-dev-team/16-pod-environment-bootstrap.md:289",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:197"
+      ]
+    },
+    "pod-role-bootstrap": {
+      "recommendation": "keep",
+      "reason": "Dependency/internal repo checkout/bootstrap contract invoked after common blockers are absent.",
+      "source_refs": [
+        "mobile-app-dev-team/16-pod-environment-bootstrap.md:284",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:203",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md:46"
+      ]
+    },
+    "eas-robot-auth-setup": {
+      "recommendation": "keep",
+      "reason": "QA/Release role-specific status-only dependency before approved EAS/Maestro evidence work.",
+      "source_refs": [
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:24",
+        "mobile-app-dev-team/16-pod-environment-bootstrap.md:301",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/eas-robot-auth-setup/SKILL.md:8"
+      ]
+    },
+    "stitch-adc-setup": {
+      "recommendation": "keep",
+      "reason": "Design role-specific status-only dependency before approved Stitch handoff work.",
+      "source_refs": [
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:25",
+        "mobile-app-dev-team/16-pod-environment-bootstrap.md:301",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/stitch-adc-setup/SKILL.md:8"
+      ]
+    }
+  },
+  "final_sequence_decision": {
+    "supported": true,
+    "decision": "The final user-facing order is correct as clone/acquire the repo first, then run project-bootstrap as the standard setup entry point.",
+    "required_caveats": [
+      "Pod ConfigMap/Secret material, required runtime skill artifacts, and repo/source artifacts still gate setup.",
+      "project-bootstrap should repair deterministic agent-owned setup where possible before asking the user.",
+      "Credentials, account access, live approvals, missing source artifacts, and missing pod skill artifacts remain blockers or user/platform-owner requests.",
+      "codex-cli-auth-setup and pod-role-bootstrap remain internal dependency contracts, not ordinary user-facing peer steps."
+    ],
+    "source_refs": [
+      "mobile-app-dev-team/16-pod-environment-bootstrap.md:270",
+      "mobile-app-dev-team/16-pod-environment-bootstrap.md:275",
+      "mobile-app-dev-team/16-pod-environment-bootstrap.md:281",
+      "mobile-app-dev-team/16-pod-environment-bootstrap.md:289",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:160",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:278",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md:67"
+    ]
+  },
+  "checks_reviewed": [
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Exited 0 with output: Validated current mobile-app-dev-team managed docs."
+    },
+    {
+      "command": "source review: setup entry point and dependency/internal contract",
+      "status": "PASS",
+      "evidence": "README and pod bootstrap runbook state project-bootstrap is the normal user-facing entry point and codex-cli-auth-setup/pod-role-bootstrap are internal dependency contracts: mobile-app-dev-team/09-pod-native-openclaw-skills/README.md:11, mobile-app-dev-team/16-pod-environment-bootstrap.md:281, mobile-app-dev-team/16-pod-environment-bootstrap.md:289."
+    },
+    {
+      "command": "source review: deterministic setup repair and blocker split",
+      "status": "PASS",
+      "evidence": "project-bootstrap requires agent-owned setup before blocker reporting and preserves human-owned blockers: mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:160, mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:278, mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md:42, mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md:67."
+    },
+    {
+      "command": "source review: test/eval accompaniment",
+      "status": "PASS",
+      "evidence": "Validator asserts the new entry-point/dependency terms and project-bootstrap required terms; smoke eval covers design setup, wrong repo path block, missing Codex precheck order, QA report generation, and product-planning status-only missing preflight: scripts/validate-team-doc.mjs:279, scripts/validate-team-doc.mjs:603, scripts/validate-team-doc.mjs:1463, evals/skills/project-bootstrap-agent-setup-smoke.sh:48."
+    },
+    {
+      "command": "mobile runtime boundary review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed changes are pod-native docs/validator/runtime setup contracts, not React Native screen code; mobile UI boundary rules remain in AGENTS.md:17 and PROJECT_ENVIRONMENT.md:99."
+    },
+    {
+      "command": "API contract drift review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No app/api/contracts paths are in the tracked diff; contract SoT rules remain in AGENTS.md:86 and AGENTS.md:99."
+    }
+  ],
+  "residual_risks": [
+    "Full PR readiness gates were not run in this read-only review; before merge, the repo still requires applicable gates such as pnpm run test:runtime and conditional pnpm run test:local-harness per AGENTS.md:106 and PROJECT_ENVIRONMENT.md:359.",
+    "This review confirms local SoT consistency only; it does not prove live OrbStack/OpenClaw pod behavior, external platform state, or human-gated actions, matching PROJECT_ENVIRONMENT.md:268 and mobile-app-dev-team/16-pod-environment-bootstrap.md:475.",
+    "The working tree contains untracked project-bootstrap evidence artifacts under .evidence/wm/project-bootstrap; they were not required for this SoT source review."
+  ],
+  "next_action": "proceed"
+}
+```
