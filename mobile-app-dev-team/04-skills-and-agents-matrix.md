@@ -1,5 +1,10 @@
 # Skills And Agents Matrix
 
+> Canonical term definitions (`skill`, `agent`, `AGENTS.md`, the `.agents/` vs
+> `.codex/agents/` directory trap, and pod-native skills) live in
+> `REPO_OPERATIONS.md` → "Skill, Agent, And AGENTS.md Terminology". This matrix lists
+> concrete instances; it does not redefine the terms.
+
 ## Active repo-local skills
 
 Active repo-local skills are only the directories that currently exist under `.agents/skills/<slug>/SKILL.md`.

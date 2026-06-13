@@ -158,6 +158,20 @@ requireTerms('REPO_OPERATIONS.md', [
   '/workspace/codex-hooks/codex-run',
 ]);
 
+requireTerms('REPO_OPERATIONS.md', [
+  '## Skill, Agent, And AGENTS.md Terminology',
+  '.agents/skills/<name>/SKILL.md',
+  '.claude/skills/<name>/SKILL.md',
+  '/workspace/skills/<slug>/SKILL.md',
+  '.codex/agents/<name>.toml',
+  '.claude/agents/<name>.md',
+  '### Directory trap',
+  'holds skills',
+  'holds custom agents',
+  'pod agent skills',
+  'not a skill and not a custom agent',
+]);
+
 requirePackageScripts();
 requireConfluenceDependencyBoundary();
 
