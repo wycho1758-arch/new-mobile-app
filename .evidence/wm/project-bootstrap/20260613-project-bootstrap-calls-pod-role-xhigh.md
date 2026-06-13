@@ -1,0 +1,78 @@
+Findings: none. I found no Critical, High, Medium, or Low issues with the proposed scope answer.
+
+Verdict: GO. The proposed answer is source-backed: the full `project-bootstrap` workflow runs `bash /workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh` at step 6, while `project-bootstrap-preflight.sh` only writes the project bootstrap report and blocker guide state. The pod-role-bootstrap items 1-5 are performed by `pod-bootstrap.sh` after that workflow step is reached: role resolution, checkout/clone, managed-path validation, corepack/pnpm install, and repo-local pod preflight/report generation.
+
+The “fix agent-owned setup before reporting blockers” caveat is also source-backed. `project-bootstrap` explicitly requires non-secret deterministic setup before asking the user, and its agent setup script writes role identity, repairs the canonical managed-path registry, attempts required MCP registration, runs Codex CLI precheck when missing, runs role-specific setup reports, and writes the agent setup report. Human-owned blockers remain blocked under the skill contract.
+
+Residual risk: this was a read-only scope review of the proposed answer, not a live pod execution. I did not run mutating bootstrap commands such as `pod-bootstrap.sh`, `pnpm install`, or MCP registration.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "a171ff6f1ea99e01c7adf12dca41de986821687e",
+    "target": ".evidence/wm/project-bootstrap/20260613-project-bootstrap-calls-pod-role-review-prompt.md",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git rev-parse HEAD && git status --short",
+      "status": "PASS",
+      "evidence": "Baseline commit is a171ff6f1ea99e01c7adf12dca41de986821687e; only untracked evidence files were visible, with no tracked source implementation diff."
+    },
+    {
+      "command": "source inspection: project-bootstrap workflow",
+      "status": "PASS",
+      "evidence": "project-bootstrap is an orchestration skill that does not replace role-specific pod skills at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:8-15; workflow step 6 invokes bash /workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh at lines 203-207."
+    },
+    {
+      "command": "source inspection: project-bootstrap-preflight.sh",
+      "status": "PASS",
+      "evidence": "project-bootstrap-preflight.sh collects status inputs, writes project-bootstrap-report.json, and emits completion at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:176-228 and 392-468; no pod-bootstrap invocation is present."
+    },
+    {
+      "command": "source inspection: pod-role-bootstrap responsibilities",
+      "status": "PASS",
+      "evidence": "pod-bootstrap.sh resolves role at lines 13-24, handles checkout/clone at 90-108, checks managed path at 111-127, validates expected role at 135-138, runs corepack/pnpm at 147-149, and runs codex-preflight/report writing at 151-153."
+    },
+    {
+      "command": "source inspection: agent-owned setup before blockers",
+      "status": "PASS",
+      "evidence": "project-bootstrap requires agent-owned setup before blocker reporting at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:160-175 and narrows remaining blockers at 278-292; project-bootstrap-agent-setup.sh implements role identity, managed-path repair, MCP registration, Codex precheck, role-specific reports, and report writing at lines 100-107, 112-136, 143-176, 208-240, and 255-310."
+    },
+    {
+      "command": "source inspection: tests-first / eval coverage",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No source implementation changes were requested or present. Existing eval coverage for project-bootstrap-agent-setup is present at evals/skills/project-bootstrap-agent-setup-smoke.sh:48-204 and is referenced by validation at scripts/validate-team-doc.mjs:670-677."
+    },
+    {
+      "command": "source inspection: mobile runtime boundaries",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed scope is pod-native bootstrap guidance, not mobile UI/runtime code. AGENTS.md mobile UI constraints remain unchanged at AGENTS.md:40-53 and 92-100."
+    },
+    {
+      "command": "source inspection: API contract usage",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed scope does not change API code or schemas. Contract SoT remains packages/contracts per AGENTS.md:84-100 and PROJECT_ENVIRONMENT.md:193-202."
+    }
+  ],
+  "residual_risks": [
+    "This was a read-only scope review; live pod execution, MCP registration, dependency installation, and pod-role-bootstrap runtime success were not proven.",
+    "Untracked evidence files exist under .evidence/wm/project-bootstrap; they were treated as review inputs, not implementation source."
+  ],
+  "next_action": "proceed"
+}
+```

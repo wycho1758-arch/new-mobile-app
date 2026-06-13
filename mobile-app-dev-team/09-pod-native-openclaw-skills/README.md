@@ -8,6 +8,12 @@ This folder is source-only documentation for pod-native OpenClaw skills whose ru
 
 Do not place repo-local Codex CLI artifacts here. Codex CLI native skills and agents belong under `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml`.
 
+Normal user-facing setup starts from `project-bootstrap`. The other common
+setup skills remain dependency/internal setup contracts that `project-bootstrap`
+uses for secret-safe checks and reusable readiness reports. Invoke
+`codex-cli-auth-setup` or `pod-role-bootstrap` directly only for advanced recovery paths
+or focused diagnostics.
+
 ## Current Skills
 
 | Skill | Runtime Shape | Purpose |
@@ -20,8 +26,10 @@ Do not place repo-local Codex CLI artifacts here. Codex CLI native skills and ag
 
 ## Per-Role Required Pod Skills
 
-This is the canonical per-role pod-native skill matrix. `04-skills-and-agents-matrix.md`
-links here instead of duplicating the table.
+This is the canonical per-role pod-native skill dependency matrix.
+`04-skills-and-agents-matrix.md` links here instead of duplicating the table.
+It is not the normal user-facing execution order; normal setup uses
+`project-bootstrap` as the entry point.
 
 | Operating Role | Required pod-native skills |
 | --- | --- |

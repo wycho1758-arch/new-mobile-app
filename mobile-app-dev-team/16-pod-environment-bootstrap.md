@@ -6,8 +6,10 @@ will work on this Codex-managed mobile app template repository.
 It is source guidance only. It does not modify a live pod, GitHub setting,
 Secret, ConfigMap, EAS project, or Stitch project, and it does not prove actual OrbStack/OpenClaw pod execution.
 Before using it as an OrbStack canary handoff, run the read-only preflight in
-this document and stop on any missing required source, skill, repo, managed path,
-or credential status check.
+this document, then use `project-bootstrap` as the standard user-facing entry
+point. Agent-owned deterministic setup may be repaired by `project-bootstrap`;
+human-owned credentials, accounts, live approvals, missing source artifacts, and
+missing pod skill artifacts remain blockers.
 
 ## Source Of Truth
 
@@ -55,7 +57,8 @@ config/private-material patch
 -> readiness check
 -> pod-internal redacted read-only preflight
 -> project-bootstrap
--> pod-role-bootstrap
+   (runs dependency/internal setup such as codex-cli-auth-setup and
+   pod-role-bootstrap when the workflow reaches those checks)
 ```
 
 ### Data Classification
@@ -270,36 +273,33 @@ pod evidence, or a substitute for `human-gate/v1` approval.
    or references changed, rollout restart, wait for readiness, and discard or
    re-source any old long-running sessions.
 3. Run read-only preflight and write
-   `${STATE_DIR:-/workspace/state}/bootstrap-preflight.json`. If any required
-   SoT file, skill directory, repo path, managed path entry, or credential
-   status check is missing, stop and request the missing artifact.
-4. Run `project-bootstrap` from `/workspace/skills/project-bootstrap/SKILL.md`.
-   It orchestrates the project-level readiness check for the configured boram
-   role pod, verifies the repo path, managed path, required pod skills, required
-   MCP names, conditional external CLI/account status, role-specific setup
-   reports, `PROJECT_ENVIRONMENT.md`, and `human-gate/v1` policy, then writes
+   `${STATE_DIR:-/workspace/state}/bootstrap-preflight.json`. If required
+   source artifacts, skill directories, repo access, or credential status checks
+   are missing, continue only through `project-bootstrap` blocker handling:
+   agent-owned deterministic setup may be repaired by `project-bootstrap`, while
+   human-owned credentials, accounts, or live-action approvals remain blockers.
+4. Run `project-bootstrap` from `/workspace/skills/project-bootstrap/SKILL.md`
+   as the standard user-facing entry point. It performs the normal setup flow:
+   agent-owned role identity and managed-path setup, project readiness
+   preflight, Codex CLI/auth status setup, repo checkout/bootstrap through
+   `pod-role-bootstrap`, re-preflight, role-specific status checks,
+   `PROJECT_ENVIRONMENT.md` checks, and `human-gate/v1` policy checks. It writes
    status-only evidence to
    `${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}`.
-5. Run `codex-cli-auth-setup` from `/workspace/skills/codex-cli-auth-setup/SKILL.md`
-   to verify Codex CLI and auth readiness without printing secrets.
-6. Resolve role identity from `WM_ROLE` or `/workspace/IDENTITY`.
-7. Ensure the repo checkout exists at `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`.
-   If it is missing, `REPO_CLONE_URL` must be provided by explicit pod config.
-8. Ensure `${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}` contains
-   the normalized managed path entry for `${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}`.
-   A pod is not ready for Codex-managed repo work until that entry exists.
-9. Run `pod-role-bootstrap` from `/workspace/skills/pod-role-bootstrap/SKILL.md`.
-   It aligns pnpm using this source order: `package.json` `packageManager`,
-   confirmed against `PROJECT_ENVIRONMENT.md`, then `EXPECTED_PNPM_VERSION`
-   override only when explicitly source-backed. The current expected value is
-   `pnpm@9.15.9`. It then runs
-   `pnpm install --frozen-lockfile`, runs
-   `node scripts/codex-preflight.mjs --pod --json`, and writes status-only
-   evidence under `${STATE_DIR:-/workspace/state}` or the configured
-   `REPORT_PATH`.
-10. Verify Codex MCP status from the checked-out repo using `.codex/config.toml`
+5. Treat `codex-cli-auth-setup` and `pod-role-bootstrap` as
+   dependency/internal setup contracts for normal setup. Run them directly only
+   for advanced recovery, focused diagnostics, or when `project-bootstrap`
+   reports a source-backed blocker that asks for that exact check. Direct runs
+   must still preserve secret-safe status-only reporting.
+6. Confirm the generated reports:
+   - `${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}`;
+   - `${STATE_DIR:-/workspace/state}/project-bootstrap-agent-setup-report.json`;
+   - `${REPORT_PATH:-/workspace/state/pod-role-bootstrap-report.json}` when the
+     workflow reaches repo checkout/bootstrap.
+7. Verify Codex MCP status from the checked-out repo using `.codex/config.toml`
    as the pin source. Do not duplicate MCP versions in pod-local claims.
-11. Run role-specific checks when needed:
+8. Run role-specific checks when needed and not already generated by
+   `project-bootstrap`:
    - Design: `stitch-adc-setup` verifies Google ADC and Stitch MCP readiness.
    - QA/Release: `eas-robot-auth-setup` verifies EAS CLI and Expo robot auth
      readiness before any human-gated EAS/Maestro run.
@@ -409,20 +409,26 @@ Run these only after the read-only preflight has no required blockers.
 ```bash
 REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPO_PATH="${REPO_PATH%/}"
-cd "${REPO_PATH}"
+export REPO_PATH
+export REPO_CLONE_URL="${REPO_CLONE_URL:-https://github.com/Wondermove-Inc/new-mobile-app.git}"
+export CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
+export PROJECT_BOOTSTRAP_REPORT_PATH="${PROJECT_BOOTSTRAP_REPORT_PATH:-/workspace/state/project-bootstrap-report.json}"
+export PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH:-/workspace/state/project-bootstrap-blockers.md}"
+
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
+source /workspace/state/project-bootstrap-role.env 2>/dev/null || true
 bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh
-EXPECTED_PNPM_VERSION="$(
-  node -p "require('./package.json').packageManager.replace(/^pnpm@/, '')"
-)"
-corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate
-pnpm install --frozen-lockfile
-node scripts/codex-preflight.mjs --pod --json
+bash /workspace/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh
+bash /workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-preflight.sh
 ```
 
-The final `codex-preflight` command writes repo-local status evidence by design.
-Do not run this block until missing SoT files, missing pod-native skills,
-missing managed path entries, and required credential-status blockers have been
-resolved or source-backed as role-specific `not_applicable`.
+`project-bootstrap` is the normal execution model. The explicit script calls
+above show its current dependency/internal setup contracts for operators who
+need shell-level canary evidence; they are not separate peer setup decisions for
+the user. Do not run this block until missing SoT files, missing pod-native
+skills, and required credential-status blockers have been resolved or
+source-backed as role-specific `not_applicable`.
 
 For QA/Release EAS readiness:
 
