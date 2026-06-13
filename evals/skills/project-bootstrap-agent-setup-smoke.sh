@@ -978,8 +978,8 @@ JSON
   assert_file_contains "${blockers_md_path}" "### 채팅으로 보내지 마세요"
   assert_file_contains "${blockers_md_path}" "### 기술 지원 세부 정보"
   assert_file_contains "${blockers_md_path}" "Selected language: ko"
-  assert_file_contains "${blockers_md_path}" "로그인 화면을 열거나 안내"
-  assert_file_contains "${blockers_md_path}" "사용자가 GitHub 화면에서 직접 로그인하고 승인"
+  assert_file_contains "${blockers_md_path}" "제가 GitHub 로그인 화면을 열어드리면, 사용자는 그 화면에서 로그인하고 승인만 해주세요. 이후 연결 확인과 재검사는 제가 처리합니다."
+  assert_file_contains "${blockers_md_path}" "원하는 commit 이름/이메일이 있으면 알려주세요. 없으면 승인된 GitHub 계정 기준으로 설정 가능한지 확인하겠습니다."
   assert_primary_guidance_has_korean_text "${blockers_md_path}"
   assert_file_not_contains "${blockers_md_path}" "## Action needed"
   assert_file_not_contains "${blockers_md_path}" "### What you need to do"
@@ -998,6 +998,8 @@ JSON
 # human-gate/v1; nested pod role report.
 # Language contract literals: PROJECT_BOOTSTRAP_USER_LANGUAGE=ko,
 # PROJECT_BOOTSTRAP_USER_LANGUAGE=en, PROJECT_BOOTSTRAP_USER_LANGUAGE=auto,
+# agent running project-bootstrap-preflight.sh sets PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE from the current user message,
+# PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=ko-KR, PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=한국어,
 # fallback_reason: "missing_current_user_language_hint",
 # fallback_reason: "unsupported_requested_language".
 # raw blocker IDs are support-only; support-only raw blockers;
@@ -1087,6 +1089,8 @@ JSON
   assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'ko-KR'"
   assert_json_field "${report_path}" "r.user_summary.language.selected === 'ko'"
   assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === null"
+  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-auto-ko-language.md" "Selected language: ko"
+  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-auto-ko-language.md" "제가 GitHub 로그인 화면을 열어드리면, 사용자는 그 화면에서 로그인하고 승인만 해주세요. 이후 연결 확인과 재검사는 제가 처리합니다."
 
   report_path="${tmpdir}/state/project-bootstrap-report-auto-en-language.json"
   PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \

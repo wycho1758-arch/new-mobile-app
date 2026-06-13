@@ -79,6 +79,17 @@ hint and `fallback_reason: "unsupported_requested_language"` when the requested
 language is not supported. The selected language is always recorded under
 `user_summary.language` in the generated JSON report.
 
+The agent running project-bootstrap-preflight.sh sets PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE from the current user message before
+invoking preflight. Do not ask the user to provide that hint as a separate setup
+value. For a Korean current user message, keep
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=auto` and export either
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=ko-KR` or
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=한국어`; explicit
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=ko` still forces Korean output. If the agent
+omits the current-language hint in `auto` mode, the report selects English and
+records `fallback_reason: "missing_current_user_language_hint"`; for Korean
+conversations, treat that as an agent setup miss and rerun with the hint set.
+
 raw blocker IDs are support-only. The generated Markdown must treat
 support-only raw blockers as technical details: Raw blockers must appear only in
 support details and JSON, never as the primary user guidance. For interactive
@@ -168,6 +179,9 @@ export REPO_PATH="/workspace/projects/Wondermove-Inc/new-mobile-app"
 export CODEX_MANAGED_PATHS="/workspace/CODEX_MANAGED_PATHS.md"
 export PROJECT_BOOTSTRAP_REPORT_PATH="/workspace/state/project-bootstrap-report.json"
 export PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="/workspace/state/project-bootstrap-blockers.md"
+export PROJECT_BOOTSTRAP_USER_LANGUAGE="auto"
+# Set AGENT_CURRENT_USER_LANGUAGE from the current user message before preflight.
+export PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="${AGENT_CURRENT_USER_LANGUAGE:?set from current user message, e.g. ko-KR or 한국어}"
 ```
 
 2. Resolve and apply agent-owned identity setup before preflight. Use the pod

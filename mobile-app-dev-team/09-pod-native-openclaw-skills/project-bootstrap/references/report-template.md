@@ -149,6 +149,12 @@ Language contract fields are addressed as `user_summary.language.requested`,
 `PROJECT_BOOTSTRAP_USER_LANGUAGE=ko`, `PROJECT_BOOTSTRAP_USER_LANGUAGE=en`, and
 `PROJECT_BOOTSTRAP_USER_LANGUAGE=auto`, with
 `PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE` used for auto detection.
+The agent running project-bootstrap-preflight.sh sets PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE from the current user message before the
+preflight script runs. The user does not provide this value manually. For a
+Korean current user message, use `PROJECT_BOOTSTRAP_USER_LANGUAGE=auto` with
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=ko-KR` or
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=한국어`; explicit
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=ko` still forces Korean output.
 Current-language hint aliases are accepted only when the requested mode is
 `auto`; unrecognized or secret-like current-language hints are not persisted
 verbatim.

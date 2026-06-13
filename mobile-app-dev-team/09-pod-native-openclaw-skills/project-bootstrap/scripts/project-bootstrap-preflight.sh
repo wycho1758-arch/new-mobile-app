@@ -380,6 +380,8 @@ const blockerGuide = {
 // Language contract literals for validators and generated reports:
 // PROJECT_BOOTSTRAP_USER_LANGUAGE=ko, PROJECT_BOOTSTRAP_USER_LANGUAGE=en,
 // PROJECT_BOOTSTRAP_USER_LANGUAGE=auto, PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE.
+// agent running project-bootstrap-preflight.sh sets PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE from the current user message.
+// PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=ko-KR, PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=한국어.
 // fallback_reason: "missing_current_user_language_hint"
 // fallback_reason: "unsupported_requested_language"
 // user_summary.language.requested, user_summary.language.current_user_hint,
@@ -643,7 +645,7 @@ function buildKoreanResult(ctx, language) {
 
   if (ctx.hasGithubAuthUnavailable) {
     lines.push('GitHub 연결이 필요합니다. 이 환경은 아직 GitHub에 연결되어 있지 않아 저장소 접근이나 업로드를 계속할 수 없습니다.');
-    lines.push('제가 가능한 경우 browser-use 또는 computer-use로 로그인 화면을 열거나 안내하겠습니다. 사용자가 GitHub 화면에서 직접 로그인하고 승인해야 합니다.');
+    lines.push('제가 GitHub 로그인 화면을 열어드리면, 사용자는 그 화면에서 로그인하고 승인만 해주세요. 이후 연결 확인과 재검사는 제가 처리합니다.');
   } else {
     lines.push('프로젝트 부트스트랩을 안전하게 계속하려면 사람 권한이 필요한 항목이 하나 이상 남아 있습니다.');
   }
@@ -712,10 +714,10 @@ function buildKoreanResult(ctx, language) {
   );
   const userRequests = [];
   if (ctx.hasGithubAuthUnavailable) {
-    userRequests.push('제가 열거나 안내하는 GitHub 로그인 화면에서 직접 로그인하고 승인해 주세요. 토큰은 채팅으로 보내지 마세요.');
+    userRequests.push('제가 GitHub 로그인 화면을 열어드리면, 사용자는 그 화면에서 로그인하고 승인만 해주세요. 이후 연결 확인과 재검사는 제가 처리합니다. 토큰은 채팅으로 보내지 마세요.');
   }
   if (ctx.hasGitIdentityMissing) {
-    userRequests.push('승인된 공개 Git commit author name/email 한 쌍 또는 승인된 로컬 handoff 파일 경로를 제공해 주세요.');
+    userRequests.push('원하는 commit 이름/이메일이 있으면 알려주세요. 없으면 승인된 GitHub 계정 기준으로 설정 가능한지 확인하겠습니다. 제가 임의로 이메일을 만들지는 않습니다.');
   }
   if (ctx.hasMissingRepoSot) {
     userRequests.push('누락된 프로젝트 파일의 올바른 checkout 또는 승인된 파일 source를 제공해 주세요.');

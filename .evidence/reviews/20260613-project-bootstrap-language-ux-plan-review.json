@@ -1,0 +1,79 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "88ad89cf4e52afc61ac4062c5d9009821ef5d728",
+    "target": "planned project-bootstrap runtime language UX change",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      ".agents/skills/wm/SKILL.md",
+      ".agents/skills/git-workflow/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "nl -ba AGENTS.md | sed -n '1,180p'",
+      "status": "PASS",
+      "evidence": "AGENTS.md confirms TDD, branch/PR, runtime path ownership, and runtime gates at lines 11-17, 19-26, 84-90, and 102-112."
+    },
+    {
+      "command": "nl -ba PROJECT_ENVIRONMENT.md | sed -n '1,220p'",
+      "status": "PASS",
+      "evidence": "PROJECT_ENVIRONMENT.md confirms root runtime gates and Codex runtime SoT requirements at lines 14-21 and 204-220."
+    },
+    {
+      "command": "nl -ba .agents/skills/wm/SKILL.md | sed -n '1,180p'",
+      "status": "PASS",
+      "evidence": "$wm requires SoT-grounded planning, tests first, read-only review routing, final review evidence, and runtime/local harness checks at lines 14-20, 27-34, 55-64, and 86-92."
+    },
+    {
+      "command": "nl -ba .agents/skills/git-workflow/SKILL.md | sed -n '1,220p'",
+      "status": "PASS",
+      "evidence": "git-workflow requires branch/dirty preflight, no direct main push, scoped commits, and runtime evidence at lines 12-21, 23-34, 50-56, and 74-80."
+    },
+    {
+      "command": "rg -n \"PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE|missing_current_user_language_hint|GitHub 연결|commit author|로그인 화면|case_project_preflight_korean\" mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap evals/skills/project-bootstrap-agent-setup-smoke.sh scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Search confirms current language hint docs, script handling, validator terms, and Korean smoke coverage exist in the expected files."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Pre-implementation plan review only; the plan correctly schedules this after tests are updated and before implementation completion."
+    },
+    {
+      "command": "pnpm run validate:team-doc",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Pre-implementation plan review only; the plan correctly schedules validator execution after adding doc-term assertions."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Pre-implementation plan review only; required after runtime edits per AGENTS.md lines 102-112 and PROJECT_ENVIRONMENT.md lines 14-21."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Pre-implementation plan review only; required after Codex/runtime path changes per AGENTS.md lines 55-60 and 102-112."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Pre-implementation plan review only; required before PR by AGENTS.md lines 62-75 and git-workflow lines 74-80."
+    }
+  ],
+  "residual_risks": [
+    "Current workspace is already on branch fix/project-bootstrap-expanded-user-help-ux with unrelated untracked evidence; implementation should perform git preflight and avoid staging unrelated evidence before creating or switching branches.",
+    "The actual final verdict depends on the post-edit diff and command evidence; this review approves the plan, not the future implementation."
+  ],
+  "next_action": "proceed"
+}

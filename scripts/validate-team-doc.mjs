@@ -194,6 +194,12 @@ const projectBootstrapUserLanguageContractTerms = [
   'fallback_reason: "unsupported_requested_language"',
 ];
 
+const projectBootstrapAgentLanguageOwnershipTerms = [
+  'agent running project-bootstrap-preflight.sh sets PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE from the current user message',
+  'PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=ko-KR',
+  'PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=한국어',
+];
+
 const projectBootstrapUserSummaryLanguageTerms = [
   'user_summary.language.requested',
   'user_summary.language.current_user_hint',
@@ -719,6 +725,7 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   'agent must inspect and set up its own pod environment',
   'project-bootstrap-report.json',
   ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapSupportOnlyRawBlockerTerms,
   ...projectBootstrapBrowserComputerUseLoginTerms,
 ]);
@@ -768,6 +775,7 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guid
   'pinned credential-free MCP registration',
   'pnpm pin alignment',
   ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapExpandedBlockerMatrixTerms,
   ...projectBootstrapSupportOnlyRawBlockerTerms,
   ...projectBootstrapBrowserComputerUseLoginTerms,
@@ -782,6 +790,7 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/report-template.md`, [
   'Technical details for support',
   'user_summary',
   ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapUserSummaryLanguageTerms,
   ...projectBootstrapKoreanGeneratedOutputTerms,
   ...projectBootstrapSupportOnlyRawBlockerTerms,
@@ -801,6 +810,7 @@ requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-prefligh
   'platform owner refresh',
   'approved Codex CLI artifact',
   ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapUserSummaryLanguageTerms,
   ...projectBootstrapKoreanGeneratedOutputTerms,
   ...projectBootstrapExpandedBlockerMatrixTerms,
@@ -866,6 +876,7 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   'blocked_wrong_repo_path',
   'project-bootstrap-agent-setup smoke passed',
   ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapUserSummaryLanguageTerms,
   ...projectBootstrapKoreanModeSmokeTerms,
   ...projectBootstrapExpandedBlockerMatrixTerms,

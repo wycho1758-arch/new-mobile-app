@@ -83,6 +83,13 @@ only for `PROJECT_BOOTSTRAP_USER_LANGUAGE=auto`; they are unsupported as
 requested language modes. Unrecognized or secret-like current-language hints are
 not persisted verbatim.
 
+The agent running project-bootstrap-preflight.sh sets PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE from the current user message before
+preflight. Do not ask the user to provide this hint separately. For a Korean
+current user message, use `PROJECT_BOOTSTRAP_USER_LANGUAGE=auto` with
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=ko-KR` or
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE=한국어`; explicit
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=ko` still forces Korean output.
+
 The report records `fallback_reason: "missing_current_user_language_hint"` when
 `auto` has no usable hint and `fallback_reason: "unsupported_requested_language"`
 when a requested language is unsupported. raw blocker IDs are support-only:
@@ -101,7 +108,7 @@ Minimum user request, and the next step where the agent can continue.
 
 | Raw blocker | Plain-language meaning | Minimum user request | Next agent action |
 | --- | --- | --- | --- |
-| `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Provide one approved non-secret Git identity pair through `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. | Configure Git from that one approved source and rerun bootstrap. |
+| `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Share a preferred public commit name/email if one exists, or provide an approved local handoff file through `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. If absent, the agent checks whether the approved GitHub account can support a non-invented Git identity source. | Configure Git from one approved source and rerun bootstrap. |
 | `github-auth-unavailable` | GitHub connection is needed before the agent can continue with repository access or upload work. | Be present for the GitHub login screen; sign in with your GitHub account and approve the request. Never send tokens in chat. | Check the GitHub connection, set up Git to use that login after authentication works, then rerun bootstrap. |
 | `pod-role-bootstrap blocked` | `project-bootstrap` found that the generated `pod-role-bootstrap` report is present but not ready. | Resolve the nested blocker requests only; do not create report files manually. | Rerun `pod-role-bootstrap`, then rerun `project-bootstrap` preflight. |
 
@@ -156,9 +163,10 @@ blocker names for support details:
   agent will open or guide the GitHub login screen when possible, and that they
   should sign in with your GitHub account and approve the request there. Do not
   ask for tokens in chat.
-- If Git identity is also missing, keep GitHub login first, then ask for the Git
-  commit author name and email or an approved local handoff path. Do not invent
-  an email address.
+- If Git identity is also missing, keep GitHub login first, then ask whether the
+  user has a preferred public commit name/email. If not, check whether the
+  approved GitHub account can support a non-invented Git identity source. Do not
+  invent an email address.
 - For project files, ask for the correct checkout or approved project file
   source.
 - For platform/runtime problems, ask for platform owner refresh of the pod
