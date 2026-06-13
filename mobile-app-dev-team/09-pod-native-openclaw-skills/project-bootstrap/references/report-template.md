@@ -46,6 +46,14 @@ preflight report. That report has this shape:
 {
   "schema": "project-bootstrap/v1",
   "status": "ready_for_bootstrap | blocked",
+  "user_summary": {
+    "language": {
+      "requested": "auto | ko | en | unsupported value from PROJECT_BOOTSTRAP_USER_LANGUAGE",
+      "current_user_hint": "accepted value from PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE | [redacted_current_user_language_hint] | [unsupported_current_user_language_hint]",
+      "selected": "ko | en",
+      "fallback_reason": null
+    }
+  },
   "repo": {
     "clone_url_status": "configured_non_secret | token_bearing_or_rejected",
     "path": "/workspace/projects/Wondermove-Inc/new-mobile-app",
@@ -135,6 +143,18 @@ preflight report. That report has this shape:
 }
 ```
 
+Language contract fields are addressed as `user_summary.language.requested`,
+`user_summary.language.current_user_hint`, `user_summary.language.selected`, and
+`user_summary.language.fallback_reason`. Supported env modes are
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=ko`, `PROJECT_BOOTSTRAP_USER_LANGUAGE=en`, and
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=auto`, with
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE` used for auto detection.
+Current-language hint aliases are accepted only when the requested mode is
+`auto`; unrecognized or secret-like current-language hints are not persisted
+verbatim.
+Fallback reasons are `fallback_reason: "missing_current_user_language_hint"` and
+`fallback_reason: "unsupported_requested_language"`.
+
 Evidence may contain command names, exit statuses, object names, status labels,
 report paths, and the generated blocker guide path. It must not contain auth
 token values, API keys, OAuth tokens, refresh tokens, passwords, Google ADC JSON,
@@ -154,16 +174,19 @@ support details section and the JSON report:
 <Plain-language current state. For GitHub auth blockers, start with:
 GitHub connection is needed before I can continue.>
 
-### What you need to do
-
-- <Only the smallest user-owned action: a public non-secret value, approved
-  project file source, approved secure credential source, human-present login, platform
-  owner refresh, or linked `human-gate/v1` decision.>
-
 ### What I will do after that
 
 - <The status-only local checks, setup script, report regeneration, and
   bootstrap/preflight rerun the agent will perform.>
+- <For auth, the agent will open or guide the login surface when possible.>
+
+### What you need to do
+
+- <Only the smallest user-owned action: a public non-secret value, approved
+  project file source, approved secure credential source, human-present login,
+  platform owner refresh, or linked `human-gate/v1` decision.>
+- <For GitHub auth, be present for the GitHub login screen the agent opens or
+  guides; sign in with your GitHub account and approve the request there.>
 
 ### Do not send in chat
 
@@ -177,10 +200,36 @@ GitHub connection is needed before I can continue.>
   the user action.>
 ```
 
-Future JSON reports may add a `user_summary` object with the same shape:
+Korean mode is selected with `PROJECT_BOOTSTRAP_USER_LANGUAGE=ko` and uses this
+generated shape:
+
+```markdown
+## 도움이 필요합니다
+
+GitHub 연결이 필요합니다.
+
+### 현재 상태
+
+### 이미 확인한 내용
+
+### 제가 다음에 할 수 있는 일
+
+### 사용자에게 필요한 최소 작업
+
+### 채팅으로 보내지 마세요
+
+### 기술 지원 세부 정보
+```
+
+raw blocker IDs are support-only. support-only raw blockers must be listed only
+after the technical support heading or in JSON. Raw blockers must appear only in
+support details and JSON, never as the primary user request.
+
+Raw blockers must appear only in support details and JSON.
+
+Future JSON reports may add more `user_summary` fields with the same shape:
 `action_needed`, `user_request`, `agent_next_action`, and
-`do_not_send_in_chat`. Until that exists, the generated Markdown is the
-user-facing contract.
+`do_not_send_in_chat`. The generated Markdown remains the user-facing contract.
 
 ## Interpretation Notes
 

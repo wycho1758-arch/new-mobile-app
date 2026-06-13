@@ -1,0 +1,124 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "0e81f6b",
+    "target": "project-bootstrap expanded user-help UX implementation",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red-review-rerun-4.md",
+      ".evidence/wm/project-bootstrap/korean-samples-20260613/",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "scope review against wm plan, AGENTS.md, PROJECT_ENVIRONMENT.md, and affected paths",
+      "status": "PASS",
+      "evidence": "Scope is runtime/docs/eval only: AGENTS.md:5-6, AGENTS.md:25-26, REPO_OPERATIONS.md:76-81, plan file changes at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:254-326, and git diff paths are limited to project-bootstrap docs/script, eval, validator, and evidence."
+    },
+    {
+      "command": "verify TDD ordering and RED reviewer authorization",
+      "status": "PASS",
+      "evidence": "AGENTS.md:13 requires TDD. RED evidence records expected failing smoke/validator checks before implementation at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:16-46, later RED coverage hardening at lines 58-180, and Phase 1 reviewer GO before implementation at lines 88-99. The active plan progress records Phase 2 implementation started after RED reviewer GO at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:20-31."
+    },
+    {
+      "command": "verify user_summary.language requested/current_user_hint/selected/fallback_reason for blocked and ready reports",
+      "status": "PASS",
+      "evidence": "The generator writes all four fields unconditionally at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:798-807. Ready-path smoke asserts all four fields at evals/skills/project-bootstrap-agent-setup-smoke.sh:641-646. Blocked sample JSON includes the fields at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.json:4-10."
+    },
+    {
+      "command": "verify requested-language strictness, auto hints, fallback reasons, and secret-like hint redaction",
+      "status": "PASS",
+      "evidence": "Language selection accepts ko/en/auto, falls back invalid requested values, maps current hints only in auto, and redacts secret-like hints at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:402-440. Smoke coverage asserts auto ko/en hints, invalid requested language, invalid alias as requested language, and secret-like current hint redaction at evals/skills/project-bootstrap-agent-setup-smoke.sh:1050-1200."
+    },
+    {
+      "command": "verify Korean generated primary guidance and required headings",
+      "status": "PASS",
+      "evidence": "Korean renderer emits the required primary headings and Korean guidance at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:638-747. Korean sample output shows Korean heading/order and primary guidance at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:7-39."
+    },
+    {
+      "command": "verify raw blocker IDs are constrained to support details and JSON",
+      "status": "PASS",
+      "evidence": "Support details append raw blockers only under the support heading at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:497-508. Smoke helper dynamically fails if report blockers appear in primary guidance or are absent from support details at evals/skills/project-bootstrap-agent-setup-smoke.sh:242-289. Sample blocker IDs are in support details at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:36-39."
+    },
+    {
+      "command": "verify package-manager/pnpm guidance follows repo SoT and does not ask the user to choose a pnpm version",
+      "status": "PASS",
+      "evidence": "Plan requires package-manager checks against package.json, pnpm-lock.yaml, corepack, pnpm, and pnpm@9.15.9 without asking the user to choose a version at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:239. Implementation and sample match that at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:553-554, 697-699, 723-724 and .evidence/wm/project-bootstrap/korean-samples-20260613/package-manager-pnpm-pin.md:15-30."
+    },
+    {
+      "command": "verify browser-use/computer-use auth guidance opens or guides login surfaces only",
+      "status": "PASS",
+      "evidence": "Implementation says the agent can open or guide the login surface and the user signs in/approves/enters credentials in the real provider surface at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:517-520, 589-590, 644-646, 714-715. The GitHub sample reflects that at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:9-10, 29."
+    },
+    {
+      "command": "verify API contract usage and mobile runtime boundaries",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No apps/api, packages/contracts, or apps/mobile files are in the changed implementation paths. API contract and native UI rules from AGENTS.md:86-99 are therefore not touched by this runtime/docs/eval change."
+    },
+    {
+      "command": "verify no mobile UI/native visual QA is required",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Changed paths are project-bootstrap runtime/docs/eval/validator/evidence only. AGENTS.md:109-110 scopes mobile-mcp visual QA to mobile UI/runtime changes with an available simulator or device."
+    },
+    {
+      "command": "verify evidence and source secret hygiene",
+      "status": "PASS",
+      "evidence": "GREEN evidence records validate:evidence-hygiene exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:59-61 and rerun exit 0 at lines 119-120. Secret-pattern scan over affected evidence/source found only the intentional negative fixture token=do-not-persist and redaction assertions at evals/skills/project-bootstrap-agent-setup-smoke.sh:1189-1200 plus the redaction regex at project-bootstrap-preflight.sh:403."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:97-99 after the previous NO_GO fixes."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:101-102 after the previous NO_GO fixes."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:110-111."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:113-114."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:116-117."
+    },
+    {
+      "command": "pnpm run validate:evidence-hygiene",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:119-120."
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS",
+      "evidence": "Recorded GREEN exit 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:122-123."
+    }
+  ],
+  "residual_risks": [
+    "This read-only review did not rerun mutating or temp-output-producing gates; required gate status is source-backed by recorded GREEN evidence.",
+    "Local validation and local harness evidence do not prove live OpenClaw pod execution or external platform state, per REPO_OPERATIONS.md:138-143.",
+    "No live Confluence, GitHub branch protection, EAS, Railway, Jira, or mobile device proof is included or required for this runtime/docs/eval change."
+  ],
+  "next_action": "proceed"
+}

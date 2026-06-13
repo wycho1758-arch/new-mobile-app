@@ -1,0 +1,146 @@
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "0e81f6b90a2a659c162ab97fe95dedb7ee088032",
+    "target": "project-bootstrap expanded user-help UX implementation",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "REPO_OPERATIONS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red-review-rerun-4.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md",
+      ".evidence/wm/project-bootstrap/korean-samples-20260613/",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "summary": "PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE is persisted verbatim into durable JSON even though the approved plan says no secret values are allowed in that variable. The script accepts the raw env value as a Node argument, stores it in currentUserHint without redaction or validation, and writes it to user_summary.language.current_user_hint. If the variable is accidentally populated with a token or credential-like value, project-bootstrap will persist it into the report/evidence path.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:194",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:199",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:230",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:404",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:790"
+      ],
+      "owner": "Mobile App Dev"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "PROJECT_BOOTSTRAP_USER_LANGUAGE accepts unsupported requested values as if they were valid language modes. The plan and skill docs define exact requested values of auto, ko, and en, with any other requested value falling back to en and recording unsupported_requested_language. The implementation also accepts ko-KR, Korean, 한국어, en-US, and English in PROJECT_BOOTSTRAP_USER_LANGUAGE; those aliases belong only to PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE auto hints, so invalid requested values are not consistently recorded as fallback.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:186",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:193",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:200",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:208",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:66",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:77",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:407",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:411",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1129"
+      ],
+      "owner": "Mobile App Dev"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "The English generated/template guidance still uses the older user-request-before-agent-next-action shape and weaker auth wording, so the language-aware contract is only fully satisfied for the Korean path. The approved contract orders primary guidance as current state, already checked, can do next, need from you, and do-not-send; acceptance also requires auth guidance to say the agent will open or guide the login surface. The English renderer emits What you need to do before What I will do after that, includes the old When the GitHub login screen opens line, and the report template preserves the old ordering.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:161",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:174",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:405",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:411",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:505",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:545",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:589",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md:174",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md:183"
+      ],
+      "owner": "Mobile App Dev"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "scope review against AGENTS.md, REPO_OPERATIONS.md, PROJECT_ENVIRONMENT.md, and active plan",
+      "status": "PASS",
+      "evidence": "AGENTS.md requires TDD and no hardcoded tokens/credentials at AGENTS.md:13-14; required gates are listed at AGENTS.md:104-112. REPO_OPERATIONS.md confirms runtime/docs changes require evidence at REPO_OPERATIONS.md:100 and local validation limits at REPO_OPERATIONS.md:138-143. The active plan defines final-review scope at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:382-390."
+    },
+    {
+      "command": "verify TDD ordering and RED reviewer authorization",
+      "status": "PASS",
+      "evidence": "RED evidence records failing smoke and validator coverage before implementation at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:18-46. Phase 1 RED reviewer GO is recorded at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:88-99 and .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red-review-rerun-4.md:1."
+    },
+    {
+      "command": "review recorded full verification evidence",
+      "status": "PASS",
+      "evidence": "GREEN evidence records targeted smoke, validator, syntax checks, test:runtime, test:local-harness, turbo lint/test, validate:evidence-hygiene, and git diff --check all exiting 0 at .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md:7-68."
+    },
+    {
+      "command": "source review: user_summary.language exists for blocked and ready report paths",
+      "status": "PASS",
+      "evidence": "The report object always includes user_summary.language fields before status-specific content at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:784-793. Ready-path smoke asserts all four fields at evals/skills/project-bootstrap-agent-setup-smoke.sh:623-641; blocked Korean samples show selected language support detail at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:36-39."
+    },
+    {
+      "command": "source review: current-language hint secret safety",
+      "status": "FAIL",
+      "evidence": "The plan forbids secret values in PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:194-199, but the implementation persists the raw hint into user_summary.language.current_user_hint at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:790."
+    },
+    {
+      "command": "source review: exact PROJECT_BOOTSTRAP_USER_LANGUAGE requested-value contract",
+      "status": "FAIL",
+      "evidence": "The plan allows only auto, ko, and en as requested values at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:186-193, but selectUserLanguage treats requested ko-KR/Korean/한국어 and en-US/English as valid at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:407-411."
+    },
+    {
+      "command": "source review: Korean generated primary guidance and required headings",
+      "status": "PASS",
+      "evidence": "Generated Korean sample includes Korean primary heading, current state, checked, next action, minimum user action, do-not-send, and support details at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:7-39. Smoke asserts those headings and absence of English-only Korean primary headings at evals/skills/project-bootstrap-agent-setup-smoke.sh:958-986."
+    },
+    {
+      "command": "source review: raw blocker IDs constrained to support details and JSON",
+      "status": "PASS",
+      "evidence": "Korean generated sample keeps raw blocker IDs under technical support details at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:36-39. The smoke helper asserts raw blockers are absent from primary guidance and present after support details at evals/skills/project-bootstrap-agent-setup-smoke.sh:221-269."
+    },
+    {
+      "command": "source review: package-manager/pnpm guidance uses repo SoT and does not ask user to choose a version",
+      "status": "PASS",
+      "evidence": "Renderer cites package.json, pnpm-lock.yaml, corepack --version, pnpm --version, and pnpm@9.15.9 at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:652-665, and says not to make the user choose a pnpm version at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:683-710."
+    },
+    {
+      "command": "source review: browser-use/computer-use auth guidance",
+      "status": "FAIL",
+      "evidence": "Korean generated guidance opens/guides the login surface and keeps credential entry in the provider surface at .evidence/wm/project-bootstrap/korean-samples-20260613/github-git-identity.md:9-10 and :27-29, but English/template guidance retains old ordering/wording at mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:505-506 and mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md:174-183."
+    },
+    {
+      "command": "secret scan of provided Korean samples and RED/GREEN evidence with rg for common credential markers",
+      "status": "PASS",
+      "evidence": "Read-only rg review found policy/status strings such as password/token labels and missing secret-ref statuses, not concrete credential values, across .evidence/wm/project-bootstrap/korean-samples-20260613 and the RED/GREEN evidence files."
+    },
+    {
+      "command": "API contract usage review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed changed paths are project-bootstrap runtime/docs/eval/validator artifacts, not apps/api or packages/contracts. No API request/response/domain schema changes were in scope."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Changed paths are runtime/docs/eval/validator files, not mobile UI screens. AGENTS.md requires mobile-mcp visual QA for mobile UI/runtime changes with an available device at AGENTS.md:109-110."
+    }
+  ],
+  "residual_risks": [
+    "This reviewer operated read-only and did not rerun the verification commands; command pass status is based on the recorded evidence in .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-green.md.",
+    "Local validation and local harness evidence do not prove live OpenClaw pod execution or external platform state, per REPO_OPERATIONS.md:138-143.",
+    "The validator additions are mostly literal-term checks; the current findings show behavior can drift while the recorded gates still pass."
+  ],
+  "next_action": "fix_findings"
+}
+```

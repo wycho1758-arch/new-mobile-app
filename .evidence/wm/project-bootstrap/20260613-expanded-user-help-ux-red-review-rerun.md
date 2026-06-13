@@ -1,0 +1,80 @@
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "0e81f6b90a2a659c162ab97fe95dedb7ee088032",
+    "target": "Phase 1 RED coverage for project-bootstrap expanded user-help UX",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs",
+      "package.json",
+      ".github/workflows/quality-gate.yml"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "summary": "Missing executable coverage for valid auto language-hint mapping. The approved language algorithm requires PROJECT_BOOTSTRAP_USER_LANGUAGE=auto to map PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE to ko or en, including accepted Korean and English hints. The smoke coverage exercises explicit ko, explicit en, empty auto fallback, and invalid requested-language fallback, but does not assert that auto plus a usable Korean or English hint selects the hinted language. Phase 2 could therefore pass RED coverage while leaving the auto happy path unimplemented.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:182",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:188",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:191",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:951",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:958",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1033",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1040",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1067",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1074",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1090",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1097",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1158",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1165"
+      ],
+      "owner": "Mobile App Dev"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:18 records expected RED exit 1; source review confirms added ko, en, invalid, support-detail, and matrix assertions, with the auto valid-hint gap noted above."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:32 records expected RED exit 1; scripts/validate-team-doc.mjs:187 and scripts/validate-team-doc.mjs:837 add validator terms for language, matrix, support-only raw blockers, and login guidance."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Phase 1 requires targeted RED commands only; full runtime gates are Phase 4 per docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:361."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Phase 1 RED coverage review precedes implementation; local harness is required for later runtime/full verification per AGENTS.md:57 and docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:361."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile/app implementation is under review in this Phase 1 RED gate; workspace lint/test is reserved for Phase 4 per docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:361."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Changed files are runtime smoke/validator/plan evidence only, not React Native UI; mobile visual QA requirements apply to mobile UI/runtime changes per PROJECT_ENVIRONMENT.md:84."
+    }
+  ],
+  "residual_risks": [
+    "Validator term checks are mostly substring-based, so the smoke script remains the primary executable guard for behavioral coverage.",
+    "Full GREEN and PR readiness gates remain pending for Phase 3 and Phase 4 after implementation."
+  ],
+  "next_action": "fix_findings"
+}
+```

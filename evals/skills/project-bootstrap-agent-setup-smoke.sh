@@ -103,7 +103,12 @@ const file = process.argv[2];
 const unexpected = process.argv[3];
 const body = fs.readFileSync(file, 'utf8');
 const start = body.indexOf('### What you need to do');
-const end = body.indexOf('### What I will do after that');
+const endCandidates = [
+  body.indexOf('### Do not send in chat', start + 1),
+  body.indexOf('### Technical details for support', start + 1),
+  body.indexOf('## Current Status Summary', start + 1),
+].filter((index) => index !== -1);
+const end = endCandidates.length > 0 ? Math.min(...endCandidates) : -1;
 if (start === -1 || end === -1 || end <= start) {
   console.error(`assertion failed: could not find action section in ${file}`);
   process.exit(1);
@@ -180,6 +185,106 @@ const section = body.slice(start, end);
 if (section.includes(unexpected)) {
   console.error(`assertion failed: expected primary guidance in ${file} not to contain ${unexpected}`);
   process.exit(1);
+}
+NODE
+}
+
+assert_korean_primary_guidance_not_contains() {
+  local file="$1"
+  local unexpected="$2"
+  node - "${file}" "${unexpected}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const unexpected = process.argv[3];
+const body = fs.readFileSync(file, 'utf8');
+const starts = [
+  body.indexOf('## 도움이 필요합니다'),
+  body.indexOf('## 조치가 필요합니다'),
+].filter((index) => index !== -1);
+const supportStarts = [
+  body.indexOf('### 기술 지원 세부 정보'),
+  body.indexOf('### 지원용 기술 세부 정보'),
+  body.indexOf('### Technical details for support'),
+  body.indexOf('## Current Status Summary'),
+].filter((index) => index !== -1);
+if (starts.length === 0 || supportStarts.length === 0) {
+  console.error(`assertion failed: could not find Korean primary guidance bounds in ${file}`);
+  process.exit(1);
+}
+const start = Math.min(...starts);
+const end = Math.min(...supportStarts.filter((index) => index > start));
+if (!Number.isFinite(end) || end <= start) {
+  console.error(`assertion failed: invalid Korean primary guidance bounds in ${file}`);
+  process.exit(1);
+}
+const section = body.slice(start, end);
+if (section.includes(unexpected)) {
+  console.error(`assertion failed: expected Korean primary guidance in ${file} not to contain ${unexpected}`);
+  process.exit(1);
+}
+NODE
+}
+
+assert_primary_guidance_has_korean_text() {
+  local file="$1"
+  node - "${file}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const body = fs.readFileSync(file, 'utf8');
+const koreanMatches = body.match(/[가-힣]/g) || [];
+if (koreanMatches.length < 40) {
+  console.error(`assertion failed: expected first-class Korean generated guidance in ${file}`);
+  process.exit(1);
+}
+NODE
+}
+
+assert_report_blockers_support_only() {
+  local file="$1"
+  local report="$2"
+  node - "${file}" "${report}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const reportFile = process.argv[3];
+const body = fs.readFileSync(file, 'utf8');
+const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
+const starts = [
+  body.indexOf('## 도움이 필요합니다'),
+  body.indexOf('## Action needed'),
+].filter((index) => index !== -1);
+const supportStarts = [
+  body.indexOf('### 기술 지원 세부 정보'),
+  body.indexOf('### Technical details for support'),
+  body.indexOf('## Current Status Summary'),
+].filter((index) => index !== -1);
+if (starts.length === 0 || supportStarts.length === 0) {
+  console.error(`assertion failed: could not find primary/support guidance bounds in ${file}`);
+  process.exit(1);
+}
+const start = Math.min(...starts);
+const end = Math.min(...supportStarts.filter((index) => index > start));
+if (!Number.isFinite(end) || end <= start) {
+  console.error(`assertion failed: invalid primary/support guidance bounds in ${file}`);
+  process.exit(1);
+}
+const primary = body.slice(start, end);
+const support = body.slice(end);
+const rawBlockers = new Set();
+for (const blocker of report.blockers || []) {
+  if (typeof blocker === 'string' && blocker) rawBlockers.add(blocker);
+}
+for (const blocker of report.nested_reports?.pod_role_bootstrap?.blockers || []) {
+  if (typeof blocker === 'string' && blocker) rawBlockers.add(blocker);
+}
+for (const blocker of rawBlockers) {
+  if (primary.includes(blocker)) {
+    console.error(`assertion failed: raw blocker ${blocker} appeared in primary guidance`);
+    process.exit(1);
+  }
+  if (!support.includes(blocker)) {
+    console.error(`assertion failed: raw blocker ${blocker} missing from support details`);
+    process.exit(1);
+  }
 }
 NODE
 }
@@ -523,19 +628,25 @@ case_product_planning_status_only_missing_preflight() {
   FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
   REPO_PATH="${repo_path}" \
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
-  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
-  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
-  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
-  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
-  WM_ROLE="product-planning" \
-  WM_EXPECTED_ROLE="product-planning" \
-  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+	  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+	  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
+	  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+	  PROJECT_BOOTSTRAP_USER_LANGUAGE="auto" \
+	  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="en-US" \
+	  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+	  WM_ROLE="product-planning" \
+	  WM_EXPECTED_ROLE="product-planning" \
+	  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
 
-  assert_json_field "${report_path}" "r.status === 'ready_for_bootstrap'"
-  assert_json_field "${report_path}" "Array.isArray(r.blockers) && r.blockers.length === 0"
-  assert_json_field "${report_path}" "r.role.normalized === 'product-planning' && r.role.requires_stitch === false && r.role.requires_eas === false"
-  assert_json_field "${report_path}" "r.cli.railway === 'missing' && r.cli.gcloud === 'missing' && r.cli.eas === 'missing'"
-  assert_json_field "${report_path}" "r.reports.pod_role_bootstrap === 'missing'"
+	  assert_json_field "${report_path}" "r.status === 'ready_for_bootstrap'"
+	  assert_json_field "${report_path}" "Array.isArray(r.blockers) && r.blockers.length === 0"
+	  assert_json_field "${report_path}" "r.user_summary.language.requested === 'auto'"
+	  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'en-US'"
+	  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+	  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === null"
+	  assert_json_field "${report_path}" "r.role.normalized === 'product-planning' && r.role.requires_stitch === false && r.role.requires_eas === false"
+	  assert_json_field "${report_path}" "r.cli.railway === 'missing' && r.cli.gcloud === 'missing' && r.cli.eas === 'missing'"
+	  assert_json_field "${report_path}" "r.reports.pod_role_bootstrap === 'missing'"
 }
 
 case_project_preflight_blocks_on_pod_role_report_blocked() {
@@ -796,6 +907,403 @@ case_project_preflight_guides_role_specific_secure_sources() {
   assert_file_not_contains "${blockers_md_path}" 'Align `pnpm-pin-mismatch` yourself'
 }
 
+case_project_preflight_korean_language_contract() {
+  local tmpdir repo_path report_path pod_report_path blockers_md_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    .codex/config.toml \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+  cat > "${pod_report_path}" <<'JSON'
+{
+  "schema": "pod-role-bootstrap/v1",
+  "status": "blocked",
+  "preflight": {
+    "result": {
+      "blockers": [
+        { "reason": "git-identity-missing" },
+        { "reason": "github-auth-unavailable" }
+      ]
+    }
+  }
+}
+JSON
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="ko" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="한국어" \
+  POD_ROLE_BOOTSTRAP_REPORT="${pod_report_path}" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.requested === 'ko'"
+  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === '한국어'"
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'ko'"
+  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === null"
+  assert_file_contains "${blockers_md_path}" "## 도움이 필요합니다"
+  assert_file_contains "${blockers_md_path}" "### 현재 상태"
+  assert_file_contains "${blockers_md_path}" "### 이미 확인한 내용"
+  assert_file_contains "${blockers_md_path}" "### 제가 다음에 할 수 있는 일"
+  assert_file_contains "${blockers_md_path}" "### 사용자에게 필요한 최소 작업"
+  assert_file_contains "${blockers_md_path}" "### 채팅으로 보내지 마세요"
+  assert_file_contains "${blockers_md_path}" "### 기술 지원 세부 정보"
+  assert_file_contains "${blockers_md_path}" "Selected language: ko"
+  assert_file_contains "${blockers_md_path}" "로그인 화면을 열거나 안내"
+  assert_file_contains "${blockers_md_path}" "사용자가 GitHub 화면에서 직접 로그인하고 승인"
+  assert_primary_guidance_has_korean_text "${blockers_md_path}"
+  assert_file_not_contains "${blockers_md_path}" "## Action needed"
+  assert_file_not_contains "${blockers_md_path}" "### What you need to do"
+  assert_file_not_contains "${blockers_md_path}" "### What I will do after that"
+  assert_file_not_contains "${blockers_md_path}" "### Do not send in chat"
+  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "github-auth-unavailable"
+  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "git-identity-missing"
+  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "pod-role-bootstrap blocked"
+  assert_report_blockers_support_only "${blockers_md_path}" "${report_path}"
+}
+
+# full blocker matrix coverage labels for validate-team-doc:
+# role identity; repo/managed path; Git identity; CLI/runtime; package-manager;
+# package manager mismatch; MCP; conditional login/auth; GitHub auth;
+# secure credentials/API/Railway; public non-secret app config;
+# human-gate/v1; nested pod role report.
+# Language contract literals: PROJECT_BOOTSTRAP_USER_LANGUAGE=ko,
+# PROJECT_BOOTSTRAP_USER_LANGUAGE=en, PROJECT_BOOTSTRAP_USER_LANGUAGE=auto,
+# fallback_reason: "missing_current_user_language_hint",
+# fallback_reason: "unsupported_requested_language".
+# raw blocker IDs are support-only; support-only raw blockers;
+# Raw blockers must appear only in support details and JSON.
+# browser-use and computer-use can open or guide the login surface; user only signs in, approves, or enters credentials in the real login surface.
+# Korean GitHub auth primary copy must include: GitHub 연결이 필요합니다.
+case_project_preflight_korean_language_fallbacks() {
+  local tmpdir repo_path report_path pod_report_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-report.json"
+  mkdir -p \
+    "${tmpdir}/bin" \
+    "${tmpdir}/state" \
+    "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/codex-cli-auth-setup" \
+    "${tmpdir}/skills/pod-role-bootstrap" \
+    "${repo_path}/.codex" \
+    "${repo_path}/docs" \
+    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    .codex/config.toml \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  printf -- '- %s/\n' "${repo_path}" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+  cat > "${pod_report_path}" <<'JSON'
+{
+  "schema": "pod-role-bootstrap/v1",
+  "status": "blocked",
+  "preflight": {
+    "result": {
+      "blockers": [
+        { "reason": "github-auth-unavailable" }
+      ]
+    }
+  }
+}
+JSON
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="auto" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.requested === 'auto'"
+  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === ''"
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === 'missing_current_user_language_hint'"
+  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Selected language: en"
+  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Fallback reason: missing_current_user_language_hint"
+
+  report_path="${tmpdir}/state/project-bootstrap-report-auto-ko-language.json"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers-auto-ko-language.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="auto" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="ko-KR" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.requested === 'auto'"
+  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'ko-KR'"
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'ko'"
+  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === null"
+
+  report_path="${tmpdir}/state/project-bootstrap-report-auto-en-language.json"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers-auto-en-language.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="auto" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="en-US" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.requested === 'auto'"
+  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'en-US'"
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === null"
+
+  report_path="${tmpdir}/state/project-bootstrap-report-en-language.json"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers-en-language.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="en" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="English" \
+  POD_ROLE_BOOTSTRAP_REPORT="${pod_report_path}" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.requested === 'en'"
+  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'English'"
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+	  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === null"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-en-language.md" "## Action needed"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-en-language.md" "Selected language: en"
+	  assert_text_order "${tmpdir}/state/project-bootstrap-blockers-en-language.md" "### What the agent already checked" "### What I will do after that"
+	  assert_text_order "${tmpdir}/state/project-bootstrap-blockers-en-language.md" "### What I will do after that" "### What you need to do"
+	  assert_file_not_contains "${tmpdir}/state/project-bootstrap-blockers-en-language.md" "## 도움이 필요합니다"
+
+  report_path="${tmpdir}/state/project-bootstrap-report-invalid-language.json"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers-invalid-language.md" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="fr" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="한국어" \
+  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.user_summary.language.requested === 'fr'"
+  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === '한국어'"
+  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === 'unsupported_requested_language'"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-invalid-language.md" "Selected language: en"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-invalid-language.md" "Fallback reason: unsupported_requested_language"
+
+	  report_path="${tmpdir}/state/project-bootstrap-report-invalid-alias-language.json"
+	  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+	  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+	  REPO_PATH="${repo_path}" \
+	  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+	  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+	  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers-invalid-alias-language.md" \
+	  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+	  PROJECT_BOOTSTRAP_USER_LANGUAGE="ko-KR" \
+	  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="ko-KR" \
+	  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+	  WM_ROLE="product-planning" \
+	  WM_EXPECTED_ROLE="product-planning" \
+	  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+	  assert_json_field "${report_path}" "r.user_summary.language.requested === 'ko-KR'"
+	  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === 'ko-KR'"
+	  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+	  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === 'unsupported_requested_language'"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-invalid-alias-language.md" "Selected language: en"
+	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers-invalid-alias-language.md" "Fallback reason: unsupported_requested_language"
+
+	  report_path="${tmpdir}/state/project-bootstrap-report-secret-current-language.json"
+	  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+	  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+	  REPO_PATH="${repo_path}" \
+	  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+	  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+	  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${tmpdir}/state/project-bootstrap-blockers-secret-current-language.md" \
+	  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+	  PROJECT_BOOTSTRAP_USER_LANGUAGE="auto" \
+	  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="token=do-not-persist" \
+	  POD_ROLE_BOOTSTRAP_REPORT="${tmpdir}/state/pod-role-bootstrap-report.json" \
+	  WM_ROLE="product-planning" \
+	  WM_EXPECTED_ROLE="product-planning" \
+	  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+	  assert_json_field "${report_path}" "r.user_summary.language.requested === 'auto'"
+	  assert_json_field "${report_path}" "r.user_summary.language.current_user_hint === '[redacted_current_user_language_hint]'"
+	  assert_json_field "${report_path}" "r.user_summary.language.selected === 'en'"
+	  assert_json_field "${report_path}" "r.user_summary.language.fallback_reason === 'missing_current_user_language_hint'"
+	  assert_file_not_contains "${report_path}" "token=do-not-persist"
+	  assert_file_not_contains "${tmpdir}/state/project-bootstrap-blockers-secret-current-language.md" "token=do-not-persist"
+	}
+
+case_project_preflight_korean_full_blocker_matrix() {
+  local tmpdir repo_path report_path pod_report_path blockers_md_path
+  tmpdir="$(mktemp -d)"
+  repo_path="${tmpdir}/repo"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-report.json"
+  blockers_md_path="${tmpdir}/state/project-bootstrap-blockers.md"
+	  mkdir -p \
+	    "${tmpdir}/bin" \
+	    "${tmpdir}/state" \
+	    "${tmpdir}/skills/project-bootstrap" \
+	    "${tmpdir}/skills/pod-role-bootstrap" \
+	    "${tmpdir}/skills/stitch-adc-setup" \
+	    "${repo_path}/.codex" \
+	    "${repo_path}/docs" \
+	    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  make_fake_codex "${tmpdir}/bin"
+  : > "${tmpdir}/mcps.txt"
+  for file in \
+    AGENTS.md \
+    REPO_OPERATIONS.md \
+    PROJECT_ENVIRONMENT.md \
+    docs/TEMPLATE_VARIABLES.md \
+    docs/CREDENTIALS.md \
+    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+  do
+    : > "${repo_path}/${file}"
+  done
+  cat > "${pod_report_path}" <<'JSON'
+{
+  "schema": "pod-role-bootstrap/v1",
+  "status": "blocked",
+  "preflight": {
+	    "result": {
+	      "blockers": [
+	        { "reason": "missing role identity" },
+	        { "reason": "missing managed path entry" },
+	        { "reason": "missing /workspace/skills/codex-cli-auth-setup" },
+	        { "reason": "pnpm-pin-mismatch" },
+	        { "reason": "conditional-auth-unavailable" },
+	        { "reason": "public-app-config-missing" },
+        { "reason": "api-railway-secure-source-missing" },
+        { "reason": "human-gate/v1 required" }
+      ]
+    }
+  }
+}
+JSON
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  REPO_PATH="${repo_path}" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  PROJECT_BOOTSTRAP_REPORT_PATH="${report_path}" \
+  PROJECT_BOOTSTRAP_BLOCKERS_MD_PATH="${blockers_md_path}" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_USER_LANGUAGE="ko" \
+  PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="ko-KR" \
+  POD_ROLE_BOOTSTRAP_REPORT="${pod_report_path}" \
+  WM_ROLE="design" \
+  WM_EXPECTED_ROLE="design" \
+	  /bin/bash "${PREFLIGHT_SCRIPT}" >/dev/null
+
+	  assert_json_field "${report_path}" "r.status === 'blocked'"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing registry')"
+	  assert_json_field "${report_path}" "r.blockers.includes('missing /workspace/skills/codex-cli-auth-setup')"
+	  assert_json_field "${report_path}" "r.user_summary.language.selected === 'ko'"
+	  assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('missing role identity')"
+	  assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('missing managed path entry')"
+	  assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('missing /workspace/skills/codex-cli-auth-setup')"
+	  assert_file_contains "${blockers_md_path}" "역할"
+	  assert_file_contains "${blockers_md_path}" "관리 경로"
+	  assert_file_contains "${blockers_md_path}" "프로젝트 파일"
+  assert_file_contains "${blockers_md_path}" "pod skill"
+  assert_file_contains "${blockers_md_path}" "Codex CLI"
+  assert_file_contains "${blockers_md_path}" "MCP"
+  assert_file_contains "${blockers_md_path}" "pnpm@9.15.9"
+  assert_file_contains "${blockers_md_path}" "package.json"
+  assert_file_contains "${blockers_md_path}" "pnpm-lock.yaml"
+  assert_file_contains "${blockers_md_path}" "corepack --version"
+  assert_file_contains "${blockers_md_path}" "pnpm --version"
+  assert_file_contains "${blockers_md_path}" "공개 앱 설정"
+  assert_file_contains "${blockers_md_path}" "보안 credential source"
+  assert_file_contains "${blockers_md_path}" "human-gate/v1"
+  assert_file_contains "${blockers_md_path}" "사용자에게 pnpm 버전을 고르게 하지 않습니다"
+  assert_file_contains "${blockers_md_path}" "Secret, secure store, tool auth, mounted file, human-present login"
+	  assert_file_contains "${blockers_md_path}" "### 기술 지원 세부 정보"
+	  assert_file_contains "${blockers_md_path}" "missing role identity"
+	  assert_file_contains "${blockers_md_path}" "missing managed path entry"
+	  assert_file_contains "${blockers_md_path}" "missing /workspace/skills/codex-cli-auth-setup"
+	  assert_file_contains "${blockers_md_path}" "pnpm-pin-mismatch"
+	  assert_file_contains "${blockers_md_path}" "public-app-config-missing"
+	  assert_file_contains "${blockers_md_path}" "api-railway-secure-source-missing"
+	  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "missing role identity"
+	  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "missing managed path entry"
+	  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "missing /workspace/skills/codex-cli-auth-setup"
+	  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "pnpm-pin-mismatch"
+	  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "public-app-config-missing"
+	  assert_korean_primary_guidance_not_contains "${blockers_md_path}" "api-railway-secure-source-missing"
+  assert_report_blockers_support_only "${blockers_md_path}" "${report_path}"
+  assert_file_not_contains "${blockers_md_path}" "Choose a pnpm version"
+  assert_file_not_contains "${blockers_md_path}" 'Align `pnpm-pin-mismatch` yourself'
+}
+
 case_design_full_setup
 case_wrong_repo_path_blocks_repair
 case_missing_codex_orders_precheck
@@ -812,5 +1320,8 @@ case_project_preflight_blocks_on_pod_role_report_blocked
 case_project_preflight_guides_missing_sot_and_mcp
 case_project_preflight_guides_missing_codex_cli
 case_project_preflight_guides_role_specific_secure_sources
+case_project_preflight_korean_language_contract
+case_project_preflight_korean_language_fallbacks
+case_project_preflight_korean_full_blocker_matrix
 
 printf 'project-bootstrap-agent-setup smoke passed\n'

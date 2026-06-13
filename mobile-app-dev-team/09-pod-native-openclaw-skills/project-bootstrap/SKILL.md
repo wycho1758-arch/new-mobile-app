@@ -61,6 +61,31 @@ For Design and QA/Release pods, role-specific report requirements are controlled
 by `role.requires_stitch` and `role.requires_eas`. Missing Stitch or EAS setup
 reports become blockers only when the matching role flag is true.
 
+## User Language Contract
+
+The generated report and blocker Markdown support `PROJECT_BOOTSTRAP_USER_LANGUAGE`
+with these exact modes:
+
+- `PROJECT_BOOTSTRAP_USER_LANGUAGE=ko`
+- `PROJECT_BOOTSTRAP_USER_LANGUAGE=en`
+- `PROJECT_BOOTSTRAP_USER_LANGUAGE=auto`
+
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE` is the current user-language hint used
+only when the requested mode is `auto`; accepted hint aliases are not accepted as
+requested language modes. Unrecognized or secret-like current-language hints are
+not persisted verbatim. The report records
+`fallback_reason: "missing_current_user_language_hint"` when `auto` has no usable
+hint and `fallback_reason: "unsupported_requested_language"` when the requested
+language is not supported. The selected language is always recorded under
+`user_summary.language` in the generated JSON report.
+
+raw blocker IDs are support-only. The generated Markdown must treat
+support-only raw blockers as technical details: Raw blockers must appear only in
+support details and JSON, never as the primary user guidance. For interactive
+auth, the agent must use browser-use or computer-use to open or guide the login surface when possible. The user only signs in, approves, or enters credentials in the real login surface.
+
+Raw blockers must appear only in support details and JSON.
+
 ## Required Project Defaults
 
 - Repository: `https://github.com/Wondermove-Inc/new-mobile-app.git`

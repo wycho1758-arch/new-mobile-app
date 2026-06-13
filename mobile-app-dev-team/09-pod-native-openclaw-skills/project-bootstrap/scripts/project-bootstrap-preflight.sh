@@ -226,7 +226,9 @@ node - "$REPORT_PATH" \
   "$(status_from_env_ref "${RAILWAY_TOKEN_SECRET_NAME:-${RAILWAY_PROJECT_ID:-}}")" \
   "$(status_from_env_ref "${GOOGLE_CLOUD_PROJECT:-}")" \
   "$(status_from_env_ref "${API_SECRET_REF:-${DATABASE_URL_SECRET_NAME:-}}")" \
-  "$(status_from_env_ref "${HUMAN_GATE_V1_PATH:-}")" <<'NODE'
+  "$(status_from_env_ref "${HUMAN_GATE_V1_PATH:-}")" \
+  "${PROJECT_BOOTSTRAP_USER_LANGUAGE:-auto}" \
+  "${PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE:-}" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -285,6 +287,8 @@ const [
   googleCloudProject,
   apiSecretRef,
   humanGate,
+  userLanguageRequestedRaw,
+  currentUserLanguageHintRaw,
 ] = process.argv.slice(2);
 
 const blockers = [];
@@ -373,47 +377,162 @@ const blockerGuide = {
   reference_status: fs.existsSync(blockerGuideReferencePath) ? 'present' : 'missing',
 };
 
-function buildUserUnderstandableResult() {
+// Language contract literals for validators and generated reports:
+// PROJECT_BOOTSTRAP_USER_LANGUAGE=ko, PROJECT_BOOTSTRAP_USER_LANGUAGE=en,
+// PROJECT_BOOTSTRAP_USER_LANGUAGE=auto, PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE.
+// fallback_reason: "missing_current_user_language_hint"
+// fallback_reason: "unsupported_requested_language"
+// user_summary.language.requested, user_summary.language.current_user_hint,
+// user_summary.language.selected, user_summary.language.fallback_reason.
+// Korean generated output includes: ## 도움이 필요합니다; ### 현재 상태;
+// ### 이미 확인한 내용; ### 제가 다음에 할 수 있는 일;
+// ### 사용자에게 필요한 최소 작업; ### 채팅으로 보내지 마세요;
+// GitHub 연결이 필요합니다.
+// full blocker matrix; repo/managed path; CLI/runtime; package-manager;
+// pnpm-pin-mismatch; package manager mismatch; package.json; pnpm-lock.yaml;
+// corepack --version; pnpm --version; pnpm@9.15.9; conditional login/auth;
+// GitHub auth; secure credentials/API/Railway; public non-secret app config;
+// nested pod role report; raw blocker IDs are support-only;
+// support-only raw blockers; Raw blockers must appear only in support details and JSON.
+// browser-use can open or guide the login surface; user only signs in, approves, or enters credentials in the real login surface.
+function normalizeLanguageValue(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function isSecretLikeLanguageHint(value) {
+  return /(?:token|password|secret|credential|bearer|private[_-]?key|database_url|ghp_|github_pat_|-----begin)/i.test(value);
+}
+
+function sanitizeCurrentLanguageHint(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (isSecretLikeLanguageHint(raw)) return '[redacted_current_user_language_hint]';
+  const normalized = normalizeLanguageValue(raw);
+  if (normalized === 'ko' || normalized === 'ko-kr' || normalized === 'korean' || raw === '한국어') return raw;
+  if (normalized === 'en' || normalized === 'en-us' || normalized === 'english') return raw;
+  return '[unsupported_current_user_language_hint]';
+}
+
+function selectUserLanguage(requestedRaw, currentHintRaw) {
+  const requested = String(requestedRaw || 'auto').trim() || 'auto';
+  const rawCurrentUserHint = String(currentHintRaw || '').trim();
+  const currentUserHint = sanitizeCurrentLanguageHint(rawCurrentUserHint);
+  const normalizedRequested = normalizeLanguageValue(requested);
+  const normalizedHint = normalizeLanguageValue(rawCurrentUserHint);
+  if (normalizedRequested === 'ko') {
+    return { requested, current_user_hint: currentUserHint, selected: 'ko', fallback_reason: null };
+  }
+  if (normalizedRequested === 'en') {
+    return { requested, current_user_hint: currentUserHint, selected: 'en', fallback_reason: null };
+  }
+  if (normalizedRequested && normalizedRequested !== 'auto') {
+    return { requested, current_user_hint: currentUserHint, selected: 'en', fallback_reason: 'unsupported_requested_language' };
+  }
+  if (!normalizedHint || currentUserHint.startsWith('[')) {
+    return { requested, current_user_hint: currentUserHint, selected: 'en', fallback_reason: 'missing_current_user_language_hint' };
+  }
+  if (normalizedHint === 'ko' || normalizedHint === 'ko-kr' || normalizedHint === 'korean' || rawCurrentUserHint === '한국어') {
+    return { requested, current_user_hint: currentUserHint, selected: 'ko', fallback_reason: null };
+  }
+  if (normalizedHint === 'en' || normalizedHint === 'en-us' || normalizedHint === 'english') {
+    return { requested, current_user_hint: currentUserHint, selected: 'en', fallback_reason: null };
+  }
+  return { requested, current_user_hint: currentUserHint, selected: 'en', fallback_reason: 'missing_current_user_language_hint' };
+}
+
+const userLanguage = selectUserLanguage(userLanguageRequestedRaw, currentUserLanguageHintRaw);
+
+function buildBlockerContext() {
   const nestedBlockers = new Set(podRoleBootstrapNestedReport.blockers);
   const blockerSet = new Set(blockers);
+  const supportBlockers = blockers
+    .concat(podRoleBootstrapNestedReport.blockers)
+    .filter((blocker) => blocker !== 'codex-preflight --pod reported blockers');
+  const allBlockers = new Set(supportBlockers);
+  const hasAny = (predicate) => supportBlockers.some(predicate);
+  const hasText = (text) => supportBlockers.some((blocker) => blocker.includes(text));
   const hasPodRoleBlocked = blockers.includes('pod-role-bootstrap blocked');
   const hasGitIdentityMissing = nestedBlockers.has('git-identity-missing');
   const hasGithubAuthUnavailable = nestedBlockers.has('github-auth-unavailable');
+  const hasRoleIdentity = hasText('missing role identity') || hasText('canonical role slug') || hasText('/workspace/IDENTITY') || hasText('WM_EXPECTED_ROLE mismatch');
+  const hasManagedPath = blockerSet.has('missing registry') || blockerSet.has('missing managed path entry') || nestedBlockers.has('missing managed path entry');
   const hasMissingRepoSot = blockers.some((blocker) => blocker.startsWith('missing repo SoT file '));
   const hasMissingCodexCli = blockerSet.has('missing codex CLI');
   const missingRequiredMcps = blockers
     .filter((blocker) => blocker.startsWith('missing required MCP '))
     .map((blocker) => blocker.replace('missing required MCP ', ''));
   const hasMissingRequiredMcp = missingRequiredMcps.length > 0;
-  const hasMissingPodSkill = blockers.some((blocker) => blocker.startsWith('missing /workspace/skills/'));
-  const hasCredentialReportBlocker = blockerSet.has('missing stitch-adc-setup report') || blockerSet.has('missing eas-robot-auth-setup report');
-  const hasHumanGateBlocker = blockers.some((blocker) => /human-gate|live external|risk-bearing/i.test(blocker));
-  const supportBlockers = blockers
-    .concat(podRoleBootstrapNestedReport.blockers)
-    .filter((blocker) => blocker !== 'codex-preflight --pod reported blockers');
+  const hasMissingPodSkill = hasAny((blocker) => blocker.startsWith('missing /workspace/skills/'));
+  const hasPackageManager = nestedBlockers.has('pnpm-pin-mismatch') || hasAny((blocker) => /package manager/i.test(blocker));
+  const hasConditionalAuth = nestedBlockers.has('conditional-auth-unavailable');
+  const hasPublicAppConfig = nestedBlockers.has('public-app-config-missing');
+  const hasApiRailwaySecureSource = nestedBlockers.has('api-railway-secure-source-missing');
+  const hasCredentialReportBlocker = blockerSet.has('missing stitch-adc-setup report') || blockerSet.has('missing eas-robot-auth-setup report') || hasApiRailwaySecureSource;
+  const hasHumanGateBlocker = hasAny((blocker) => /human-gate|live external|risk-bearing/i.test(blocker));
   const technicalBlockers = supportBlockers
     .map((blocker) => `\`${blocker}\``)
     .join(', ');
+  return {
+    nestedBlockers,
+    allBlockers,
+    hasPodRoleBlocked,
+    hasGitIdentityMissing,
+    hasGithubAuthUnavailable,
+    hasRoleIdentity,
+    hasManagedPath,
+    hasMissingRepoSot,
+    hasMissingCodexCli,
+    missingRequiredMcps,
+    hasMissingRequiredMcp,
+    hasMissingPodSkill,
+    hasPackageManager,
+    hasConditionalAuth,
+    hasPublicAppConfig,
+    hasCredentialReportBlocker,
+    hasHumanGateBlocker,
+    technicalBlockers,
+  };
+}
+
+function appendSupportDetails(lines, ctx, language) {
+  const heading = language.selected === 'ko' ? '### 기술 지원 세부 정보' : '### Technical details for support';
+  lines.push(
+    '',
+    heading,
+    '',
+    `- Selected language: ${language.selected}`,
+  );
+  if (language.fallback_reason) {
+    lines.push(`- Fallback reason: ${language.fallback_reason}`);
+  }
+  lines.push(`- Blockers: ${ctx.technicalBlockers || 'none'}.`);
+}
+
+function buildEnglishResult(ctx, language) {
   const lines = [
     '## Action needed',
     '',
   ];
 
-  if (hasGithubAuthUnavailable) {
+  if (ctx.hasGithubAuthUnavailable) {
     lines.push('GitHub connection is needed before I can continue.');
     lines.push('This environment is not connected to GitHub yet, so I cannot access or upload repository changes.');
-    lines.push('When the GitHub login screen opens, sign in with your GitHub account and approve the request.');
-    if (hasPodRoleBlocked) {
+    lines.push('I can use browser-use or computer-use to open or guide the login surface when possible; the user only signs in, approves, or enters credentials in the real login surface.');
+    if (ctx.hasPodRoleBlocked) {
       lines.push('The setup report exists, but the project is not ready until this GitHub connection is fixed.');
     }
   } else {
     lines.push('Project bootstrap needs one more user-owned item before I can continue safely.');
-    if (hasPodRoleBlocked) {
+    if (ctx.hasPodRoleBlocked) {
       lines.push('The setup report exists, but the project is not ready yet.');
     }
   }
 
   lines.push(
+    '',
+    '### Current state',
+    '',
+    '- I found one or more setup blockers that need either a public non-secret value, approved source, secure credential source, external owner help, or human gate.',
     '',
     '### What the agent already checked',
     '',
@@ -422,78 +541,87 @@ function buildUserUnderstandableResult() {
     '- The agent can use local CLI, MCP status checks, and browser/computer-use for safe setup; a login screen requires a human to be present for credential entry.',
   );
 
-  if (hasPodRoleBlocked) {
+  if (ctx.hasPodRoleBlocked) {
     lines.push('- The agent read `/workspace/state/pod-role-bootstrap-report.json`; that report is generated by `pod-role-bootstrap` and consumed by `project-bootstrap`.');
   }
-  if (hasGitIdentityMissing) {
+  if (ctx.hasGitIdentityMissing) {
     lines.push('- Git commit identity is still missing because no approved public name/email pair is available yet.');
   }
-  if (hasGithubAuthUnavailable) {
+  if (ctx.hasGithubAuthUnavailable) {
     lines.push('- GitHub connection is still unavailable because no completed GitHub login is available in this environment.');
   }
-
-  lines.push(
-    '',
-    '### What you need to do',
-    '',
-  );
-
-  const userRequests = [];
-  if (hasGithubAuthUnavailable) {
-    userRequests.push('Complete the GitHub login in the GitHub login screen. Sign in with your GitHub account and approve the request. Do not send GitHub tokens in chat.');
-  }
-  if (hasGitIdentityMissing) {
-    userRequests.push('Provide the Git commit author name and email to use for commits, or point me to an approved local handoff file. This is public/non-secret. I will not invent an email address.');
-  }
-  if (hasMissingRepoSot) {
-    userRequests.push('Provide the correct checkout or approved project file source for the missing project file, such as `.codex/config.toml`. Do not paste a secret-bearing config in chat.');
-  }
-  if (hasMissingPodSkill) {
-    userRequests.push('Ask the platform owner to install or refresh the exact missing pod skill artifact.');
-  }
-  if (hasMissingCodexCli) {
-    userRequests.push('Ask the platform owner for a platform owner refresh of the pod image/runtime or an approved Codex CLI artifact. Do not manually add unapproved binaries.');
-  }
-  if (hasMissingRequiredMcp) {
-    userRequests.push(`Ask the platform owner for approved MCP/tool-auth config for: ${missingRequiredMcps.join(', ')}. Do not install arbitrary tools. Do not use \`@latest\`.`);
-  }
-  if (hasCredentialReportBlocker) {
-    userRequests.push('Provide an approved secure credential source through Secret, secure store, tool auth, mounted file, or human-present login. This is credential availability only, not raw secret text.');
-  }
-  if (hasHumanGateBlocker) {
-    userRequests.push('For live external or risk-bearing action, provide a linked `human-gate/v1` decision naming the exact action and evidence path.');
-  }
-  if (userRequests.length === 0) {
-    userRequests.push('Provide only the missing project file source, public non-secret value, approved secure credential source, or human-gate decision named by the support details.');
-  }
-  for (const request of userRequests) {
-    lines.push(`- ${request}`);
+  if (ctx.hasPackageManager) {
+    lines.push('- Package manager status was checked against `package.json`, `pnpm-lock.yaml`, `corepack --version`, and `pnpm --version`; the repo pin is `pnpm@9.15.9`.');
   }
 
-  lines.push(
-    '',
-    '### What I will do after that',
-    '',
-  );
-  const nextActions = [];
-  if (hasGitIdentityMissing || hasGithubAuthUnavailable) {
-    nextActions.push('I will check the GitHub connection, set up Git to use that login after authentication works, apply the approved Git identity source if needed, rerun `pod-role-bootstrap`, and rerun `project-bootstrap` preflight.');
+	  lines.push(
+	    '',
+	    '### What I will do after that',
+	    '',
+	  );
+	  const nextActions = [];
+	  if (ctx.hasGitIdentityMissing || ctx.hasGithubAuthUnavailable) {
+	    nextActions.push('I will check the GitHub connection, set up Git to use that login after authentication works, apply the approved Git identity source if needed, rerun `pod-role-bootstrap`, and rerun `project-bootstrap` preflight.');
   }
-  if (hasMissingRepoSot || hasMissingPodSkill) {
+  if (ctx.hasMissingRepoSot || ctx.hasMissingPodSkill || ctx.hasManagedPath || ctx.hasRoleIdentity) {
     nextActions.push('I will recheck the project files, required pod skills, managed path, and repo SoT, then rerun setup and preflight.');
   }
-  if (hasMissingCodexCli || hasMissingRequiredMcp) {
+  if (ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
     nextActions.push('I will rerun version checks, Codex CLI checks, MCP checks, and bootstrap/preflight after the approved runtime or tool-auth source exists.');
   }
-  if (hasCredentialReportBlocker) {
+  if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth || ctx.hasPublicAppConfig) {
     nextActions.push('I will run the relevant redacted status-only setup report and continue only from status labels, not secret values.');
   }
   if (nextActions.length === 0) {
     nextActions.push('I will rerun the relevant local setup check and then rerun `project-bootstrap` preflight.');
   }
-  for (const action of nextActions) {
-    lines.push(`- ${action}`);
-  }
+	  for (const action of nextActions) {
+	    lines.push(`- ${action}`);
+	  }
+
+	  lines.push(
+	    '',
+	    '### What you need to do',
+	    '',
+	  );
+
+	  const userRequests = [];
+	  if (ctx.hasGithubAuthUnavailable) {
+	    userRequests.push('Be present for the GitHub login screen I open or guide; sign in with your GitHub account and approve the request there. Do not send GitHub tokens in chat.');
+	  }
+	  if (ctx.hasGitIdentityMissing) {
+	    userRequests.push('Provide the Git commit author name and email to use for commits, or point me to an approved local handoff file. This is public/non-secret. I will not invent an email address.');
+	  }
+	  if (ctx.hasMissingRepoSot) {
+	    userRequests.push('Provide the correct checkout or approved project file source for the missing project file, such as `.codex/config.toml`. Do not paste a secret-bearing config in chat.');
+	  }
+	  if (ctx.hasMissingPodSkill) {
+	    userRequests.push('Ask the platform owner to install or refresh the exact missing pod skill artifact.');
+	  }
+	  if (ctx.hasMissingCodexCli) {
+	    userRequests.push('Ask the platform owner for a platform owner refresh of the pod image/runtime or an approved Codex CLI artifact. Do not manually add unapproved binaries.');
+	  }
+	  if (ctx.hasMissingRequiredMcp) {
+	    userRequests.push(`Ask the platform owner for approved MCP/tool-auth config for: ${ctx.missingRequiredMcps.join(', ')}. Do not install arbitrary tools. Do not use \`@latest\`.`);
+	  }
+	  if (ctx.hasPackageManager) {
+	    userRequests.push('Do not choose a pnpm version. Ask for platform/runtime refresh only if the pinned package-manager setup cannot run in the pod.');
+	  }
+	  if (ctx.hasPublicAppConfig) {
+	    userRequests.push('Provide the approved public non-secret app config source. Do not send private endpoints, signing keys, tokens, or credentials.');
+	  }
+	  if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth) {
+	    userRequests.push('Provide an approved secure credential source through Secret, secure store, tool auth, mounted file, or human-present login. This is credential availability only, not raw secret text.');
+	  }
+	  if (ctx.hasHumanGateBlocker) {
+	    userRequests.push('For live external or risk-bearing action, provide a linked `human-gate/v1` decision naming the exact action and evidence path.');
+	  }
+	  if (userRequests.length === 0) {
+	    userRequests.push('Provide only the missing project file source, public non-secret value, approved secure credential source, or human-gate decision named by the support details.');
+	  }
+	  for (const request of userRequests) {
+	    lines.push(`- ${request}`);
+	  }
 
   lines.push(
     '',
@@ -501,13 +629,128 @@ function buildUserUnderstandableResult() {
     '',
     '- Do not send passwords, tokens, 2FA codes, recovery codes, private keys, database URLs, bearer tokens, Google ADC JSON, service account JSON, or full secret-bearing config.',
     '- I will ask only for a user-owned approval, public non-secret value, approved secure place, or human-present login when I cannot safely do that part myself.',
-    '',
-    '### Technical details for support',
-    '',
-    `- Blockers: ${technicalBlockers || 'none'}.`,
   );
 
+  appendSupportDetails(lines, ctx, language);
   return lines.join('\n');
+}
+
+function buildKoreanResult(ctx, language) {
+  const lines = [
+    '## 도움이 필요합니다',
+    '',
+  ];
+
+  if (ctx.hasGithubAuthUnavailable) {
+    lines.push('GitHub 연결이 필요합니다. 이 환경은 아직 GitHub에 연결되어 있지 않아 저장소 접근이나 업로드를 계속할 수 없습니다.');
+    lines.push('제가 가능한 경우 browser-use 또는 computer-use로 로그인 화면을 열거나 안내하겠습니다. 사용자가 GitHub 화면에서 직접 로그인하고 승인해야 합니다.');
+  } else {
+    lines.push('프로젝트 부트스트랩을 안전하게 계속하려면 사람 권한이 필요한 항목이 하나 이상 남아 있습니다.');
+  }
+  if (ctx.hasPodRoleBlocked) {
+    lines.push('`pod-role-bootstrap` 보고서는 존재하지만 아직 준비 상태가 아니며, `project-bootstrap`이 그 상태를 프로젝트 보고서에 반영했습니다.');
+  }
+
+  lines.push(
+    '',
+    '### 현재 상태',
+    '',
+    '- 제가 로컬에서 할 수 있는 상태 확인과 비밀이 아닌 설정 점검은 먼저 수행했습니다.',
+  );
+  if (ctx.hasRoleIdentity) lines.push('- 역할 정보가 필요합니다. 역할은 SOUL, pod selector, handoff에서 확인되면 제가 설정해야 합니다.');
+  if (ctx.hasManagedPath) lines.push('- 관리 경로 등록 상태를 확인했습니다. 알려진 repo/managed path는 제가 다시 점검하고 고칠 수 있습니다.');
+  if (ctx.hasMissingRepoSot) lines.push('- 프로젝트 파일 일부가 없거나 올바른 체크아웃이 필요합니다.');
+  if (ctx.hasMissingPodSkill) lines.push('- 필요한 pod skill 아티팩트가 누락되어 platform owner 확인이 필요합니다.');
+  if (ctx.hasMissingCodexCli) lines.push('- Codex CLI/runtime 상태가 준비되지 않았습니다.');
+  if (ctx.hasMissingRequiredMcp) lines.push(`- MCP 설정이 누락되었습니다: ${ctx.missingRequiredMcps.join(', ')}.`);
+  if (ctx.hasPackageManager) lines.push('- package-manager 상태를 확인했습니다. repo SoT는 `package.json`과 `pnpm-lock.yaml`이며 pin은 `pnpm@9.15.9`입니다.');
+  if (ctx.hasPublicAppConfig) lines.push('- 공개 앱 설정(public non-secret app config) 출처가 필요합니다.');
+  if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth) lines.push('- 보안 credential source 또는 conditional login/auth 준비가 필요합니다.');
+  if (ctx.hasHumanGateBlocker) lines.push('- `human-gate/v1` 승인이 필요한 외부/위험 작업이 포함되어 있습니다.');
+
+  lines.push(
+    '',
+    '### 이미 확인한 내용',
+    '',
+    '- repo path, 관리 경로, 프로젝트 파일, pod skill, Codex CLI, MCP, 생성 보고서 경로를 상태값으로 확인했습니다.',
+    '- GitHub auth, Git identity, package manager mismatch, 조건부 인증, 공개 앱 설정, API/Railway 보안 소스, human-gate 상태를 비밀값 없이 분류했습니다.',
+  );
+  if (ctx.hasPackageManager) {
+    lines.push('- `package.json`, `pnpm-lock.yaml`, `corepack --version`, `pnpm --version`를 기준으로 package-manager 상태를 확인합니다.');
+  }
+  if (ctx.hasPodRoleBlocked) {
+    lines.push('- nested pod role report(`/workspace/state/pod-role-bootstrap-report.json`)를 읽었습니다.');
+  }
+
+  lines.push(
+    '',
+    '### 제가 다음에 할 수 있는 일',
+    '',
+  );
+  const nextActions = [];
+  if (ctx.hasRoleIdentity || ctx.hasManagedPath || ctx.hasMissingRepoSot || ctx.hasMissingPodSkill) {
+    nextActions.push('역할, 관리 경로, 프로젝트 파일, pod skill 상태를 다시 확인하고 가능한 비밀 없는 설정은 제가 적용한 뒤 preflight를 다시 실행하겠습니다.');
+  }
+  if (ctx.hasGithubAuthUnavailable || ctx.hasGitIdentityMissing) {
+    nextActions.push('GitHub 연결 상태를 확인하고, 인증이 끝난 뒤 `gh auth setup-git` 및 승인된 Git identity 적용을 진행하겠습니다.');
+  }
+  if (ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
+    nextActions.push('Codex CLI/runtime, MCP, package-manager 버전 확인을 다시 실행하겠습니다. 사용자에게 pnpm 버전을 고르게 하지 않습니다.');
+  }
+  if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth || ctx.hasPublicAppConfig) {
+    nextActions.push('승인된 source가 준비되면 redacted status-only setup report를 다시 만들고 비밀값 없이 다음 단계를 진행하겠습니다.');
+  }
+  if (nextActions.length === 0) {
+    nextActions.push('필요한 입력이 준비되면 관련 setup과 `project-bootstrap` preflight를 다시 실행하겠습니다.');
+  }
+  for (const action of nextActions) lines.push(`- ${action}`);
+
+  lines.push(
+    '',
+    '### 사용자에게 필요한 최소 작업',
+    '',
+  );
+  const userRequests = [];
+  if (ctx.hasGithubAuthUnavailable) {
+    userRequests.push('제가 열거나 안내하는 GitHub 로그인 화면에서 직접 로그인하고 승인해 주세요. 토큰은 채팅으로 보내지 마세요.');
+  }
+  if (ctx.hasGitIdentityMissing) {
+    userRequests.push('승인된 공개 Git commit author name/email 한 쌍 또는 승인된 로컬 handoff 파일 경로를 제공해 주세요.');
+  }
+  if (ctx.hasMissingRepoSot) {
+    userRequests.push('누락된 프로젝트 파일의 올바른 checkout 또는 승인된 파일 source를 제공해 주세요.');
+  }
+  if (ctx.hasMissingPodSkill || ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
+    userRequests.push('platform owner에게 pod artifact, Codex CLI/runtime, MCP/tool-auth, 또는 `pnpm@9.15.9` 기반 package-manager setup refresh를 요청해 주세요.');
+  }
+  if (ctx.hasPublicAppConfig) {
+    userRequests.push('공개 앱 설정 source만 제공해 주세요. 비밀 endpoint, token, signing key는 보내지 마세요.');
+  }
+  if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth) {
+    userRequests.push('Secret, secure store, tool auth, mounted file, human-present login 중 승인된 보안 credential source를 준비해 주세요.');
+  }
+  if (ctx.hasHumanGateBlocker) {
+    userRequests.push('정확한 action과 evidence path가 적힌 `human-gate/v1` 결정을 연결해 주세요.');
+  }
+  if (userRequests.length === 0) {
+    userRequests.push('지원 세부 정보에 적힌 항목에 맞는 공개 비밀 아님 값, 승인된 source, 보안 credential source, 또는 human-gate 결정을 제공해 주세요.');
+  }
+  for (const request of userRequests) lines.push(`- ${request}`);
+
+  lines.push(
+    '',
+    '### 채팅으로 보내지 마세요',
+    '',
+    '- password, token, 2FA code, recovery code, private key, database URL, bearer token, Google ADC JSON, service account JSON, secret-bearing config는 채팅이나 evidence에 보내지 마세요.',
+  );
+
+  appendSupportDetails(lines, ctx, language);
+  return lines.join('\n');
+}
+
+function buildUserUnderstandableResult(language) {
+  const ctx = buildBlockerContext();
+  return language.selected === 'ko' ? buildKoreanResult(ctx, language) : buildEnglishResult(ctx, language);
 }
 
 if (blockers.length) {
@@ -519,7 +762,7 @@ if (blockers.length) {
     `Report: ${reportPath}`,
     `Repo path: ${repoPath}`,
     '',
-    buildUserUnderstandableResult(),
+    buildUserUnderstandableResult(userLanguage),
     '',
     '## Current Status Summary',
     '',
@@ -555,6 +798,14 @@ if (blockers.length) {
 const report = {
   schema: 'project-bootstrap/v1',
   status: blockers.length ? 'blocked' : 'ready_for_bootstrap',
+  user_summary: {
+    language: {
+      requested: userLanguage.requested,
+      current_user_hint: userLanguage.current_user_hint,
+      selected: userLanguage.selected,
+      fallback_reason: userLanguage.fallback_reason,
+    },
+  },
   repo: {
     clone_url_status: tokenBearingCloneUrl ? 'token_bearing_or_rejected' : 'configured_non_secret',
     path: repoPath,

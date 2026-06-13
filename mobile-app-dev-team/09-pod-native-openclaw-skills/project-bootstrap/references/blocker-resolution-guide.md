@@ -72,6 +72,27 @@ credentials, account decisions, paid/external platform choices, or a linked
 Never request secret values in chat; ask for mounted/managed credentials or an
 interactive login path instead.
 
+## Language And Support-Only Contract
+
+The generated report accepts `PROJECT_BOOTSTRAP_USER_LANGUAGE` with
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=ko`, `PROJECT_BOOTSTRAP_USER_LANGUAGE=en`, and
+`PROJECT_BOOTSTRAP_USER_LANGUAGE=auto`. When `auto` is used,
+`PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE` supplies the current user hint. Hint
+aliases such as `ko-KR`, `Korean`, `한국어`, `en-US`, and `English` are accepted
+only for `PROJECT_BOOTSTRAP_USER_LANGUAGE=auto`; they are unsupported as
+requested language modes. Unrecognized or secret-like current-language hints are
+not persisted verbatim.
+
+The report records `fallback_reason: "missing_current_user_language_hint"` when
+`auto` has no usable hint and `fallback_reason: "unsupported_requested_language"`
+when a requested language is unsupported. raw blocker IDs are support-only:
+support-only raw blockers must stay out of primary guidance. Raw blockers must
+appear only in support details and JSON.
+
+Raw blockers must appear only in support details and JSON.
+
+For GitHub auth, the agent must use browser-use or computer-use to open or guide the login surface when possible. The user only signs in, approves, or enters credentials in the real login surface.
+
 ## Human-readable blocker table
 
 Use this table to convert raw blockers into a user-understandable result. The
@@ -92,6 +113,29 @@ Minimum user request, and the next step where the agent can continue.
 | Agent-owned if approved source exists | Git identity from an approved local handoff, GitHub CLI setup when auth material is already mounted, repo clone when a non-secret clone URL is known, conditional MCP registration when selected by SoT | The agent uses the approved local source. If the source is absent or ambiguous, keep a human-owned blocker. |
 | Human-owned blockers | Account login, credential provisioning, cloud project authority, store credentials, billing choices, branch protection, production release, failed-gate risk acceptance, missing pod artifact refresh | The agent gives the generated Markdown guide and waits for the external authority or artifact to exist. |
 
+## Full Blocker Matrix
+
+The full blocker matrix includes these families:
+
+| Family | Examples | Required handling |
+| --- | --- | --- |
+| role identity | `missing role identity`, non-canonical role, mismatch | Derive the role from SOUL, selector, or handoff; ask for pod artifact refresh only when no role source exists. |
+| repo/managed path | missing registry, missing managed path entry, conflicting repo path | Repair only the known canonical managed path; ask for approved project source on conflict. |
+| Git identity | `git-identity-missing` | Use one approved public name/email source; do not invent values. |
+| CLI/runtime | missing Codex CLI, invalid runtime | Run approved precheck; ask platform owner refresh or approved Codex CLI artifact only if still blocked. |
+| package-manager | `pnpm-pin-mismatch`, package manager mismatch | Verify `package.json`, `pnpm-lock.yaml`, `corepack --version`, and `pnpm --version`; use `pod-role-bootstrap` to activate `pnpm@9.15.9`. |
+| MCP | missing required MCP or selected conditional MCP | Compare `codex mcp list` with repo SoT and register pinned credential-free config when possible. |
+| conditional login/auth | provider login or mounted auth requirement | Open or guide the real login surface when possible; the user enters credentials there. |
+| GitHub auth | `github-auth-unavailable` | Tell the user that GitHub connection is needed, open or guide GitHub login, then run setup-git after auth. |
+| secure credentials/API/Railway | API/Railway secret source, ADC/Stitch/EAS credential report | Ask for Secret, secure store, tool auth, mounted file, or human-present login. |
+| public non-secret app config | missing app display name, app slug, app scheme, iOS bundle ID, Android package, public API URL | Ask for public non-secret app config values only; do not request secrets. |
+| human-gate/v1 | live external or risk-bearing action | Require a linked `human-gate/v1` decision naming action and evidence. |
+| nested pod role report | blocked `pod-role-bootstrap` result | Surface plain-language guidance; keep nested raw IDs in support details and JSON. |
+
+Do not ask the user to perform agent-owned setup such as report directories,
+role identity writing, canonical managed-path repair, pinned credential-free MCP
+registration, or pnpm pin alignment.
+
 The default order is: run
 `/workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh`,
 source `/workspace/state/project-bootstrap-role.env` when present, rerun
@@ -108,9 +152,10 @@ Ask only for the smallest user-owned input. Use plain wording first and keep raw
 blocker names for support details:
 
 - For GitHub, the first body line should start with `GitHub connection is
-  needed` when `github-auth-unavailable` is present. Tell the user that when
-  the GitHub login screen opens, they should sign in with your GitHub account
-  and approve the request. Do not ask for tokens in chat.
+  needed` when `github-auth-unavailable` is present. Tell the user that the
+  agent will open or guide the GitHub login screen when possible, and that they
+  should sign in with your GitHub account and approve the request there. Do not
+  ask for tokens in chat.
 - If Git identity is also missing, keep GitHub login first, then ask for the Git
   commit author name and email or an approved local handoff path. Do not invent
   an email address.

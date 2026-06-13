@@ -1,0 +1,104 @@
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": null,
+    "target": "Phase 1 RED coverage for project-bootstrap expanded user-help UX",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "summary": "Full blocker-matrix coverage is still partly comment/literal-driven rather than executable. The plan requires full matrix generated-message tests, but several matrix labels are present only in a comment block, and the validator accepts plain term presence in the smoke file. The executable full-matrix fixture injects only pnpm, conditional auth, public app config, secure source, and human-gate nested blockers, then checks broad output words; it does not force generated-message behavior for required families such as missing role identity, managed-path conflict, or missing pod skill.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:321",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:324",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:328",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:983",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:994",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1174",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1181",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1185",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1208",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1223",
+        "scripts/validate-team-doc.mjs:837",
+        "scripts/validate-team-doc.mjs:873"
+      ],
+      "owner": "QA/Release"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "The report language schema is not enforced on the ready report path. The plan requires the JSON report to carry user_summary.language.requested/current_user_hint/selected/fallback_reason, but the existing ready_for_bootstrap smoke case only asserts status, blockers, role, CLI, and pod-role report fields. An implementation could emit language fields only for blocked Markdown cases and still pass the current RED smoke assertions.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:197",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:203",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:622",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:638",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:958",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:961"
+      ],
+      "owner": "QA/Release"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "scope review against AGENTS.md, PROJECT_ENVIRONMENT.md, approved plan, RED evidence, changed RED files",
+      "status": "PASS",
+      "evidence": "AGENTS.md requires TDD; PROJECT_ENVIRONMENT.md:262-269 defines project-bootstrap source/runtime/report; plan Phase 1 requires RED smoke and validator coverage at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:321-335."
+    },
+    {
+      "command": "bash -n evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Local read-only syntax check exited 0."
+    },
+    {
+      "command": "node --check scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Local read-only syntax check exited 0."
+    },
+    {
+      "command": "git diff --check -- evals/skills/project-bootstrap-agent-setup-smoke.sh scripts/validate-team-doc.mjs docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md",
+      "status": "PASS",
+      "evidence": "Local read-only whitespace check exited 0."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Recorded Phase 1 RED exit 1 is expected because current preflight does not write user_summary.language.*; see .evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:18-30 and rerun note at lines 124-135."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Local read-only rerun exited 1 with expected RED failures requiring project-bootstrap docs/generator language, matrix, support-only, and login terms before Phase 2 implementation."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Phase 1 RED coverage review only; full runtime gates are planned for Phase 4."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Phase 1 RED coverage review only; local harness is planned for Phase 4."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Phase 1 RED coverage review only; workspace lint/test is planned for Phase 4."
+    }
+  ],
+  "residual_risks": [
+    "This review did not execute the mutating smoke script directly; it relied on recorded RED evidence plus read-only syntax/validator checks.",
+    "No Phase 2 implementation diff or generated Korean samples were reviewed in this pass.",
+    "mobile-mcp/native visual QA is not applicable to this runtime/eval-only RED coverage phase."
+  ],
+  "next_action": "fix_findings"
+}

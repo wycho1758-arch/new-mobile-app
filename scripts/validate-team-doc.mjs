@@ -184,6 +184,81 @@ const stitchAdcSetupSkillRoot = `${podNativeOpenClawSkillRoot}/stitch-adc-setup`
 const refOrganizationRoot = `${managedTeamDocRoot}/ref-organization`;
 const completedPlanArchiveRoot = `${managedTeamDocRoot}/_archive`;
 
+const projectBootstrapUserLanguageContractTerms = [
+  'PROJECT_BOOTSTRAP_USER_LANGUAGE',
+  'PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE',
+  'PROJECT_BOOTSTRAP_USER_LANGUAGE=ko',
+  'PROJECT_BOOTSTRAP_USER_LANGUAGE=en',
+  'PROJECT_BOOTSTRAP_USER_LANGUAGE=auto',
+  'fallback_reason: "missing_current_user_language_hint"',
+  'fallback_reason: "unsupported_requested_language"',
+];
+
+const projectBootstrapUserSummaryLanguageTerms = [
+  'user_summary.language.requested',
+  'user_summary.language.current_user_hint',
+  'user_summary.language.selected',
+  'user_summary.language.fallback_reason',
+];
+
+const projectBootstrapKoreanGeneratedOutputTerms = [
+  'PROJECT_BOOTSTRAP_USER_LANGUAGE=ko',
+  '## 도움이 필요합니다',
+  '### 현재 상태',
+  '### 이미 확인한 내용',
+  '### 제가 다음에 할 수 있는 일',
+  '### 사용자에게 필요한 최소 작업',
+  '### 채팅으로 보내지 마세요',
+  'GitHub 연결이 필요합니다',
+];
+
+const projectBootstrapKoreanModeSmokeTerms = [
+  'case_project_preflight_korean_language_contract',
+  'case_project_preflight_korean_language_fallbacks',
+  'case_project_preflight_korean_full_blocker_matrix',
+  'assert_korean_primary_guidance_not_contains',
+  'assert_report_blockers_support_only',
+  '## Action needed',
+  '### What you need to do',
+  ...projectBootstrapKoreanGeneratedOutputTerms,
+];
+
+const projectBootstrapExpandedBlockerMatrixTerms = [
+  'full blocker matrix',
+  'role identity',
+  'repo/managed path',
+  'Git identity',
+  'CLI/runtime',
+  'package-manager',
+  'pnpm-pin-mismatch',
+  'package manager mismatch',
+  'package.json',
+  'pnpm-lock.yaml',
+  'corepack --version',
+  'pnpm --version',
+  'pnpm@9.15.9',
+  'MCP',
+  'conditional login/auth',
+  'GitHub auth',
+  'secure credentials/API/Railway',
+  'public non-secret app config',
+  'human-gate/v1',
+  'nested pod role report',
+];
+
+const projectBootstrapSupportOnlyRawBlockerTerms = [
+  'raw blocker IDs are support-only',
+  'support-only raw blockers',
+  'Raw blockers must appear only in support details and JSON',
+];
+
+const projectBootstrapBrowserComputerUseLoginTerms = [
+  'browser-use',
+  'computer-use',
+  'open or guide the login surface',
+  'user only signs in, approves, or enters credentials in the real login surface',
+];
+
 for (const relativePath of [
   `${managedTeamDocRoot}/README.md`,
   `${managedTeamDocRoot}/00-sot-and-principles.md`,
@@ -643,6 +718,9 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   'run role-specific status-only setup reports',
   'agent must inspect and set up its own pod environment',
   'project-bootstrap-report.json',
+  ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapSupportOnlyRawBlockerTerms,
+  ...projectBootstrapBrowserComputerUseLoginTerms,
 ]);
 
 requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guide.md`, [
@@ -689,6 +767,10 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guid
   'canonical managed-path repair',
   'pinned credential-free MCP registration',
   'pnpm pin alignment',
+  ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapExpandedBlockerMatrixTerms,
+  ...projectBootstrapSupportOnlyRawBlockerTerms,
+  ...projectBootstrapBrowserComputerUseLoginTerms,
 ]);
 
 requireDocTerms(`${projectBootstrapSkillRoot}/references/report-template.md`, [
@@ -699,6 +781,10 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/report-template.md`, [
   'GitHub connection is needed',
   'Technical details for support',
   'user_summary',
+  ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapUserSummaryLanguageTerms,
+  ...projectBootstrapKoreanGeneratedOutputTerms,
+  ...projectBootstrapSupportOnlyRawBlockerTerms,
 ]);
 
 requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-preflight.sh`, [
@@ -714,6 +800,12 @@ requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-prefligh
   'passwords, tokens, 2FA codes',
   'platform owner refresh',
   'approved Codex CLI artifact',
+  ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapUserSummaryLanguageTerms,
+  ...projectBootstrapKoreanGeneratedOutputTerms,
+  ...projectBootstrapExpandedBlockerMatrixTerms,
+  ...projectBootstrapSupportOnlyRawBlockerTerms,
+  ...projectBootstrapBrowserComputerUseLoginTerms,
 ]);
 
 requireDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
@@ -773,6 +865,12 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   'Align `pnpm-pin-mismatch` yourself',
   'blocked_wrong_repo_path',
   'project-bootstrap-agent-setup smoke passed',
+  ...projectBootstrapUserLanguageContractTerms,
+  ...projectBootstrapUserSummaryLanguageTerms,
+  ...projectBootstrapKoreanModeSmokeTerms,
+  ...projectBootstrapExpandedBlockerMatrixTerms,
+  ...projectBootstrapSupportOnlyRawBlockerTerms,
+  ...projectBootstrapBrowserComputerUseLoginTerms,
 ]);
 
 requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [

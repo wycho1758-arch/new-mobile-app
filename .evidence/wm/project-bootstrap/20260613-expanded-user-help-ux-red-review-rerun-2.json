@@ -1,0 +1,80 @@
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": null,
+    "target": "Phase 1 RED coverage for project-bootstrap expanded user-help UX",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md",
+      ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "summary": "Executable Markdown support-detail coverage still does not assert the `missing_current_user_language_hint` fallback reason. The plan requires generated Markdown support details to include selected language and fallback reason when one exists. The smoke covers this fallback only in JSON for the `auto` plus empty current-language case, while the only Markdown fallback assertion covers `unsupported_requested_language`.",
+      "source_refs": [
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:193",
+        "docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:202",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1026",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1043",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1141",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1142"
+      ],
+      "owner": "QA/Release"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "git diff -- evals/skills/project-bootstrap-agent-setup-smoke.sh scripts/validate-team-doc.mjs docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md",
+      "status": "PASS",
+      "evidence": "Diff reviewed read-only; changed RED files match requested scope."
+    },
+    {
+      "command": "bash -n evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Read-only syntax check exited 0."
+    },
+    {
+      "command": "node --check scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Read-only syntax check exited 0."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:18 records Exit 1 expected RED at missing user_summary.language.*; rerun evidence after fixes is recorded at lines 100-108."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": ".evidence/wm/project-bootstrap/20260613-expanded-user-help-ux-red.md:32 records Exit 1 expected RED for missing docs/generator terms; rerun evidence after fixes is recorded at lines 100-108."
+    },
+    {
+      "command": "mobile UI/runtime boundary review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed paths are project-bootstrap runtime eval/validator/plan evidence only; no React Native UI files changed. AGENTS.md:40 and AGENTS.md:48 mobile UI rules remain out of scope."
+    },
+    {
+      "command": "API contract usage review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed paths do not touch apps/api, apps/mobile API calls, or packages/contracts. AGENTS.md:84 defines packages/contracts API SoT, but this RED coverage change has no API surface."
+    },
+    {
+      "command": "Phase 4 full runtime gates",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Plan scopes this request to Phase 1 RED coverage before implementation. Full gates are scheduled for Phase 4 at docs/plans/active/20260613-project-bootstrap-expanded-user-help-ux-plan.md:361."
+    }
+  ],
+  "residual_risks": [
+    "The full smoke script was not executed by this read-only reviewer because it writes temporary fixtures; review relied on recorded RED evidence plus static syntax checks.",
+    "Validator term checks can still be satisfied by marker strings, so Phase 2 implementation review must verify real generated behavior and sample outputs, not only term presence."
+  ],
+  "next_action": "fix_findings"
+}
