@@ -1,0 +1,1 @@
+$mobile-app-dev-workflow Implement an API-backed screen, but there is no `packages/contracts` schema, mock, or fixture path. Block or hand off to Backend/API Integrator instead of inferring API shape from UI code.

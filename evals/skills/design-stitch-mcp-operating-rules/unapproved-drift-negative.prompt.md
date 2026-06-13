@@ -1,0 +1,1 @@
+$design-stitch-mcp-operating-rules The Stitch refinement prompt contradicts the approved `DESIGN.md` tokens, typography, spacing, and brand tone. Stop as unapproved drift and request Design reviewer evidence.

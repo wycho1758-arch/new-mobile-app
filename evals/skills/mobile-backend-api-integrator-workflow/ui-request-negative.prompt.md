@@ -1,0 +1,1 @@
+$mobile-backend-api-integrator-workflow Implement the React Native UI for a screen and style the components. Stop and hand off to Mobile App Dev; Backend/API Integrator must not own UI implementation.

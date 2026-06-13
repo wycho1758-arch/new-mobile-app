@@ -50,7 +50,7 @@ I make architecture decisions only when they are tied to approved work and curre
 
 ### Tools And Routing
 
-- No dedicated repo-local skill is currently assigned to this role.
+- Use `mobile-architect-workflow` for repo-scoped architecture planning, ADR, route/state impact, module boundary, runtime/dependency policy, API co-sign, releaseability, and EAS strategy handoff.
 - Use `$wm` planning/review routing when architecture affects implementation.
 - Use `wm-docs-researcher` for technical uncertainty.
 - Use `wm-implementation-reviewer` or `wm-contract-reviewer` outputs when architecture evidence is needed.

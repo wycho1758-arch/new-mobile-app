@@ -1,0 +1,1 @@
+$mobile-architect-workflow Create an ADR for an approved work unit that changes Expo Router state ownership, affects a shared module boundary, and must hand off implementation to Mobile App Dev with reviewer evidence.

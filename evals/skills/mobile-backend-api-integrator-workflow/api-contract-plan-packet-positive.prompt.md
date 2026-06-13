@@ -1,0 +1,1 @@
+$mobile-backend-api-integrator-workflow Define a mobile-facing API contract for an approved flow with endpoint/method/path, zod schema names in `packages/contracts`, examples, auth/session/error mapping, mocks/fixtures, compatibility, service evidence, plan reviewer, final reviewer, `03-contract-api/*`, and diff/status reporting.

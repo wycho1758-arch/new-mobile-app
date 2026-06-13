@@ -1,0 +1,1 @@
+$codex-role-workflow After project-bootstrap and pod-role-bootstrap pass, resolve `WM_ROLE=Mobile App Dev`, map the pod to allowed repo-local skills, reviewers, durable work-unit artifact stage, and output `codex-role-workflow/v1`.

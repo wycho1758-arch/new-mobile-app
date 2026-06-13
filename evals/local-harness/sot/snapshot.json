@@ -204,6 +204,24 @@
     ]
   },
   "skillTaxonomy": {
+    "taxonomyNotes": {
+      "purpose": "Confluence/MVP source-page namespace for local harness case coverage; not .agents/skills runtime drift.",
+      "mvpSkillMappings": {
+        "mobile-prd-to-execution": "Current Codex adapter: po-prd-to-execution.",
+        "mobile-design-handoff": "Current Codex adapter: design-mobile-design-handoff.",
+        "mobile-api-contract": "Current Codex/API workflow coverage: mobile-backend-api-integrator-workflow plus packages/contracts checks.",
+        "mobile-qa-release": "Current QA workflow coverage: e2e-test and qa-railway-workflow.",
+        "mobile-gatekeeper": "Current deterministic gatekeeper coverage: scripts/validate-work-units.mjs, scripts/work-unit-next.mjs, and evidence fixtures."
+      },
+      "organizationRuntimeSkillMappings": {
+        "mobile-project-bootstrap-workflow": "Pod-native project-bootstrap source under mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/."
+      },
+      "adapterExamples": [
+        "po-prd-to-execution",
+        "design-mobile-design-handoff",
+        "project-bootstrap"
+      ]
+    },
     "mvpSkills": [
       "mobile-prd-to-execution",
       "mobile-design-handoff",
@@ -225,14 +243,14 @@
       "po-planning-completeness-review",
       "design-mobile-design-handoff",
       "design-stitch-mcp-operating-rules",
+      "mobile-architect-workflow",
       "git-workflow",
       "e2e-test",
       "qa-railway-workflow"
     ],
     "forbiddenRoleWrapperSkills": [
       "mobile-product-planning-workflow",
-      "mobile-design-workflow",
-      "mobile-architect-workflow"
+      "mobile-design-workflow"
     ],
     "forbiddenCaseDuplicateSkills": [
       "mobile-ui-only-feature-workflow",

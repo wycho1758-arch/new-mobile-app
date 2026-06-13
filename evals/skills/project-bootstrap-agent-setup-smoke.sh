@@ -993,7 +993,7 @@ JSON
 
 # full blocker matrix coverage labels for validate-team-doc:
 # role identity; repo/managed path; Git identity; CLI/runtime; package-manager;
-# package manager mismatch; MCP; conditional login/auth; GitHub auth;
+# package manager mismatch; MCP; approved MCP/tool-auth config; conditional login/auth; GitHub auth;
 # secure credentials/API/Railway; public non-secret app config;
 # human-gate/v1; nested pod role report.
 # Language contract literals: PROJECT_BOOTSTRAP_USER_LANGUAGE=ko,

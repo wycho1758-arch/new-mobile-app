@@ -1,0 +1,1 @@
+$codex-role-workflow The resolved role is Mobile App Dev, but the requested work is to design a backend API schema and migration. Stop or hand off to Backend/API Integrator; do not implement out-of-role work.

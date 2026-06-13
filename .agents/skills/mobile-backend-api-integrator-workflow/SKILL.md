@@ -7,7 +7,7 @@ description: Use when defining or updating mobile-facing backend API contracts, 
 
 Use this as a thin write-side role workflow for Backend/API Integrator work that mobile implementation depends on.
 
-Review-only contract tasks must use the read-only `mobile-contract-reviewer` custom agent or code-review mode instead of this workflow.
+Review-only contract tasks must use the read-only `wm-contract-reviewer` custom agent or code-review mode instead of this workflow.
 
 ## Required Inputs
 
@@ -15,15 +15,39 @@ Review-only contract tasks must use the read-only `mobile-contract-reviewer` cus
 - Backend source, endpoint draft, or existing API docs.
 - Auth/session requirements and tenant/payment/PII risk notes.
 - Mock or fixture requirements.
+- Work-unit artifact path under `docs/plans/work-units/<work-unit-id>/03-contract-api/`.
+- Migration, rollback, runtime smoke, service evidence, and reviewer requirements when backend behavior changes.
 
 ## Workflow
 
 1. Identify the consuming mobile flow and contract boundary.
 2. Read `references/sot.md` if the task lacks Confluence/source links.
-3. Define request, response, error, loading, retry, and auth/session behavior.
-4. Create or update mock fixtures before Mobile App Dev implementation consumes them.
-5. Record risks, breaking changes, and owner for unresolved backend work.
-6. Run contract/schema checks and record evidence.
+3. Produce a Codex API Contract Plan Packet before contract edits and request the plan reviewer when the change is non-trivial.
+4. Define request, response, error, loading, retry, and auth/session behavior.
+5. Define or update `packages/contracts` zod schema names and TypeScript exports before app/API consumers use them.
+6. Create or update mock fixtures before Mobile App Dev implementation consumes them.
+7. Record migration, rollback, runtime smoke, service evidence, risks, breaking changes, and owner for unresolved backend work.
+8. Run contract/schema checks and record evidence.
+9. Request the final reviewer before reporting Done.
+10. Run `git diff` for changed paths and `git status --short`; include the material change summary in the user report.
+
+## Codex API Contract Plan Packet
+
+Every Backend/API Integrator plan must include:
+
+- work-unit ID and `03-contract-api/` artifact path;
+- consuming mobile flow and owner;
+- endpoint method/path, request schema, response schema, and error schema;
+- `packages/contracts` zod schema names and generated TypeScript type impact;
+- auth/session behavior, retry behavior, and error mapping;
+- mock/fixture paths and compatibility notes for Mobile App Dev;
+- migration and rollback assessment;
+- runtime smoke command and service evidence path when service behavior changes;
+- plan reviewer and final reviewer;
+- non-goals, blockers, and human-gate risks;
+- completion requirement to report `git diff` and `git status --short`.
+
+If a request is UI implementation, screen styling, or React Native component work, stop and hand off to Mobile App Dev.
 
 ## Forbidden
 
@@ -31,6 +55,7 @@ Review-only contract tasks must use the read-only `mobile-contract-reviewer` cus
 - Exposing secrets, tokens, or private customer data.
 - Silently changing UX decisions.
 - Self-approving contract changes without reviewer evidence.
+- Reporting completion before final reviewer evidence, `git diff`, and `git status --short`.
 
 ## Required Evals
 

@@ -1,0 +1,1 @@
+$mobile-app-dev-workflow Implement an approved API-backed mobile screen from a Design handoff. Produce a Codex Implementation Plan Packet with work-unit id, route/screen/component, selected Design option, state matrix, API fixture, architecture note, first test, selector impact, evidence path, plan reviewer, final reviewer, `04-mobile-app/*`, and diff/status reporting.

@@ -20,6 +20,9 @@ const designSkillNames = [
   'design-mobile-design-handoff',
   'design-stitch-mcp-operating-rules',
 ];
+const architectSkillNames = [
+  'mobile-architect-workflow',
+];
 const poAgentNames = [
   'po-planning-reviewer',
   'po-scope-gate-reviewer',
@@ -239,7 +242,33 @@ for (const required of [
     `evals/skills/${skill}/p0-product-planning-approval-positive.prompt.md`,
     `evals/skills/${skill}/p1-product-planning-approval-positive.prompt.md`,
     `evals/skills/${skill}/p1-html-extraction-gate-negative.prompt.md`,
+    `evals/skills/${skill}/missing-baseline-negative.prompt.md`,
+    `evals/skills/${skill}/mismatched-stitch-project-negative.prompt.md`,
+    `evals/skills/${skill}/unapproved-drift-negative.prompt.md`,
+    `evals/skills/${skill}/approved-fork-positive.prompt.md`,
   ]),
+  ...architectSkillNames.flatMap((skill) => [
+    `evals/skills/${skill}/positive.prompt.md`,
+    `evals/skills/${skill}/negative.prompt.md`,
+    `evals/skills/${skill}/review-only-negative.prompt.md`,
+    `evals/skills/${skill}/route-state-positive.prompt.md`,
+    `evals/skills/${skill}/api-cosign-positive.prompt.md`,
+  ]),
+  'evals/skills/codex-role-workflow/positive.prompt.md',
+  'evals/skills/codex-role-workflow/role-mismatch-negative.prompt.md',
+  'evals/skills/codex-role-workflow/out-of-role-negative.prompt.md',
+  'evals/skills/codex-role-workflow/human-gate-negative.prompt.md',
+  'evals/skills/codex-role-workflow/secret-safety-negative.prompt.md',
+  'evals/skills/mobile-app-dev-workflow/plan-packet-positive.prompt.md',
+  'evals/skills/mobile-app-dev-workflow/missing-design-handoff-negative.prompt.md',
+  'evals/skills/mobile-app-dev-workflow/missing-contract-negative.prompt.md',
+  'evals/skills/mobile-backend-api-integrator-workflow/api-contract-plan-packet-positive.prompt.md',
+  'evals/skills/mobile-backend-api-integrator-workflow/ui-request-negative.prompt.md',
+  'evals/skills/mobile-backend-api-integrator-workflow/migration-human-gate-negative.prompt.md',
+  'evals/skills/e2e-test/failed-gate-human-approval-negative.prompt.md',
+  'evals/skills/e2e-test/final-review-diff-status-positive.prompt.md',
+  'evals/skills/qa-railway-workflow/failed-deploy-human-gate-negative.prompt.md',
+  'evals/skills/qa-railway-workflow/final-review-diff-status-positive.prompt.md',
   ...poAgentEvalNames.flatMap((agent) => [
     `evals/agents/${agent}/positive.prompt.md`,
     `evals/agents/${agent}/negative.prompt.md`,
@@ -388,6 +417,196 @@ for (const skill of designSkillNames) {
     assert(/option-a\.html/i.test(p1), `${p1Path} must include option-a.html publication risk`);
     assert(/option-b\.html/i.test(p1), `${p1Path} must include option-b.html publication risk`);
     assert(/READY_FOR_EXECUTION/i.test(p1), `${p1Path} must identify READY_FOR_EXECUTION as the only extraction-unblocking state`);
+  }
+}
+
+const requiredEvalContentTerms = new Map([
+  ['evals/skills/codex-role-workflow/positive.prompt.md', [
+    '$codex-role-workflow',
+    'project-bootstrap',
+    'pod-role-bootstrap',
+    'WM_ROLE=Mobile App Dev',
+    'allowed repo-local skills',
+    'reviewers',
+    'durable work-unit artifact stage',
+    'codex-role-workflow/v1',
+  ]],
+  ['evals/skills/codex-role-workflow/role-mismatch-negative.prompt.md', [
+    '$codex-role-workflow',
+    'WM_ROLE=Design',
+    '/workspace/IDENTITY',
+    'Backend/API Integrator',
+    'blocked',
+    'role mismatch',
+  ]],
+  ['evals/skills/codex-role-workflow/out-of-role-negative.prompt.md', [
+    '$codex-role-workflow',
+    'Mobile App Dev',
+    'Backend/API Integrator',
+    'out-of-role',
+    'do not implement',
+  ]],
+  ['evals/skills/codex-role-workflow/human-gate-negative.prompt.md', [
+    '$codex-role-workflow',
+    'QA/Release',
+    'failed production gate',
+    'Product/Planning',
+    'human gate',
+    'do not self-approve',
+  ]],
+  ['evals/skills/codex-role-workflow/secret-safety-negative.prompt.md', [
+    '$codex-role-workflow',
+    'GitHub',
+    'EAS',
+    'credential values',
+    'Refuse secret exposure',
+    'status only',
+  ]],
+  ['evals/skills/mobile-architect-workflow/positive.prompt.md', [
+    '$mobile-architect-workflow',
+    'ADR',
+    'Expo Router',
+    'state ownership',
+    'module boundary',
+    'Mobile App Dev',
+    'reviewer evidence',
+  ]],
+  ['evals/skills/mobile-architect-workflow/negative.prompt.md', [
+    'Expo screen UI',
+    'Mobile App Dev implementation',
+    'not Mobile Architect planning',
+  ]],
+  ['evals/skills/mobile-architect-workflow/review-only-negative.prompt.md', [
+    'Review this architecture note',
+    'route/state risk',
+    'Do not edit files',
+    'create an ADR',
+  ]],
+  ['evals/skills/mobile-architect-workflow/route-state-positive.prompt.md', [
+    '$mobile-architect-workflow',
+    'route/state impact',
+    '02-architecture/*',
+    'owner handoff',
+    'evidence requirement',
+    'final reviewer path',
+  ]],
+  ['evals/skills/mobile-architect-workflow/api-cosign-positive.prompt.md', [
+    '$mobile-architect-workflow',
+    'mobile/API integration architecture',
+    'packages/contracts',
+    'auth/session/error',
+    'Backend/API handoff',
+  ]],
+  ...designSkillNames.flatMap((skill) => [
+    [`evals/skills/${skill}/missing-baseline-negative.prompt.md`, [
+      `$${skill}`,
+      'DESIGN.md',
+      'design.md',
+      'baseline',
+      'Stop before Stitch generation',
+    ]],
+    [`evals/skills/${skill}/mismatched-stitch-project-negative.prompt.md`, [
+      `$${skill}`,
+      'different Stitch project',
+      'approved fork',
+      'same-project',
+    ]],
+    [`evals/skills/${skill}/unapproved-drift-negative.prompt.md`, [
+      `$${skill}`,
+      'DESIGN.md',
+      'unapproved',
+      'drift',
+    ]],
+    [`evals/skills/${skill}/approved-fork-positive.prompt.md`, [
+      `$${skill}`,
+      'approved fork',
+      'fork reason',
+      'drift',
+    ]],
+  ]),
+  ['evals/skills/mobile-app-dev-workflow/plan-packet-positive.prompt.md', [
+    '$mobile-app-dev-workflow',
+    'Codex Implementation Plan Packet',
+    'selected Design option',
+    'state matrix',
+    'API fixture',
+    'plan reviewer',
+    'final reviewer',
+    '04-mobile-app/*',
+  ]],
+  ['evals/skills/mobile-app-dev-workflow/missing-design-handoff-negative.prompt.md', [
+    '$mobile-app-dev-workflow',
+    'no Design handoff',
+    'Stop or hand off',
+    'guessing',
+  ]],
+  ['evals/skills/mobile-app-dev-workflow/missing-contract-negative.prompt.md', [
+    '$mobile-app-dev-workflow',
+    'packages/contracts',
+    'schema',
+    'mock',
+    'fixture',
+    'Backend/API Integrator',
+  ]],
+  ['evals/skills/mobile-backend-api-integrator-workflow/api-contract-plan-packet-positive.prompt.md', [
+    '$mobile-backend-api-integrator-workflow',
+    'mobile-facing API contract',
+    'zod schema',
+    'packages/contracts',
+    'service evidence',
+    'plan reviewer',
+    'final reviewer',
+    '03-contract-api/*',
+  ]],
+  ['evals/skills/mobile-backend-api-integrator-workflow/ui-request-negative.prompt.md', [
+    '$mobile-backend-api-integrator-workflow',
+    'React Native UI',
+    'Mobile App Dev',
+    'must not own UI implementation',
+  ]],
+  ['evals/skills/mobile-backend-api-integrator-workflow/migration-human-gate-negative.prompt.md', [
+    '$mobile-backend-api-integrator-workflow',
+    'irreversible migration',
+    'human gate',
+    'rollback note',
+    'migration evidence',
+  ]],
+  ['evals/skills/e2e-test/failed-gate-human-approval-negative.prompt.md', [
+    '$e2e-test',
+    'required gate failed',
+    'human approval',
+    'QA must not self-approve',
+  ]],
+  ['evals/skills/e2e-test/final-review-diff-status-positive.prompt.md', [
+    '$e2e-test',
+    'canonical evidence',
+    'final reviewer verification',
+    'git diff',
+    'git status --short',
+  ]],
+  ['evals/skills/qa-railway-workflow/failed-deploy-human-gate-negative.prompt.md', [
+    '$qa-railway-workflow',
+    'Railway deployment health failed',
+    'failed deployment',
+    'service risk',
+    'release approval',
+  ]],
+  ['evals/skills/qa-railway-workflow/final-review-diff-status-positive.prompt.md', [
+    '$qa-railway-workflow',
+    'redacted Railway evidence',
+    'RN Web API URL handoff',
+    'final reviewer verification',
+    'git diff',
+    'git status --short',
+  ]],
+]);
+
+for (const [fixture, terms] of requiredEvalContentTerms) {
+  assert(exists(fixture), `missing eval fixture content target: ${fixture}`);
+  if (!exists(fixture)) continue;
+  const body = read(fixture);
+  for (const term of terms) {
+    assert(body.includes(term), `${fixture} missing required eval content term: ${term}`);
   }
 }
 
@@ -649,6 +868,134 @@ for (const [skill, source] of designSkillSources) {
   assert(/Do not .*implement|must not .*implement/i.test(body), `${file} must forbid implementation ownership`);
   assert(/external platform\/runtime/i.test(body), `${file} must preserve external runtime boundary`);
   assert(!/mobile-design-workflow/i.test(body), `${file} must not create forbidden role-wrapper slug`);
+}
+
+const designBaselineRequiredTerms = [
+  'design_system_baseline',
+  'design_md_source_path_or_url',
+  'design_md_hash_or_version',
+  'stitch_project_id_or_share_link',
+  'extends_existing_project',
+  'fork_reason',
+  'drift_check_result',
+  'design_reviewer_verdict_path',
+  'same Stitch project',
+  'approved fork',
+  'design-system drift',
+  'official source',
+  'prompt template',
+];
+for (const skill of designSkillNames) {
+  const file = `.agents/skills/${skill}/SKILL.md`;
+  if (!exists(file)) continue;
+  const body = read(file);
+  for (const term of designBaselineRequiredTerms) {
+    assert(body.includes(term), `${file} missing Design baseline/Stitch continuity term: ${term}`);
+  }
+}
+
+const mobileArchitectSkillPath = '.agents/skills/mobile-architect-workflow/SKILL.md';
+assert(exists(mobileArchitectSkillPath), `missing Mobile Architect workflow skill: ${mobileArchitectSkillPath}`);
+if (exists(mobileArchitectSkillPath)) {
+  const architect = read(mobileArchitectSkillPath);
+  for (const term of [
+    'Mobile Architect',
+    'ADR',
+    'route/state impact',
+    'module boundary',
+    'runtime/dependency policy',
+    'API co-sign',
+    'releaseability',
+    'EAS',
+    '02-architecture',
+    'wm-implementation-reviewer',
+    'wm-contract-reviewer',
+    'wm-docs-researcher',
+    'Product/Planning',
+    'Mobile App Dev',
+    'Backend/API Integrator',
+    'QA/Release',
+    'Do not implement',
+    'Do not absorb',
+    'final reviewer',
+    'git diff',
+    'git status --short',
+  ]) {
+    assert(architect.includes(term), `${mobileArchitectSkillPath} missing required architecture workflow term: ${term}`);
+  }
+}
+
+const mobileAppDevSkillPath = '.agents/skills/mobile-app-dev-workflow/SKILL.md';
+assert(exists(mobileAppDevSkillPath), `missing Mobile App Dev workflow skill: ${mobileAppDevSkillPath}`);
+if (exists(mobileAppDevSkillPath)) {
+  const mobileAppDev = read(mobileAppDevSkillPath);
+  for (const term of [
+    'Codex Implementation Plan Packet',
+    '04-mobile-app/',
+    'final reviewer',
+    'git diff',
+    'git status --short',
+    'plan reviewer',
+    'selected Design option',
+    'state matrix',
+    'API contract',
+    'testID',
+  ]) {
+    assert(mobileAppDev.includes(term), `${mobileAppDevSkillPath} missing required implementation plan-packet term: ${term}`);
+  }
+}
+
+const backendApiSkillPath = '.agents/skills/mobile-backend-api-integrator-workflow/SKILL.md';
+assert(exists(backendApiSkillPath), `missing Backend/API workflow skill: ${backendApiSkillPath}`);
+if (exists(backendApiSkillPath)) {
+  const backendApi = read(backendApiSkillPath);
+  for (const term of [
+    'Codex API Contract Plan Packet',
+    '03-contract-api/',
+    'packages/contracts',
+    'zod schema',
+    'migration',
+    'rollback',
+    'runtime smoke',
+    'service evidence',
+    'wm-contract-reviewer',
+    'final reviewer',
+    'git diff',
+    'git status --short',
+    'plan reviewer',
+  ]) {
+    assert(backendApi.includes(term), `${backendApiSkillPath} missing required API plan-packet term: ${term}`);
+  }
+}
+
+const qaSkillRequiredTerms = new Map([
+  ['e2e-test', [
+    'final reviewer',
+    'git diff',
+    'git status --short',
+    'failed gate',
+    'human approval',
+    'canonical evidence',
+    'release proof limits',
+  ]],
+  ['qa-railway-workflow', [
+    'final reviewer',
+    'git diff',
+    'git status --short',
+    'failed deployment',
+    'human approval',
+    'canonical evidence',
+    'release proof limits',
+  ]],
+]);
+for (const [skill, terms] of qaSkillRequiredTerms) {
+  const file = `.agents/skills/${skill}/SKILL.md`;
+  assert(exists(file), `missing QA/Release skill: ${file}`);
+  if (!exists(file)) continue;
+  const body = read(file);
+  for (const term of terms) {
+    assert(body.includes(term), `${file} missing required QA/Release reinforcement term: ${term}`);
+  }
 }
 
 if (errors.length) {

@@ -1,0 +1,1 @@
+$design-mobile-design-handoff Continue an existing approved design, but the request points to a different Stitch project with no approved fork reason. Stop and require same-project evidence or approved fork metadata.

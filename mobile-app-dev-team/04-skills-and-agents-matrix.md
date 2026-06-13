@@ -20,6 +20,7 @@ Active repo-local skills are only the directories that currently exist under `.a
 | `po-planning-completeness-review` | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | Readiness review before execution |
 | `design-mobile-design-handoff` | Product Designer | Design | Stitch-backed mobile design handoff |
 | `design-stitch-mcp-operating-rules` | Product Designer | Design | Stitch execution, P0/P1 gates, publication rules |
+| `mobile-architect-workflow` | Mobile Architect / Technical Lead | Mobile Architect | Architecture planning, ADR, route/state impact, API co-sign, releaseability, and role-boundary handoff |
 | `mobile-app-dev-workflow` | Mobile App Developer | Mobile App Dev | Expo React Native implementation |
 | `mobile-backend-api-integrator-workflow` | Backend/API Engineer | Backend/API Integrator | Mobile-facing API contract/integration work |
 | `e2e-test` | QA/Release Engineer | QA/Release | E2E plan, reset, execution, evidence |
@@ -58,6 +59,10 @@ Pod-native OpenClaw skills are source-managed under
 `09-pod-native-openclaw-skills/` and run in pods as
 `/workspace/skills/<slug>/SKILL.md`. The canonical per-role pod skill matrix is
 `09-pod-native-openclaw-skills/README.md`.
+
+The role-aware pod bridge is `codex-role-workflow`; it resolves a bootstrapped
+pod role to allowed repo-local Codex skills, reviewers, durable artifact stage,
+and stop conditions before role work proceeds.
 
 Do not place repo-local Codex skills or agents in that pod-native skill tree.
 Repo-local Codex artifacts remain under `.agents/skills/<slug>/SKILL.md` and

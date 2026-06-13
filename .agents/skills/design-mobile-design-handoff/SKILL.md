@@ -22,6 +22,7 @@ The `design-*` slug is the required repo-local Codex adapter name for Design-own
 - Approved requirement, PRD slice, Story, or bounded work unit.
 - Target route, platform, user goal, known backend/API dependency, non-goals, and human-gate flags.
 - Current `DESIGN.md`, relevant Stitch link or Stitch project context, and expected evidence path.
+- Selected design-system baseline manifest values: `design_system_baseline`, `design_md_source_path_or_url`, `design_md_hash_or_version`, `stitch_project_id_or_share_link`, `extends_existing_project`, `fork_reason`, `drift_check_result`, and `design_reviewer_verdict_path`.
 - Requested publication date for `design-pub-html/<YYYY-MM-DD>/`; record the requested date separately from actual generation timestamp.
 - Known implementation constraints for Expo Router, React Native primitives, NativeWind, semantic tokens, and stable testID needs.
 - Product/Planning decision records for P0 and P1 when the workflow has already passed either gate.
@@ -36,6 +37,9 @@ The `design-*` slug is the required repo-local Codex adapter name for Design-own
 6. Stop until Product/Planning records scope/evidence approval for the Design Stitch generation task. Valid P0 outcomes use existing Product/Planning readiness language: `READY_FOR_EXECUTION`, `NEEDS_REWORK`, `HUMAN_DECISION_REQUIRED`, or `BLOCKED_BY_RUNTIME_CAPABILITY`. Product/Planning approves scope, non-goals, evidence readiness, and human-gate routing only; Design still owns design quality.
 7. Explain the Stitch execution order to the user before running Stitch.
 8. Enhance the Stitch prompt before any Stitch tool call. Use structure, content, platform, information architecture, interaction states, and professional UI/UX terms; keep visual tokens in `DESIGN.md` instead of duplicating theme values in generation prompts.
+   - Use a prompt template that cites the selected `DESIGN.md`, official source for Stitch requirements when an external tool rule is uncertain, and the target same Stitch project.
+   - Continue in the same Stitch project whenever extending an approved design. If a new project is required, stop unless an approved fork and `fork_reason` are recorded.
+   - Run a design-system drift check before handoff. Treat unapproved design-system drift as blocked until Design reviewer evidence exists.
 9. Produce exactly two Stitch design directions, Option A and Option B. Each option must cover all approved screens and default, loading, empty, error, and permission-denied states. Do not stop at one option and do not create a third option without a new approved requirement.
 10. Use current `DESIGN.md` plus the selected design reference. For mobile handoff, translate visual intent to NativeWind, React Native primitives, and semantic tokens. Use shadcn-style component semantics only for Stitch HTML or optional web-console artifacts, never as a React Native implementation dependency.
 11. Prefer Gemini 3.1 Pro, Pro, or Thinking mode as a best-effort Stitch model/mode request when the Stitch UI, MCP surface, or tool schema exposes model selection. If model selection is unavailable, record the requested model/mode, exposed tool capability, actual returned model/mode when available, and limitation in `manifest.json`.
@@ -47,6 +51,25 @@ The `design-*` slug is the required repo-local Codex adapter name for Design-own
 17. Publish artifacts under project-root `design-pub-html/<YYYY-MM-DD>/`, including `option-a.html`, `option-a.png`, `option-b.html`, `option-b.png`, `manifest.json`, and `handoff.md`.
 18. Build the handoff package: P0/P1 decision links, Stitch links, selected-option HTML, screen inventory, route impact, five-state matrix, accessibility notes, implementation constraints, UX acceptance criteria, evidence path, open decisions, and next responsible role.
 19. Ask `design-reviewer` for read-only review before Mobile App Dev implementation starts when the handoff will drive code changes.
+
+## Baseline And Stitch Continuity
+
+The Design handoff must preserve design-system continuity.
+
+Record these manifest fields before publication:
+
+- `design_system_baseline`
+- `design_md_source_path_or_url`
+- `design_md_hash_or_version`
+- `stitch_project_id_or_share_link`
+- `extends_existing_project`
+- `fork_reason`
+- `drift_check_result`
+- `design_reviewer_verdict_path`
+
+Continue in the same Stitch project for extensions of an approved design. If the same Stitch project cannot be used, require an approved fork with `fork_reason`, `drift_check_result`, and `design_reviewer_verdict_path`.
+
+Block design-system drift unless the drift is explicitly approved by Design reviewer evidence. External Stitch tool behavior must be checked against an official source when uncertain, and the prompt template must include the selected design-system baseline, target screen inventory, five states, non-goals, and handoff evidence path.
 
 ## Output
 
