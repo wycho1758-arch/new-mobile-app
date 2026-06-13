@@ -1,0 +1,81 @@
+**Findings**
+
+No Critical, High, Medium, or Low findings.
+
+The plan is scoped to the requested `github-auth-unavailable` / `git-identity-missing` UX problem and directly targets the current technical wording in `project-bootstrap-preflight.sh` where the message still starts with “The pod agent cannot continue…” and exposes support-level terms in the primary guidance. The plan requires RED coverage before behavior changes, including GitHub-first opening/order assertions, support-only technical detail placement, and negative assertions for the exact hard-to-understand phrases from the user feedback.
+
+Scope and gate fit are acceptable: `AGENTS.md` requires TDD, branch/PR flow, and runtime gates; `PROJECT_ENVIRONMENT.md` lists the required runtime gates; `REPO_OPERATIONS.md` requires linked evidence and status-only reporting. The plan includes targeted smoke/validator checks, runtime/local-harness/workspace gates, evidence hygiene, `git diff --check`, final reviewer review, PR creation, and CI/merge status reporting.
+
+Residual risks are downstream only: RED/final gates and PR/CI status are not executed at plan stage, and local validation will not prove external GitHub branch protection or live platform state per repo policy.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "f4ee2bb",
+    "target": ".evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md",
+    "paths_reviewed": [
+      ".evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md",
+      "AGENTS.md",
+      "REPO_OPERATIONS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/blocker-resolution-guide.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "Plan scope against requested UX problem and SoT",
+      "status": "PASS",
+      "evidence": ".evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:8, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:14, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:22, AGENTS.md:5, REPO_OPERATIONS.md:85, PROJECT_ENVIRONMENT.md:14"
+    },
+    {
+      "command": "Tests-first sequencing review",
+      "status": "PASS",
+      "evidence": "AGENTS.md:13, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:60, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:68, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:81, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:85"
+    },
+    {
+      "command": "Plain-language GitHub-first UX coverage review",
+      "status": "PASS",
+      "evidence": "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:398, mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh:425, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:63, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:68, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:71, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:86"
+    },
+    {
+      "command": "Secrets and evidence hygiene plan review",
+      "status": "PASS",
+      "evidence": "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md:31, mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/references/report-template.md:138, REPO_OPERATIONS.md:93, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:16, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:66, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:120"
+    },
+    {
+      "command": "Runtime gates and PR readiness plan review",
+      "status": "PASS",
+      "evidence": "AGENTS.md:102, PROJECT_ENVIRONMENT.md:14, REPO_OPERATIONS.md:97, REPO_OPERATIONS.md:135, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:96, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:105"
+    },
+    {
+      "command": "Mobile runtime boundary review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed scope is pod-native OpenClaw project-bootstrap runtime/evidence only; no apps/mobile React Native UI paths are in the plan. AGENTS.md:17, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:34"
+    },
+    {
+      "command": "API contract usage review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed scope does not touch apps/api or packages/contracts. AGENTS.md:86, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:34"
+    },
+    {
+      "command": "Final implementation verification commands",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Plan-stage review only; final commands are explicitly required by the plan before completion. .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:96, .evidence/wm/project-bootstrap/20260613-github-login-ux-goal-plan.md:127"
+    }
+  ],
+  "residual_risks": [
+    "RED test, implementation, final verification, final reviewer evidence, and PR/CI status remain future required gates, not plan-stage proof.",
+    "Local validation and local harness evidence will not prove live GitHub branch protection, external OpenClaw pod behavior, or CI merge state; those must be reported separately per REPO_OPERATIONS.md:138."
+  ],
+  "next_action": "proceed"
+}
+```

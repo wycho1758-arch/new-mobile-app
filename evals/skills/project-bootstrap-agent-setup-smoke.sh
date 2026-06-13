@@ -116,6 +116,74 @@ if (section.includes(unexpected)) {
 NODE
 }
 
+assert_markdown_heading_body_starts_with() {
+  local file="$1"
+  local heading="$2"
+  local expected="$3"
+  node - "${file}" "${heading}" "${expected}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const heading = process.argv[3];
+const expected = process.argv[4];
+const body = fs.readFileSync(file, 'utf8');
+const start = body.indexOf(heading);
+if (start === -1) {
+  console.error(`assertion failed: could not find heading ${heading} in ${file}`);
+  process.exit(1);
+}
+const afterHeading = body.slice(start + heading.length).split('\n').map((line) => line.trim());
+const firstBodyLine = afterHeading.find((line) => line.length > 0);
+if (!firstBodyLine || !firstBodyLine.startsWith(expected)) {
+  console.error(`assertion failed: expected first body line after ${heading} in ${file} to start with ${expected}; got ${firstBodyLine || '<none>'}`);
+  process.exit(1);
+}
+NODE
+}
+
+assert_text_order() {
+  local file="$1"
+  local first="$2"
+  local second="$3"
+  node - "${file}" "${first}" "${second}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const first = process.argv[3];
+const second = process.argv[4];
+const body = fs.readFileSync(file, 'utf8');
+const firstIndex = body.indexOf(first);
+const secondIndex = body.indexOf(second);
+if (firstIndex === -1 || secondIndex === -1 || firstIndex >= secondIndex) {
+  console.error(`assertion failed: expected ${first} to appear before ${second} in ${file}`);
+  process.exit(1);
+}
+NODE
+}
+
+assert_primary_guidance_not_contains() {
+  local file="$1"
+  local unexpected="$2"
+  node - "${file}" "${unexpected}" <<'NODE'
+const fs = require('node:fs');
+const file = process.argv[2];
+const unexpected = process.argv[3];
+const body = fs.readFileSync(file, 'utf8');
+const start = body.indexOf('## Action needed');
+const support = body.indexOf('### Technical details for support');
+const detected = body.indexOf('## Detected Blockers');
+const endCandidates = [support, detected].filter((index) => index !== -1);
+const end = endCandidates.length > 0 ? Math.min(...endCandidates) : -1;
+if (start === -1 || end === -1 || end <= start) {
+  console.error(`assertion failed: could not find primary guidance bounds in ${file}`);
+  process.exit(1);
+}
+const section = body.slice(start, end);
+if (section.includes(unexpected)) {
+  console.error(`assertion failed: expected primary guidance in ${file} not to contain ${unexpected}`);
+  process.exit(1);
+}
+NODE
+}
+
 case_design_full_setup() {
   local tmpdir
   tmpdir="$(mktemp -d)"
@@ -535,16 +603,34 @@ JSON
   assert_json_field "${report_path}" "r.nested_reports.pod_role_bootstrap.blockers.includes('github-auth-unavailable')"
   assert_json_field "${report_path}" "r.blockers.includes('pod-role-bootstrap blocked')"
   assert_file_contains "${blockers_md_path}" "## Action needed"
-  assert_file_contains "${blockers_md_path}" "The pod agent cannot continue because"
-  assert_file_contains "${blockers_md_path}" "The pod role bootstrap report exists, but the pod is not ready yet."
-  assert_file_contains "${blockers_md_path}" "### What you need to do"
-  assert_file_contains "${blockers_md_path}" "one approved non-secret Git identity"
+  assert_markdown_heading_body_starts_with "${blockers_md_path}" "## Action needed" "GitHub connection is needed"
+  assert_file_contains "${blockers_md_path}" "GitHub connection is needed"
   assert_file_contains "${blockers_md_path}" "GitHub login screen"
-  assert_file_contains "${blockers_md_path}" "approved secure GitHub auth source"
+  assert_file_contains "${blockers_md_path}" "sign in with your GitHub account and approve"
+  assert_file_contains "${blockers_md_path}" "### What you need to do"
+  assert_file_contains "${blockers_md_path}" "GitHub login"
+  assert_file_contains "${blockers_md_path}" "Git commit author name and email"
+  assert_text_order "${blockers_md_path}" "GitHub login" "Git commit author name and email"
   assert_file_contains "${blockers_md_path}" "### What I will do after that"
-  assert_file_contains "${blockers_md_path}" "verify GitHub status"
+  assert_file_contains "${blockers_md_path}" "check the GitHub connection"
   assert_file_contains "${blockers_md_path}" "### Do not send in chat"
   assert_file_contains "${blockers_md_path}" "passwords, tokens, 2FA codes"
+  assert_file_contains "${blockers_md_path}" "### Technical details for support"
+  assert_file_contains "${blockers_md_path}" "github-auth-unavailable"
+  assert_file_contains "${blockers_md_path}" "## Support Reference"
+  assert_primary_guidance_not_contains "${blockers_md_path}" "Technical details:"
+  assert_primary_guidance_not_contains "${blockers_md_path}" "github-auth-unavailable"
+  assert_primary_guidance_not_contains "${blockers_md_path}" "git-identity-missing"
+  assert_primary_guidance_not_contains "${blockers_md_path}" "pod-role-bootstrap blocked"
+  assert_file_not_contains "${blockers_md_path}" "## Detected Blockers"
+  assert_file_not_contains "${blockers_md_path}" "## Resolution Guide"
+  assert_file_not_contains "${blockers_md_path}" "The pod agent cannot continue because"
+  assert_file_not_contains "${blockers_md_path}" "approved artifact"
+  assert_file_not_contains "${blockers_md_path}" "platform owner action"
+  assert_file_not_contains "${blockers_md_path}" "nested pod role readiness result"
+  assert_file_not_contains "${blockers_md_path}" "codex-preflight --pod"
+  assert_file_not_contains "${blockers_md_path}" "authenticated gh state"
+  assert_file_not_contains "${blockers_md_path}" "mounted/managed GitHub auth source"
   assert_file_not_contains "${blockers_md_path}" "Create /workspace/state/pod-role-bootstrap-report.json"
   assert_file_not_contains "${blockers_md_path}" 'create `/workspace/state/pod-role-bootstrap-report.json`'
 }
@@ -594,7 +680,7 @@ case_project_preflight_guides_missing_sot_and_mcp() {
   assert_json_field "${report_path}" "r.blockers.includes('missing repo SoT file .codex/config.toml')"
   assert_json_field "${report_path}" "r.blockers.includes('missing required MCP mobile-mcp')"
   assert_file_contains "${blockers_md_path}" "## Action needed"
-  assert_file_contains "${blockers_md_path}" "approved project artifact"
+  assert_file_contains "${blockers_md_path}" "approved project file source"
   assert_file_contains "${blockers_md_path}" ".codex/config.toml"
   assert_file_contains "${blockers_md_path}" "approved MCP/tool-auth config"
   assert_file_contains "${blockers_md_path}" "Do not install arbitrary tools"
@@ -698,19 +784,11 @@ case_project_preflight_guides_role_specific_secure_sources() {
   assert_json_field "${report_path}" "r.blockers.includes('missing stitch-adc-setup report')"
   assert_file_contains "${blockers_md_path}" "approved secure credential source"
   assert_file_contains "${blockers_md_path}" "Secret, secure store, tool auth, mounted file, or human-present login"
-  assert_file_contains "${blockers_md_path}" "public non-secret app config values"
-  assert_file_contains "${blockers_md_path}" "app display name"
-  assert_file_contains "${blockers_md_path}" "app slug"
-  assert_file_contains "${blockers_md_path}" "app scheme"
-  assert_file_contains "${blockers_md_path}" "iOS bundle ID"
-  assert_file_contains "${blockers_md_path}" "Android package"
-  assert_file_contains "${blockers_md_path}" "public API URL"
-  assert_file_contains "${blockers_md_path}" 'linked `human-gate/v1` decision'
+  assert_file_contains "${blockers_md_path}" "## Support Reference"
   assert_file_contains "${blockers_md_path}" "Google ADC JSON"
   assert_file_contains "${blockers_md_path}" "service account JSON"
-  assert_file_contains "${blockers_md_path}" "DATABASE_URL"
+  assert_file_contains "${blockers_md_path}" "database URLs"
   assert_file_contains "${blockers_md_path}" "bearer tokens"
-  assert_file_contains "${blockers_md_path}" "Railway tokens"
   assert_file_not_contains "${blockers_md_path}" 'Create `/workspace/state`'
   assert_file_not_contains "${blockers_md_path}" 'Choose `WM_ROLE`'
   assert_file_not_contains "${blockers_md_path}" 'Repair `/workspace/CODEX_MANAGED_PATHS.md` yourself'

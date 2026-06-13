@@ -81,7 +81,7 @@ Minimum user request, and the next step where the agent can continue.
 | Raw blocker | Plain-language meaning | Minimum user request | Next agent action |
 | --- | --- | --- | --- |
 | `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Provide one approved non-secret Git identity pair through `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus `WM_GIT_USER_EMAIL`, or `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. | Configure Git from that one approved source and rerun bootstrap. |
-| `github-auth-unavailable` | The GitHub CLI has no usable authenticated state or approved mounted/managed auth source. | Confirm approved mounted/managed auth exists, or be present for `gh auth login` / browser/device login with human present. Never send tokens in chat. | Run status-only GitHub checks, run `gh auth setup-git` only when authenticated state exists, then rerun bootstrap. |
+| `github-auth-unavailable` | GitHub connection is needed before the agent can continue with repository access or upload work. | Be present for the GitHub login screen; sign in with your GitHub account and approve the request. Never send tokens in chat. | Check the GitHub connection, set up Git to use that login after authentication works, then rerun bootstrap. |
 | `pod-role-bootstrap blocked` | `project-bootstrap` found that the generated `pod-role-bootstrap` report is present but not ready. | Resolve the nested blocker requests only; do not create report files manually. | Rerun `pod-role-bootstrap`, then rerun `project-bootstrap` preflight. |
 
 ## Blocker Classification
@@ -101,16 +101,21 @@ preflight, and only then report unresolved blockers to the user.
 
 The generated blocker guide should start with `## Action needed`, then use
 `### What you need to do`, `### What I will do after that`, and
-`### Do not send in chat`.
+`### Do not send in chat`. Support-only blocker names must appear under
+`### Technical details for support`, not before the user action.
 
 Ask only for the smallest user-owned input. Use plain wording first and keep raw
-blocker names for technical details:
+blocker names for support details:
 
-- For GitHub, ask the user to be present for a GitHub login screen or confirm an
-  approved secure GitHub auth source exists. Do not ask for tokens in chat.
-- For Git identity, ask for one approved non-secret Git identity name/email pair
-  or an approved local handoff path.
-- For project files, ask for the correct checkout or approved project artifact.
+- For GitHub, the first body line should start with `GitHub connection is
+  needed` when `github-auth-unavailable` is present. Tell the user that when
+  the GitHub login screen opens, they should sign in with your GitHub account
+  and approve the request. Do not ask for tokens in chat.
+- If Git identity is also missing, keep GitHub login first, then ask for the Git
+  commit author name and email or an approved local handoff path. Do not invent
+  an email address.
+- For project files, ask for the correct checkout or approved project file
+  source.
 - For platform/runtime problems, ask for platform owner refresh of the pod
   image/runtime, an approved Codex CLI artifact, or approved MCP/tool-auth
   config.

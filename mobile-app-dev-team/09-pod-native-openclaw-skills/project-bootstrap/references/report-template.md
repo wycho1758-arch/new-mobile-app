@@ -145,17 +145,19 @@ manifests.
 ## Generated Blocker Markdown Shape
 
 When the report is blocked, `/workspace/state/project-bootstrap-blockers.md`
-must begin with a user-facing summary before raw technical blockers:
+must begin with a user-facing summary. Raw blocker names belong only in the
+support details section and the JSON report:
 
 ```markdown
 ## Action needed
 
-<Plain-language current state and why the pod agent cannot continue.>
+<Plain-language current state. For GitHub auth blockers, start with:
+GitHub connection is needed before I can continue.>
 
 ### What you need to do
 
 - <Only the smallest user-owned action: a public non-secret value, approved
-  artifact, approved secure credential source, human-present login, platform
+  project file source, approved secure credential source, human-present login, platform
   owner refresh, or linked `human-gate/v1` decision.>
 
 ### What I will do after that
@@ -168,6 +170,11 @@ must begin with a user-facing summary before raw technical blockers:
 - <Passwords, tokens, 2FA codes, recovery codes, private keys, database URLs,
   bearer tokens, Google ADC JSON, service account JSON, or full secret-bearing
   config.>
+
+### Technical details for support
+
+- <Raw blocker names and support details only. Do not place this content before
+  the user action.>
 ```
 
 Future JSON reports may add a `user_summary` object with the same shape:
