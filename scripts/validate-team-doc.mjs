@@ -846,6 +846,19 @@ requireNoDocTerms(`${codexRoleWorkflowSkillRoot}/SKILL.md`, [
   'GOOGLE_APPLICATION_CREDENTIALS=',
 ]);
 
+requireDocTerms('.agents/skills/git-workflow/SKILL.md', [
+  'Self-Workflow Approval Requests',
+  'Product Delivery Lead',
+  'Mobile Architect / Technical Lead',
+  'mobile-app-dev-team/02-role-souls/product-planning-soul.md',
+  'mobile-app-dev-team/02-role-souls/mobile-architect-soul.md',
+  'approval request packet',
+  'scope/readiness/human-gate',
+  'architecture/runtime/releaseability',
+  'Do not merge your own PR',
+  'human approval before merge',
+]);
+
 requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guide.md`, [
   'Project Bootstrap Blocker Resolution Guide',
   'Blocker Classification',
