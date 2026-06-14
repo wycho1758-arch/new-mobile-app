@@ -159,6 +159,7 @@ Common setup:
 
 - `/workspace/skills/codex-cli-auth-setup/SKILL.md`
 - `/workspace/skills/pod-role-bootstrap/SKILL.md`
+- `/workspace/skills/codex-role-workflow/SKILL.md`
 
 Role-specific setup:
 
@@ -251,6 +252,9 @@ bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.s
 This script must:
 
 - repair the managed-path registry when the repo path is the known SoT path;
+- register the required pod-native skills from
+  `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md` into
+  `/workspace/skills`;
 - register missing required MCPs from repo-pinned non-secret commands when the
   registration is agent-owned;
 - run Codex CLI/auth status setup before `missing codex CLI` becomes terminal;

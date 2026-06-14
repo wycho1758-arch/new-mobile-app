@@ -202,6 +202,7 @@ node - "$REPORT_PATH" \
   "$(dir_status "${SKILLS_ROOT%/}/pod-role-bootstrap")" \
   "$(dir_status "${SKILLS_ROOT%/}/stitch-adc-setup")" \
   "$(dir_status "${SKILLS_ROOT%/}/eas-robot-auth-setup")" \
+  "$(dir_status "${SKILLS_ROOT%/}/codex-role-workflow")" \
   "$(command_status codex)" \
   "$(command_status gh)" \
   "$(command_status railway)" \
@@ -264,6 +265,7 @@ const [
   podRoleBootstrapSkill,
   stitchAdcSetupSkill,
   easRobotAuthSetupSkill,
+  codexRoleWorkflowSkill,
   codexCli,
   ghCli,
   railwayCli,
@@ -389,6 +391,7 @@ if (managedPathStatus !== 'present') blockers.push(managedPathStatus);
 requirePresent('missing /workspace/skills/project-bootstrap', projectBootstrapSkill);
 requirePresent('missing /workspace/skills/codex-cli-auth-setup', codexCliAuthSetupSkill);
 requirePresent('missing /workspace/skills/pod-role-bootstrap', podRoleBootstrapSkill);
+requirePresent('missing /workspace/skills/codex-role-workflow', codexRoleWorkflowSkill);
 if (codexCli !== 'available') blockers.push('missing codex CLI');
 for (const [name, status] of [
   ['mobile-mcp', mobileMcp],
@@ -969,6 +972,7 @@ const report = {
     pod_role_bootstrap: podRoleBootstrapSkill,
     stitch_adc_setup: stitchAdcSetupSkill,
     eas_robot_auth_setup: easRobotAuthSetupSkill,
+    codex_role_workflow: codexRoleWorkflowSkill,
   },
   mcp: {
     required: {

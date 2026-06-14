@@ -32,7 +32,10 @@ preflight report. That report has this shape:
     "root": "/workspace/skills",
     "project-bootstrap": "present | registered | missing_source | blocked",
     "codex-cli-auth-setup": "present | registered | missing_source | blocked",
-    "pod-role-bootstrap": "present | registered | missing_source | blocked"
+    "pod-role-bootstrap": "present | registered | missing_source | blocked",
+    "eas-robot-auth-setup": "present | registered | missing_source | blocked",
+    "stitch-adc-setup": "present | registered | missing_source | blocked",
+    "codex-role-workflow": "present | registered | missing_source | blocked"
   },
   "workspace_agents": {
     "path": "/workspace/AGENTS.md",
@@ -287,7 +290,8 @@ preflight report. That report has this shape:
     "codex_cli_auth_setup": "present | missing",
     "pod_role_bootstrap": "present | missing",
     "stitch_adc_setup": "present | missing",
-    "eas_robot_auth_setup": "present | missing"
+    "eas_robot_auth_setup": "present | missing",
+    "codex_role_workflow": "present | missing"
   },
   "mcp": {
     "required": {
