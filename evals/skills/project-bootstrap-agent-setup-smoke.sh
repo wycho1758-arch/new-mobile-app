@@ -986,6 +986,7 @@ case_agent_setup_detects_unauthorized_provider_state() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_REQUIRE_GCLOUD_ADC="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1025,6 +1026,352 @@ case_expo_mcp_and_expo_cli_are_separate() {
   assert_json_field "${report_path}" "r.tool_readiness.expo_mcp.auth_status === 'available'"
   assert_json_field "${report_path}" "r.tool_readiness.expo_cli.auth_status === 'missing'"
   assert_json_field "${report_path}" "r.blockers.includes('expo-cli-auth-missing')"
+}
+
+case_explicit_role_slug_writes_all_role_surfaces() {
+  local role tmpdir report_path
+  for role in \
+    product-planning \
+    design \
+    mobile-architect \
+    mobile-app-dev \
+    backend-api-integrator \
+    qa-release
+  do
+    tmpdir="$(mktemp -d)"
+    report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+    mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+    make_fake_codex "${tmpdir}/bin"
+    printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+    HOME="${tmpdir}/home" \
+    PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+    FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+    STATE_DIR="${tmpdir}/state" \
+    IDENTITY_PATH="${tmpdir}/IDENTITY" \
+    CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+    REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_ROLE_SLUG="${role}" \
+    PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+    /bin/bash "${SCRIPT}" >/dev/null
+
+    [[ "$(cat "${tmpdir}/IDENTITY")" == "${role}" ]]
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_ROLE=${role}"
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_EXPECTED_ROLE=${role}"
+    assert_json_field "${report_path}" "r.role.resolved === '${role}'"
+    assert_json_field "${report_path}" "r.role.status === 'configured'"
+    assert_json_field "${report_path}" "r.role.env_path.endsWith('/project-bootstrap-role.env')"
+  done
+}
+
+case_role_soul_files_map_to_canonical_bootstrap_roles() {
+  local soul_path expected_operating_role expected_role tmpdir report_path actual_slug
+
+  while IFS='|' read -r soul_path expected_operating_role expected_role; do
+    [[ -n "${soul_path}" ]] || continue
+    [[ -f "${ROOT_DIR}/${soul_path}" ]]
+    assert_file_contains "${ROOT_DIR}/${soul_path}" "Operating Role: ${expected_operating_role}"
+
+    case "$(basename "${soul_path}")" in
+      product-planning-soul.md) actual_slug="product-planning" ;;
+      design-soul.md) actual_slug="design" ;;
+      mobile-architect-soul.md) actual_slug="mobile-architect" ;;
+      mobile-app-dev-soul.md) actual_slug="mobile-app-dev" ;;
+      backend-api-integrator-soul.md) actual_slug="backend-api-integrator" ;;
+      qa-release-soul.md) actual_slug="qa-release" ;;
+      *) actual_slug="missing" ;;
+    esac
+    [[ "${actual_slug}" == "${expected_role}" ]]
+
+    tmpdir="$(mktemp -d)"
+    report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+    mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+    make_fake_codex "${tmpdir}/bin"
+    printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+    HOME="${tmpdir}/home" \
+    PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+    FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+    STATE_DIR="${tmpdir}/state" \
+    IDENTITY_PATH="${tmpdir}/IDENTITY" \
+    CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+    REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+    PROJECT_BOOTSTRAP_ROLE_SLUG="${expected_role}" \
+    PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+    /bin/bash "${SCRIPT}" >/dev/null
+
+    [[ "$(cat "${tmpdir}/IDENTITY")" == "${expected_role}" ]]
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_ROLE=${expected_role}"
+    assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "export WM_EXPECTED_ROLE=${expected_role}"
+    assert_json_field "${report_path}" "r.role.resolved === '${expected_role}'"
+    assert_json_field "${report_path}" "r.role.status === 'configured'"
+  done <<'ROLE_SOULS'
+mobile-app-dev-team/02-role-souls/product-planning-soul.md|Product/Planning|product-planning
+mobile-app-dev-team/02-role-souls/design-soul.md|Design|design
+mobile-app-dev-team/02-role-souls/mobile-architect-soul.md|Mobile Architect|mobile-architect
+mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md|Mobile App Dev|mobile-app-dev
+mobile-app-dev-team/02-role-souls/backend-api-integrator-soul.md|Backend/API Integrator|backend-api-integrator
+mobile-app-dev-team/02-role-souls/qa-release-soul.md|QA/Release|qa-release
+ROLE_SOULS
+}
+
+case_explicit_role_slug_blocks_invalid_or_conflicting_identity() {
+  local tmpdir report_path
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="sales" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_invalid'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-invalid')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_invalid'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-invalid')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_ROLE="design" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_ROLE="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  WM_EXPECTED_ROLE="design" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  printf '%s\n' design > "${tmpdir}/IDENTITY"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_explicit_role_slug_conflict'"
+  assert_json_field "${report_path}" "r.blockers.includes('explicit-role-slug-conflict')"
+  [[ "$(cat "${tmpdir}/IDENTITY")" == "design" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_ROLE="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_role_surface_noncanonical'"
+  assert_json_field "${report_path}" "r.blockers.includes('role-surface-noncanonical')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_EXPECTED_ROLE="Product/Planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_role_surface_noncanonical'"
+  assert_json_field "${report_path}" "r.blockers.includes('role-surface-noncanonical')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  printf '%s\n' "Product/Planning" > "${tmpdir}/IDENTITY"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'blocked_role_surface_noncanonical'"
+  assert_json_field "${report_path}" "r.blockers.includes('role-surface-noncanonical')"
+  [[ "$(cat "${tmpdir}/IDENTITY")" == "Product/Planning" ]]
+}
+
+case_role_identity_requires_explicit_slug_or_existing_canonical_surface() {
+  local tmpdir report_path
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/product-planning-soul.md" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'not_resolved'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing-role-identity')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'not_resolved'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing-role-identity')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.role.status === 'not_resolved'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing-role-identity')"
+  [[ ! -e "${tmpdir}/IDENTITY" ]]
+
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_ROLE="product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+  assert_json_field "${report_path}" "r.role.status === 'configured'"
+  assert_json_field "${report_path}" "r.role.resolved === 'product-planning'"
+  [[ "$(cat "${tmpdir}/IDENTITY")" == "product-planning" ]]
 }
 
 case_auth_blocker_markdown_ko_en_user_friendly() {
@@ -1092,6 +1439,7 @@ case_install_requires_explicit_approval() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1128,6 +1476,7 @@ case_system_installer_requires_explicit_approval() {
   PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR="${tool_bin}" \
   PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
   PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1160,6 +1509,7 @@ case_failed_npm_install_is_not_reported_as_installed() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1194,6 +1544,7 @@ case_failed_system_installer_is_not_reported_as_installed() {
   PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
   PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1233,6 +1584,7 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${skills_root}" \
   PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${workspace_agents_path}" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1276,6 +1628,7 @@ case_agent_setup_blocks_failed_skill_sync() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
   PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1405,6 +1758,7 @@ case_design_full_setup() {
 	  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
 	  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
 	  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+	  PROJECT_BOOTSTRAP_ROLE_SLUG="design" \
 	  WM_POD_SELECTOR="boram-design" \
   STITCH_ADC_PRECHECK="${tmpdir}/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh" \
   STITCH_ADC_REPORT="${tmpdir}/state/stitch-adc-setup-report.json" \
@@ -1438,6 +1792,7 @@ case_wrong_repo_path_blocks_repair() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/canonical" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="design" \
   WM_POD_SELECTOR="boram-design" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1468,6 +1823,7 @@ SH
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
   PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="qa-release" \
   WM_POD_SELECTOR="boram-qa-release" \
   CODEX_CLI_PRECHECK="${tmpdir}/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh" \
   /bin/bash "${SCRIPT}" >/dev/null
@@ -1495,6 +1851,7 @@ case_qa_role_report_generation() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
   PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="qa-release" \
   WM_POD_SELECTOR="boram-qa-release" \
   EAS_ROBOT_AUTH_PRECHECK="${tmpdir}/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh" \
   EAS_ROBOT_AUTH_REPORT="${tmpdir}/state/eas-robot-auth-setup-report.json" \
@@ -1527,6 +1884,7 @@ case_git_identity_from_approved_env() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_USER_NAME="WonderMove Pod Agent" \
   PROJECT_BOOTSTRAP_GIT_USER_EMAIL="pod-agent@wondermove.local" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1553,6 +1911,7 @@ case_git_identity_from_wm_env() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   WM_GIT_USER_NAME="WonderMove WM Pod" \
   WM_GIT_USER_EMAIL="wm-pod@wondermove.local" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1582,6 +1941,7 @@ case_git_identity_from_approved_file() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH="${tmpdir}/git-identity.env" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1606,6 +1966,7 @@ case_missing_git_identity_does_not_invent_values() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1632,6 +1993,7 @@ case_git_identity_rejects_mixed_approved_sources() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_USER_NAME="Project Name Only" \
   WM_GIT_USER_EMAIL="wm-email-only@wondermove.local" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1656,6 +2018,7 @@ case_git_identity_rejects_mixed_approved_sources() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_GIT_USER_NAME="Project Env Name Only" \
   PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH="${tmpdir}/git-identity.env" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1679,6 +2042,7 @@ case_github_auth_setup_git_when_authenticated() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1702,6 +2066,7 @@ case_github_auth_missing_skips_setup_git() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="mobile-app-dev" \
   WM_POD_SELECTOR="boram-mobile-app-dev" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1726,6 +2091,7 @@ case_required_tool_readiness_without_approved_installers() {
   CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1771,6 +2137,7 @@ case_railway_npm_install_and_login_flow_are_attempted() {
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
   PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER="true" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1817,6 +2184,7 @@ case_credential_file_explorer_is_opt_in() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1852,6 +2220,7 @@ case_railway_browserless_fallback_is_attempted() {
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1883,6 +2252,7 @@ case_gcloud_false_positive_auth_and_project_are_rejected() {
   PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
   PROJECT_BOOTSTRAP_REQUIRE_GCLOUD_ADC="true" \
   PROJECT_BOOTSTRAP_GCLOUD_PROJECT_ID="wm-test-project" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -1922,6 +2292,7 @@ case_required_cli_approved_installers_are_attempted() {
   PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
   PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
   PROJECT_BOOTSTRAP_INSTALL_APPROVED="true" \
+  PROJECT_BOOTSTRAP_ROLE_SLUG="product-planning" \
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
@@ -2722,6 +3093,10 @@ case_preflight_blocks_auth_absent_from_agent_setup_report
 case_preflight_auth_ready_passes_auth_gate
 case_agent_setup_detects_unauthorized_provider_state
 case_expo_mcp_and_expo_cli_are_separate
+case_explicit_role_slug_writes_all_role_surfaces
+case_role_soul_files_map_to_canonical_bootstrap_roles
+case_explicit_role_slug_blocks_invalid_or_conflicting_identity
+case_role_identity_requires_explicit_slug_or_existing_canonical_surface
 case_auth_blocker_markdown_ko_en_user_friendly
 case_install_requires_explicit_approval
 case_system_installer_requires_explicit_approval

@@ -180,12 +180,19 @@ copying unverified runtime files.
 
 ## Canonical Role Identity
 
-The agent must derive the canonical role slug from the pod SOUL before the first
-preflight run, then write that slug to pod identity. Do not write display titles
-or operating-role names such as `Mobile App Dev`, `Product/Planning`, `Design`,
-or `QA/Release` to `WM_ROLE`. Do not ask the user to choose a role slug when a
-SOUL file, pod selector, or local role handoff already identifies the assigned
-role.
+The agent must derive the canonical role slug from the runtime pod SOUL before
+the first preflight run, then pass that slug as the explicit setup parameter.
+In generated OpenClaw role pods, the runtime SOUL path is `/workspace/SOUL.md`.
+This is the same requirement as: derive the canonical role slug from the pod SOUL.
+The project repository keeps role source templates under
+`mobile-app-dev-team/02-role-souls/`, but the live pod must not rely on those
+source filenames to identify its role.
+
+Do not write display titles or operating-role names such as `Mobile App Dev`,
+`Product/Planning`, `Design`, or `QA/Release` to `WM_ROLE`. Do not ask the user
+to choose a role slug when `/workspace/SOUL.md`, a pod selector, or a local role
+handoff already identifies the assigned role.
+Do not ask the user to choose a role slug.
 
 | SOUL file | Canonical role slug |
 | --- | --- |
@@ -196,25 +203,39 @@ role.
 | `backend-api-integrator-soul.md` | `backend-api-integrator` |
 | `qa-release-soul.md` | `qa-release` |
 
-For the most reliable bootstrap path, set all role identity surfaces to the same
-canonical slug. This is non-secret setup work and should be done by the agent:
+For the most reliable bootstrap path, read `/workspace/SOUL.md`, choose exactly
+one canonical slug from the table above, then pass that value to
+`project-bootstrap-agent-setup.sh` as `PROJECT_BOOTSTRAP_ROLE_SLUG`. This is
+non-secret setup work and should be done by the agent:
 
 ```bash
 role_slug="<canonical-role-slug>"
-export WM_ROLE="${role_slug}"
-export WM_EXPECTED_ROLE="${role_slug}"
-printf '%s\n' "${role_slug}" > /workspace/IDENTITY
+PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}" \
+PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
+source /workspace/state/project-bootstrap-role.env
 ```
 
-`WM_ROLE` takes precedence over `/workspace/IDENTITY`. If both are configured,
-they must represent the same canonical role. `WM_EXPECTED_ROLE` is the supported
-guardrail for pod-native bootstrap scripts; do not rely on `EXPECTED_WM_ROLE`
-for this skill.
+`project-bootstrap-agent-setup.sh` validates `PROJECT_BOOTSTRAP_ROLE_SLUG`
+against the canonical role allowlist, writes `/workspace/IDENTITY`, and writes
+`/workspace/state/project-bootstrap-role.env` with `WM_ROLE` and
+`WM_EXPECTED_ROLE` set to that same slug. If `WM_ROLE`, `WM_EXPECTED_ROLE`, or
+`/workspace/IDENTITY` is already configured with a conflicting role, the setup
+must block instead of silently overriding the existing identity. Do not rely on
+`EXPECTED_WM_ROLE` for this skill.
+
+If `PROJECT_BOOTSTRAP_ROLE_SLUG` is not provided, existing `WM_ROLE`,
+`WM_EXPECTED_ROLE`, and `/workspace/IDENTITY` values are still valid only when
+they already exactly match one canonical slug. Display titles and operating-role
+labels must not be normalized into a role identity. The setup script does not
+infer or write a new role from `PROJECT_BOOTSTRAP_ROLE_SOUL_PATH`, pod
+selectors, or hostnames when the explicit slug is absent; the skill/agent must
+perform that selection before calling the script.
 
 If the pod does not contain any SOUL file, selector, or role handoff that lets
-the agent determine the role, keep `missing role identity` blocked and request a
-pod artifact refresh or role-source handoff. Do not convert that blocker into a
-question asking the user which role to pick.
+the agent determine the role, keep `missing-role-identity` (`missing role
+identity`) blocked and request a pod artifact refresh or role-source handoff. Do
+not convert that blocker into a question asking the user which role to pick.
 
 Do not ask the user to perform agent-owned setup. The agent must inspect and set
 up its own pod environment for non-secret role identity surfaces whenever the
@@ -235,23 +256,31 @@ export PROJECT_BOOTSTRAP_USER_LANGUAGE="auto"
 export PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="${AGENT_CURRENT_USER_LANGUAGE:?set from current user message, e.g. ko-KR or 한국어}"
 ```
 
-2. Resolve and apply agent-owned identity setup before preflight. Use the pod
-   SOUL, selector, or local role handoff to choose the canonical slug and write
-   it to every supported role surface. For a Product/Planning pod, the agent
-   must set this itself:
+2. Resolve and apply agent-owned identity setup before preflight. Read
+   `/workspace/SOUL.md`, select exactly one canonical slug from the six allowed
+   values, and pass that selection to the setup script. For a Product/Planning
+   pod, the selected slug is `product-planning`:
 
 ```bash
 role_slug="product-planning"
-export WM_ROLE="${role_slug}"
-export WM_EXPECTED_ROLE="${role_slug}"
-printf '%s\n' "${role_slug}" > /workspace/IDENTITY
+PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}" \
+PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
 ```
+
+If `/workspace/SOUL.md` does not identify exactly one of
+`product-planning`, `design`, `mobile-architect`, `mobile-app-dev`,
+`backend-api-integrator`, or `qa-release`, keep role identity blocked and request
+a pod artifact refresh or role-source handoff. Do not ask the user to choose the
+role.
 
 3. Run agent-owned setup before blocker report. This step performs only
    non-secret, local, deterministic setup that the agent can do itself before
    the user sees a blocker list:
 
 ```bash
+PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}" \
+PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
 bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
 ```
 
@@ -268,8 +297,8 @@ This script must:
   their local setup skills exist;
 - write `/workspace/state/project-bootstrap-agent-setup-report.json`.
 
-The agent may source the generated role environment for the current shell before
-preflight:
+The agent must source the generated role environment for the current shell before
+running role-bound tools that read `WM_ROLE`:
 
 ```bash
 source /workspace/state/project-bootstrap-role.env

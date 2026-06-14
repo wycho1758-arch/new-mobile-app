@@ -49,6 +49,13 @@ is_canonical_role() {
   esac
 }
 
+is_exact_canonical_role_value() {
+  local value="$1"
+  local normalized
+  normalized="$(normalize_role "${value}")"
+  [[ "${value}" == "${normalized}" ]] && is_canonical_role "${normalized}"
+}
+
 role_from_soul_path() {
   case "$(basename "$1")" in
     product-planning-soul.md) printf 'product-planning' ;;
@@ -75,37 +82,74 @@ role_from_selector() {
   esac
 }
 
+role_surface_conflicts() {
+  local selected_role="$1"
+  local configured_value="$2"
+  local configured_role
+
+  if [[ -z "${configured_value}" ]]; then
+    return 1
+  fi
+
+  configured_role="$(normalize_role "${configured_value}")"
+  if [[ "${configured_value}" != "${configured_role}" ]] || ! is_canonical_role "${configured_role}"; then
+    return 0
+  fi
+
+  [[ "${configured_role}" != "${selected_role}" ]]
+}
+
 resolve_agent_role() {
   local candidate=""
+  local explicit_role=""
+
+  if [[ -n "${PROJECT_BOOTSTRAP_ROLE_SLUG:-}" ]]; then
+    explicit_role="$(normalize_role "${PROJECT_BOOTSTRAP_ROLE_SLUG}")"
+    if [[ "${PROJECT_BOOTSTRAP_ROLE_SLUG}" != "${explicit_role}" ]] || ! is_canonical_role "${explicit_role}"; then
+      printf '%s\n' "blocked_explicit_role_slug_invalid"
+      return 2
+    fi
+
+    if role_surface_conflicts "${explicit_role}" "${WM_ROLE:-}" \
+      || role_surface_conflicts "${explicit_role}" "${WM_EXPECTED_ROLE:-}"; then
+      printf '%s\n' "blocked_explicit_role_slug_conflict"
+      return 2
+    fi
+
+    if [[ -r "${IDENTITY_PATH}" ]]; then
+      candidate="$(head -n 1 "${IDENTITY_PATH}" | tr -d '\r')"
+      if role_surface_conflicts "${explicit_role}" "${candidate}"; then
+        printf '%s\n' "blocked_explicit_role_slug_conflict"
+        return 2
+      fi
+    fi
+
+    printf '%s\n' "${explicit_role}"
+    return 0
+  fi
 
   for candidate in "${WM_ROLE:-}" "${WM_EXPECTED_ROLE:-}"; do
-    if [[ -n "${candidate}" ]] && is_canonical_role "$(normalize_role "${candidate}")"; then
-      normalize_role "${candidate}"
+    if [[ -n "${candidate}" ]]; then
+      if ! is_exact_canonical_role_value "${candidate}"; then
+        printf '%s\n' "blocked_role_surface_noncanonical"
+        return 2
+      fi
+      printf '%s\n' "${candidate}"
       return 0
     fi
   done
 
   if [[ -r "${IDENTITY_PATH}" ]]; then
     candidate="$(head -n 1 "${IDENTITY_PATH}" | tr -d '\r')"
-    if [[ -n "${candidate}" ]] && is_canonical_role "$(normalize_role "${candidate}")"; then
-      normalize_role "${candidate}"
+    if [[ -n "${candidate}" ]]; then
+      if ! is_exact_canonical_role_value "${candidate}"; then
+        printf '%s\n' "blocked_role_surface_noncanonical"
+        return 2
+      fi
+      printf '%s\n' "${candidate}"
       return 0
     fi
   fi
-
-  for candidate in "${PROJECT_BOOTSTRAP_ROLE_SOUL_PATH:-}" "${WM_ROLE_SOUL_PATH:-}" "${POD_SOUL_PATH:-}"; do
-    if [[ -n "${candidate}" ]] && role_from_soul_path "${candidate}" >/dev/null 2>&1; then
-      role_from_soul_path "${candidate}"
-      return 0
-    fi
-  done
-
-  for candidate in "${WM_POD_SELECTOR:-}" "${BORAM_POD_SELECTOR:-}" "${POD_SELECTOR:-}" "${HOSTNAME:-}"; do
-    if [[ -n "${candidate}" ]] && role_from_selector "${candidate}" >/dev/null 2>&1; then
-      role_from_selector "${candidate}"
-      return 0
-    fi
-  done
 
   return 1
 }
@@ -681,6 +725,13 @@ resolved_role=""
 if resolved_role="$(resolve_agent_role)"; then
   write_role_identity "${resolved_role}"
   role_status="configured"
+else
+  case "${resolved_role}" in
+    blocked_*)
+      role_status="${resolved_role}"
+      resolved_role=""
+      ;;
+  esac
 fi
 
 repair_managed_path_registry
@@ -958,6 +1009,10 @@ if (managedPathStatus.startsWith('blocked')) blockers.push(managedPathStatus);
 if (repoCheckoutStatus === 'blocked') blockers.push('repo-checkout-blocked');
 if (repoCheckoutStatus === 'clone_failed') blockers.push('repo-clone-failed');
 if (workspaceSkillsSyncStatus !== 'completed') blockers.push('workspace-skills-sync-blocked');
+if (roleStatus === 'not_resolved') blockers.push('missing-role-identity');
+if (roleStatus === 'blocked_explicit_role_slug_invalid') blockers.push('explicit-role-slug-invalid');
+if (roleStatus === 'blocked_explicit_role_slug_conflict') blockers.push('explicit-role-slug-conflict');
+if (roleStatus === 'blocked_role_surface_noncanonical') blockers.push('role-surface-noncanonical');
 if (railwayCommandStatus !== 'available') blockers.push('railway-cli-unavailable');
 if (gcloudCommandStatus !== 'available') blockers.push('gcloud-cli-unavailable');
 if (railwayInstallDecision === 'install_blocked_needs_approval') blockers.push('railway-install-approval-required');
