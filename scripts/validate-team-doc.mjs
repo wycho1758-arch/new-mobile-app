@@ -1908,6 +1908,35 @@ requireDocTerms(`${managedTeamDocRoot}/16-pod-environment-bootstrap.md`, [
   'does not prove actual OrbStack/OpenClaw pod execution',
 ]);
 
+requireDocTerms(`${managedTeamDocRoot}/decision-records/README.md`, [
+  '# Decision Records',
+  'durable, repo-local decision records',
+  'Source of Truth support',
+  '.evidence/**',
+  'mobile-app-dev-team/decision-records/',
+  'Migrated records',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/19-entry-case-routing.md`, [
+  'mobile-app-dev-team/decision-records/20260614-entry-case-cp2-p1-decision.md',
+  'mobile-app-dev-team/decision-records/20260614-entry-case-risk2-runtime-binding-decision.md',
+  'mobile-app-dev-team/decision-records/20260614-entry-case-cp3-decision.md',
+]);
+
+requireNoDocTerms(`${managedTeamDocRoot}/19-entry-case-routing.md`, [
+  '.evidence/reviews/20260614-entry-case-cp2-p1-decision.md',
+  '.evidence/reviews/20260614-entry-case-risk2-runtime-binding-decision.md',
+  '.evidence/reviews/20260614-entry-case-cp3-decision.md',
+]);
+
+requireDocTerms(`${managedTeamDocRoot}/20-app-eas-ota-rollback-runbook.md`, [
+  'mobile-app-dev-team/decision-records/20260614-followup1-precise-rule-decision.md',
+]);
+
+requireNoDocTerms(`${managedTeamDocRoot}/20-app-eas-ota-rollback-runbook.md`, [
+  '.evidence/reviews/20260614-followup1-precise-rule-decision.md',
+]);
+
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join('\n'));
   process.exit(1);

@@ -55,9 +55,9 @@ function listTrackedFiles(baseDir) {
   }
 }
 
-function readFileMap() {
+function readFileMap(trackedEvidenceFiles = listTrackedFiles(trackedEvidenceRoot)) {
   const files = {};
-  for (const relativePath of listTrackedFiles(trackedEvidenceRoot)) {
+  for (const relativePath of trackedEvidenceFiles) {
     files[relativePath] = fs.readFileSync(path.join(root, relativePath), 'utf8');
   }
   for (const scanRoot of workspaceScanRoots) {
@@ -68,8 +68,12 @@ function readFileMap() {
   return files;
 }
 
-function validateEvidenceHygiene(files = readFileMap()) {
+function validateEvidenceHygiene(files = readFileMap(), options = {}) {
   const errors = [];
+  for (const relativePath of options.trackedEvidenceFiles || []) {
+    errors.push(`${relativePath}: tracked .evidence files are forbidden; move durable decision records outside .evidence`);
+  }
+
   for (const [relativePath, body] of Object.entries(files).sort(([a], [b]) => a.localeCompare(b))) {
     for (const rule of forbiddenPathRules) {
       if (rule.pattern.test(relativePath)) {
@@ -97,7 +101,9 @@ function runSelfTest() {
   for (const file of fixtureFiles) {
     const fixturePath = path.join(root, fixtureDir, file);
     const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
-    const errors = validateEvidenceHygiene(fixture.files || {});
+    const errors = validateEvidenceHygiene(fixture.files || {}, {
+      trackedEvidenceFiles: fixture.trackedEvidenceFiles || [],
+    });
 
     if (fixture.valid && errors.length > 0) {
       failures.push(`${file}: valid fixture failed:\n${errors.map((error) => `  - ${error}`).join('\n')}`);
@@ -134,7 +140,8 @@ function runSelfTest() {
 if (args.includes('--self-test')) {
   runSelfTest();
 } else {
-  const errors = validateEvidenceHygiene();
+  const trackedEvidenceFiles = listTrackedFiles(trackedEvidenceRoot);
+  const errors = validateEvidenceHygiene(readFileMap(trackedEvidenceFiles), { trackedEvidenceFiles });
   if (errors.length) {
     console.error(errors.map((error) => `- ${error}`).join('\n'));
     process.exit(1);

@@ -1,0 +1,14 @@
+{
+  "name": "invalid-tracked-evidence-root",
+  "valid": false,
+  "files": {
+    ".evidence/reviews/durable-decision.md": "reviewer decision content\n"
+  },
+  "trackedEvidenceFiles": [
+    ".evidence/reviews/durable-decision.md"
+  ],
+  "expectedErrors": [
+    ".evidence/reviews/durable-decision.md",
+    "tracked .evidence files are forbidden"
+  ]
+}
