@@ -1,0 +1,115 @@
+**Findings**
+
+Medium: RED coverage does not fully enforce “install approval before package/system installation.” The new negative case blocks Railway `npm i -g @railway/cli` without `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`, but it does not cover the approved-installer/system path used by `ensure_required_cli` for gcloud. Current implementation runs an executable installer path directly, and the only gcloud installer test is the positive path with approval enabled, so an implementation could still perform a system installer when `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH` is set but install approval is absent. Source refs: `docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:77`, `docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:78`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:905`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:932`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:1552`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:1577`, `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:326`, `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:328`. Owner: Mobile App Dev.
+
+No Critical or High findings. The prior Medium missing/unreadable setup-report finding is covered, and the existing-repo token-bearing clone URL redaction path is now covered. Implementation should not begin until the install-approval RED gap is fixed.
+
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "b9c84e1",
+    "target": "working-tree RED coverage for project-bootstrap auth gates",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/CODEX_MCP_ENVIRONMENT.md",
+      "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs",
+      ".evidence/reviews/20260614-openclaw-bootstrap-auth-gates-corrected-plan-xhigh.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "summary": "RED coverage blocks Railway npm installation without PROJECT_BOOTSTRAP_INSTALL_APPROVED=true but does not cover the gcloud/system installer path, so system installation could still run without explicit approval.",
+      "source_refs": [
+        "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:77",
+        "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:78",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:905",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:932",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1552",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1577",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:326",
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:328"
+      ],
+      "owner": "Mobile App Dev"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "source review: missing and unreadable project-bootstrap-agent-setup-report.json RED coverage",
+      "status": "PASS",
+      "evidence": "Covered by case_preflight_blocks_missing_agent_setup_report and case_preflight_blocks_unreadable_agent_setup_report at evals/skills/project-bootstrap-agent-setup-smoke.sh:728 and evals/skills/project-bootstrap-agent-setup-smoke.sh:742."
+    },
+    {
+      "command": "source review: preflight consumes setup report as hard pass/fail input",
+      "status": "PASS",
+      "evidence": "run_ready_preflight wires PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH, and missing/unreadable/auth-absent/ready cases assert blocked or completed status at evals/skills/project-bootstrap-agent-setup-smoke.sh:710, evals/skills/project-bootstrap-agent-setup-smoke.sh:737, evals/skills/project-bootstrap-agent-setup-smoke.sh:773, and evals/skills/project-bootstrap-agent-setup-smoke.sh:788."
+    },
+    {
+      "command": "source review: separate Railway, gcloud, gcloud ADC, Expo MCP, and Expo CLI auth blockers",
+      "status": "PASS",
+      "evidence": "Separate blocker assertions exist for railway-auth-missing, gcloud-auth-missing, gcloud-adc-missing, expo-mcp-auth-missing, and expo-cli-auth-missing at evals/skills/project-bootstrap-agent-setup-smoke.sh:868 through evals/skills/project-bootstrap-agent-setup-smoke.sh:873."
+    },
+    {
+      "command": "source review: install approval before package/system installation",
+      "status": "FAIL",
+      "evidence": "Negative coverage only checks Railway npm install without approval; gcloud/system installer execution is only covered with PROJECT_BOOTSTRAP_INSTALL_APPROVED=true."
+    },
+    {
+      "command": "source review: default clone, /workspace/skills registration, and /workspace/AGENTS.md defaults",
+      "status": "PASS",
+      "evidence": "Covered by case_default_clone_runtime_skill_registration_workspace_agents_defaults at evals/skills/project-bootstrap-agent-setup-smoke.sh:935 through evals/skills/project-bootstrap-agent-setup-smoke.sh:977."
+    },
+    {
+      "command": "source review: token-bearing clone URL rejection in project-bootstrap and pod-role-bootstrap, including existing-repo redaction",
+      "status": "PASS",
+      "evidence": "Covered by token URL cases at evals/skills/project-bootstrap-agent-setup-smoke.sh:980 through evals/skills/project-bootstrap-agent-setup-smoke.sh:1059."
+    },
+    {
+      "command": "source review: validator terms protect new behavior",
+      "status": "PASS",
+      "evidence": "Validator requires preflight, setup, pod-role-bootstrap, and eval terms at scripts/validate-team-doc.mjs:862 through scripts/validate-team-doc.mjs:967."
+    },
+    {
+      "command": "bash -n evals/skills/project-bootstrap-agent-setup-smoke.sh && node --check scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Read-only local syntax checks exited 0."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Review request reports expected RED failure at case_preflight_blocks_missing_agent_setup_report because current preflight did not return blocked."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Review request reports expected RED failure on missing preflight/setup/pod-role-bootstrap contract terms."
+    },
+    {
+      "command": "pnpm run test:runtime / pnpm run test:local-harness / pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Plan-mode RED coverage review before implementation; these remain required final gates under AGENTS.md:106 through AGENTS.md:112."
+    },
+    {
+      "command": "mobile-mcp visual QA / mobile runtime checks",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No React Native UI/runtime path changed in this RED coverage scope."
+    }
+  ],
+  "residual_risks": [
+    "Full targeted smoke was not rerun by this reviewer; supplied evidence records the expected RED failure.",
+    "OpenClaw /workspace runtime effects remain local-fixture approximations until pod execution evidence exists.",
+    "Final implementation still needs runtime gates from AGENTS.md and PROJECT_ENVIRONMENT.md before PR readiness."
+  ],
+  "next_action": "fix_findings"
+}
+```

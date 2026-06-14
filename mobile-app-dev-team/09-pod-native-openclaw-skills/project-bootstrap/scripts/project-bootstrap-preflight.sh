@@ -7,6 +7,7 @@ CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
 SKILLS_ROOT="${PROJECT_BOOTSTRAP_SKILLS_ROOT:-/workspace/skills}"
 REPORT_PATH="${PROJECT_BOOTSTRAP_REPORT_PATH:-${REPORT_PATH:-/workspace/state/project-bootstrap-report.json}}"
 POD_ROLE_BOOTSTRAP_REPORT="${POD_ROLE_BOOTSTRAP_REPORT:-/workspace/state/pod-role-bootstrap-report.json}"
+PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT="${PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH:-/workspace/state/project-bootstrap-agent-setup-report.json}"
 STITCH_ADC_REPORT="${STITCH_ADC_REPORT:-/workspace/state/stitch-adc-setup-report.json}"
 EAS_ROBOT_AUTH_REPORT="${EAS_ROBOT_AUTH_REPORT:-/workspace/state/eas-robot-auth-setup-report.json}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -201,6 +202,7 @@ node - "$REPORT_PATH" \
   "$(dir_status "${SKILLS_ROOT%/}/pod-role-bootstrap")" \
   "$(dir_status "${SKILLS_ROOT%/}/stitch-adc-setup")" \
   "$(dir_status "${SKILLS_ROOT%/}/eas-robot-auth-setup")" \
+  "$(dir_status "${SKILLS_ROOT%/}/codex-role-workflow")" \
   "$(command_status codex)" \
   "$(command_status gh)" \
   "$(command_status railway)" \
@@ -215,7 +217,9 @@ node - "$REPORT_PATH" \
   "$(mcp_status node_repl)" \
   "$(mcp_status playwright)" \
   "$POD_ROLE_BOOTSTRAP_REPORT" \
+  "$PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT" \
   "$(file_status "${POD_ROLE_BOOTSTRAP_REPORT}")" \
+  "$(file_status "${PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT}")" \
   "$(file_status "${STITCH_ADC_REPORT}")" \
   "$(file_status "${EAS_ROBOT_AUTH_REPORT}")" \
   "$role_requires_stitch" \
@@ -261,6 +265,7 @@ const [
   podRoleBootstrapSkill,
   stitchAdcSetupSkill,
   easRobotAuthSetupSkill,
+  codexRoleWorkflowSkill,
   codexCli,
   ghCli,
   railwayCli,
@@ -275,7 +280,9 @@ const [
   nodeReplMcp,
   playwrightMcp,
   podRoleBootstrapReportPath,
+  projectBootstrapAgentSetupReportPath,
   podRoleBootstrapReport,
+  projectBootstrapAgentSetupReport,
   stitchAdcReport,
   easRobotAuthReport,
   roleRequiresStitch,
@@ -296,7 +303,7 @@ const tokenBearingCloneUrl = /:\/\/[^/\s]+@/.test(repoCloneUrl) || /(?:token|pas
 
 function readNestedReport(filePath) {
   if (!filePath || !fs.existsSync(filePath)) {
-    return { status: 'missing', blockers: [] };
+    return { status: 'missing', blockers: [], parsed: null };
   }
   try {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -314,13 +321,40 @@ function readNestedReport(filePath) {
     return {
       status: typeof parsed?.status === 'string' ? parsed.status : 'unknown',
       blockers: [...nestedBlockers],
+      parsed,
     };
   } catch {
-    return { status: 'unreadable', blockers: [] };
+    return { status: 'unreadable', blockers: [], parsed: null };
   }
 }
 
 const podRoleBootstrapNestedReport = readNestedReport(podRoleBootstrapReportPath);
+const projectBootstrapAgentSetupNestedReport = readNestedReport(projectBootstrapAgentSetupReportPath);
+
+function setupStatus(...pathParts) {
+  let value = projectBootstrapAgentSetupNestedReport.parsed;
+  for (const part of pathParts) value = value?.[part];
+  return typeof value === 'string' ? value : 'absent';
+}
+
+const toolAuth = {
+  railway: {
+    auth_status: setupStatus('tool_readiness', 'railway', 'auth_status'),
+  },
+  gcloud: {
+    auth_status: setupStatus('tool_readiness', 'gcloud', 'auth_status'),
+    adc_status: setupStatus('tool_readiness', 'gcloud', 'adc_status'),
+  },
+  expo_mcp: {
+    auth_status: setupStatus('tool_readiness', 'expo_mcp', 'auth_status'),
+  },
+  expo_cli: {
+    auth_status: setupStatus('tool_readiness', 'expo_cli', 'auth_status'),
+  },
+};
+const projectBootstrapAgentSetupReportStatus = projectBootstrapAgentSetupNestedReport.status === 'missing'
+  ? 'missing'
+  : projectBootstrapAgentSetupNestedReport.status === 'unreadable' ? 'unreadable' : 'present';
 
 function requirePresent(label, value) {
   if (value !== 'present') blockers.push(label);
@@ -335,6 +369,7 @@ if (identityRoleMatchStatus === 'mismatch') blockers.push('WM_ROLE and /workspac
 if (expectedRoleStatus === 'mismatch') blockers.push('WM_EXPECTED_ROLE mismatch');
 if (expectedRoleCanonicalStatus === 'unknown') blockers.push('unknown WM_EXPECTED_ROLE canonical slug');
 if (expectedRoleCanonicalStatus === 'non_canonical') blockers.push('WM_EXPECTED_ROLE must use canonical role slug');
+if (tokenBearingCloneUrl) blockers.push('token-bearing REPO_CLONE_URL rejected');
 if (repoPathStatus !== 'present' && (!repoCloneUrl || tokenBearingCloneUrl)) {
   blockers.push('repo missing and REPO_CLONE_URL is missing or token-bearing');
 }
@@ -356,6 +391,7 @@ if (managedPathStatus !== 'present') blockers.push(managedPathStatus);
 requirePresent('missing /workspace/skills/project-bootstrap', projectBootstrapSkill);
 requirePresent('missing /workspace/skills/codex-cli-auth-setup', codexCliAuthSetupSkill);
 requirePresent('missing /workspace/skills/pod-role-bootstrap', podRoleBootstrapSkill);
+requirePresent('missing /workspace/skills/codex-role-workflow', codexRoleWorkflowSkill);
 if (codexCli !== 'available') blockers.push('missing codex CLI');
 for (const [name, status] of [
   ['mobile-mcp', mobileMcp],
@@ -379,6 +415,28 @@ if (roleRequiresEas === 'true') {
   if (easRobotAuthReport !== 'present') blockers.push('missing eas-robot-auth-setup report');
 }
 if (podRoleBootstrapNestedReport.status === 'blocked') blockers.push('pod-role-bootstrap blocked');
+if (projectBootstrapAgentSetupNestedReport.status === 'missing') {
+  blockers.push('missing project-bootstrap-agent-setup report');
+} else if (projectBootstrapAgentSetupNestedReport.status === 'unreadable') {
+  blockers.push('unreadable project-bootstrap-agent-setup report');
+} else {
+  if (projectBootstrapAgentSetupNestedReport.status === 'blocked') blockers.push('project-bootstrap-agent-setup blocked');
+  const authValues = [
+    toolAuth.railway.auth_status,
+    toolAuth.gcloud.auth_status,
+    toolAuth.gcloud.adc_status,
+    toolAuth.expo_mcp.auth_status,
+    toolAuth.expo_cli.auth_status,
+  ];
+  if (toolAuth.railway.auth_status === 'missing') blockers.push('railway-auth-missing');
+  if (toolAuth.gcloud.auth_status === 'missing') blockers.push('gcloud-auth-missing');
+  if (toolAuth.gcloud.adc_status === 'missing') blockers.push('gcloud-adc-missing');
+  if (toolAuth.expo_mcp.auth_status === 'missing') blockers.push('expo-mcp-auth-missing');
+  if (toolAuth.expo_cli.auth_status === 'missing') blockers.push('expo-cli-auth-missing');
+  if (authValues.some((value) => value !== 'available' && value !== 'missing')) {
+    blockers.push('project-bootstrap-agent-setup auth readiness missing');
+  }
+}
 
 const blockerGuide = {
   path: blockerGuidePath,
@@ -490,6 +548,7 @@ function buildBlockerContext() {
     .map((blocker) => `\`${blocker}\``)
     .join(', ');
   return {
+    blockerSet,
     nestedBlockers,
     allBlockers,
     hasPodRoleBlocked,
@@ -582,6 +641,10 @@ function buildEnglishResult(ctx, language) {
       lines.push('- gcloud CLI is mandatory. I will use an approved official Google Cloud CLI installer source, recheck `gcloud --version`, run `gcloud auth login`, run `gcloud auth application-default login` when ADC is needed, and set the non-secret project id with `gcloud config set project <project-id>` before verifying `gcloud config get-value project`.');
     }
   }
+  if (ctx.blockerSet.has('railway-auth-missing')) lines.push('- Railway login is required before project-bootstrap can pass.');
+  if (ctx.blockerSet.has('gcloud-auth-missing') || ctx.blockerSet.has('gcloud-adc-missing')) lines.push('- Google Cloud login is required before project-bootstrap can pass.');
+  if (ctx.blockerSet.has('expo-mcp-auth-missing')) lines.push('- Expo MCP authentication is required in the target Codex session.');
+  if (ctx.blockerSet.has('expo-cli-auth-missing')) lines.push('- Expo CLI login is required in the workspace CLI session.');
 
 	  lines.push(
 	    '',
@@ -645,6 +708,10 @@ function buildEnglishResult(ctx, language) {
 	      userRequests.push(`Ask the platform owner to provide or approve the required CLI setup for: ${otherMissingClis.join(', ')}. Use real login surfaces or approved secure sources only; do not send secrets in chat.`);
 	    }
 	  }
+  if (ctx.blockerSet.has('railway-auth-missing')) userRequests.push('Complete Railway login in the official Railway login surface. Do not send Railway tokens in chat.');
+  if (ctx.blockerSet.has('gcloud-auth-missing') || ctx.blockerSet.has('gcloud-adc-missing')) userRequests.push('Complete Google Cloud login in the official Google Cloud login surface. Do not send ADC JSON, service account JSON, or tokens in chat.');
+  if (ctx.blockerSet.has('expo-mcp-auth-missing')) userRequests.push('Complete Expo MCP authorization for the target Codex session.');
+  if (ctx.blockerSet.has('expo-cli-auth-missing')) userRequests.push('Complete Expo CLI login for the workspace CLI session. Do not send Expo tokens in chat.');
 	  if (ctx.hasPackageManager) {
 	    userRequests.push('Do not choose a pnpm version. Ask for platform/runtime refresh only if the pinned package-manager setup cannot run in the pod.');
 	  }
@@ -711,6 +778,10 @@ function buildKoreanResult(ctx, language) {
   if (ctx.missingRequiredClis.includes('gcloud')) {
     lines.push('- gcloud CLI는 필수입니다. 승인된 공식 설치 source로 설치한 뒤 제가 `gcloud auth login`과 필요 시 `gcloud auth application-default login`을 실행합니다. 프로젝트 ID는 비밀이 아니므로 알려주시면 제가 `gcloud config set project <project-id>`를 실행하고 `gcloud config get-value project`로 확인합니다.');
   }
+  if (ctx.blockerSet.has('railway-auth-missing')) lines.push('- Railway 로그인이 필요합니다.');
+  if (ctx.blockerSet.has('gcloud-auth-missing') || ctx.blockerSet.has('gcloud-adc-missing')) lines.push('- Google Cloud 로그인이 필요합니다.');
+  if (ctx.blockerSet.has('expo-mcp-auth-missing')) lines.push('- Expo MCP 인증이 대상 Codex 세션에 필요합니다.');
+  if (ctx.blockerSet.has('expo-cli-auth-missing')) lines.push('- Expo CLI 로그인이 workspace CLI 세션에 필요합니다.');
   if (ctx.hasPackageManager) lines.push('- package-manager 상태를 확인했습니다. repo SoT는 `package.json`과 `pnpm-lock.yaml`이며 pin은 `pnpm@9.15.9`입니다.');
   if (ctx.hasPublicAppConfig) lines.push('- 공개 앱 설정(public non-secret app config) 출처가 필요합니다.');
   if (ctx.hasCredentialReportBlocker || ctx.hasConditionalAuth) lines.push('- 보안 credential source 또는 conditional login/auth 준비가 필요합니다.');
@@ -779,6 +850,10 @@ function buildKoreanResult(ctx, language) {
       userRequests.push('gcloud는 제가 공식 설치 source로 설치하고 `gcloud auth login`, 필요 시 `gcloud auth application-default login`을 실행하겠습니다. 프로젝트 ID만 알려주시면 `gcloud config set project <project-id>`와 `gcloud config get-value project` 확인도 제가 합니다.');
     }
   }
+  if (ctx.blockerSet.has('railway-auth-missing')) userRequests.push('Railway 로그인은 공식 화면에서 완료해 주세요. Railway 토큰은 채팅으로 보내지 마세요.');
+  if (ctx.blockerSet.has('gcloud-auth-missing') || ctx.blockerSet.has('gcloud-adc-missing')) userRequests.push('Google Cloud 로그인은 공식 화면에서 완료해 주세요. ADC JSON, service account JSON, 토큰은 채팅으로 보내지 마세요.');
+  if (ctx.blockerSet.has('expo-mcp-auth-missing')) userRequests.push('대상 Codex 세션에서 Expo MCP 인증을 완료해 주세요.');
+  if (ctx.blockerSet.has('expo-cli-auth-missing')) userRequests.push('workspace CLI 세션에서 Expo CLI 로그인을 완료해 주세요. Expo 토큰은 채팅으로 보내지 마세요.');
   if (ctx.hasPublicAppConfig) {
     userRequests.push('공개 앱 설정 source만 제공해 주세요. 비밀 endpoint, token, signing key는 보내지 마세요.');
   }
@@ -860,7 +935,7 @@ if (blockers.length) {
 
 const report = {
   schema: 'project-bootstrap/v1',
-  status: blockers.length ? 'blocked' : 'ready_for_bootstrap',
+  status: blockers.length ? 'blocked' : 'completed',
   user_summary: {
     language: {
       requested: userLanguage.requested,
@@ -897,6 +972,7 @@ const report = {
     pod_role_bootstrap: podRoleBootstrapSkill,
     stitch_adc_setup: stitchAdcSetupSkill,
     eas_robot_auth_setup: easRobotAuthSetupSkill,
+    codex_role_workflow: codexRoleWorkflowSkill,
   },
   mcp: {
     required: {
@@ -932,13 +1008,16 @@ const report = {
     human_gate_v1: humanGate,
   },
   reports: {
+    project_bootstrap_agent_setup: projectBootstrapAgentSetupReportStatus,
     pod_role_bootstrap: podRoleBootstrapReport,
     stitch_adc_setup: roleRequiresStitch === 'true' ? stitchAdcReport : 'not_applicable',
     eas_robot_auth_setup: roleRequiresEas === 'true' ? easRobotAuthReport : 'not_applicable',
   },
   nested_reports: {
+    project_bootstrap_agent_setup: projectBootstrapAgentSetupNestedReport,
     pod_role_bootstrap: podRoleBootstrapNestedReport,
   },
+  tool_auth: toolAuth,
   blocker_guide: blockerGuide,
   blockers,
   reporting: 'status only; no auth token values, raw credential output, ADC JSON, database URLs, bearer tokens, or private keys',

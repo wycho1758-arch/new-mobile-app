@@ -370,6 +370,9 @@ test -d mobile-app-dev-team/09-pod-native-openclaw-skills
 test -d /workspace/skills/project-bootstrap
 test -d /workspace/skills/codex-cli-auth-setup
 test -d /workspace/skills/pod-role-bootstrap
+test -d /workspace/skills/eas-robot-auth-setup
+test -d /workspace/skills/stitch-adc-setup
+test -d /workspace/skills/codex-role-workflow
 grep -Fx -- "- ${MANAGED_PATH}" "${CODEX_MANAGED_PATHS}"
 
 # Role status

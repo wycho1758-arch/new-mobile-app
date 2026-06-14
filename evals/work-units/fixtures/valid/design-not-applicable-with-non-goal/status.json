@@ -1,0 +1,33 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "design-not-applicable-with-non-goal",
+  "stage": "01-design",
+  "state": "not-applicable",
+  "owner_role": "Design",
+  "attempt": 1,
+  "reviewer": {
+    "required": false,
+    "status": "not-applicable",
+    "agent": null,
+    "evidence": null
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/design-not-applicable-with-non-goal/01-design/README.md",
+      "kind": "non-goal"
+    }
+  ],
+  "handoff": {
+    "next_role": "Mobile Architect",
+    "next_artifact": "docs/plans/work-units/design-not-applicable-with-non-goal/02-architecture/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "Design",
+      "action": "not-applicable"
+    }
+  ]
+}

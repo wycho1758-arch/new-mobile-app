@@ -26,6 +26,8 @@ Confluence 원본 export, 구조화 참조, `_meta` 감사 기록은 root
 | `15-human-ops-live-readiness-annex.md` | human/ops 승인 뒤에만 가능한 live readiness 작업의 승인·증거·금지 claim annex |
 | `16-pod-environment-bootstrap.md` | fresh OpenClaw role pod의 `/workspace/projects/Wondermove-Inc/new-mobile-app` zero-to-ready 부트스트랩 순서와 OrbStack pod 설정값 체크리스트 |
 | `17-orbstack-pod-config-values.md` | 현재 repo SoT에서 확인 가능한 OrbStack role pod 설정 실제값과 owner/operator가 추가 제공해야 하는 누락값 목록 |
+| `19-entry-case-routing.md` | 진입 케이스 라우팅 taxonomy(공통 intake, SoT 명명 입력 분류, 보고서 파생 C1~C5, 확장 E1~E16)와 Design 관련성/not-applicable(P-1)·동시 work-unit 우선순위(P-2)·긴급 hotfix expedited-but-gated(P-3) 거버넌스 |
+| `20-app-eas-ota-rollback-runbook.md` | 앱/EAS Update(OTA)/store 롤백 ownership·decision·gate·evidence 런북(P-4 거버넌스, 15-annex 롤백 규칙 기반) |
 | `ref-organization/` | Reference organization 재사용 가이드와 current-project example |
 | `99-source-map.md` | 근거 파일과 active/historical crosswalk |
 

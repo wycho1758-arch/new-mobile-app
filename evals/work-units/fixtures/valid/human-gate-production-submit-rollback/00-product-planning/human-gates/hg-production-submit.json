@@ -1,0 +1,22 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-production-submit",
+  "category": "production-submit",
+  "decision": "approved",
+  "scope": "Approve production submit for this fixture work unit only.",
+  "decided_by": {
+    "name": "Taylor Kim",
+    "contact": "https://github.com/example-user",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/120#issuecomment-1200",
+  "decided_at": "2026-06-14T00:09:00.000Z",
+  "rollback_owner": "Release ops owner (human) named in the release record",
+  "rollback_plan": "Re-promote the previous EAS Update channel build and submit store rollback/mitigation per 20-app-eas-ota-rollback-runbook.md.",
+  "residual_risk": [
+    "Production submit proceeds only within the approved scope; rollback owner and plan are recorded."
+  ],
+  "evidence_links": [
+    ".evidence/reviews/20260614-entry-case-final-xhigh-review.md"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "verdict": "GO",
+  "reviewer": "po-scope-gate-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "b9c84e139c77ada761c218511612edafeee89a24",
+    "target": "working-tree scoped binding: production-submit rollback field enforcement",
+    "paths_reviewed": [
+      "scripts/lib/work-unit-machine.mjs",
+      "scripts/validate-work-units.mjs",
+      "mobile-app-dev-team/15-human-ops-live-readiness-annex.md",
+      "mobile-app-dev-team/06-gates-and-evidence.md",
+      "mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md",
+      "evals/work-units/fixtures/valid/human-gate-production-submit-rollback/status.json",
+      "evals/work-units/fixtures/valid/human-gate-production-submit-rollback/00-product-planning/human-gates/hg-production-submit.json",
+      "evals/work-units/fixtures/invalid/human-gate-production-submit-missing-rollback/status.json",
+      "evals/work-units/fixtures/invalid/human-gate-production-submit-missing-rollback/00-product-planning/human-gates/hg-production-submit.json",
+      ".evidence/reviews/20260614-followup1-rollback-field-decision.md",
+      ".evidence/reviews/20260614-followup1-precise-rule-decision.md",
+      ".evidence/reviews/20260614-followup1-binding-gate-prompt.md",
+      "/tmp/f1-test-runtime.log"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "source review: SoT grounding and authorized category scope",
+      "status": "PASS",
+      "evidence": "Approval Envelope requires rollback_owner and rollback_plan at mobile-app-dev-team/15-human-ops-live-readiness-annex.md:47 and mobile-app-dev-team/15-human-ops-live-readiness-annex.md:48; production-submit is a deterministic human-gate category at mobile-app-dev-team/06-gates-and-evidence.md:91; precise rule authorizes production-submit only and non-empty strings at .evidence/reviews/20260614-followup1-precise-rule-decision.md:23."
+    },
+    {
+      "command": "source review: validateHumanGateDecision rollback enforcement",
+      "status": "PASS",
+      "evidence": "validateString enforces trimmed non-empty strings at scripts/lib/work-unit-machine.mjs:120; validateHumanGateDecision preserves existing decided_by, decision_reference, and failed-gate-risk checks at scripts/lib/work-unit-machine.mjs:491, scripts/lib/work-unit-machine.mjs:512, and scripts/lib/work-unit-machine.mjs:536; production-submit alone requires rollback_owner and rollback_plan at scripts/lib/work-unit-machine.mjs:545, scripts/lib/work-unit-machine.mjs:546, and scripts/lib/work-unit-machine.mjs:547."
+    },
+    {
+      "command": "node --input-type=module -e targeted validateHumanGateDecision fixture check",
+      "status": "PASS",
+      "evidence": "The valid production-submit rollback fixture passed; the invalid production-submit fixture failed only with rollback_owner and rollback_plan non-empty string errors; the existing failed-gate-risk fixture passed. Fixture lines show rollback fields present at evals/work-units/fixtures/valid/human-gate-production-submit-rollback/00-product-planning/human-gates/hg-production-submit.json:14 and evals/work-units/fixtures/valid/human-gate-production-submit-rollback/00-product-planning/human-gates/hg-production-submit.json:15, absent from the invalid fixture before residual_risk at evals/work-units/fixtures/invalid/human-gate-production-submit-missing-rollback/00-product-planning/human-gates/hg-production-submit.json:14."
+    },
+    {
+      "command": "node scripts/validate-work-units.mjs --self-test",
+      "status": "PASS",
+      "evidence": "Exit 0 with output: Validated work-unit status fixtures."
+    },
+    {
+      "command": "pnpm run validate:team-doc",
+      "status": "PASS",
+      "evidence": "Exit 0 with output: Validated current mobile-app-dev-team managed docs."
+    },
+    {
+      "command": "source review: rollback runbook doc accuracy and live-execution boundary",
+      "status": "PASS",
+      "evidence": "The added note states partial runtime enforcement for production-submit only and says other categories keep existing requirements at mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md:44; managed-doc and no-supersede boundaries remain at mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md:3 and mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md:5; live EAS/OTA/store/production execution is not authorized at mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md:11 and mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md:51."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "PASS",
+      "evidence": "Recorded writable-environment evidence in /tmp/f1-test-runtime.log shows validate, repo operations, team-doc, work-units, work-unit-next, EAS evidence, project environment, evidence hygiene, and hooks all passed, ending with Passed 44 hook fixture tests. The review prompt permits using this recorded evidence under read-only sandbox constraints at .evidence/reviews/20260614-followup1-binding-gate-prompt.md:23."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Source-backed as out of scope for this reviewer pass by .evidence/reviews/20260614-followup1-binding-gate-prompt.md:24."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Source-backed as out of scope for this reviewer pass by .evidence/reviews/20260614-followup1-binding-gate-prompt.md:24."
+    },
+    {
+      "command": "git status --short -- scoped collision paths; git diff -- scripts/validate-team-doc.mjs mobile-app-dev-team/09-pod-native-openclaw-skills/** | rg rollback_owner|rollback_plan|production-submit|validateHumanGateDecision|human-gate-production-submit",
+      "status": "PASS",
+      "evidence": "The worktree contains unrelated dirty paths in scripts/validate-team-doc.mjs and mobile-app-dev-team/09-pod-native-openclaw-skills/**, but the rollback-binding terms were not present in those diffs. This verdict is constrained to THIS binding per .evidence/reviews/20260614-followup1-binding-gate-prompt.md:5 and collision constraints at .evidence/reviews/20260614-followup1-binding-gate-prompt.md:18."
+    }
+  ],
+  "residual_risks": [
+    "Working tree has unrelated modified paths outside this binding, including scripts/validate-team-doc.mjs and mobile-app-dev-team/09-pod-native-openclaw-skills/**; this review did not approve or validate those changes.",
+    "Full workspace lint/test and local-harness remain final-step gates outside this scoped reviewer pass per .evidence/reviews/20260614-followup1-binding-gate-prompt.md:24."
+  ],
+  "next_action": "proceed"
+}

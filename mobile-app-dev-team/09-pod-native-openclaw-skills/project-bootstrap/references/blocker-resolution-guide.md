@@ -441,6 +441,52 @@ Agent action:
   instead of adding the override to `/workspace/CODEX_MANAGED_PATHS.md`.
 - If clone is required, `REPO_CLONE_URL` must be non-secret and token-free.
 
+## Project Bootstrap Agent Setup And Auth Blockers
+
+Related blockers:
+
+- missing project-bootstrap-agent-setup report
+- unreadable project-bootstrap-agent-setup report
+- project-bootstrap-agent-setup blocked
+- project-bootstrap-agent-setup auth readiness missing
+- railway-cli-unavailable
+- gcloud-cli-unavailable
+- railway-auth-missing
+- gcloud-auth-missing
+- gcloud-adc-missing
+- expo-mcp-auth-missing
+- expo-cli-auth-missing
+
+Resolution:
+
+- The agent must run `/workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh`
+  before `project-bootstrap-preflight.sh`.
+- Railway, gcloud auth, Google ADC, Expo MCP auth, and workspace Expo CLI auth
+  are separate readiness surfaces. Do not collapse them into a single
+  "logged in" status.
+- Railway and gcloud command availability are required before their auth states
+  can be trusted. Missing CLI availability must keep the setup report blocked.
+- Expo MCP proves the target Codex session OAuth surface. Expo CLI proves the
+  workspace CLI session and is checked with `npx --no-install expo whoami`.
+- Package or system installers require explicit
+  `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`. Without approval, report
+  `install_blocked_needs_approval`, list `install_plan`, keep
+  `installed_exact` empty, and wait.
+- After approval, `installed_exact` may list only verified successful installs.
+  `npm_global_install_failed` and `install_failed` are failed attempts, not
+  installed software.
+
+Agent action:
+
+- Regenerate `/workspace/state/project-bootstrap-agent-setup-report.json`.
+- Rerun `project-bootstrap-preflight.sh` with
+  `PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH` pointing at that setup report when
+  a non-default state path is used.
+- Ask the user only for the smallest human-owned login or approval action:
+  Railway login, Google Cloud login/ADC, Expo MCP authorization, Expo CLI login,
+  or installer approval. Never ask the user to send tokens, ADC JSON, service
+  account JSON, or passwords in chat.
+
 ## Public App Config Blockers
 
 Related blockers:

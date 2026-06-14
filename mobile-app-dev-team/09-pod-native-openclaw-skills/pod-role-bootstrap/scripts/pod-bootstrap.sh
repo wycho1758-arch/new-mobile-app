@@ -10,6 +10,10 @@ redact() {
   sed -E 's/(token|key|secret|password)([=: ][^ ]+)/\1=***REDACTED***/Ig'
 }
 
+has_token_bearing_clone_url() {
+  [[ "${REPO_CLONE_URL:-}" =~ ://[^/[:space:]]+@ ]] || [[ "${REPO_CLONE_URL:-}" =~ (token|password|secret|key)= ]]
+}
+
 resolve_role() {
   if [[ -n "${WM_ROLE:-}" ]]; then
     printf '%s\n' "${WM_ROLE}"
@@ -88,6 +92,12 @@ NODE
 }
 
 ensure_repo_checkout() {
+  if has_token_bearing_clone_url; then
+    write_status_report "blocked" "token_bearing_or_rejected" "not_checked" "skipped" "token-bearing REPO_CLONE_URL rejected"
+    echo "pod-role-bootstrap failed: token-bearing REPO_CLONE_URL rejected" >&2
+    exit 1
+  fi
+
   if [[ -d "${REPO_PATH}" ]]; then
     printf '%s\n' "existing"
     return

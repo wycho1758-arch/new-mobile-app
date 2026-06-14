@@ -108,3 +108,7 @@ Human gate envelopes make a decision auditable and machine-readable; they do not
 turn a role, reviewer, pod, LLM, or Release Gatekeeper into a human approver.
 `blocked-human` work may resume to `in-progress` only when the matching
 decision envelope is `approved`.
+
+Emergency hotfixes are expedited but still gated: `production-submit` and
+`failed-gate-risk` human gates are never bypassed. See
+`19-entry-case-routing.md` §P-3 (managed-doc guidance).

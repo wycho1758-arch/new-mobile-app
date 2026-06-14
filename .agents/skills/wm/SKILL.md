@@ -30,13 +30,14 @@ Review-only requests MUST route to the read-only custom agents without triggerin
 - If applicable SoT is missing, unreadable, or ambiguous, mark the item unknown or blocked instead of proceeding from assumptions.
 - Pre-implementation plan review evidence and final actual-work review evidence are mandatory for non-trivial implementation runs.
 - The completed implementation plan must be reviewed by the appropriate read-only reviewer before implementation starts, unless the user explicitly requested planning-only and no repo edits will follow.
+- The approved plan for non-trivial implementation runs must define step-by-step checkpoint review boundaries before execution. Each checkpoint review must include the approved plan, checkpoint diff, command output, evidence path, remaining plan impact, and the read-only reviewer verdict or source-backed skip reason. A failed or blocked checkpoint review must be addressed before the next checkpoint proceeds.
 - The actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
 - The headless helper is an allowed review evidence path; the review evidence requirement itself is mandatory.
 
 ## Workflow
 
 1. Confirm the task is explicitly invoked with `$wm` or `/wm`.
-2. For non-trivial work, produce a short SoT-grounded plan before implementation. Include scope, owner role, affected paths, expected tests, evidence path, gate impact, any human gate or handoff needed before execution, and the SoT sources used. A completed implementation plan must be reviewed by the appropriate read-only reviewer before implementation starts, unless the user explicitly requested planning-only and no repo edits will follow.
+2. For non-trivial work, produce a short SoT-grounded plan before implementation. Include scope, owner role, affected paths, expected tests, evidence path, gate impact, checkpoint boundaries, any human gate or handoff needed before execution, and the SoT sources used. A completed implementation plan must be reviewed by the appropriate read-only reviewer before implementation starts, unless the user explicitly requested planning-only and no repo edits will follow.
 3. Identify the role boundary:
    - Mobile UI/runtime implementation: use `.agents/skills/mobile-app-dev-workflow/SKILL.md`.
    - Mobile-facing backend/API contract work: use `.agents/skills/mobile-backend-api-integrator-workflow/SKILL.md`.
@@ -52,16 +53,18 @@ Review-only requests MUST route to the read-only custom agents without triggerin
    - Product/Planning SoT uncertainty: `po-docs-researcher`;
    - Design handoff readiness, P0/P1, state coverage, accessibility, or implementation constraints: `design-reviewer`;
    - Design or Stitch SoT uncertainty: `design-researcher`.
-6. Add or update the narrowest failing test, eval fixture, harness assertion, or validator check first.
-7. Implement the smallest repo-scoped change that satisfies the test and respects ownership boundaries.
-8. Run the applicable verification:
+6. Inspect `.codex/agents/**` read-only when the request affects `$wm` review routing, reviewer contracts, or custom-agent selection. Record whether the dedicated `wm-*`, Product/Planning `po-*`, and Design `design-*` read-only agents are sufficient, and do not route `$wm` reviewer work through legacy `mobile-*` agents.
+7. Add or update the narrowest failing test, eval fixture, harness assertion, or validator check first.
+8. Implement the smallest repo-scoped change that satisfies the test and respects ownership boundaries.
+9. At each approved checkpoint boundary, run or collect the checkpoint-specific verification, then obtain a bounded read-only checkpoint review or record a source-backed skip reason when no material risk changed. The checkpoint review input must include the approved plan, checkpoint diff, command output, evidence path, and remaining plan impact. A failed or blocked checkpoint review must be addressed before the next checkpoint proceeds.
+10. Run the applicable verification:
    - Runtime changes: `pnpm run test:runtime`.
    - Runtime path or harness changes: `pnpm run test:local-harness`.
    - Workspace code changes: `pnpm turbo run lint test`.
    - Mobile runtime changes: `pnpm --filter mobile exec expo install --check`, mobile lint/test/doctor, and local visual QA when a simulator or device is available.
-9. After implementation and tests, actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
-10. Record evidence under `.evidence/` or `evals/*/results/` for review, gate, harness, or QA proof. Persist plan-review and final-review evidence for every non-trivial implementation run.
-11. Before the final user completion report, run `git diff` for the changed paths, check full `git status --short`, and include the material diff/change details in the completion report.
+11. After implementation and tests, actual completed work must be reviewed by the appropriate read-only reviewer against the approved plan, git diff, command output, and evidence before Done.
+12. Record evidence under `.evidence/` or `evals/*/results/` for review, gate, harness, or QA proof. Persist plan-review, checkpoint review, and final-review evidence for every non-trivial implementation run.
+13. Before the final user completion report, run `git diff` for the changed paths, check full `git status --short`, and include the material diff/change details in the completion report.
 
 ## Symbolic Navigation
 

@@ -134,6 +134,10 @@ Stop immediately when any of these occurs:
 Rollback must be owned by the approving human/ops owner. Repo agents can document
 rollback evidence and classify failures, but they do not own external rollback.
 
+The app / EAS Update (OTA) / store rollback ownership, decision, gate, and
+evidence flow built on these rules is documented in
+`20-app-eas-ota-rollback-runbook.md` (managed-doc guidance).
+
 ## Forbidden Claims
 
 Do not claim any of the following from repo-local evidence:

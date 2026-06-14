@@ -61,10 +61,16 @@ The agent must first perform non-secret setup that it can own:
 
 - register pinned MCPs from repo SoT for `mobile-mcp`, `serena`, `stitch`,
   `expo`, `atlassian`, and `playwright`;
-- install Railway with `npm i -g @railway/cli` when missing and npm is
-  available, then recheck `railway --version`;
+- report the exact install plan and wait for explicit approval before any
+  package or system installer runs, unless the user already approved it;
+- install Railway with `npm i -g @railway/cli` only when missing, npm is
+  available, and `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`, then recheck
+  `railway --version`;
 - install gcloud only from an approved official Google Cloud CLI installer
-  source, then recheck `gcloud --version`;
+  source and only when `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`, then recheck
+  `gcloud --version`;
+- after any package/system install, report only verified successful installs in
+  `installed_exact`; failed attempts must remain outside `installed_exact`;
 - start `railway login`, `gcloud auth login`, and when needed
   `gcloud auth application-default login` only with a human present for the real
   provider surface;
@@ -153,6 +159,7 @@ Common setup:
 
 - `/workspace/skills/codex-cli-auth-setup/SKILL.md`
 - `/workspace/skills/pod-role-bootstrap/SKILL.md`
+- `/workspace/skills/codex-role-workflow/SKILL.md`
 
 Role-specific setup:
 
@@ -245,6 +252,9 @@ bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.s
 This script must:
 
 - repair the managed-path registry when the repo path is the known SoT path;
+- register the required pod-native skills from
+  `mobile-app-dev-team/09-pod-native-openclaw-skills/README.md` into
+  `/workspace/skills`;
 - register missing required MCPs from repo-pinned non-secret commands when the
   registration is agent-owned;
 - run Codex CLI/auth status setup before `missing codex CLI` becomes terminal;
@@ -327,19 +337,21 @@ exists for the exact action and evidence path.
 - Missing required MCPs are registered from pinned repo SoT when Codex CLI is
   available and no credential flow or app-owned runtime restoration is required.
 - Required CLIs are status-checked: Railway and gcloud. Missing values are
-  blockers. The agent installs Railway with `npm i -g @railway/cli` when npm is
-  available, starts `railway login` with a human present, and records
-  metadata-only credential storage proof for `${HOME}/.railway`. The agent may
-  install gcloud only from an approved official Google Cloud CLI installer
-  source, starts `gcloud auth login` and when needed
-  `gcloud auth application-default login` with a human present, asks only for
-  the non-secret project ID, runs `gcloud config set project <project-id>`, and
-  verifies `gcloud config get-value project`. Token values, ADC JSON, service
-  account JSON, and credential file contents are never printed or persisted.
-- EAS/Expo account details, workspace Expo, GitHub auth, and Codex auth are
-  checked status-only unless the `blockers` array or current role-specific SoT
-  makes them actionable. EAS CLI remains the baseline exception until EAS work
-  is selected.
+  blockers. Any package/system install requires explicit
+  `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`; otherwise the agent reports
+  `install_blocked_needs_approval`, lists the `install_plan`, keeps
+  `installed_exact` empty, and waits. After approved installs, the report lists
+  only verified successful installs in `installed_exact`; failed attempts must
+  not be reported as installed. Railway auth, gcloud auth, and gcloud ADC are
+  separate status fields and blockers.
+- Expo MCP auth and workspace Expo CLI auth are separate readiness surfaces.
+  Expo MCP is checked for the target Codex session, while Expo CLI is checked
+  with `npx --no-install expo whoami` so status checks do not install packages.
+  EAS CLI remains the baseline exception until EAS work is selected.
+- `project-bootstrap-preflight.sh` consumes
+  `/workspace/state/project-bootstrap-agent-setup-report.json` as a hard input.
+  Missing, unreadable, blocked, or auth-incomplete setup reports block
+  project-bootstrap.
 - Git identity is configured only from an approved non-secret local source such
   as `PROJECT_BOOTSTRAP_GIT_USER_NAME` plus
   `PROJECT_BOOTSTRAP_GIT_USER_EMAIL`, `WM_GIT_USER_NAME` plus

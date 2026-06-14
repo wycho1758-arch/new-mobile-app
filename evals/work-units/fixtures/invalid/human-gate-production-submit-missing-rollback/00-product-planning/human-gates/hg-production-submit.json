@@ -1,0 +1,20 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "hg-production-submit",
+  "category": "production-submit",
+  "decision": "approved",
+  "scope": "Approve production submit for this fixture work unit only.",
+  "decided_by": {
+    "name": "Taylor Kim",
+    "contact": "https://github.com/example-user",
+    "channel": "github-review"
+  },
+  "decision_reference": "https://github.com/example/mobile-app-template/pull/121#issuecomment-1210",
+  "decided_at": "2026-06-14T00:09:00.000Z",
+  "residual_risk": [
+    "Missing rollback_owner and rollback_plan: this production-submit decision must be rejected by the validator."
+  ],
+  "evidence_links": [
+    ".evidence/reviews/20260614-entry-case-final-xhigh-review.md"
+  ]
+}

@@ -1,0 +1,142 @@
+**Findings**
+
+Critical: None.
+
+High: None.
+
+Medium: Install-approval RED coverage is internally inconsistent. The plan requires every package/system install to require `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true` and otherwise block with a report-only install plan (`docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:77`). The new negative case correctly asserts that npm must not run without approval (`evals/skills/project-bootstrap-agent-setup-smoke.sh:905`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:925`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:929`), but existing smoke cases still require install attempts without setting `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`: Railway npm install is expected at `evals/skills/project-bootstrap-agent-setup-smoke.sh:1380`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:1406`, and approved installer execution is expected at `evals/skills/project-bootstrap-agent-setup-smoke.sh:1527`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:1553`. That means GREEN implementation cannot satisfy the stated approval contract and the current smoke suite at the same time. Owner: Mobile App Dev.
+
+Medium: Token-bearing clone URL RED coverage still does not prove the existing-repo path for `pod-role-bootstrap`. The plan requires token-bearing clone URLs to be rejected by both `project-bootstrap` preflight and `pod-role-bootstrap`, even when the repo path already exists (`docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:80`). The “both paths” case covers `pod-role-bootstrap` only after deleting the repo (`evals/skills/project-bootstrap-agent-setup-smoke.sh:997`) and then verifies no clone and redacted report (`evals/skills/project-bootstrap-agent-setup-smoke.sh:1011`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:1014`). The existing-repo redaction case covers only project preflight (`evals/skills/project-bootstrap-agent-setup-smoke.sh:1020`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:1031`). A pod-role existing-repo leak/regression would still escape this RED coverage. Owner: Mobile App Dev.
+
+Low: None.
+
+The missing/unreadable setup-report gap from the prior reviewer is now directly covered: the smoke sets `PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH` into preflight (`evals/skills/project-bootstrap-agent-setup-smoke.sh:721`) and asserts missing/unreadable reports block (`evals/skills/project-bootstrap-agent-setup-smoke.sh:728`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:742`). Auth blocker separation is also covered for Railway, gcloud auth, gcloud ADC, Expo MCP, and Expo CLI (`evals/skills/project-bootstrap-agent-setup-smoke.sh:868`). Validator term guards now include the new case names and key contract strings (`scripts/validate-team-doc.mjs:862`, `scripts/validate-team-doc.mjs:933`). Because the install-approval contradiction and pod-role existing-repo token gap remain, this RED package should not proceed to implementation yet.
+
+```json
+{
+  "verdict": "NO_GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "b9c84e139c77ada761c218511612edafeee89a24",
+    "target": "RED coverage for project-bootstrap auth gates before GREEN implementation",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs",
+      ".evidence/reviews/20260614-openclaw-bootstrap-auth-gates-corrected-plan-xhigh.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "summary": "Install-approval RED coverage is contradictory: one case blocks npm install without PROJECT_BOOTSTRAP_INSTALL_APPROVED=true, while other active smoke cases still require Railway and gcloud/railway installer execution without that explicit approval.",
+      "source_refs": [
+        "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:77",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:905",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:925",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:929",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1380",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1406",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1527",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1553"
+      ],
+      "owner": "Mobile App Dev"
+    },
+    {
+      "severity": "MEDIUM",
+      "summary": "Token-bearing clone URL RED coverage does not cover pod-role-bootstrap when the repo path already exists, despite the plan requiring both bootstrap paths to reject token-bearing URLs even on existing repos.",
+      "source_refs": [
+        "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:80",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:980",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:997",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1011",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1014",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1020",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:1031"
+      ],
+      "owner": "Mobile App Dev"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "scope review against AGENTS.md and PROJECT_ENVIRONMENT.md",
+      "status": "PASS",
+      "evidence": "AGENTS.md requires TDD before implementation and runtime gates for Codex artifacts; PROJECT_ENVIRONMENT.md defines project-bootstrap runtime shape, /workspace defaults, provider auth surfaces, and secret-safe proof limits."
+    },
+    {
+      "command": "source review: missing and unreadable project-bootstrap-agent-setup-report.json RED coverage",
+      "status": "PASS",
+      "evidence": "case_preflight_blocks_missing_agent_setup_report and case_preflight_blocks_unreadable_agent_setup_report assert blocked status, missing/unreadable report markers, and explicit blockers."
+    },
+    {
+      "command": "source review: project-bootstrap-preflight.sh consumes setup report as hard pass/fail input",
+      "status": "PASS",
+      "evidence": "run_ready_preflight passes PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH into preflight; missing, unreadable, absent-auth, and ready-auth cases assert pass/fail behavior around that report."
+    },
+    {
+      "command": "source review: separate Railway auth, gcloud auth, gcloud ADC, Expo MCP auth, and Expo CLI auth blockers",
+      "status": "PASS",
+      "evidence": "case_auth_blocker_markdown_ko_en_user_friendly asserts railway-auth-missing, gcloud-auth-missing, gcloud-adc-missing, expo-mcp-auth-missing, and expo-cli-auth-missing as separate blockers."
+    },
+    {
+      "command": "source review: install approval before package/system installation",
+      "status": "FAIL",
+      "evidence": "Negative approval coverage was added, but active smoke cases still require npm/installer execution without PROJECT_BOOTSTRAP_INSTALL_APPROVED=true."
+    },
+    {
+      "command": "source review: default clone, /workspace/skills registration, and /workspace/AGENTS.md defaults",
+      "status": "PASS",
+      "evidence": "case_default_clone_runtime_skill_registration_workspace_agents_defaults asserts default clone URL/path, skill registration under workspace skills root, and Project Workspace Defaults in workspace AGENTS.md."
+    },
+    {
+      "command": "source review: token-bearing clone URL rejection in project-bootstrap and pod-role-bootstrap including existing-repo redaction",
+      "status": "FAIL",
+      "evidence": "Project preflight existing-repo redaction is covered and pod-role missing-repo rejection is covered, but pod-role existing-repo rejection/redaction is not covered."
+    },
+    {
+      "command": "source review: validator terms protect new behavior from silent deletion",
+      "status": "PASS",
+      "evidence": "validate-team-doc.mjs now requires setup-report preflight terms, auth blocker terms, token-bearing URL terms, install/report/workspace terms, and the new smoke case names."
+    },
+    {
+      "command": "bash -n evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Provided evidence says shell syntax passed; read-only review did not mutate or rerun the smoke."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Provided evidence says the smoke failed expected-RED at case_preflight_blocks_missing_agent_setup_report because current preflight did not return blocked."
+    },
+    {
+      "command": "node --check scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Provided evidence says validator syntax passed."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Provided evidence says validator failed expected-RED on missing preflight/setup/pod-role-bootstrap contract terms."
+    },
+    {
+      "command": "mobile-mcp / visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "This is a plan-mode runtime eval/validator coverage review; no React Native UI or device behavior changed."
+    },
+    {
+      "command": "API contract drift review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Reviewed paths are runtime scripts, validators, and planning/evidence docs; no packages/contracts or API request/response schemas are in scope."
+    }
+  ],
+  "residual_risks": [
+    "The expected-RED smoke stops at the first failing case, so later RED cases have source coverage but not observed sequential failure evidence yet.",
+    "Validator term checks guard against silent deletion of strings and case names, but they do not prove assertion-level semantic consistency such as the install-approval contradiction found here.",
+    "Full runtime gates remain future work before PR readiness: pnpm run test:runtime, pnpm run test:local-harness, and pnpm turbo run lint test."
+  ],
+  "next_action": "fix_findings"
+}
+```

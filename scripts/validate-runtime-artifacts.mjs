@@ -361,6 +361,27 @@ if (exists(wmPositivePromptPath)) {
   assert(/material planning decision/i.test(wmPositive), `${wmPositivePromptPath} must require material planning decision routing`);
   assert(/read-only sub-agent/i.test(wmPositive), `${wmPositivePromptPath} must require read-only planning sub-agent routing`);
   assert(/agent, question, conclusion, source refs or evidence path, and reflection\/impact/i.test(wmPositive), `${wmPositivePromptPath} must require structured planning sub-agent result fields`);
+  assert(/checkpoint review/i.test(wmPositive), `${wmPositivePromptPath} must require checkpoint review evidence`);
+}
+
+const wmCheckpointReviewPromptPath = 'evals/skills/wm/checkpoint-review-positive.prompt.md';
+assert(exists(wmCheckpointReviewPromptPath), `missing wm checkpoint review eval fixture: ${wmCheckpointReviewPromptPath}`);
+if (exists(wmCheckpointReviewPromptPath)) {
+  const wmCheckpointReview = read(wmCheckpointReviewPromptPath);
+  for (const term of [
+    '$wm',
+    'step-by-step checkpoint review boundaries',
+    'approved plan',
+    'checkpoint diff',
+    'command output',
+    'evidence path',
+    'remaining plan impact',
+    'read-only reviewer verdict',
+    'Failed or blocked checkpoint review',
+    '.codex/agents/**',
+  ]) {
+    assert(wmCheckpointReview.includes(term), `${wmCheckpointReviewPromptPath} missing required checkpoint review term: ${term}`);
+  }
 }
 
 const wmWriteExecutorNegativePath = 'evals/skills/wm/write-executor-negative.prompt.md';
@@ -649,6 +670,10 @@ if (exists(wmSkillPath)) {
   assert(/write-capable executor/i.test(wm), 'wm skill must forbid write-capable executor delegation');
   assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(wm), 'wm skill must require mandatory plan and final review evidence');
   assert(/actual completed work must be reviewed/i.test(wm), 'wm skill must require reviewer check for actual completed work');
+  assert(/checkpoint review/i.test(wm), 'wm skill must require checkpoint review');
+  assert(/checkpoint boundaries/i.test(wm), 'wm skill must require checkpoint boundaries in the approved plan');
+  assert(/approved plan/i.test(wm) && /checkpoint diff/i.test(wm) && /command output/i.test(wm) && /evidence path/i.test(wm) && /remaining plan impact/i.test(wm), 'wm skill must define checkpoint review inputs');
+  assert(/failed or blocked checkpoint review/i.test(wm), 'wm skill must block next checkpoint after failed or blocked checkpoint review');
   assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(wm), 'wm skill must clarify helper choice is optional but review evidence is mandatory');
   assert(/git diff/i.test(wm) && /completion report/i.test(wm), 'wm skill must require git diff details in completion reports');
   assert(/TDD/i.test(wm), 'wm skill must require TDD');
@@ -715,6 +740,8 @@ if (exists(projectEnvironmentPath)) {
   assert(/write-capable executor/i.test(environment), 'PROJECT_ENVIRONMENT.md must forbid write-capable executor delegation');
   assert(/must not proceed past planning until applicable local SoT has been read and cited or named/i.test(environment), 'PROJECT_ENVIRONMENT.md must block $wm implementation until applicable SoT is read and cited or named');
   assert(/pre-implementation plan review evidence and final actual-work review evidence are mandatory/i.test(environment), 'PROJECT_ENVIRONMENT.md must require mandatory $wm plan and final review evidence');
+  assert(/checkpoint review evidence/i.test(environment), 'PROJECT_ENVIRONMENT.md must require $wm checkpoint review evidence');
+  assert(/checkpoint boundaries/i.test(environment), 'PROJECT_ENVIRONMENT.md must document $wm checkpoint boundaries');
   assert(/headless helper is an allowed review evidence path.*review evidence requirement itself is mandatory/is.test(environment), 'PROJECT_ENVIRONMENT.md must clarify helper choice is optional but $wm review evidence is mandatory');
   assert(/machine-readable reviewer verdict/i.test(environment), 'PROJECT_ENVIRONMENT.md must document reviewer JSON envelope contract');
   assert(/--json-envelope/i.test(environment), 'PROJECT_ENVIRONMENT.md must document codex-headless-review --json-envelope');

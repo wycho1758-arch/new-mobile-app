@@ -1,0 +1,85 @@
+{
+  "verdict": "GO",
+  "reviewer": "po-scope-gate-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "b9c84e139c77ada761c218511612edafeee89a24",
+    "target": "worktree: CP-3 P-2/P-3 governance docs",
+    "paths_reviewed": [
+      "mobile-app-dev-team/19-entry-case-routing.md",
+      "mobile-app-dev-team/06-gates-and-evidence.md",
+      "mobile-app-dev-team/05-work-processes.md",
+      "mobile-app-dev-team/03-role-capability-matrix.md",
+      "mobile-app-dev-team/00-sot-and-principles.md",
+      ".agents/skills/po-work-unit-planning-and-agent-sprint/SKILL.md",
+      ".evidence/reviews/20260614-entry-case-cp3-decision.md",
+      ".evidence/reviews/20260614-entry-case-cp3-prompt.md",
+      ".github/workflows/quality-gate.yml",
+      "package.json"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "source inspection: CP-3 target shape",
+      "status": "PASS",
+      "evidence": "git status --short shows mobile-app-dev-team/06-gates-and-evidence.md modified and mobile-app-dev-team/19-entry-case-routing.md plus .evidence/reviews/20260614-entry-case-cp3-decision.md untracked; review target was current worktree content."
+    },
+    {
+      "command": "source inspection: P-2/P-3 SoT grounding",
+      "status": "PASS",
+      "evidence": "P-2/P-3 cite and preserve per-work-unit durable handoff, API contract ownership, tests-first, production approval, and failure loop boundaries: mobile-app-dev-team/19-entry-case-routing.md:94; mobile-app-dev-team/19-entry-case-routing.md:96; mobile-app-dev-team/19-entry-case-routing.md:104; mobile-app-dev-team/19-entry-case-routing.md:105; mobile-app-dev-team/19-entry-case-routing.md:107."
+    },
+    {
+      "command": "source inspection: no human-gate weakening",
+      "status": "PASS",
+      "evidence": "P-2 escalates irreversible scope and budget decisions to human gates, and P-3 states production-submit and failed-gate-risk are not bypassed: mobile-app-dev-team/19-entry-case-routing.md:97; mobile-app-dev-team/19-entry-case-routing.md:105; mobile-app-dev-team/19-entry-case-routing.md:108; mobile-app-dev-team/06-gates-and-evidence.md:91; mobile-app-dev-team/06-gates-and-evidence.md:98."
+    },
+    {
+      "command": "source inspection: role-boundary preservation",
+      "status": "PASS",
+      "evidence": "Product/Planning is limited to scope/routing, Backend/API owns packages/contracts with Mobile Architect co-review, and QA/Release owns evidence/risk/failure classification: mobile-app-dev-team/03-role-capability-matrix.md:5; mobile-app-dev-team/03-role-capability-matrix.md:7; mobile-app-dev-team/03-role-capability-matrix.md:9; mobile-app-dev-team/03-role-capability-matrix.md:10; mobile-app-dev-team/05-work-processes.md:34."
+    },
+    {
+      "command": "source inspection: managed-doc disclaimer in both sections",
+      "status": "PASS",
+      "evidence": "Both P-2 and P-3 include managed-doc guidance, deferred runtime enforcement, and non-supersession language aligned to SoT priority 5: mobile-app-dev-team/19-entry-case-routing.md:92; mobile-app-dev-team/19-entry-case-routing.md:101; mobile-app-dev-team/00-sot-and-principles.md:13."
+    },
+    {
+      "command": "source inspection: 06 additive pointer, Railway Boundary preserved, no CTO token",
+      "status": "PASS",
+      "evidence": "git diff shows only four inserted lines in mobile-app-dev-team/06-gates-and-evidence.md; Railway Boundary remains at mobile-app-dev-team/06-gates-and-evidence.md:57 and Human Gates terms remain at mobile-app-dev-team/06-gates-and-evidence.md:70. rg -n \"CTO\" over the reviewed CP-3 paths returned no matches."
+    },
+    {
+      "command": "git diff --check -- mobile-app-dev-team/19-entry-case-routing.md mobile-app-dev-team/06-gates-and-evidence.md",
+      "status": "PASS",
+      "evidence": "Command exited 0 during this read-only review."
+    },
+    {
+      "command": "pnpm run validate:team-doc",
+      "status": "PASS",
+      "evidence": "Implementer-run PASS is explicitly required to be recorded for CP-3 by .evidence/reviews/20260614-entry-case-cp3-prompt.md:19; package.json:24 defines the validator command."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Intermediate checkpoint instruction says full CI gates run once at CP-5 and must be marked NOT_APPLICABLE here: .evidence/reviews/20260614-entry-case-cp3-prompt.md:20. PR CI still runs this gate at .github/workflows/quality-gate.yml:17."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Intermediate checkpoint instruction says full CI gates run once at CP-5 and must be marked NOT_APPLICABLE here: .evidence/reviews/20260614-entry-case-cp3-prompt.md:20. PR CI still runs this gate at .github/workflows/quality-gate.yml:16."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Intermediate checkpoint instruction says full CI gates run once at CP-5 and must be marked NOT_APPLICABLE here: .evidence/reviews/20260614-entry-case-cp3-prompt.md:20. mobile-app-dev-team changes trigger local harness in PR CI at .github/workflows/quality-gate.yml:25 and .github/workflows/quality-gate.yml:31."
+    }
+  ],
+  "residual_risks": [
+    "Runtime enforcement remains deferred; this GO only covers managed-doc governance consistency, not validator or skill enforcement.",
+    "Full workspace/runtime/local-harness CI evidence remains deferred to CP-5 and PR quality gate.",
+    "Final PR packaging must include the currently untracked mobile-app-dev-team/19-entry-case-routing.md and .evidence/reviews/20260614-entry-case-cp3-decision.md files."
+  ],
+  "next_action": "proceed"
+}

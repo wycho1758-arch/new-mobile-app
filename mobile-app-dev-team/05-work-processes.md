@@ -23,6 +23,8 @@
 8. Extract/publish HTML and image artifacts.
 9. Request `design-reviewer` before Mobile App Dev implementation begins.
 
+> Design relevance / `not-applicable` criteria for the `01-design` stage are documented in `19-entry-case-routing.md` §P-1 (managed-doc guidance).
+
 ## 3. API Readiness
 
 1. Backend/API Engineer receives API-backed task or contract uncertainty through Backend/API Integrator.

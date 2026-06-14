@@ -23,6 +23,24 @@ preflight report. That report has this shape:
     "canonical_repo_path": "/workspace/projects/Wondermove-Inc/new-mobile-app/",
     "status": "present | repaired | blocked_wrong_repo_path"
   },
+  "repo_checkout": {
+    "clone_url_status": "canonical_https | token_bearing_or_rejected",
+    "local_path": "/workspace/projects/Wondermove-Inc/new-mobile-app",
+    "status": "present | cloned | blocked | clone_failed"
+  },
+  "workspace_skills": {
+    "root": "/workspace/skills",
+    "project-bootstrap": "present | registered | missing_source | blocked",
+    "codex-cli-auth-setup": "present | registered | missing_source | blocked",
+    "pod-role-bootstrap": "present | registered | missing_source | blocked",
+    "eas-robot-auth-setup": "present | registered | missing_source | blocked",
+    "stitch-adc-setup": "present | registered | missing_source | blocked",
+    "codex-role-workflow": "present | registered | missing_source | blocked"
+  },
+  "workspace_agents": {
+    "path": "/workspace/AGENTS.md",
+    "project_workspace_defaults": "present | created_default | blocked"
+  },
   "codex_cli_setup": "not_needed | available_after_precheck | missing_after_precheck | codex_cli_precheck_missing",
   "mcp": {
     "mobile_mcp": "already_configured | registered | registration_unverified | codex_cli_missing | blocked",
@@ -45,8 +63,8 @@ preflight report. That report has this shape:
       "required": true,
       "owner": "agent_with_approved_installer_then_human_auth",
       "command_status": "available | missing",
-      "install_decision": "already_available | npm_global_install_attempted | install_attempted | install_unavailable_npm_missing",
-      "installer_status": "not_needed | executed | failed | missing | not_executable",
+      "install_decision": "already_available | install_blocked_needs_approval | npm_global_install_attempted | npm_global_install_failed | install_attempted | install_failed | install_unavailable_npm_missing",
+      "installer_status": "not_needed | approval_required | executed | failed | missing | not_executable",
       "version_status": "checked | failed | not_checked",
       "auth_status": "available | missing | not_checked",
       "login_flow": "not_checked | not_needed | needs_human_present | railway_login_started | railway_login_failed | railway_login_browserless_started | railway_login_browserless_failed",
@@ -57,8 +75,8 @@ preflight report. That report has this shape:
       "required": true,
       "owner": "agent_with_approved_installer_then_human_auth",
       "command_status": "available | missing",
-      "install_decision": "already_available | install_attempted | install_unavailable_needs_platform_source",
-      "installer_status": "not_needed | executed | failed | missing | not_executable",
+      "install_decision": "already_available | install_blocked_needs_approval | install_attempted | install_failed | install_unavailable_needs_platform_source",
+      "installer_status": "not_needed | approval_required | executed | failed | missing | not_executable",
       "version_status": "checked | failed | not_checked",
       "auth_status": "available | missing | not_checked",
       "login_flow": "not_checked | not_needed | needs_human_present | gcloud_auth_login_started | gcloud_auth_login_failed",
@@ -69,8 +87,33 @@ preflight report. That report has this shape:
       "project_set_flow": "not_checked | not_needed | attempted | failed",
       "tool_bin_dir": "/workspace/state/project-bootstrap-tools/bin",
       "minimum_user_action": "status-only minimal action text"
+    },
+    "expo_mcp": {
+      "required": true,
+      "owner": "target_codex_session_oauth",
+      "auth_status": "available | missing | not_checked"
+    },
+    "expo_cli": {
+      "required": true,
+      "owner": "workspace_expo_cli_login",
+      "auth_status": "available | missing | not_checked"
     }
   },
+  "install_plan": [
+    {
+      "tool": "railway | gcloud",
+      "package": "@railway/cli | google-cloud-cli",
+      "command": "npm i -g @railway/cli | approved Google Cloud CLI installer",
+      "approval_required": true
+    }
+  ],
+  "installed_exact": [
+    {
+      "tool": "railway | gcloud",
+      "package": "@railway/cli | google-cloud-cli",
+      "command": "npm i -g @railway/cli | approved railway installer | approved Google Cloud CLI installer"
+    }
+  ],
   "credential_storage": {
     "railway": {
       "path": "/root/.railway | ${HOME}/.railway",
@@ -247,7 +290,8 @@ preflight report. That report has this shape:
     "codex_cli_auth_setup": "present | missing",
     "pod_role_bootstrap": "present | missing",
     "stitch_adc_setup": "present | missing",
-    "eas_robot_auth_setup": "present | missing"
+    "eas_robot_auth_setup": "present | missing",
+    "codex_role_workflow": "present | missing"
   },
   "mcp": {
     "required": {
@@ -283,14 +327,34 @@ preflight report. That report has this shape:
     "human_gate_v1": "present | missing"
   },
   "reports": {
+    "project_bootstrap_agent_setup": "present | missing | unreadable",
     "pod_role_bootstrap": "present | missing",
     "stitch_adc_setup": "present | missing | not_applicable",
     "eas_robot_auth_setup": "present | missing | not_applicable"
   },
   "nested_reports": {
+    "project_bootstrap_agent_setup": {
+      "status": "completed | blocked | missing | unknown | unreadable",
+      "blockers": ["status-only blocker reason"]
+    },
     "pod_role_bootstrap": {
       "status": "ready | blocked | missing | unknown | unreadable",
       "blockers": ["status-only blocker reason"]
+    }
+  },
+  "tool_auth": {
+    "railway": {
+      "auth_status": "available | missing | absent"
+    },
+    "gcloud": {
+      "auth_status": "available | missing | absent",
+      "adc_status": "available | missing | absent"
+    },
+    "expo_mcp": {
+      "auth_status": "available | missing | absent"
+    },
+    "expo_cli": {
+      "auth_status": "available | missing | absent"
     }
   },
   "blocker_guide": {

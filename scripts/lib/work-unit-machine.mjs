@@ -212,6 +212,19 @@ function validateEvidence(errors, source, status) {
   }
 }
 
+// Managed-doc guidance P-1 (mobile-app-dev-team/19-entry-case-routing.md): marking the
+// 01-design stage not-applicable requires durable non-goal justification evidence. The
+// semantic relevance judgment stays process-owned; this only enforces that a not-applicable
+// Design stage carries a durable non-goal evidence reference (the existing `non-goal` kind).
+function validateDesignNotApplicableNonGoal(errors, source, status) {
+  if (status.stage !== '01-design' || status.state !== 'not-applicable') return;
+  const hasNonGoalEvidence = Array.isArray(status.evidence)
+    && status.evidence.some((item) => isPlainObject(item) && item.kind === 'non-goal');
+  if (!hasNonGoalEvidence) {
+    fail(errors, source, "01-design in not-applicable state must carry durable 'non-goal' evidence (mobile-app-dev-team/19-entry-case-routing.md P-1)");
+  }
+}
+
 function normalizeEvidenceLevel(value) {
   if (typeof value !== 'string') return null;
   return evidenceLevelAliases.get(value) || null;
@@ -438,6 +451,7 @@ export function validateWorkUnitStatus(status, options = {}) {
   validateReviewer(errors, source, status);
   validateEvidence(errors, source, status);
   validateEvidenceLadder(errors, source, status, options);
+  validateDesignNotApplicableNonGoal(errors, source, status);
   validateHandoff(errors, source, status);
   validateEvents(errors, source, status);
 
@@ -521,6 +535,16 @@ export function validateHumanGateDecision(decision, options = {}) {
 
   if (decision.category === 'failed-gate-risk') {
     validateDurableLink(errors, source, decision.failed_check_reference, 'failed_check_reference');
+  }
+
+  // Human-authorized P-4 binding (mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md;
+  // mobile-app-dev-team/15-human-ops-live-readiness-annex.md Approval Envelope): a
+  // production-submit human-gate decision is a live mutation and must record a rollback owner
+  // and a rollback plan. Scoped to production-submit only (per xhigh decision); other
+  // categories keep their existing requirements.
+  if (decision.category === 'production-submit') {
+    validateString(errors, source, 'rollback_owner', decision.rollback_owner);
+    validateString(errors, source, 'rollback_plan', decision.rollback_plan);
   }
 
   return errors;

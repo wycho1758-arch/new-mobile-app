@@ -1,0 +1,53 @@
+No findings.
+
+I reviewed `mobile-app-dev-team/19-entry-case-routing.md` against the cited SoT files. The CP-1 taxonomy scope is limited to the requested core sections, labels the five cases as report-derived rather than SoT-named, keeps C5 conditional by relevance, preserves Product/Planning role boundaries, includes the managed-doc/SoT priority disclaimer with runtime enforcement deferred, and does not contain a `CTO` token or visible secret material. P-1/P-2/P-3/P-4 detail remains a deferred residual risk for later checkpoints, not a CP-1 defect.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "po-planning-reviewer",
+  "mode": "scope",
+  "scope": {
+    "baseline": "b9c84e139c77ada761c218511612edafeee89a24",
+    "target": "mobile-app-dev-team/19-entry-case-routing.md",
+    "paths_reviewed": [
+      "mobile-app-dev-team/19-entry-case-routing.md",
+      ".agents/skills/po-work-unit-planning-and-agent-sprint/SKILL.md",
+      ".agents/skills/po-requirement-office-hours/SKILL.md",
+      ".agents/skills/po-planning-completeness-review/SKILL.md",
+      "mobile-app-dev-team/05-work-processes.md",
+      ".agents/skills/design-mobile-design-handoff/SKILL.md",
+      "mobile-app-dev-team/06-gates-and-evidence.md",
+      "mobile-app-dev-team/03-role-capability-matrix.md"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "pnpm run validate:team-doc",
+      "status": "PASS",
+      "evidence": "Implementer-reported exit 0: \"Validated current mobile-app-dev-team managed docs.\""
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Intermediate CP-1 checkpoint instruction: full CI gate runs once at CP-5; per-CP doc edits are gated by validate:team-doc."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Intermediate CP-1 checkpoint instruction: full CI gate runs once at CP-5; per-CP doc edits are gated by validate:team-doc."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Intermediate CP-1 checkpoint instruction: full CI gate runs once at CP-5; per-CP doc edits are gated by validate:team-doc."
+    }
+  ],
+  "residual_risks": [
+    "P-1/P-2/P-3/P-4 sections are intentionally deferred beyond CP-1, including expanded Design NOT_APPLICABLE handling referenced by mobile-app-dev-team/19-entry-case-routing.md:46.",
+    "Runtime enforcement remains deferred by the managed-doc disclaimer in mobile-app-dev-team/19-entry-case-routing.md:3."
+  ],
+  "next_action": "proceed"
+}
+```

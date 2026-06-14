@@ -1,0 +1,94 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "b9c84e139c77ada761c218511612edafeee89a24",
+    "target": "working-tree",
+    "paths_reviewed": [
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "scripts/validate-team-doc.mjs",
+      "docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md",
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "docs/CODEX_MCP_ENVIRONMENT.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/SKILL.md"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "LOW",
+      "summary": "Expo CLI smoke coverage does not strictly fail if the status check regresses from `npx --no-install expo whoami` to `npx expo whoami`; implementation and SoT are correct, but the fake and assertion are permissive.",
+      "source_refs": [
+        "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:771",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:171",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:190",
+        "evals/skills/project-bootstrap-agent-setup-smoke.sh:887",
+        "PROJECT_ENVIRONMENT.md:331",
+        "docs/CODEX_MCP_ENVIRONMENT.md:558"
+      ],
+      "owner": "QA/Release"
+    }
+  ],
+  "checks_reviewed": [
+    {
+      "command": "source review: install approval, install_plan, installed_exact",
+      "status": "PASS",
+      "evidence": "Approval gate is read from PROJECT_BOOTSTRAP_INSTALL_APPROVED at project-bootstrap-agent-setup.sh:22; Railway npm install is blocked without approval at project-bootstrap-agent-setup.sh:460-467; executable installer paths are blocked without approval at project-bootstrap-agent-setup.sh:411-418; failed installers set npm_global_install_failed/install_failed at project-bootstrap-agent-setup.sh:478-483 and project-bootstrap-agent-setup.sh:432-437; installed_exact is success-only at project-bootstrap-agent-setup.sh:1058-1082; smoke coverage exists at evals/skills/project-bootstrap-agent-setup-smoke.sh:971-1100."
+    },
+    {
+      "command": "source review: separate Railway, gcloud, gcloud ADC, Expo MCP, Expo CLI auth statuses",
+      "status": "PASS",
+      "evidence": "Expo MCP auth is checked at project-bootstrap-agent-setup.sh:705-710; Railway auth at project-bootstrap-agent-setup.sh:724-734; gcloud auth/ADC/project at project-bootstrap-agent-setup.sh:736-769; Expo CLI auth at project-bootstrap-agent-setup.sh:771-779; report fields are separate at project-bootstrap-agent-setup.sh:1014-1056."
+    },
+    {
+      "command": "source review: Expo CLI status checks must not install packages",
+      "status": "PASS",
+      "evidence": "The implementation uses npx --no-install expo whoami at project-bootstrap-agent-setup.sh:771-773; SoT mirrors this at PROJECT_ENVIRONMENT.md:331 and docs/CODEX_MCP_ENVIRONMENT.md:558-560."
+    },
+    {
+      "command": "source review: canonical clone, /workspace/skills registration, /workspace/AGENTS.md defaults without overwrites",
+      "status": "PASS",
+      "evidence": "Canonical repo defaults are defined at project-bootstrap-agent-setup.sh:4-6; clone only occurs when the repo path is absent and URL is non-token-bearing at project-bootstrap-agent-setup.sh:224-239; existing skill dirs return present without overwrite at project-bootstrap-agent-setup.sh:241-259; AGENTS defaults append only when marker is absent at project-bootstrap-agent-setup.sh:261-298; repo AGENTS source text is present at AGENTS.md:11-24; smoke coverage is at evals/skills/project-bootstrap-agent-setup-smoke.sh:1103-1146."
+    },
+    {
+      "command": "source review: PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH hard input and auth gates",
+      "status": "PASS",
+      "evidence": "Preflight reads PROJECT_BOOTSTRAP_AGENT_SETUP_REPORT_PATH at project-bootstrap-preflight.sh:10 and passes it into report parsing at project-bootstrap-preflight.sh:218-221; missing/unreadable/blocked/auth-incomplete reports block at project-bootstrap-preflight.sh:329-355 and project-bootstrap-preflight.sh:415-435; report output records setup-report status and tool_auth at project-bootstrap-preflight.sh:1006-1017; smoke coverage is at evals/skills/project-bootstrap-agent-setup-smoke.sh:794-860."
+    },
+    {
+      "command": "source review: token-bearing REPO_CLONE_URL rejected by preflight and pod-role-bootstrap without raw URL echo",
+      "status": "PASS",
+      "evidence": "Preflight detects token-bearing URLs at project-bootstrap-preflight.sh:299-300, blocks even when repo exists at project-bootstrap-preflight.sh:370, and reports only clone_url_status at project-bootstrap-preflight.sh:944-946; pod-role-bootstrap checks before its existing-directory path at pod-bootstrap.sh:13-15 and pod-bootstrap.sh:94-103; smoke redaction coverage is at evals/skills/project-bootstrap-agent-setup-smoke.sh:1148-1227."
+    },
+    {
+      "command": "bash -n project-bootstrap-agent-setup.sh project-bootstrap-preflight.sh pod-bootstrap.sh project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Reviewer ran bash -n on all four changed shell scripts; all exited 0."
+    },
+    {
+      "command": "node --check scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Reviewer ran node --check scripts/validate-team-doc.mjs; exited 0."
+    },
+    {
+      "command": "node scripts/validate-team-doc.mjs",
+      "status": "PASS",
+      "evidence": "Reviewer ran node scripts/validate-team-doc.mjs; exited 0 with 'Validated current mobile-app-dev-team managed docs.'"
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Not rerun by reviewer to preserve read-only scope because the smoke creates temporary fixtures; provided GREEN fix evidence records pass at docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:221-223, and reviewed smoke case coverage is registered at evals/skills/project-bootstrap-agent-setup-smoke.sh:2520-2556."
+    }
+  ],
+  "residual_risks": [
+    "Full PR readiness gates remain pending outside this GREEN behavior review: pnpm run test:runtime, pnpm run test:local-harness, pnpm turbo run lint test, and any source-backed mobile environment checks listed at docs/plans/active/20260614-project-bootstrap-auth-gates-goal.md:189-203.",
+    "Expo CLI no-install behavior is implemented, but smoke coverage should be tightened later to assert the exact --no-install invocation."
+  ],
+  "next_action": "proceed"
+}

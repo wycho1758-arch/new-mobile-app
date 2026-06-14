@@ -457,14 +457,18 @@ Purpose:
 Railway is not a Codex MCP in this repo. It is required for project-bootstrap
 readiness.
 
-`project-bootstrap-agent-setup.sh` installs Railway with the approved
-non-secret command when it is missing and npm is available:
+`project-bootstrap-agent-setup.sh` may install Railway with the approved
+non-secret command when it is missing, npm is available, and
+`PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`:
 
 ```bash
 npm i -g @railway/cli
 ```
 
-Then it rechecks:
+Without explicit approval, it reports `install_blocked_needs_approval`, lists
+the `install_plan`, keeps `installed_exact` empty, and waits. After an approved
+install, it reports only verified successful installs in `installed_exact`;
+failed attempts are not reported as installed. It then rechecks:
 
 Verify:
 
@@ -551,6 +555,9 @@ pnpm --filter mobile exec expo --version
 
 Use the workspace Expo CLI as the project reference. Do not treat a global
 legacy `expo` binary as authoritative for this repo.
+`project-bootstrap-agent-setup.sh` checks Expo CLI auth with
+`npx --no-install expo whoami` so a status check does not install packages.
+Expo MCP auth remains separate and is verified in the target Codex session.
 
 ## gcloud CLI
 
@@ -560,11 +567,12 @@ Purpose:
   project-bootstrap readiness.
 
 `project-bootstrap-agent-setup.sh` may install gcloud only when an explicit
-approved official Google Cloud CLI installer source is available. On Ubuntu,
-the official package setup adds the Google Cloud apt source with a signed
-keyring, imports the Google Cloud public key, runs `sudo apt-get update`, and
-installs `google-cloud-cli`. If the runtime cannot use the approved installer
-source, keep the installer precondition blocked instead of inventing another
+approved official Google Cloud CLI installer source is available and
+`PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`. On Ubuntu, the official package setup
+adds the Google Cloud apt source with a signed keyring, imports the Google Cloud
+public key, runs `sudo apt-get update`, and installs `google-cloud-cli`. If the
+runtime cannot use the approved installer source or explicit install approval is
+absent, keep the installer precondition blocked instead of inventing another
 source.
 
 The agent rechecks `gcloud --version` after install. gcloud account login, ADC

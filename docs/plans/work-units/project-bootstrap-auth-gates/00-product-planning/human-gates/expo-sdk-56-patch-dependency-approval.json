@@ -1,0 +1,23 @@
+{
+  "schema": "human-gate/v1",
+  "gate_id": "expo-sdk-56-patch-dependency-approval",
+  "category": "business-budget-owner",
+  "decision": "approved",
+  "scope": "Approve updating Expo SDK 56 patch drift packages and lockfile only: @expo/metro-runtime, expo, expo-dev-client, expo-linking, expo-router, jest-expo, pnpm-lock.yaml.",
+  "decided_by": {
+    "name": "tw.kim",
+    "contact": "GitHub issue comment recorded by authenticated gh session",
+    "channel": "Codex chat instruction anchored to GitHub issue comment"
+  },
+  "decision_reference": "https://github.com/Wondermove-Inc/new-mobile-app/issues/18#issuecomment-4701146359",
+  "decided_at": "2026-06-14T08:11:31Z",
+  "residual_risk": [
+    "Package update must remain limited to the six approved Expo SDK 56 patch drift packages and pnpm-lock.yaml.",
+    "After dependency update, Expo install check, Expo doctor, mobile lint/test, runtime gates, and reviewer validation are required."
+  ],
+  "evidence_links": [
+    "docs/plans/work-units/project-bootstrap-auth-gates/README.md",
+    ".evidence/reviews/20260614-project-bootstrap-auth-gates-final-v2-xhigh.md",
+    "https://github.com/Wondermove-Inc/new-mobile-app/issues/18#issuecomment-4701146359"
+  ]
+}

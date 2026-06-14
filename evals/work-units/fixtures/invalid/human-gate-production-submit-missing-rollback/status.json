@@ -1,0 +1,47 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "human-gate-production-submit-missing-rollback",
+  "stage": "04-mobile-app",
+  "state": "in-progress",
+  "owner_role": "Mobile App Dev",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "pending",
+    "agent": "wm-implementation-reviewer",
+    "evidence": null
+  },
+  "human_gates": [
+    {
+      "gate_id": "hg-production-submit",
+      "category": "production-submit",
+      "blocking_stage": "04-mobile-app",
+      "state": "approved",
+      "decision_path": "00-product-planning/human-gates/hg-production-submit.json"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/human-gate-production-submit-missing-rollback/00-product-planning/human-gates/hg-production-submit.json",
+      "kind": "human-gate-decision"
+    }
+  ],
+  "handoff": {
+    "next_role": "QA/Release",
+    "next_artifact": "docs/plans/work-units/human-gate-production-submit-missing-rollback/05-qa-release/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "blocked-human"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-14T00:10:00.000Z",
+      "actor": "Product/Planning",
+      "action": "human-gate-approved"
+    }
+  ]
+}

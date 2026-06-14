@@ -14,6 +14,8 @@
 | `mobile-app-dev-team/15-human-ops-live-readiness-annex.md` | Current human/ops live readiness approval, evidence, rollback, and forbidden-claim annex |
 | `mobile-app-dev-team/16-pod-environment-bootstrap.md` | Current fresh OpenClaw role pod zero-to-ready sequence for `/workspace/projects/Wondermove-Inc/new-mobile-app` and pod-native skills |
 | `mobile-app-dev-team/17-orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
+| `mobile-app-dev-team/19-entry-case-routing.md` | Current entry-case routing taxonomy (common intake, SoT-named input categories, report-derived C1-C5, expanded E1-E16) and managed-doc governance for Design relevance/not-applicable (P-1), cross-work-unit prioritization (P-2), and expedited-but-gated hotfix (P-3) |
+| `mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md` | Current app / EAS Update (OTA) / store rollback ownership, decision, gate, and evidence runbook (P-4 managed-doc governance) building on the 15-annex rollback rules |
 | `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md` | Current pod-native OpenClaw project bootstrap source for boram pod readiness, runtime-shaped as `/workspace/skills/project-bootstrap/SKILL.md` |
 | `mobile-app-dev-team/ref-organization/` | Consolidated reference organization reusable guidance, current-project examples, and migration crosswalk |
 | `mobile-app-dev-team/ref-organization/99-source-map-and-migration/README.md` | Migration source priority, active-vs-historical rules, old-to-new crosswalk, and validator requirements for historical `team-doc/10-structured/**` identifiers |

@@ -23,6 +23,10 @@ Runtime shape:
 - Report auth, GitHub, EAS, MCP, and config readiness as status only.
 - Treat `REPO_CLONE_URL`, `GITHUB_TOKEN` presence, and `gh auth status` output
   as status only. Do not print configured token or credential values.
+- Reject token-bearing clone URLs before both existing-checkout and missing-repo
+  recovery paths. The blocker string is `token-bearing REPO_CLONE_URL rejected`,
+  and reports must use only `token_bearing_or_rejected` status without echoing
+  the raw URL.
 - Do not run live EAS, pod creation, image build/push, webhook, branch
   protection, or platform provisioning commands.
 - Do not claim native Android E2E readiness from this bootstrap. Boram-like
@@ -51,10 +55,12 @@ bash /workspace/skills/pod-role-bootstrap/scripts/pod-bootstrap.sh
 ```
 
 The default checkout path is `/workspace/projects/Wondermove-Inc/new-mobile-app`. If that directory is
-missing, `REPO_CLONE_URL` must be configured by the pod environment. The
-bootstrap may run `gh auth status` as a redacted GitHub readiness check when
-the GitHub CLI is available. It does not print the clone URL token material or
-any token value.
+missing, `REPO_CLONE_URL` must be configured by the pod environment and must be
+non-secret. If `REPO_CLONE_URL` contains embedded credentials, the bootstrap
+writes `token-bearing REPO_CLONE_URL rejected` and exits before clone or package
+setup. The bootstrap may run `gh auth status` as a redacted GitHub readiness
+check when the GitHub CLI is available. It does not print the clone URL token
+material or any token value.
 
 The checkout is not ready for Codex-managed repo work until
 `/workspace/CODEX_MANAGED_PATHS.md` contains the managed path entry for

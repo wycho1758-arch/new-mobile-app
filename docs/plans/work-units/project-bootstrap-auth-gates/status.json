@@ -1,0 +1,165 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "project-bootstrap-auth-gates",
+  "stage": "04-mobile-app",
+  "state": "done",
+  "owner_role": "Mobile App Dev",
+  "attempt": 2,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "wm-implementation-reviewer",
+    "evidence": ".evidence/reviews/20260614-project-bootstrap-auth-gates-package-remediation-final-xhigh.md"
+  },
+  "human_gates": [
+    {
+      "gate_id": "expo-sdk-56-patch-dependency-approval",
+      "category": "business-budget-owner",
+      "blocking_stage": "04-mobile-app",
+      "state": "approved",
+      "decision_path": "00-product-planning/human-gates/expo-sdk-56-patch-dependency-approval.json"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/project-bootstrap-auth-gates/README.md",
+      "kind": "planning-artifact"
+    },
+    {
+      "path": "docs/plans/work-units/project-bootstrap-auth-gates/00-product-planning/human-gates/expo-sdk-56-patch-dependency-approval.json",
+      "kind": "human-gate-decision"
+    },
+    {
+      "path": "docs/plans/work-units/project-bootstrap-auth-gates/01-design/handoff-index.md",
+      "kind": "design-handoff"
+    },
+    {
+      "path": "docs/plans/work-units/project-bootstrap-auth-gates/02-architecture/architecture-note.md",
+      "kind": "architecture-note"
+    },
+    {
+      "path": "docs/plans/work-units/project-bootstrap-auth-gates/03-contract-api/api-contract.md",
+      "kind": "api-contract"
+    },
+    {
+      "path": "apps/mobile/package.json",
+      "kind": "test-evidence"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "kind": "test-evidence"
+    },
+    {
+      "path": "PROJECT_ENVIRONMENT.md",
+      "kind": "test-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-project-bootstrap-auth-gates-red-review-v3-xhigh.md",
+      "kind": "review-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-project-bootstrap-auth-gates-green-behavior-v2-xhigh.md",
+      "kind": "review-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-project-bootstrap-auth-gates-sot-xhigh.md",
+      "kind": "review-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-project-bootstrap-auth-gates-final-v2-xhigh.md",
+      "kind": "review-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-project-bootstrap-auth-gates-package-remediation-final-xhigh.md",
+      "kind": "review-evidence"
+    },
+    {
+      "path": "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "kind": "test-evidence"
+    }
+  ],
+  "handoff": {
+    "next_role": "Mobile App Dev",
+    "next_artifact": "docs/plans/work-units/project-bootstrap-auth-gates/README.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "created durable work-unit handoff for completed runtime/OpenClaw auth-gate scope"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "approved runtime/OpenClaw scope and blocked Expo patch remediation pending explicit package-change approval"
+    },
+    {
+      "seq": 3,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "recorded repeated continuation blocked audit with no explicit Expo package-change approval"
+    },
+    {
+      "seq": 4,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "rejected package-edit resume until a human-gate/v1 GitHub decision URL exists"
+    },
+    {
+      "seq": 5,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "reconfirmed repeated chat approval does not unblock package edits without a GitHub decision URL"
+    },
+    {
+      "seq": 6,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "confirmed third repeated resume still has allowed_actions empty and remains blocked on human-gate-decision"
+    },
+    {
+      "seq": 7,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "Mobile App Dev",
+      "action": "recorded GitHub issue comment human-gate decision and resumed Expo patch dependency remediation"
+    },
+    {
+      "seq": 8,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "required design not-applicable, architecture dependency note, and API not-applicable artifacts before package update"
+    },
+    {
+      "seq": 9,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "Mobile App Dev",
+      "action": "added role prerequisite artifacts for design, architecture, and API contract classifications"
+    },
+    {
+      "seq": 10,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "Mobile App Dev",
+      "action": "updated approved Expo SDK 56 patch drift packages, lockfile, and project environment baseline"
+    },
+    {
+      "seq": 11,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "Mobile App Dev",
+      "action": "completed package remediation verification and moved work unit to review-needed"
+    },
+    {
+      "seq": 12,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "approved package remediation final review with no findings"
+    },
+    {
+      "seq": 13,
+      "at": "2026-06-14T08:11:31.000Z",
+      "actor": "Mobile App Dev",
+      "action": "recorded final reviewer evidence and marked work unit done"
+    }
+  ]
+}

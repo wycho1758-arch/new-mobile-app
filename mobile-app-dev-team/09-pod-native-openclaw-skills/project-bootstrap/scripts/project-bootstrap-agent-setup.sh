@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
+REPO_CLONE_URL="${REPO_CLONE_URL:-https://github.com/Wondermove-Inc/new-mobile-app.git}"
 CANONICAL_REPO_PATH="${PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
 STATE_DIR="${STATE_DIR:-/workspace/state}"
@@ -18,6 +19,10 @@ GIT_IDENTITY_PATH="${PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH:-}"
 AGENT_TOOL_BIN_DIR="${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}"
 RAILWAY_INSTALLER_PATH="${PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH:-}"
 GCLOUD_INSTALLER_PATH="${PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH:-}"
+INSTALL_APPROVED="${PROJECT_BOOTSTRAP_INSTALL_APPROVED:-false}"
+SKILLS_ROOT="${PROJECT_BOOTSTRAP_SKILLS_ROOT:-/workspace/skills}"
+WORKSPACE_AGENTS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH:-/workspace/AGENTS.md}"
+REPO_SOURCE_PATH="${PROJECT_BOOTSTRAP_REPO_SOURCE_PATH:-${REPO_PATH}}"
 HUMAN_PRESENT="${PROJECT_BOOTSTRAP_HUMAN_PRESENT:-false}"
 CREDENTIAL_FILE_EXPLORER_OPEN="${PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER:-false}"
 
@@ -212,6 +217,86 @@ metadata_status() {
   fi
 }
 
+has_token_bearing_clone_url() {
+  [[ "${REPO_CLONE_URL}" =~ ://[^/[:space:]]+@ ]] || [[ "${REPO_CLONE_URL}" =~ (token|password|secret|key)= ]]
+}
+
+ensure_repo_checkout() {
+  if [[ -d "${REPO_PATH}" ]]; then
+    printf '%s\n' "present"
+    return
+  fi
+  if [[ -z "${REPO_CLONE_URL}" || "$(has_token_bearing_clone_url && printf yes || printf no)" == "yes" ]]; then
+    printf '%s\n' "blocked"
+    return
+  fi
+  mkdir -p "$(dirname "${REPO_PATH}")"
+  if git clone "${REPO_CLONE_URL}" "${REPO_PATH}" 2> >(redact >&2) >/dev/null; then
+    printf '%s\n' "cloned"
+  else
+    printf '%s\n' "clone_failed"
+  fi
+}
+
+register_workspace_skill() {
+  local slug="$1"
+  local source_dir="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/09-pod-native-openclaw-skills/${slug}"
+  local target_dir="${SKILLS_ROOT%/}/${slug}"
+  if [[ -e "${target_dir}" ]]; then
+    printf '%s\n' "present"
+    return
+  fi
+  if [[ ! -f "${source_dir}/SKILL.md" ]]; then
+    printf '%s\n' "missing_source"
+    return
+  fi
+  mkdir -p "${SKILLS_ROOT%/}"
+  if cp -R "${source_dir}" "${target_dir}" 2> >(redact >&2); then
+    printf '%s\n' "registered"
+  else
+    printf '%s\n' "blocked"
+  fi
+}
+
+ensure_workspace_agents_defaults() {
+  local defaults_marker="## Project Workspace Defaults"
+  if ! mkdir -p "$(dirname "${WORKSPACE_AGENTS_PATH}")" 2>/dev/null; then
+    printf '%s\n' "blocked"
+    return
+  fi
+  if [[ -e "${WORKSPACE_AGENTS_PATH}" ]] && grep -F "${defaults_marker}" "${WORKSPACE_AGENTS_PATH}" >/dev/null 2>&1; then
+    printf '%s\n' "present"
+    return
+  fi
+  if ! touch "${WORKSPACE_AGENTS_PATH}" 2>/dev/null; then
+    printf '%s\n' "blocked"
+    return
+  fi
+  if ! {
+    if [[ -s "${WORKSPACE_AGENTS_PATH}" ]]; then
+      printf '\n'
+    fi
+    cat <<'EOF'
+## Project Workspace Defaults
+
+Primary project repository:
+- Repository: https://github.com/Wondermove-Inc/new-mobile-app.git
+- Local path: /workspace/projects/Wondermove-Inc/new-mobile-app
+
+Default behavior:
+- For new-mobile-app repository work, use `/workspace/projects/Wondermove-Inc/new-mobile-app` as the working directory.
+- Do not use `/workspace` root as the project repo directory. The root contains agent operating files such as AGENTS.md, SOUL.md, WORKFLOW.md, and TOOLS.md.
+- Do not confuse this file with the project-local `/workspace/projects/Wondermove-Inc/new-mobile-app/AGENTS.md`.
+- Before installing dependencies or system packages, report what will be installed and wait for explicit approval unless the user already approved that installation.
+- After any computer/package installation, report exactly what was installed.
+EOF
+  } >> "${WORKSPACE_AGENTS_PATH}" 2>/dev/null; then
+    printf '%s\n' "blocked"
+    return
+  fi
+  printf '%s\n' "created_default"
+}
+
 file_explorer_command() {
   for candidate in xdg-open gio nautilus; do
     if command -v "${candidate}" >/dev/null 2>&1; then
@@ -324,6 +409,13 @@ ensure_required_cli() {
   fi
 
   if [[ -n "${installer_path}" && -x "${installer_path}" ]]; then
+    if [[ "${INSTALL_APPROVED}" != "true" ]]; then
+      printf -v "${status_prefix}_command_status" '%s' "missing"
+      printf -v "${status_prefix}_install_decision" '%s' "install_blocked_needs_approval"
+      printf -v "${status_prefix}_installer_status" '%s' "approval_required"
+      printf -v "${status_prefix}_version_status" '%s' "not_checked"
+      return
+    fi
     mkdir -p "${AGENT_TOOL_BIN_DIR}"
     if "${installer_path}" "${AGENT_TOOL_BIN_DIR}" >/dev/null 2> >(redact >&2); then
       export PATH="${AGENT_TOOL_BIN_DIR}:${PATH}"
@@ -339,7 +431,7 @@ ensure_required_cli() {
       fi
     else
       printf -v "${status_prefix}_command_status" '%s' "missing"
-      printf -v "${status_prefix}_install_decision" '%s' "install_attempted"
+      printf -v "${status_prefix}_install_decision" '%s' "install_failed"
       printf -v "${status_prefix}_installer_status" '%s' "failed"
       printf -v "${status_prefix}_version_status" '%s' "not_checked"
     fi
@@ -366,6 +458,13 @@ ensure_railway_cli() {
   fi
 
   if command -v npm >/dev/null 2>&1; then
+    if [[ "${INSTALL_APPROVED}" != "true" ]]; then
+      railway_command_status="missing"
+      railway_install_decision="install_blocked_needs_approval"
+      railway_installer_status="approval_required"
+      railway_version_status="not_checked"
+      return
+    fi
     if npm i -g @railway/cli >/dev/null 2> >(redact >&2); then
       railway_install_decision="npm_global_install_attempted"
       railway_installer_status="executed"
@@ -378,7 +477,7 @@ ensure_railway_cli() {
       fi
     else
       railway_command_status="missing"
-      railway_install_decision="npm_global_install_attempted"
+      railway_install_decision="npm_global_install_failed"
       railway_installer_status="failed"
       railway_version_status="not_checked"
     fi
@@ -567,6 +666,15 @@ configure_github_auth() {
 
 mkdir -p "${STATE_DIR}" "$(dirname "${REPORT_PATH}")"
 
+repo_checkout_status="$(ensure_repo_checkout)"
+project_bootstrap_skill_status="$(register_workspace_skill project-bootstrap)"
+codex_cli_auth_setup_skill_status="$(register_workspace_skill codex-cli-auth-setup)"
+pod_role_bootstrap_skill_status="$(register_workspace_skill pod-role-bootstrap)"
+eas_robot_auth_setup_skill_status="$(register_workspace_skill eas-robot-auth-setup)"
+stitch_adc_setup_skill_status="$(register_workspace_skill stitch-adc-setup)"
+codex_role_workflow_skill_status="$(register_workspace_skill codex-role-workflow)"
+workspace_agents_status="$(ensure_workspace_agents_defaults)"
+
 role_status="not_resolved"
 resolved_role=""
 if resolved_role="$(resolve_agent_role)"; then
@@ -597,6 +705,12 @@ expo_mcp_status="$(register_mcp expo || printf 'blocked')"
 atlassian_mcp_status="$(register_mcp atlassian || printf 'blocked')"
 node_repl_mcp_status="$(check_node_repl_status || printf 'blocked')"
 playwright_mcp_status="$(register_mcp playwright || printf 'blocked')"
+expo_mcp_auth_status="missing"
+if command -v codex >/dev/null 2>&1; then
+  if codex mcp get expo 2> >(redact >&2) | grep -Eiq 'authenticated|connected|authorized|ready'; then
+    expo_mcp_auth_status="available"
+  fi
+fi
 
 railway_command_status="missing"
 railway_install_decision="install_unavailable_needs_platform_source"
@@ -657,6 +771,17 @@ if [[ "${gcloud_command_status}" == "available" ]]; then
   fi
 fi
 
+expo_cli_auth_status="not_checked"
+if command -v npx >/dev/null 2>&1; then
+  if npx --no-install expo whoami >/dev/null 2> >(redact >&2); then
+    expo_cli_auth_status="available"
+  else
+    expo_cli_auth_status="missing"
+  fi
+else
+  expo_cli_auth_status="missing"
+fi
+
 railway_credentials_path="${HOME}/.railway"
 gcloud_credentials_path="${HOME}/.config/gcloud"
 gcloud_adc_path="${HOME}/.config/gcloud/application_default_credentials.json"
@@ -697,7 +822,7 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" "$REPO_CLONE_URL" "$repo_checkout_status" "$SKILLS_ROOT" "$project_bootstrap_skill_status" "$codex_cli_auth_setup_skill_status" "$pod_role_bootstrap_skill_status" "$eas_robot_auth_setup_skill_status" "$stitch_adc_setup_skill_status" "$codex_role_workflow_skill_status" "$WORKSPACE_AGENTS_PATH" "$workspace_agents_status" "$expo_mcp_auth_status" "$expo_cli_auth_status" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
@@ -756,6 +881,19 @@ const [
   expoCredentialsStatus,
   easCredentialsPath,
   easCredentialsStatus,
+  repoCloneUrl,
+  repoCheckoutStatus,
+  skillsRoot,
+  projectBootstrapSkillStatus,
+  codexCliAuthSetupSkillStatus,
+  podRoleBootstrapSkillStatus,
+  easRobotAuthSetupSkillStatus,
+  stitchAdcSetupSkillStatus,
+  codexRoleWorkflowSkillStatus,
+  workspaceAgentsPath,
+  workspaceAgentsStatus,
+  expoMcpAuthStatus,
+  expoCliAuthStatus,
 ] = process.argv.slice(2);
 
 function metadataFor(targetPath) {
@@ -811,7 +949,20 @@ function metadataFor(targetPath) {
   return result;
 }
 
-const setupBlocked = managedPathStatus.startsWith('blocked');
+const blockers = [];
+if (managedPathStatus.startsWith('blocked')) blockers.push(managedPathStatus);
+if (repoCheckoutStatus === 'blocked') blockers.push('repo-checkout-blocked');
+if (repoCheckoutStatus === 'clone_failed') blockers.push('repo-clone-failed');
+if (railwayCommandStatus !== 'available') blockers.push('railway-cli-unavailable');
+if (gcloudCommandStatus !== 'available') blockers.push('gcloud-cli-unavailable');
+if (railwayInstallDecision === 'install_blocked_needs_approval') blockers.push('railway-install-approval-required');
+if (gcloudInstallDecision === 'install_blocked_needs_approval') blockers.push('gcloud-install-approval-required');
+if (railwayCommandStatus === 'available' && railwayAuthStatus === 'missing') blockers.push('railway-auth-missing');
+if (gcloudCommandStatus === 'available' && gcloudAuthStatus === 'missing') blockers.push('gcloud-auth-missing');
+if (gcloudCommandStatus === 'available' && gcloudAdcStatus === 'missing') blockers.push('gcloud-adc-missing');
+if (expoMcpAuthStatus === 'missing') blockers.push('expo-mcp-auth-missing');
+if (expoCliAuthStatus === 'missing') blockers.push('expo-cli-auth-missing');
+const setupBlocked = blockers.length > 0;
 const railwayMetadata = metadataFor(railwayCredentialsPath);
 const gcloudMetadata = metadataFor(gcloudCredentialsPath);
 const gcloudAdcMetadata = metadataFor(gcloudAdcPath);
@@ -822,6 +973,25 @@ const easMetadata = metadataFor(easCredentialsPath);
 const report = {
   schema: 'project-bootstrap-agent-setup/v1',
   status: setupBlocked ? 'blocked' : 'completed',
+  blockers,
+  repo_checkout: {
+    clone_url_status: /:\/\/[^/\s]+@/.test(repoCloneUrl) || /(?:token|password|secret|key)=/i.test(repoCloneUrl) ? 'token_bearing_or_rejected' : 'canonical_https',
+    local_path: repoPath,
+    status: repoCheckoutStatus,
+  },
+  workspace_skills: {
+    root: skillsRoot,
+    'project-bootstrap': projectBootstrapSkillStatus,
+    'codex-cli-auth-setup': codexCliAuthSetupSkillStatus,
+    'pod-role-bootstrap': podRoleBootstrapSkillStatus,
+    'eas-robot-auth-setup': easRobotAuthSetupSkillStatus,
+    'stitch-adc-setup': stitchAdcSetupSkillStatus,
+    'codex-role-workflow': codexRoleWorkflowSkillStatus,
+  },
+  workspace_agents: {
+    path: workspaceAgentsPath,
+    project_workspace_defaults: workspaceAgentsStatus === 'present' || workspaceAgentsStatus === 'created_default' ? 'present' : workspaceAgentsStatus,
+  },
   role: {
     resolved: resolvedRole || 'missing',
     status: roleStatus,
@@ -885,7 +1055,42 @@ const report = {
         ? 'If Google auth, ADC, or project selection is missing, I will run gcloud auth login, gcloud auth application-default login when needed, and gcloud config set project <project-id> after you provide the non-secret project id. Do not send ADC JSON or service account JSON in chat.'
         : 'Provide or approve an approved official Google Cloud CLI installer source. After install, I will run gcloud auth login, gcloud auth application-default login when needed, and gcloud config set project <project-id> after you provide the non-secret project id; do not send ADC JSON or service account JSON in chat.',
     },
+    expo_mcp: {
+      required: true,
+      owner: 'target_codex_session_oauth',
+      auth_status: expoMcpAuthStatus,
+    },
+    expo_cli: {
+      required: true,
+      owner: 'workspace_expo_cli_login',
+      auth_status: expoCliAuthStatus,
+    },
   },
+  install_plan: [
+    railwayInstallDecision === 'install_blocked_needs_approval'
+      ? { tool: 'railway', package: '@railway/cli', command: 'npm i -g @railway/cli', approval_required: true }
+      : null,
+    gcloudInstallDecision === 'install_blocked_needs_approval'
+      ? { tool: 'gcloud', package: 'google-cloud-cli', command: 'approved Google Cloud CLI installer', approval_required: true }
+      : null,
+  ].filter(Boolean),
+  installed_exact: [
+    railwayInstallDecision === 'npm_global_install_attempted' &&
+      railwayInstallerStatus === 'executed' &&
+      railwayCommandStatus === 'available'
+      ? { tool: 'railway', package: '@railway/cli', command: 'npm i -g @railway/cli' }
+      : null,
+    railwayInstallDecision === 'install_attempted' &&
+      railwayInstallerStatus === 'executed' &&
+      railwayCommandStatus === 'available'
+      ? { tool: 'railway', command: 'approved railway installer' }
+      : null,
+    gcloudInstallDecision === 'install_attempted' &&
+      gcloudInstallerStatus === 'executed' &&
+      gcloudCommandStatus === 'available'
+      ? { tool: 'gcloud', package: 'google-cloud-cli', command: 'approved Google Cloud CLI installer' }
+      : null,
+  ].filter(Boolean),
   credential_storage: {
     railway: {
       path: railwayCredentialsPath,
