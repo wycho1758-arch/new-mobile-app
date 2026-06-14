@@ -261,6 +261,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - MCP config: `.codex/config.toml`.
 - Codex MCP/CLI setup guide: `docs/CODEX_MCP_ENVIRONMENT.md`.
 - Pod-native project bootstrap:
+  - Sync source: `mobile-app-dev-team/09-pod-native-openclaw-skills/openclaw-pod-skills-sync/`.
+  - Sync runtime shape: `/workspace/skills/openclaw-pod-skills-sync/SKILL.md`.
+  - Sync report: `/workspace/state/openclaw-pod-skills-sync-report.json`.
+  - After clone or pull, run `openclaw-pod-skills-sync` before `project-bootstrap`.
   - Source: `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/`.
   - Runtime shape: `/workspace/skills/project-bootstrap/SKILL.md`.
   - Default boram checkout: `/workspace/projects/Wondermove-Inc/new-mobile-app`.

@@ -8,6 +8,10 @@ description: Orchestrate WonderMove new-mobile-app setup inside an OpenClaw/OrbS
 Use this pod-native OpenClaw skill when an OrbStack `boram-*` role pod must be
 prepared for the WonderMove `new-mobile-app` repository before role work starts.
 This is an orchestration skill. It does not replace the role-specific pod skills.
+After clone or pull, run `openclaw-pod-skills-sync` first so the repo SoT
+pod-native skills are copy-synced into `/workspace/skills`; this skill may seed
+only `openclaw-pod-skills-sync` as a fallback and then delegates broader runtime
+skill and `/workspace/AGENTS.md` sync to that skill.
 The agent must inspect and set up its own pod environment for non-secret,
 local, deterministic readiness items before asking the user for help. Do not ask
 the user to perform agent-owned setup such as role identity writing, managed
@@ -59,6 +63,8 @@ For every pod role, these project environment entries are required before
 
 The agent must first perform non-secret setup that it can own:
 
+- run `openclaw-pod-skills-sync` so `/workspace/skills` is a copy snapshot of
+  the repo SoT before project readiness checks continue;
 - register pinned MCPs from repo SoT for `mobile-mcp`, `serena`, `stitch`,
   `expo`, `atlassian`, and `playwright`;
 - report the exact install plan and wait for explicit approval before any

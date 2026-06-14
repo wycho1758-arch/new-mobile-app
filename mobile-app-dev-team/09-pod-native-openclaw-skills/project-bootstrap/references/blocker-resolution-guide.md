@@ -111,6 +111,7 @@ Minimum user request, and the next step where the agent can continue.
 | `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Share a preferred public commit name/email if one exists, or provide an approved local handoff file through `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. If absent, the agent checks whether the approved GitHub account can support a non-invented Git identity source. | Configure Git from one approved source and rerun bootstrap. |
 | `github-auth-unavailable` | GitHub connection is needed before the agent can continue with repository access or upload work. | Be present for the GitHub login screen; sign in with your GitHub account and approve the request. Never send tokens in chat. | Check the GitHub connection, set up Git to use that login after authentication works, then rerun bootstrap. |
 | `pod-role-bootstrap blocked` | `project-bootstrap` found that the generated `pod-role-bootstrap` report is present but not ready. | Resolve the nested blocker requests only; do not create report files manually. | Rerun `pod-role-bootstrap`, then rerun `project-bootstrap` preflight. |
+| `workspace-skills-sync-blocked` | The runtime `/workspace/skills` snapshot was not refreshed from repo SoT, so existing skills may be stale. | No user secret is needed; let the agent rerun `openclaw-pod-skills-sync` from the checked-out repo. | Run `openclaw-pod-skills-sync`, verify `/workspace/state/openclaw-pod-skills-sync-report.json`, then rerun `project-bootstrap`. |
 
 ## Blocker Classification
 
@@ -449,6 +450,7 @@ Related blockers:
 - unreadable project-bootstrap-agent-setup report
 - project-bootstrap-agent-setup blocked
 - project-bootstrap-agent-setup auth readiness missing
+- workspace-skills-sync-blocked
 - railway-cli-unavailable
 - gcloud-cli-unavailable
 - railway-auth-missing

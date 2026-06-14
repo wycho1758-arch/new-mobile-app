@@ -179,6 +179,7 @@ const podNativeOpenClawSkillRoot = `${managedTeamDocRoot}/09-pod-native-openclaw
 const codexCliAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/codex-cli-auth-setup`;
 const podRoleBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/pod-role-bootstrap`;
 const projectBootstrapSkillRoot = `${podNativeOpenClawSkillRoot}/project-bootstrap`;
+const openclawPodSkillsSyncSkillRoot = `${podNativeOpenClawSkillRoot}/openclaw-pod-skills-sync`;
 const easRobotAuthSetupSkillRoot = `${podNativeOpenClawSkillRoot}/eas-robot-auth-setup`;
 const stitchAdcSetupSkillRoot = `${podNativeOpenClawSkillRoot}/stitch-adc-setup`;
 const codexRoleWorkflowSkillRoot = `${podNativeOpenClawSkillRoot}/codex-role-workflow`;
@@ -355,6 +356,7 @@ requireRootTerms('AGENTS.md', [
   '## OpenClaw And Codex Skill Routing',
   'Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape',
   'mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/',
+  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/09-pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.',
   'Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts',
   'required validators, evals, scripts, and evidence may still be added when the change needs them',
 ]);
@@ -362,12 +364,13 @@ requireRootTerms('AGENTS.md', [
 requireDocTerms(`${podNativeOpenClawSkillRoot}/README.md`, [
   'source-only',
   '/workspace/skills/<slug>/SKILL.md',
-  'Normal user-facing setup starts from `project-bootstrap`',
+  'Normal user-facing setup after clone or pull starts from `openclaw-pod-skills-sync`, then `project-bootstrap`',
   'user-understandable result',
   'minimum request/action',
   'blocker-resolution-guide.md',
   'dependency/internal setup contracts',
   'advanced recovery paths',
+  'openclaw-pod-skills-sync',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
   'project-bootstrap',
@@ -695,6 +698,7 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/references/report-template.md`, [
 
 requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-bootstrap-preflight.sh', [
   'project-bootstrap-agent-setup.sh',
+  'openclaw-pod-skills-sync',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
   'stitch-adc-setup',
@@ -738,6 +742,26 @@ requirePodNativeSkill(projectBootstrapSkillRoot, 'project-bootstrap', 'project-b
   ...projectBootstrapAgentLanguageOwnershipTerms,
   ...projectBootstrapSupportOnlyRawBlockerTerms,
   ...projectBootstrapBrowserComputerUseLoginTerms,
+]);
+
+requirePodNativeSkill(openclawPodSkillsSyncSkillRoot, 'openclaw-pod-skills-sync', 'sync-pod-skills.sh', [
+  'repo SoT',
+  'runtime snapshot',
+  'copy sync',
+  'not symlink',
+  '/workspace/skills/openclaw-pod-skills-sync/SKILL.md',
+  '/workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  '/workspace/projects/Wondermove-Inc/new-mobile-app',
+  'mobile-app-dev-team/09-pod-native-openclaw-skills',
+  '/workspace/skills',
+  '/workspace/AGENTS.md',
+  '/workspace/state/openclaw-pod-skills-sync-report.json',
+  'git clone',
+  'git pull',
+  'project-bootstrap',
+  'missing source root',
+  'missing SKILL.md',
+  'auth token values',
 ]);
 
 requireDocTerms(`${codexRoleWorkflowSkillRoot}/SKILL.md`, [
@@ -904,6 +928,7 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/blocker-resolution-guid
   'pinned credential-free MCP registration',
   'pnpm pin alignment',
   'project-bootstrap-agent-setup auth readiness missing',
+  'workspace-skills-sync-blocked',
   'railway-cli-unavailable',
   'gcloud-cli-unavailable',
   'railway-auth-missing',
@@ -934,6 +959,8 @@ requireDocTerms(`${projectBootstrapSkillRoot}/references/report-template.md`, [
   'clone_url_status',
   'local_path',
   'workspace_skills',
+  'openclaw-pod-skills-sync',
+  'workspace-skills-sync-blocked',
   'project-bootstrap',
   'codex-cli-auth-setup',
   'pod-role-bootstrap',
@@ -962,6 +989,7 @@ requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-prefligh
   'missing project-bootstrap-agent-setup report',
   'unreadable project-bootstrap-agent-setup report',
   'project-bootstrap-agent-setup auth readiness missing',
+  'workspace-skills-sync-blocked',
   'railway-auth-missing',
   'gcloud-auth-missing',
   'gcloud-adc-missing',
@@ -1000,6 +1028,9 @@ requireDocTerms(`${podRoleBootstrapSkillRoot}/SKILL.md`, [
 requireDocTerms(`${projectBootstrapSkillRoot}/scripts/project-bootstrap-agent-setup.sh`, [
   'set -euo pipefail',
   'project-bootstrap-agent-setup/v1',
+  'OPENCLAW_POD_SKILLS_SYNC',
+  'openclaw-pod-skills-sync',
+  'sync-pod-skills.sh',
   'PROJECT_BOOTSTRAP_INSTALL_APPROVED',
   'PROJECT_BOOTSTRAP_SKILLS_ROOT',
   'PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH',
@@ -1053,6 +1084,8 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   'case_project_preflight_guides_role_specific_secure_sources',
   'case_preflight_blocks_missing_agent_setup_report',
   'case_preflight_blocks_unreadable_agent_setup_report',
+  'case_preflight_blocks_failed_skill_sync',
+  'case_agent_setup_blocks_failed_skill_sync',
   'case_preflight_blocks_auth_absent_from_agent_setup_report',
   'case_preflight_auth_ready_passes_auth_gate',
   'case_agent_setup_detects_unauthorized_provider_state',
@@ -1063,6 +1096,9 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   'case_failed_npm_install_is_not_reported_as_installed',
   'case_failed_system_installer_is_not_reported_as_installed',
   'case_default_clone_runtime_skill_registration_workspace_agents_defaults',
+  'openclaw-pod-skills-sync',
+  "r.workspace_skills.sync.status === 'completed'",
+  "r.workspace_skills['openclaw-pod-skills-sync'] === 'present'",
   'case_token_bearing_clone_url_rejected_in_both_paths',
   'case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted',
   'PROJECT_BOOTSTRAP_INSTALL_APPROVED=true',
@@ -1097,6 +1133,24 @@ requireDocTerms('evals/skills/project-bootstrap-agent-setup-smoke.sh', [
   ...projectBootstrapExpandedBlockerMatrixTerms,
   ...projectBootstrapSupportOnlyRawBlockerTerms,
   ...projectBootstrapBrowserComputerUseLoginTerms,
+]);
+
+requireDocTerms('evals/skills/openclaw-pod-skills-sync-smoke.sh', [
+  'case_copy_sync_all_pod_skills',
+  'case_missing_source_root_blocks',
+  'case_unreadable_source_root_blocks',
+  'case_empty_source_root_blocks',
+  'case_missing_skill_entrypoint_blocks',
+  'case_report_is_secret_safe',
+  'case_no_symlink_runtime_snapshot',
+  'openclaw-pod-skills-sync smoke passed',
+  'OPENCLAW_POD_SKILLS_SOURCE_ROOT',
+  'OPENCLAW_POD_SKILLS_ROOT',
+  'OPENCLAW_WORKSPACE_AGENTS_PATH',
+  'OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH',
+  'git clone',
+  'git pull',
+  'project-bootstrap',
 ]);
 
 requirePodNativeSkill(easRobotAuthSetupSkillRoot, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh', [

@@ -8,9 +8,9 @@ This folder is source-only documentation for pod-native OpenClaw skills whose ru
 
 Do not place repo-local Codex CLI artifacts here. Codex CLI native skills and agents belong under `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml`.
 
-Normal user-facing setup starts from `project-bootstrap`. The other common
-setup skills remain dependency/internal setup contracts that `project-bootstrap`
-uses for secret-safe checks and reusable readiness reports. Invoke
+Normal user-facing setup after clone or pull starts from `openclaw-pod-skills-sync`, then `project-bootstrap`. The other common setup
+skills remain dependency/internal setup contracts that `project-bootstrap` uses
+for secret-safe checks and reusable readiness reports. Invoke
 `codex-cli-auth-setup` or `pod-role-bootstrap` directly only for advanced recovery paths
 or focused diagnostics.
 
@@ -25,6 +25,7 @@ translation table.
 
 | Skill | Runtime Shape | Purpose |
 | --- | --- | --- |
+| `openclaw-pod-skills-sync` | `/workspace/skills/openclaw-pod-skills-sync/SKILL.md` | Copy-sync the repo SoT pod-native skills into the `/workspace/skills` runtime snapshot and verify the clone/pull setup rule before `project-bootstrap`. |
 | `codex-cli-auth-setup` | `/workspace/skills/codex-cli-auth-setup/SKILL.md` | Install, verify, and run Codex CLI readiness checks in an OpenClaw agent pod without exposing secrets. |
 | `pod-role-bootstrap` | `/workspace/skills/pod-role-bootstrap/SKILL.md` | Resolve the role pod identity, align pnpm to the repo pin, install the repo, run `codex-preflight --pod`, and write a status-only readiness report. |
 | `project-bootstrap` | `/workspace/skills/project-bootstrap/SKILL.md` | Orchestrate project-level boram pod readiness by checking the repo path, managed path, required pod skills, required/conditional MCPs, external CLI/account status, role-specific setup reports, and human gates without exposing secrets. |
@@ -37,7 +38,9 @@ translation table.
 This is the canonical per-role pod-native skill dependency matrix.
 `04-skills-and-agents-matrix.md` links here instead of duplicating the table.
 It is not the normal user-facing execution order; normal setup uses
-`project-bootstrap` as the entry point.
+`openclaw-pod-skills-sync`, then `project-bootstrap` as the entry point.
+The matrix below lists role-specific required skills after the common sync
+prerequisite.
 
 | Operating Role | Required pod-native skills |
 | --- | --- |

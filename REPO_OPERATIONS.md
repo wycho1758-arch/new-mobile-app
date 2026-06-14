@@ -80,6 +80,12 @@ and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/`.
 Repo-local Codex skills and agents use `.agents/skills/<skill-name>/SKILL.md`
 and `.codex/agents/<agent-name>.toml`.
 
+`openclaw-pod-skills-sync` is the required bridge from repo SoT to runtime
+snapshot: after clone or pull, it copy-syncs
+`mobile-app-dev-team/09-pod-native-openclaw-skills` into `/workspace/skills`.
+It does not replace the repo SoT, and `/workspace/skills` remains only a
+runtime snapshot.
+
 ### Codex-only Repo Work Policy
 
 For OpenClaw pods operating on a Codex-managed repository, repository work must

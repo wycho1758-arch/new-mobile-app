@@ -23,6 +23,8 @@ INSTALL_APPROVED="${PROJECT_BOOTSTRAP_INSTALL_APPROVED:-false}"
 SKILLS_ROOT="${PROJECT_BOOTSTRAP_SKILLS_ROOT:-/workspace/skills}"
 WORKSPACE_AGENTS_PATH="${PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH:-/workspace/AGENTS.md}"
 REPO_SOURCE_PATH="${PROJECT_BOOTSTRAP_REPO_SOURCE_PATH:-${REPO_PATH}}"
+OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH:-${STATE_DIR}/openclaw-pod-skills-sync-report.json}"
+OPENCLAW_POD_SKILLS_SYNC="${OPENCLAW_POD_SKILLS_SYNC:-${SKILLS_ROOT%/}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh}"
 HUMAN_PRESENT="${PROJECT_BOOTSTRAP_HUMAN_PRESENT:-false}"
 CREDENTIAL_FILE_EXPLORER_OPEN="${PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER:-false}"
 
@@ -238,63 +240,60 @@ ensure_repo_checkout() {
   fi
 }
 
-register_workspace_skill() {
+workspace_skill_status() {
   local slug="$1"
-  local source_dir="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/09-pod-native-openclaw-skills/${slug}"
-  local target_dir="${SKILLS_ROOT%/}/${slug}"
-  if [[ -e "${target_dir}" ]]; then
+  if [[ -f "${SKILLS_ROOT%/}/${slug}/SKILL.md" ]]; then
+    printf '%s\n' "present"
+  else
+    printf '%s\n' "missing"
+  fi
+}
+
+seed_openclaw_pod_skills_sync() {
+  local source_dir="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/09-pod-native-openclaw-skills/openclaw-pod-skills-sync"
+  local target_dir="${SKILLS_ROOT%/}/openclaw-pod-skills-sync"
+  if [[ -x "${OPENCLAW_POD_SKILLS_SYNC}" ]]; then
     printf '%s\n' "present"
     return
   fi
-  if [[ ! -f "${source_dir}/SKILL.md" ]]; then
+  if [[ ! -f "${source_dir}/SKILL.md" || ! -x "${source_dir}/scripts/sync-pod-skills.sh" ]]; then
     printf '%s\n' "missing_source"
     return
   fi
   mkdir -p "${SKILLS_ROOT%/}"
-  if cp -R "${source_dir}" "${target_dir}" 2> >(redact >&2); then
-    printf '%s\n' "registered"
+  rm -rf "${target_dir}"
+  if cp -R "${source_dir}" "${target_dir}" 2> >(redact >&2) && [[ -x "${OPENCLAW_POD_SKILLS_SYNC}" ]]; then
+    printf '%s\n' "seeded"
   else
     printf '%s\n' "blocked"
   fi
 }
 
-ensure_workspace_agents_defaults() {
-  local defaults_marker="## Project Workspace Defaults"
-  if ! mkdir -p "$(dirname "${WORKSPACE_AGENTS_PATH}")" 2>/dev/null; then
-    printf '%s\n' "blocked"
+run_workspace_skills_sync() {
+  local seed_status
+  seed_status="$(seed_openclaw_pod_skills_sync)"
+  if [[ "${seed_status}" == "missing_source" || "${seed_status}" == "blocked" ]]; then
+    printf '%s\n' "${seed_status}"
     return
   fi
-  if [[ -e "${WORKSPACE_AGENTS_PATH}" ]] && grep -F "${defaults_marker}" "${WORKSPACE_AGENTS_PATH}" >/dev/null 2>&1; then
+  if OPENCLAW_POD_SKILLS_SOURCE_ROOT="${REPO_SOURCE_PATH%/}/mobile-app-dev-team/09-pod-native-openclaw-skills" \
+    OPENCLAW_POD_SKILLS_ROOT="${SKILLS_ROOT%/}" \
+    OPENCLAW_WORKSPACE_AGENTS_PATH="${WORKSPACE_AGENTS_PATH}" \
+    OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}" \
+    STATE_DIR="${STATE_DIR}" \
+    bash "${OPENCLAW_POD_SKILLS_SYNC}" 2> >(redact >&2) >/dev/null; then
+    printf '%s\n' "completed"
+  else
+    printf '%s\n' "blocked"
+  fi
+}
+
+workspace_agents_defaults_status() {
+  if [[ -e "${WORKSPACE_AGENTS_PATH}" ]] && grep -F "## Project Workspace Defaults" "${WORKSPACE_AGENTS_PATH}" >/dev/null 2>&1; then
     printf '%s\n' "present"
-    return
+  else
+    printf '%s\n' "missing"
   fi
-  if ! touch "${WORKSPACE_AGENTS_PATH}" 2>/dev/null; then
-    printf '%s\n' "blocked"
-    return
-  fi
-  if ! {
-    if [[ -s "${WORKSPACE_AGENTS_PATH}" ]]; then
-      printf '\n'
-    fi
-    cat <<'EOF'
-## Project Workspace Defaults
-
-Primary project repository:
-- Repository: https://github.com/Wondermove-Inc/new-mobile-app.git
-- Local path: /workspace/projects/Wondermove-Inc/new-mobile-app
-
-Default behavior:
-- For new-mobile-app repository work, use `/workspace/projects/Wondermove-Inc/new-mobile-app` as the working directory.
-- Do not use `/workspace` root as the project repo directory. The root contains agent operating files such as AGENTS.md, SOUL.md, WORKFLOW.md, and TOOLS.md.
-- Do not confuse this file with the project-local `/workspace/projects/Wondermove-Inc/new-mobile-app/AGENTS.md`.
-- Before installing dependencies or system packages, report what will be installed and wait for explicit approval unless the user already approved that installation.
-- After any computer/package installation, report exactly what was installed.
-EOF
-  } >> "${WORKSPACE_AGENTS_PATH}" 2>/dev/null; then
-    printf '%s\n' "blocked"
-    return
-  fi
-  printf '%s\n' "created_default"
 }
 
 file_explorer_command() {
@@ -667,13 +666,15 @@ configure_github_auth() {
 mkdir -p "${STATE_DIR}" "$(dirname "${REPORT_PATH}")"
 
 repo_checkout_status="$(ensure_repo_checkout)"
-project_bootstrap_skill_status="$(register_workspace_skill project-bootstrap)"
-codex_cli_auth_setup_skill_status="$(register_workspace_skill codex-cli-auth-setup)"
-pod_role_bootstrap_skill_status="$(register_workspace_skill pod-role-bootstrap)"
-eas_robot_auth_setup_skill_status="$(register_workspace_skill eas-robot-auth-setup)"
-stitch_adc_setup_skill_status="$(register_workspace_skill stitch-adc-setup)"
-codex_role_workflow_skill_status="$(register_workspace_skill codex-role-workflow)"
-workspace_agents_status="$(ensure_workspace_agents_defaults)"
+workspace_skills_sync_status="$(run_workspace_skills_sync)"
+openclaw_pod_skills_sync_skill_status="$(workspace_skill_status openclaw-pod-skills-sync)"
+project_bootstrap_skill_status="$(workspace_skill_status project-bootstrap)"
+codex_cli_auth_setup_skill_status="$(workspace_skill_status codex-cli-auth-setup)"
+pod_role_bootstrap_skill_status="$(workspace_skill_status pod-role-bootstrap)"
+eas_robot_auth_setup_skill_status="$(workspace_skill_status eas-robot-auth-setup)"
+stitch_adc_setup_skill_status="$(workspace_skill_status stitch-adc-setup)"
+codex_role_workflow_skill_status="$(workspace_skill_status codex-role-workflow)"
+workspace_agents_status="$(workspace_agents_defaults_status)"
 
 role_status="not_resolved"
 resolved_role=""
@@ -822,7 +823,7 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" "$REPO_CLONE_URL" "$repo_checkout_status" "$SKILLS_ROOT" "$project_bootstrap_skill_status" "$codex_cli_auth_setup_skill_status" "$pod_role_bootstrap_skill_status" "$eas_robot_auth_setup_skill_status" "$stitch_adc_setup_skill_status" "$codex_role_workflow_skill_status" "$WORKSPACE_AGENTS_PATH" "$workspace_agents_status" "$expo_mcp_auth_status" "$expo_cli_auth_status" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" "$REPO_CLONE_URL" "$repo_checkout_status" "$SKILLS_ROOT" "$workspace_skills_sync_status" "$OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH" "$openclaw_pod_skills_sync_skill_status" "$project_bootstrap_skill_status" "$codex_cli_auth_setup_skill_status" "$pod_role_bootstrap_skill_status" "$eas_robot_auth_setup_skill_status" "$stitch_adc_setup_skill_status" "$codex_role_workflow_skill_status" "$WORKSPACE_AGENTS_PATH" "$workspace_agents_status" "$expo_mcp_auth_status" "$expo_cli_auth_status" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
@@ -884,6 +885,9 @@ const [
   repoCloneUrl,
   repoCheckoutStatus,
   skillsRoot,
+  workspaceSkillsSyncStatus,
+  workspaceSkillsSyncReportPath,
+  openclawPodSkillsSyncSkillStatus,
   projectBootstrapSkillStatus,
   codexCliAuthSetupSkillStatus,
   podRoleBootstrapSkillStatus,
@@ -953,6 +957,7 @@ const blockers = [];
 if (managedPathStatus.startsWith('blocked')) blockers.push(managedPathStatus);
 if (repoCheckoutStatus === 'blocked') blockers.push('repo-checkout-blocked');
 if (repoCheckoutStatus === 'clone_failed') blockers.push('repo-clone-failed');
+if (workspaceSkillsSyncStatus !== 'completed') blockers.push('workspace-skills-sync-blocked');
 if (railwayCommandStatus !== 'available') blockers.push('railway-cli-unavailable');
 if (gcloudCommandStatus !== 'available') blockers.push('gcloud-cli-unavailable');
 if (railwayInstallDecision === 'install_blocked_needs_approval') blockers.push('railway-install-approval-required');
@@ -981,6 +986,11 @@ const report = {
   },
   workspace_skills: {
     root: skillsRoot,
+    sync: {
+      status: workspaceSkillsSyncStatus,
+      report: workspaceSkillsSyncReportPath,
+    },
+    'openclaw-pod-skills-sync': openclawPodSkillsSyncSkillStatus,
     'project-bootstrap': projectBootstrapSkillStatus,
     'codex-cli-auth-setup': codexCliAuthSetupSkillStatus,
     'pod-role-bootstrap': podRoleBootstrapSkillStatus,

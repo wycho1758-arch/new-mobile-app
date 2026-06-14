@@ -11,6 +11,7 @@ preflight report. That report has this shape:
 {
   "schema": "project-bootstrap-agent-setup/v1",
   "status": "completed | blocked",
+  "blockers": ["workspace-skills-sync-blocked"],
   "role": {
     "resolved": "product-planning | design | mobile-architect | mobile-app-dev | backend-api-integrator | qa-release | missing",
     "status": "configured | not_resolved",
@@ -30,12 +31,17 @@ preflight report. That report has this shape:
   },
   "workspace_skills": {
     "root": "/workspace/skills",
-    "project-bootstrap": "present | registered | missing_source | blocked",
-    "codex-cli-auth-setup": "present | registered | missing_source | blocked",
-    "pod-role-bootstrap": "present | registered | missing_source | blocked",
-    "eas-robot-auth-setup": "present | registered | missing_source | blocked",
-    "stitch-adc-setup": "present | registered | missing_source | blocked",
-    "codex-role-workflow": "present | registered | missing_source | blocked"
+    "sync": {
+      "status": "completed | missing_source | blocked",
+      "report": "/workspace/state/openclaw-pod-skills-sync-report.json"
+    },
+    "openclaw-pod-skills-sync": "present | missing",
+    "project-bootstrap": "present | missing",
+    "codex-cli-auth-setup": "present | missing",
+    "pod-role-bootstrap": "present | missing",
+    "eas-robot-auth-setup": "present | missing",
+    "stitch-adc-setup": "present | missing",
+    "codex-role-workflow": "present | missing"
   },
   "workspace_agents": {
     "path": "/workspace/AGENTS.md",

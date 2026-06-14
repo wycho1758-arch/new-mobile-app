@@ -216,6 +216,7 @@ make_fake_pod_skill_sources() {
   local repo_path="$1"
   local skill_root="${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
   for slug in \
+    openclaw-pod-skills-sync \
     project-bootstrap \
     codex-cli-auth-setup \
     pod-role-bootstrap \
@@ -223,9 +224,60 @@ make_fake_pod_skill_sources() {
     stitch-adc-setup \
     codex-role-workflow
   do
-    mkdir -p "${skill_root}/${slug}"
+    mkdir -p "${skill_root}/${slug}/scripts"
     printf '# skill\n' > "${skill_root}/${slug}/SKILL.md"
+    printf '#!/usr/bin/env bash\nset -euo pipefail\n' > "${skill_root}/${slug}/scripts/${slug}.sh"
+    chmod +x "${skill_root}/${slug}/scripts/${slug}.sh"
   done
+  cat > "${skill_root}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+
+source_root="${OPENCLAW_POD_SKILLS_SOURCE_ROOT:?source root required}"
+target_root="${OPENCLAW_POD_SKILLS_ROOT:?target root required}"
+agents_path="${OPENCLAW_WORKSPACE_AGENTS_PATH:?workspace AGENTS path required}"
+report_path="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH:?sync report path required}"
+marker_path="${OPENCLAW_POD_SKILLS_SYNC_MARKER_PATH:-${STATE_DIR:-$(dirname "${report_path}")}/openclaw-pod-skills-sync-called}"
+
+mkdir -p "${target_root}" "$(dirname "${agents_path}")" "$(dirname "${report_path}")" "$(dirname "${marker_path}")"
+for source_dir in "${source_root}"/*; do
+  [[ -d "${source_dir}" ]] || continue
+  slug="$(basename "${source_dir}")"
+  [[ -f "${source_dir}/SKILL.md" ]] || continue
+  rm -rf "${target_root}/${slug}"
+  cp -R "${source_dir}" "${target_root}/${slug}"
+done
+cat > "${agents_path}" <<'AGENTS'
+## Project Workspace Defaults
+
+After git clone or git pull, use openclaw-pod-skills-sync before project-bootstrap.
+
+- Repository: https://github.com/Wondermove-Inc/new-mobile-app.git
+- Local path: /workspace/projects/Wondermove-Inc/new-mobile-app
+AGENTS
+cat > "${report_path}" <<'JSON'
+{
+  "schema": "openclaw-pod-skills-sync/v1",
+  "status": "completed"
+}
+JSON
+printf 'called\n' > "${marker_path}"
+SH
+  chmod +x "${skill_root}/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+  cat > "${skill_root}/stitch-adc-setup/scripts/stitch-adc-precheck.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "$(dirname "${REPORT_PATH}")"
+printf '{"schema":"stitch-adc-setup/v1","status":"blocked"}\n' > "${REPORT_PATH}"
+SH
+  chmod +x "${skill_root}/stitch-adc-setup/scripts/stitch-adc-precheck.sh"
+  cat > "${skill_root}/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "$(dirname "${REPORT_PATH}")"
+printf '{"schema":"eas-robot-auth-setup/v1","status":"blocked"}\n' > "${REPORT_PATH}"
+SH
+  chmod +x "${skill_root}/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh"
 }
 
 make_fake_gh_authenticated() {
@@ -673,6 +725,7 @@ setup_project_preflight_ready_fixture() {
     "${tmpdir}/bin" \
     "${tmpdir}/state" \
     "${tmpdir}/skills/project-bootstrap" \
+    "${tmpdir}/skills/openclaw-pod-skills-sync" \
     "${tmpdir}/skills/codex-cli-auth-setup" \
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${tmpdir}/skills/stitch-adc-setup" \
@@ -727,6 +780,11 @@ write_ready_agent_setup_report() {
   },
   "workspace_skills": {
     "root": "/workspace/skills",
+    "sync": {
+      "status": "completed",
+      "report": "/workspace/state/openclaw-pod-skills-sync-report.json"
+    },
+    "openclaw-pod-skills-sync": "present",
     "project-bootstrap": "present",
     "codex-cli-auth-setup": "present",
     "pod-role-bootstrap": "present",
@@ -762,6 +820,20 @@ write_ready_agent_setup_report() {
   "installed_exact": []
 }
 JSON
+}
+
+write_failed_sync_agent_setup_report() {
+  local report_path="$1"
+  write_ready_agent_setup_report "${report_path}"
+  node - "${report_path}" <<'NODE'
+const fs = require('node:fs');
+const reportPath = process.argv[2];
+const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+report.status = 'blocked';
+report.blockers = ['workspace-skills-sync-blocked'];
+report.workspace_skills.sync.status = 'blocked';
+fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+NODE
 }
 
 write_missing_auth_agent_setup_report() {
@@ -838,6 +910,21 @@ case_preflight_blocks_unreadable_agent_setup_report() {
   assert_json_field "${report_path}" "r.status === 'blocked'"
   assert_json_field "${report_path}" "r.reports.project_bootstrap_agent_setup === 'unreadable'"
   assert_json_field "${report_path}" "r.blockers.includes('unreadable project-bootstrap-agent-setup report')"
+}
+
+case_preflight_blocks_failed_skill_sync() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  write_failed_sync_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('project-bootstrap-agent-setup blocked')"
+  assert_json_field "${report_path}" "r.blockers.includes('workspace-skills-sync-blocked')"
 }
 
 case_preflight_blocks_auth_absent_from_agent_setup_report() {
@@ -1150,6 +1237,8 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   /bin/bash "${SCRIPT}" >/dev/null
 
   assert_file_contains "${tmpdir}/git-command-log" "clone https://github.com/Wondermove-Inc/new-mobile-app.git ${repo_path}"
+  [[ -f "${tmpdir}/state/openclaw-pod-skills-sync-called" ]]
+  [[ -e "${skills_root}/openclaw-pod-skills-sync/SKILL.md" ]]
   [[ -e "${skills_root}/project-bootstrap/SKILL.md" ]]
   [[ -e "${skills_root}/codex-cli-auth-setup/SKILL.md" ]]
   [[ -e "${skills_root}/pod-role-bootstrap/SKILL.md" ]]
@@ -1157,12 +1246,42 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   [[ -e "${skills_root}/stitch-adc-setup/SKILL.md" ]]
   [[ -e "${skills_root}/codex-role-workflow/SKILL.md" ]]
   assert_file_contains "${workspace_agents_path}" "## Project Workspace Defaults"
+  assert_file_contains "${workspace_agents_path}" "openclaw-pod-skills-sync"
+  assert_file_contains "${workspace_agents_path}" "git clone"
+  assert_file_contains "${workspace_agents_path}" "git pull"
+  assert_text_order "${workspace_agents_path}" "openclaw-pod-skills-sync" "project-bootstrap"
   assert_file_contains "${workspace_agents_path}" "https://github.com/Wondermove-Inc/new-mobile-app.git"
   assert_file_contains "${workspace_agents_path}" "/workspace/projects/Wondermove-Inc/new-mobile-app"
   assert_json_field "${report_path}" "r.repo_checkout.status === 'cloned'"
-  assert_json_field "${report_path}" "r.workspace_skills['project-bootstrap'] === 'registered'"
-  assert_json_field "${report_path}" "r.workspace_skills['codex-role-workflow'] === 'registered'"
+  assert_json_field "${report_path}" "r.workspace_skills.sync.status === 'completed'"
+  assert_json_field "${report_path}" "r.workspace_skills['openclaw-pod-skills-sync'] === 'present'"
+  assert_json_field "${report_path}" "r.workspace_skills['project-bootstrap'] === 'present'"
+  assert_json_field "${report_path}" "r.workspace_skills['codex-role-workflow'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_agents.project_workspace_defaults === 'present'"
+}
+
+case_agent_setup_blocks_failed_skill_sync() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.blockers.includes('workspace-skills-sync-blocked')"
+  assert_json_field "${report_path}" "r.workspace_skills.sync.status === 'missing_source'"
 }
 
 case_project_preflight_blocks_missing_codex_role_workflow_skill() {
@@ -1279,13 +1398,14 @@ case_design_full_setup() {
   HOME="${tmpdir}/home" \
   PATH="${tmpdir}/bin:${PATH}" \
   FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
-  STATE_DIR="${tmpdir}/state" \
-  IDENTITY_PATH="${tmpdir}/IDENTITY" \
-  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
-  REPO_PATH="${tmpdir}/repo" \
-  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
-  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
-  WM_POD_SELECTOR="boram-design" \
+	  STATE_DIR="${tmpdir}/state" \
+	  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+	  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+	  REPO_PATH="${tmpdir}/repo" \
+	  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+	  PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+	  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
+	  WM_POD_SELECTOR="boram-design" \
   STITCH_ADC_PRECHECK="${tmpdir}/skills/stitch-adc-setup/scripts/stitch-adc-precheck.sh" \
   STITCH_ADC_REPORT="${tmpdir}/state/stitch-adc-setup-report.json" \
   /bin/bash "${SCRIPT}" >/dev/null
@@ -1293,12 +1413,14 @@ case_design_full_setup() {
   [[ "$(cat "${tmpdir}/IDENTITY")" == "design" ]]
   grep -Fx -- "- ${tmpdir}/repo/" "${tmpdir}/CODEX_MANAGED_PATHS.md" >/dev/null
   for name in mobile-mcp serena stitch; do grep -Fx -- "${name}" "${tmpdir}/mcps.txt" >/dev/null; done
+  [[ -f "${tmpdir}/state/openclaw-pod-skills-sync-called" ]]
   [[ -f "${tmpdir}/state/stitch-adc-setup-report.json" ]]
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.status === 'completed'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.managed_path.status === 'repaired'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.mcp.mobile_mcp === 'registered' && r.mcp.serena === 'registered' && r.mcp.stitch === 'registered'"
-  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "['present', 'registered'].includes(r.workspace_skills['stitch-adc-setup'])"
-  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'registered'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills.sync.status === 'completed'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['stitch-adc-setup'] === 'present'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.stitch_adc_setup === 'generated'"
 }
 
@@ -1345,6 +1467,7 @@ SH
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
   WM_POD_SELECTOR="boram-qa-release" \
   CODEX_CLI_PRECHECK="${tmpdir}/skills/codex-cli-auth-setup/scripts/codex-cli-precheck.sh" \
   /bin/bash "${SCRIPT}" >/dev/null
@@ -1371,15 +1494,18 @@ case_qa_role_report_generation() {
   REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
   PROJECT_BOOTSTRAP_SKILLS_ROOT="${tmpdir}/skills" \
+  PROJECT_BOOTSTRAP_WORKSPACE_AGENTS_PATH="${tmpdir}/workspace/AGENTS.md" \
   WM_POD_SELECTOR="boram-qa-release" \
   EAS_ROBOT_AUTH_PRECHECK="${tmpdir}/skills/eas-robot-auth-setup/scripts/eas-robot-auth-precheck.sh" \
   EAS_ROBOT_AUTH_REPORT="${tmpdir}/state/eas-robot-auth-setup-report.json" \
   /bin/bash "${SCRIPT}" >/dev/null
 
+  [[ -f "${tmpdir}/state/openclaw-pod-skills-sync-called" ]]
   [[ -f "${tmpdir}/state/eas-robot-auth-setup-report.json" ]]
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.role.resolved === 'qa-release'"
-  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "['present', 'registered'].includes(r.workspace_skills['eas-robot-auth-setup'])"
-  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'registered'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills.sync.status === 'completed'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['eas-robot-auth-setup'] === 'present'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.eas_robot_auth_setup === 'generated'"
 }
 
@@ -2591,6 +2717,7 @@ case_project_preflight_korean_language_fallbacks
 case_project_preflight_korean_full_blocker_matrix
 case_preflight_blocks_missing_agent_setup_report
 case_preflight_blocks_unreadable_agent_setup_report
+case_preflight_blocks_failed_skill_sync
 case_preflight_blocks_auth_absent_from_agent_setup_report
 case_preflight_auth_ready_passes_auth_gate
 case_agent_setup_detects_unauthorized_provider_state
@@ -2601,6 +2728,7 @@ case_system_installer_requires_explicit_approval
 case_failed_npm_install_is_not_reported_as_installed
 case_failed_system_installer_is_not_reported_as_installed
 case_default_clone_runtime_skill_registration_workspace_agents_defaults
+case_agent_setup_blocks_failed_skill_sync
 case_token_bearing_clone_url_rejected_in_both_paths
 case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted
 
