@@ -15,6 +15,7 @@ This skill coordinates local Git and PR workflow only. It does not replace `$wm`
 - Preserve branch and PR workflow. Do not direct push to `main`.
 - Do not force-push without explicit human approval that names the branch and reason.
 - Do not perform self-approval, merge after self-review, or marking failed gates as passed.
+- Do not merge your own PR. When the current Codex agent authored or materially changed the PR, route human approval before merge instead of merging locally.
 - Do not do issue mutation without explicit authorization. Issue mutation includes creating, closing, assigning, labeling, or changing milestone/status.
 - Do not merge, delete branch, squash/rebase published history, or clean up worktrees in `complete` mode.
 - Treat GitHub/Jira/Confluence/EAS/OpenClaw actions as external-platform proof: local validators can record readiness but cannot prove live platform state.
@@ -32,6 +33,26 @@ Before any mutating Git operation, inspect and report:
 - required durable evidence surfaces and applicable gate commands.
 
 If preflight finds unrelated user changes, work with them and do not revert them. If the requested operation would touch unrelated changes, stop and ask for a human decision.
+
+## Self-Workflow Approval Requests
+
+When a user asks the current Codex agent to merge, complete, approve, or otherwise advance a PR that includes the agent's own work, treat it as a self-workflow approval request. The workflow must report readiness and request approval; it must not convert the agent's own local checks or read-only reviewer evidence into human approval.
+
+Required approval owners:
+
+- Product Delivery Lead, using `mobile-app-dev-team/02-role-souls/product-planning-soul.md`, owns scope/readiness/human-gate approval for the requested merge or completion.
+- Mobile Architect / Technical Lead, using `mobile-app-dev-team/02-role-souls/mobile-architect-soul.md`, owns architecture/runtime/releaseability approval when the PR changes repo workflow, runtime policy, architecture, dependencies, route/state behavior, releaseability, or cross-role execution rules.
+
+The approval request packet must include:
+
+- branch, PR URL, base branch, commit range, and mergeability state;
+- exact changed files and whether any unrelated worktree changes are present;
+- local gate results and GitHub check results;
+- reviewer evidence and unresolved findings;
+- human gates, external proof boundaries, and residual risks;
+- the requested approval decision and the exact merge action that remains blocked until approval.
+
+Do not merge your own PR until the required Product Delivery Lead and Mobile Architect / Technical Lead approvals are recorded in the PR, a durable work-unit artifact, or another accepted human approval record. Ambiguous approval, silence, or self-review is not human approval before merge.
 
 ## Modes
 
@@ -69,7 +90,7 @@ Prepare the next actor handoff with branch, PR, durable evidence or proof links,
 
 ### `complete`
 
-Confirm final evidence and reviewer state. Report whether the work is ready for human merge, blocked, or needs rework. Do not merge, delete branch, force-push, or close issues in this mode.
+Confirm final evidence and reviewer state. Report whether the work is ready for human merge, blocked, or needs rework. For self-workflow completion, produce the approval request packet for Product Delivery Lead and Mobile Architect / Technical Lead instead of merging. Do not merge, delete branch, force-push, or close issues in this mode.
 
 ## Required Evidence
 

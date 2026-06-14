@@ -4,6 +4,9 @@
 
 - Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/` using skill-creator structure.
 - Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts; required validators, evals, scripts, and evidence may still be added when the change needs them.
+- WonderMove new-mobile-app project requirements, project specifications, PRDs, work requests, planning artifacts, handoffs, or role workflow requests must first resolve the current role, entry case, allowed repo-local Codex skills, required reviewers, and durable artifact stage through `codex-role-workflow`.
+- Codex is the default repo-local role-workflow substrate for planning, routing, review, handoff, evidence, hooks, MCP, validators, and implementation when implementation is actually authorized; it is not only a coding tool.
+- Do not bypass `human-gate/v1`, evidence requirements, hook-based policy/evidence expectations, or external proof boundaries when routing through `codex-role-workflow`.
 
 This repository is the mobile app template runtime for WonderMove mobile agents.
 Repo-wide operating policy ownership is defined in `REPO_OPERATIONS.md`.

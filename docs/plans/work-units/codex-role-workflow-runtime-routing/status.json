@@ -1,0 +1,89 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "codex-role-workflow-runtime-routing",
+  "stage": "00-product-planning",
+  "state": "done",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "po-planning-reviewer",
+    "evidence": ".evidence/reviews/20260614-codex-role-workflow-runtime-routing-final-po-rereview.md"
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/codex-role-workflow-runtime-routing/00-product-planning/task-packet.md",
+      "kind": "planning-artifact"
+    },
+    {
+      "path": "docs/plans/work-units/codex-role-workflow-runtime-routing/00-product-planning/evidence-matrix.md",
+      "kind": "evidence-matrix"
+    },
+    {
+      "path": "docs/plans/work-units/codex-role-workflow-runtime-routing/00-product-planning/policy-command-output.md",
+      "kind": "policy-evidence"
+    },
+    {
+      "path": "docs/plans/work-units/codex-role-workflow-runtime-routing/00-product-planning/runtime-publication-status.md",
+      "kind": "external-runtime-boundary"
+    },
+    {
+      "path": "docs/plans/work-units/codex-role-workflow-runtime-routing/04-mobile-app/command-output.md",
+      "kind": "test-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-codex-role-workflow-runtime-routing-final-wm-review.md",
+      "kind": "reviewer-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-codex-role-workflow-runtime-routing-final-wm-review.json",
+      "kind": "reviewer-json"
+    },
+    {
+      "path": ".evidence/reviews/20260614-codex-role-workflow-runtime-routing-final-po-rereview.md",
+      "kind": "reviewer-evidence"
+    },
+    {
+      "path": ".evidence/reviews/20260614-codex-role-workflow-runtime-routing-final-po-rereview.json",
+      "kind": "reviewer-json"
+    }
+  ],
+  "handoff": {
+    "next_role": "pod/bootstrap or human/ops owner",
+    "next_artifact": "docs/plans/work-units/codex-role-workflow-runtime-routing/00-product-planning/runtime-publication-status.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-14T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "created planning packet for codex-role-workflow runtime routing integration"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-14T11:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "implemented codex-role-workflow routing overlay, validator coverage, source-managed AGENTS alignment, and command evidence"
+    },
+    {
+      "seq": 3,
+      "at": "2026-06-14T11:31:00.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "reviewed validator and runtime implementation with GO verdict and no findings"
+    },
+    {
+      "seq": 4,
+      "at": "2026-06-14T11:35:00.000Z",
+      "actor": "Product/Planning",
+      "action": "linked implementation reviewer evidence and routed final semantic review to po-planning-reviewer"
+    },
+    {
+      "seq": 5,
+      "at": "2026-06-14T11:45:00.000Z",
+      "actor": "po-planning-reviewer",
+      "action": "final semantic re-review returned GO with no findings; repo-local scope marked done while live workspace publication remains external"
+    }
+  ]
+}
