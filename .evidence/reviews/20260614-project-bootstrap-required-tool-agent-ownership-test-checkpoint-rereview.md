@@ -1,0 +1,88 @@
+**Findings**
+
+No Critical, High, Medium, or Low findings found for this checkpoint.
+
+Scope matches a failing-evals-before-implementation checkpoint. `AGENTS.md:13` requires tests before implementation, and the tracked source diff is limited to `evals/skills/project-bootstrap-agent-setup-smoke.sh`. The new eval coverage directly targets `tool_readiness.node_repl`, Railway, gcloud, approved installer behavior, support-only raw blocker guidance, and report secret hygiene at `evals/skills/project-bootstrap-agent-setup-smoke.sh:670`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:704`, `evals/skills/project-bootstrap-agent-setup-smoke.sh:811`, and `evals/skills/project-bootstrap-agent-setup-smoke.sh:1496`.
+
+The intended red state is source-backed: the current setup report still writes `mcp.node_repl` but no `tool_readiness` object at `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:465`, `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:481`, and `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh:487`. The checkpoint evidence records the expected failure at `.evidence/reviews/20260614-project-bootstrap-required-tool-agent-ownership-test-checkpoint.md:35` and `.evidence/reviews/20260614-project-bootstrap-required-tool-agent-ownership-test-checkpoint.md:71`.
+
+No mobile UI, API contract, or React Native runtime boundary changes are in scope. Final implementation still needs the runtime gates required by `AGENTS.md:106`, `AGENTS.md:107`, and `AGENTS.md:108`, plus any local `docs/confluence` mirror update if implementation changes mirrored environment/MCP/runtime facts per `PROJECT_ENVIRONMENT.md:242`.
+
+```json
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "plan",
+  "scope": {
+    "baseline": "794b8c6dc2cd491761c17a2b8d03865071124da5",
+    "target": "worktree: evals/skills/project-bootstrap-agent-setup-smoke.sh",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "REPO_OPERATIONS.md",
+      ".evidence/reviews/20260614-project-bootstrap-required-tool-agent-ownership-test-checkpoint.md",
+      ".evidence/reviews/20260614-project-bootstrap-required-tool-agent-ownership-test-checkpoint-review.md",
+      "evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh",
+      "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "docs/CODEX_MCP_ENVIRONMENT.md"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "git diff --name-status",
+      "status": "PASS",
+      "evidence": "Tracked source diff is limited to evals/skills/project-bootstrap-agent-setup-smoke.sh; implementation scripts and SoT docs have no tracked diff."
+    },
+    {
+      "command": "git diff --check -- evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "No whitespace errors reported."
+    },
+    {
+      "command": "bash -n evals/skills/project-bootstrap-agent-setup-smoke.sh",
+      "status": "PASS",
+      "evidence": "Shell syntax check passed."
+    },
+    {
+      "command": "bash -n mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh",
+      "status": "PASS",
+      "evidence": "Related bootstrap scripts still parse successfully."
+    },
+    {
+      "command": "bash evals/skills/project-bootstrap-agent-setup-smoke.sh (expected red checkpoint)",
+      "status": "PASS",
+      "evidence": ".evidence/reviews/20260614-project-bootstrap-required-tool-agent-ownership-test-checkpoint.md:35 and :71 record the expected TypeError; source inspection confirms the current report has mcp.node_repl but no tool_readiness.node_repl."
+    },
+    {
+      "command": "pnpm run test:runtime",
+      "status": "NOT_APPLICABLE",
+      "evidence": "This is a pre-implementation failing-eval checkpoint; AGENTS.md:107 requires this gate before PR readiness."
+    },
+    {
+      "command": "pnpm turbo run lint test",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No app/API implementation changed in this checkpoint; AGENTS.md:106 still requires this before PR readiness."
+    },
+    {
+      "command": "pnpm run test:local-harness",
+      "status": "NOT_APPLICABLE",
+      "evidence": "Runtime-change PR gate remains required before final readiness per AGENTS.md:108; this checkpoint only validates tests-first red state."
+    },
+    {
+      "command": "mobile-mcp visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile UI/runtime screen change is in scope; AGENTS.md:109-110 applies when mobile environment/runtime or UI/device evidence is relevant."
+    }
+  ],
+  "residual_risks": [
+    "The smoke script was not rerun by this read-only reviewer; the red-state result is accepted from recorded checkpoint evidence plus source inspection.",
+    "Implementation scripts, SoT docs, and any required docs/confluence mirror updates remain pending for the next checkpoint.",
+    "Final PR readiness still requires passing runtime/workspace/local-harness gates after implementation.",
+    "No API contract drift or mobile UI selector risk was found because no app/API/mobile screen code changed."
+  ],
+  "next_action": "proceed"
+}
+```

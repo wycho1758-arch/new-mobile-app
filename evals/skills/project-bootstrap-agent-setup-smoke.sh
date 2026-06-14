@@ -76,10 +76,75 @@ SH
   chmod +x "${script_path}"
 }
 
+make_fake_required_cli_installer() {
+  local script_path="$1"
+  local cli_name="$2"
+  local marker_path="$3"
+  local command_log_path="$4"
+  mkdir -p "$(dirname "${script_path}")"
+  cat > "${script_path}" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+target_bin="\${1:?target bin dir required}"
+mkdir -p "\${target_bin}"
+printf '%s\n' "${cli_name}" > "${marker_path}"
+cat > "\${target_bin}/${cli_name}" <<'CLI'
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\${1:-}" >> "${command_log_path}"
+case "\${1:-}" in
+  --version|version)
+    printf '${cli_name} fake version\n'
+    ;;
+  whoami)
+    exit 1
+    ;;
+  auth)
+    exit 1
+    ;;
+  config)
+    exit 1
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+CLI
+chmod +x "\${target_bin}/${cli_name}"
+SH
+  chmod +x "${script_path}"
+}
+
 assert_json_field() {
   local report="$1"
   local expression="$2"
   node -e "const r=require(process.argv[1]); if (!(${expression})) { console.error('assertion failed:', process.argv[2]); process.exit(1); }" "${report}" "${expression}"
+}
+
+assert_json_no_secret_like() {
+  local report="$1"
+  node - "${report}" <<'NODE'
+const fs = require('node:fs');
+const report = fs.readFileSync(process.argv[2], 'utf8');
+const forbidden = [
+  /ghp_[A-Za-z0-9_]+/,
+  /github_pat_[A-Za-z0-9_]+/,
+  /-----BEGIN [^-]+PRIVATE KEY-----/,
+  /"private_key"\s*:/i,
+  /DATABASE_URL\s*=/i,
+  /postgres(?:ql)?:\/\/[^"\s]+/i,
+  /authorization["']?\s*:\s*["']?bearer\s+[A-Za-z0-9._-]+/i,
+  /"type"\s*:\s*"service_account"/i,
+  /"client_email"\s*:\s*"[^"]+@[^"]+"/i,
+  /"private_key_id"\s*:/i,
+];
+for (const pattern of forbidden) {
+  if (pattern.test(report)) {
+    console.error(`assertion failed: secret-like value matched ${pattern}`);
+    process.exit(1);
+  }
+}
+NODE
 }
 
 assert_file_contains() {
@@ -602,6 +667,84 @@ case_github_auth_missing_skips_setup_git() {
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.git.github_auth === 'missing'"
 }
 
+case_required_tool_readiness_without_approved_installers() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.required === true"
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.owner === 'codex_app_plugin'"
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.status === 'app_environment_missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.minimum_user_action.includes('Codex app/plugin')"
+  assert_json_field "${report_path}" "!r.tool_readiness.node_repl.minimum_user_action.includes('codex mcp add')"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.required === true"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.command_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_unavailable_needs_platform_source'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.minimum_user_action.includes('approved non-secret Railway CLI installer source')"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.required === true"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.command_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_unavailable_needs_platform_source'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.minimum_user_action.includes('approved non-secret gcloud CLI installer source')"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_required_cli_approved_installers_are_attempted() {
+  local tmpdir report_path installer_dir tool_bin
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  installer_dir="${tmpdir}/approved-installers"
+  tool_bin="${tmpdir}/state/project-bootstrap-tools/bin"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${installer_dir}"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_required_cli_installer "${installer_dir}/install-railway.sh" "railway" "${tmpdir}/railway-installer-ran" "${tmpdir}/railway-command-log"
+  make_fake_required_cli_installer "${installer_dir}/install-gcloud.sh" "gcloud" "${tmpdir}/gcloud-installer-ran" "${tmpdir}/gcloud-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian node_repl playwright > "${tmpdir}/mcps.txt"
+
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR="${tool_bin}" \
+  PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH="${installer_dir}/install-railway.sh" \
+  PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH="${installer_dir}/install-gcloud.sh" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  [[ -f "${tmpdir}/railway-installer-ran" ]]
+  [[ -f "${tmpdir}/gcloud-installer-ran" ]]
+  [[ -x "${tool_bin}/railway" ]]
+  [[ -x "${tool_bin}/gcloud" ]]
+  assert_file_contains "${tmpdir}/railway-command-log" "--version"
+  assert_file_contains "${tmpdir}/gcloud-command-log" "--version"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_attempted'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.command_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.version_status === 'checked'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_attempted'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.command_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.version_status === 'checked'"
+  assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR"
+  assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "PATH="
+  assert_json_no_secret_like "${report_path}"
+}
+
 case_product_planning_status_only_missing_preflight() {
   local tmpdir repo_path report_path
   tmpdir="$(mktemp -d)"
@@ -664,12 +807,20 @@ case_product_planning_status_only_missing_preflight() {
 	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "project environment tools"
 	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Expo MCP"
 	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Atlassian MCP"
-	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Playwright MCP"
-	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Railway CLI"
-	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud CLI"
-	  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "EAS CLI is the only baseline exception"
-	  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required MCP expo"
-	  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required CLI railway"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Playwright MCP"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Railway CLI"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud CLI"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "node_repl is mandatory"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Codex app/plugin environment"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Railway CLI is mandatory"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "approved non-secret Railway CLI installer source"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud CLI is mandatory"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "approved non-secret gcloud CLI installer source"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "EAS CLI is the only baseline exception"
+		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required MCP expo"
+		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required MCP node_repl"
+		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required CLI railway"
+		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required CLI gcloud"
 }
 
 case_project_preflight_blocks_on_pod_role_report_blocked() {
@@ -1344,6 +1495,8 @@ case_missing_git_identity_does_not_invent_values
 case_git_identity_rejects_mixed_approved_sources
 case_github_auth_setup_git_when_authenticated
 case_github_auth_missing_skips_setup_git
+case_required_tool_readiness_without_approved_installers
+case_required_cli_approved_installers_are_attempted
 case_product_planning_status_only_missing_preflight
 case_project_preflight_blocks_on_pod_role_report_blocked
 case_project_preflight_guides_missing_sot_and_mcp

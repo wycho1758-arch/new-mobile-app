@@ -454,7 +454,16 @@ Purpose:
   health checks, and RN Web E2E API URL handoff.
 
 Railway is not a Codex MCP in this repo. It is required for project-bootstrap
-readiness, but install/login/token setup remains human/platform-owned.
+readiness.
+
+`project-bootstrap-agent-setup.sh` may install Railway only when an explicit
+approved non-secret installer executable is provided at
+`PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH`. It installs into
+`${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
+adds that bin directory to `/workspace/state/project-bootstrap-role.env`, and
+rechecks `railway --version`.
+
+Railway login or secure token source remains human/platform-owned.
 
 Verify:
 
@@ -463,7 +472,7 @@ railway --version
 railway whoami
 ```
 
-Install on macOS if missing:
+Manual macOS install, when a human/platform owner chooses that path:
 
 ```bash
 brew install railway
@@ -549,8 +558,16 @@ legacy `expo` binary as authoritative for this repo.
 Purpose:
 
 - Google Cloud prerequisite for Stitch. gcloud is required for
-  project-bootstrap readiness, but ADC login, project selection, and service
-  enablement remain human/platform-owned.
+  project-bootstrap readiness.
+
+`project-bootstrap-agent-setup.sh` may install gcloud only when an explicit
+approved non-secret installer executable is provided at
+`PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`. It installs into
+`${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
+adds that bin directory to `/workspace/state/project-bootstrap-role.env`, and
+rechecks `gcloud --version`.
+
+ADC login, project selection, and service enablement remain human/platform-owned.
 
 Verify CLI:
 

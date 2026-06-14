@@ -1,6 +1,6 @@
 # Project Environment
 
-Last updated: 2026-06-12
+Last updated: 2026-06-14
 
 This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
@@ -318,9 +318,14 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - MCP browser automation support, distinct from RN Web E2E Playwright.
 - Project-bootstrap-required CLI surfaces:
   - `railway`
-  - required for Railway QA/API deploy/evidence readiness checks; install/login/token setup remains human/platform-owned and secret-safe.
+  - required for Railway QA/API deploy/evidence readiness checks.
+  - `project-bootstrap-agent-setup.sh` may install it only from an explicit approved non-secret installer path, then recheck `railway --version`.
+  - Railway login or secure token source remains human/platform-owned and secret-safe.
   - `gcloud`
-  - required for Stitch/Google ADC readiness checks; ADC login, project selection, and service enablement remain human/platform-owned.
+  - required for Stitch/Google ADC readiness checks.
+  - `project-bootstrap-agent-setup.sh` may install it only from an explicit approved non-secret installer path, then recheck `gcloud --version`.
+  - ADC login, project selection, and service enablement remain human/platform-owned.
+  - Approved installer env vars are `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH`, `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`, and optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`.
   - EAS CLI remains the baseline exception until QA/Release EAS work or another approved EAS action is selected.
 - Runtime scripts:
   - `scripts/validate-runtime-artifacts.mjs`

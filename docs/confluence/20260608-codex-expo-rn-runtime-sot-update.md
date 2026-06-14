@@ -220,6 +220,32 @@ codex mcp list
 
 Expected results include marketplace `expo-plugins`, plugin `expo@expo-plugins` with `installed, enabled`, plugin version `1.1.0`, and `mobile-mcp` still enabled with `@mobilenext/mobile-mcp@0.0.58`.
 
+## Project Bootstrap Required Tool Ownership
+
+Local mirror update: 2026-06-14
+
+`project-bootstrap` requires these tool surfaces before bootstrap can pass:
+
+- MCPs: `mobile-mcp`, `serena`, `stitch`, `expo`, `atlassian`, `node_repl`, and `playwright`.
+- CLIs: `railway` and `gcloud`.
+- Baseline exception: EAS CLI remains status-only until QA/Release EAS work or another approved EAS action is selected.
+
+Agent-owned setup:
+
+- The agent registers pinned, credential-free MCPs from repo SoT when possible.
+- `node_repl` is Codex app/plugin environment owned. The agent checks and reports it but must not invent a repo-local replacement path.
+- Railway/gcloud may be installed only from explicit approved non-secret installer executables:
+  - `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH`
+  - `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`
+  - optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`
+- After an approved installer runs, the agent persists the tool bin path in `/workspace/state/project-bootstrap-role.env` and rechecks `railway --version` or `gcloud --version`.
+
+Human/platform-owned actions:
+
+- Railway login or secure token source.
+- Google ADC login, project selection, and Stitch service enablement.
+- Live Confluence publication itself remains human-gated and requires target page IDs, current versions, proposed body changes, reviewer evidence, and explicit approval.
+
 ## Codex Runtime / Local Harness
 
 Runtime paths:

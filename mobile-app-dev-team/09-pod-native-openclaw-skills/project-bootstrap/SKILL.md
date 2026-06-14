@@ -59,6 +59,8 @@ The agent must first perform non-secret setup that it can own:
 
 - register pinned MCPs from repo SoT for `mobile-mcp`, `serena`, `stitch`,
   `expo`, `atlassian`, and `playwright`;
+- install required Railway/gcloud CLIs only from explicit approved non-secret
+  installer path env vars, then recheck CLI availability and `--version`;
 - rerun status checks and `project-bootstrap` preflight after setup changes;
 - report only the remaining human/platform-owned blockers.
 
@@ -67,9 +69,10 @@ Human/platform-owned examples:
 - `expo` OAuth login or account approval;
 - Atlassian remote auth if the target session requires it;
 - `node_repl` restoration through the Codex app/plugin environment;
-- Railway CLI install/login or secure token source;
-- gcloud CLI install, Google ADC login, project selection, or Stitch service
-  enablement.
+- approved Railway/gcloud installer source approval when none is already
+  available to the agent;
+- Railway login or secure token source;
+- Google ADC login, project selection, or Stitch service enablement.
 
 For a Product/Planning pod (`product-planning`):
 
@@ -309,8 +312,13 @@ exists for the exact action and evidence path.
 - Missing required MCPs are registered from pinned repo SoT when Codex CLI is
   available and no credential flow or app-owned runtime restoration is required.
 - Required CLIs are status-checked: Railway and gcloud. Missing values are
-  blockers, but installation, account login, ADC, project selection, and secure
-  token sources remain human/platform-owned.
+  blockers. The agent may install them only from
+  `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH` or
+  `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH` into
+  `${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
+  persist that tool bin path in `/workspace/state/project-bootstrap-role.env`,
+  and recheck `--version`. Account login, ADC, project selection, service
+  enablement, and secure token sources remain human/platform-owned.
 - EAS/Expo account details, workspace Expo, GitHub auth, and Codex auth are
   checked status-only unless the `blockers` array or current role-specific SoT
   makes them actionable. EAS CLI remains the baseline exception until EAS work

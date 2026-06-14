@@ -15,6 +15,9 @@ EAS_ROBOT_AUTH_PRECHECK="${EAS_ROBOT_AUTH_PRECHECK:-/workspace/skills/eas-robot-
 STITCH_ADC_REPORT="${STITCH_ADC_REPORT:-${STATE_DIR}/stitch-adc-setup-report.json}"
 EAS_ROBOT_AUTH_REPORT="${EAS_ROBOT_AUTH_REPORT:-${STATE_DIR}/eas-robot-auth-setup-report.json}"
 GIT_IDENTITY_PATH="${PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH:-}"
+AGENT_TOOL_BIN_DIR="${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}"
+RAILWAY_INSTALLER_PATH="${PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH:-}"
+GCLOUD_INSTALLER_PATH="${PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH:-}"
 
 redact() {
   sed -E 's/(token|key|secret|password|credential)([=: ][^ ]+)/\1=***REDACTED***/Ig'
@@ -196,6 +199,81 @@ check_node_repl_status() {
   else
     printf '%s\n' "app_environment_missing"
   fi
+}
+
+safe_version_check() {
+  local cli_name="$1"
+  if "${cli_name}" --version >/dev/null 2> >(redact >&2); then
+    printf '%s\n' "checked"
+  else
+    printf '%s\n' "failed"
+  fi
+}
+
+status_command_check() {
+  local status_name="$1"
+  shift
+  if "$@" >/dev/null 2> >(redact >&2); then
+    printf '%s\n' "available"
+  else
+    printf '%s\n' "missing"
+  fi
+}
+
+record_tool_bin_env() {
+  mkdir -p "$(dirname "${ROLE_ENV_PATH}")"
+  if [[ ! -e "${ROLE_ENV_PATH}" ]] || ! grep -F 'PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR=' "${ROLE_ENV_PATH}" >/dev/null 2>&1; then
+    {
+      printf 'export PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR=%q\n' "${AGENT_TOOL_BIN_DIR}"
+      printf 'export PATH=%q:${PATH}\n' "${AGENT_TOOL_BIN_DIR}"
+    } >> "${ROLE_ENV_PATH}"
+  fi
+}
+
+ensure_required_cli() {
+  local cli_name="$1"
+  local installer_path="$2"
+  local status_prefix="$3"
+
+  if command -v "${cli_name}" >/dev/null 2>&1; then
+    printf -v "${status_prefix}_command_status" '%s' "available"
+    printf -v "${status_prefix}_install_decision" '%s' "already_available"
+    printf -v "${status_prefix}_installer_status" '%s' "not_needed"
+    printf -v "${status_prefix}_version_status" '%s' "$(safe_version_check "${cli_name}")"
+    return
+  fi
+
+  if [[ -n "${installer_path}" && -x "${installer_path}" ]]; then
+    mkdir -p "${AGENT_TOOL_BIN_DIR}"
+    if "${installer_path}" "${AGENT_TOOL_BIN_DIR}" >/dev/null 2> >(redact >&2); then
+      export PATH="${AGENT_TOOL_BIN_DIR}:${PATH}"
+      record_tool_bin_env
+      printf -v "${status_prefix}_install_decision" '%s' "install_attempted"
+      printf -v "${status_prefix}_installer_status" '%s' "executed"
+      if command -v "${cli_name}" >/dev/null 2>&1; then
+        printf -v "${status_prefix}_command_status" '%s' "available"
+        printf -v "${status_prefix}_version_status" '%s' "$(safe_version_check "${cli_name}")"
+      else
+        printf -v "${status_prefix}_command_status" '%s' "missing"
+        printf -v "${status_prefix}_version_status" '%s' "not_checked"
+      fi
+    else
+      printf -v "${status_prefix}_command_status" '%s' "missing"
+      printf -v "${status_prefix}_install_decision" '%s' "install_attempted"
+      printf -v "${status_prefix}_installer_status" '%s' "failed"
+      printf -v "${status_prefix}_version_status" '%s' "not_checked"
+    fi
+    return
+  fi
+
+  printf -v "${status_prefix}_command_status" '%s' "missing"
+  printf -v "${status_prefix}_install_decision" '%s' "install_unavailable_needs_platform_source"
+  if [[ -n "${installer_path}" ]]; then
+    printf -v "${status_prefix}_installer_status" '%s' "not_executable"
+  else
+    printf -v "${status_prefix}_installer_status" '%s' "missing"
+  fi
+  printf -v "${status_prefix}_version_status" '%s' "not_checked"
 }
 
 run_status_precheck() {
@@ -400,6 +478,28 @@ atlassian_mcp_status="$(register_mcp atlassian || printf 'blocked')"
 node_repl_mcp_status="$(check_node_repl_status || printf 'blocked')"
 playwright_mcp_status="$(register_mcp playwright || printf 'blocked')"
 
+railway_command_status="missing"
+railway_install_decision="install_unavailable_needs_platform_source"
+railway_installer_status="missing"
+railway_version_status="not_checked"
+gcloud_command_status="missing"
+gcloud_install_decision="install_unavailable_needs_platform_source"
+gcloud_installer_status="missing"
+gcloud_version_status="not_checked"
+
+ensure_required_cli "railway" "${RAILWAY_INSTALLER_PATH}" "railway"
+ensure_required_cli "gcloud" "${GCLOUD_INSTALLER_PATH}" "gcloud"
+
+railway_auth_status="not_checked"
+if [[ "${railway_command_status}" == "available" ]]; then
+  railway_auth_status="$(status_command_check railway_auth railway whoami)"
+fi
+
+gcloud_project_status="not_checked"
+if [[ "${gcloud_command_status}" == "available" ]]; then
+  gcloud_project_status="$(status_command_check gcloud_project gcloud config get-value project)"
+fi
+
 role_requires_stitch="false"
 role_requires_eas="false"
 case "${resolved_role}" in
@@ -432,7 +532,7 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_project_status" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const [
@@ -453,6 +553,17 @@ const [
   atlassianMcpStatus,
   nodeReplMcpStatus,
   playwrightMcpStatus,
+  railwayCommandStatus,
+  railwayInstallDecision,
+  railwayInstallerStatus,
+  railwayVersionStatus,
+  railwayAuthStatus,
+  gcloudCommandStatus,
+  gcloudInstallDecision,
+  gcloudInstallerStatus,
+  gcloudVersionStatus,
+  gcloudProjectStatus,
+  agentToolBinDir,
   stitchReportStatus,
   easReportStatus,
   gitIdentityStatus,
@@ -486,6 +597,43 @@ const report = {
     atlassian: atlassianMcpStatus,
     node_repl: nodeReplMcpStatus,
     playwright: playwrightMcpStatus,
+  },
+  tool_readiness: {
+    node_repl: {
+      required: true,
+      owner: 'codex_app_plugin',
+      status: nodeReplMcpStatus,
+      install_decision: nodeReplMcpStatus === 'already_configured' ? 'already_available' : 'app_environment_owned',
+      minimum_user_action: nodeReplMcpStatus === 'already_configured'
+        ? 'None. node_repl is already available in the Codex app/plugin environment.'
+        : 'Ask the platform owner to restore or enable node_repl in the Codex app/plugin environment. Do not invent a repo-local MCP registration path.',
+    },
+    railway: {
+      required: true,
+      owner: 'agent_with_approved_installer_then_human_auth',
+      command_status: railwayCommandStatus,
+      install_decision: railwayInstallDecision,
+      installer_status: railwayInstallerStatus,
+      version_status: railwayVersionStatus,
+      auth_status: railwayAuthStatus,
+      tool_bin_dir: agentToolBinDir,
+      minimum_user_action: railwayCommandStatus === 'available'
+        ? 'If Railway auth is missing, complete Railway login in the real login surface or provide an approved secure token source. Do not send secrets in chat.'
+        : 'Provide or approve an approved non-secret Railway CLI installer source. After install, complete Railway login in the real login surface or through an approved secure token source; do not send secrets in chat.',
+    },
+    gcloud: {
+      required: true,
+      owner: 'agent_with_approved_installer_then_human_auth',
+      command_status: gcloudCommandStatus,
+      install_decision: gcloudInstallDecision,
+      installer_status: gcloudInstallerStatus,
+      version_status: gcloudVersionStatus,
+      project_status: gcloudProjectStatus,
+      tool_bin_dir: agentToolBinDir,
+      minimum_user_action: gcloudCommandStatus === 'available'
+        ? 'If Google ADC or project selection is missing, complete the official gcloud login/ADC/project selection flow yourself. Do not send ADC JSON or service account JSON in chat.'
+        : 'Provide or approve an approved non-secret gcloud CLI installer source. After install, complete official Google login/ADC/project selection yourself; do not send ADC JSON or service account JSON in chat.',
+    },
   },
   reports: {
     stitch_adc_setup: stitchReportStatus,

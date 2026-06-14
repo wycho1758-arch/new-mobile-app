@@ -191,11 +191,11 @@ Project-bootstrap required baseline:
 - `mcp.expo`, `mcp.atlassian`, `mcp.node_repl`, and `mcp.playwright` are
   required, along with `mobile-mcp`, `serena`, and `stitch`.
 - `cli.railway: missing` is a bootstrap blocker. The agent may check status and
-  use an approved platform source, but install/login/token work remains
-  human/platform-owned.
-- `cli.gcloud: missing` is a bootstrap blocker. The agent may check status, but
-  install, ADC login, project selection, and service enablement remain
-  human/platform-owned.
+  may install Railway only from an explicit approved non-secret installer source.
+  Login/token work remains human/platform-owned.
+- `cli.gcloud: missing` is a bootstrap blocker. The agent may check status and
+  may install gcloud only from an explicit approved non-secret installer source.
+  ADC login, project selection, and service enablement remain human/platform-owned.
 - `cli.eas: missing` is the baseline exception. It is status-only until
   QA/Release EAS work or another approved EAS action is selected.
 - `cli.eas: missing` is a tool inventory result. It is not a Product/Planning
@@ -486,10 +486,18 @@ Related blockers:
 Resolution:
 
 - Railway CLI is required for project-bootstrap readiness because this repo has
-  Railway QA/API evidence workflows. Login/token setup remains human/platform
-  owned.
+  Railway QA/API evidence workflows.
 - gcloud CLI is required for project-bootstrap readiness because Stitch uses
-  Google ADC and project state. ADC login, project selection, and service
+  Google ADC and project state.
+- The agent may install Railway or gcloud only from explicit approved
+  non-secret installer executables such as
+  `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH` and
+  `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`.
+- Approved installer output is placed under
+  `${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
+  persisted in `/workspace/state/project-bootstrap-role.env`, and rechecked with
+  `railway --version` or `gcloud --version`.
+- Railway login/token setup, Google ADC login, project selection, and service
   enablement remain human/platform owned.
 - EAS CLI is the only baseline exception and stays status-only until EAS work is
   selected.

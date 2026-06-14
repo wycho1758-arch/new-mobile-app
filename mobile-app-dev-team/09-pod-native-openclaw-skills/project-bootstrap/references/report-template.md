@@ -33,6 +33,37 @@ preflight report. That report has this shape:
     "node_repl": "already_configured | app_environment_missing | codex_cli_missing | blocked",
     "playwright": "already_configured | registered | registration_unverified | codex_cli_missing | blocked"
   },
+  "tool_readiness": {
+    "node_repl": {
+      "required": true,
+      "owner": "codex_app_plugin",
+      "status": "already_configured | app_environment_missing | codex_cli_missing | blocked",
+      "install_decision": "already_available | app_environment_owned",
+      "minimum_user_action": "status-only minimal action text"
+    },
+    "railway": {
+      "required": true,
+      "owner": "agent_with_approved_installer_then_human_auth",
+      "command_status": "available | missing",
+      "install_decision": "already_available | install_attempted | install_unavailable_needs_platform_source",
+      "installer_status": "not_needed | executed | failed | missing | not_executable",
+      "version_status": "checked | failed | not_checked",
+      "auth_status": "available | missing | not_checked",
+      "tool_bin_dir": "/workspace/state/project-bootstrap-tools/bin",
+      "minimum_user_action": "status-only minimal action text"
+    },
+    "gcloud": {
+      "required": true,
+      "owner": "agent_with_approved_installer_then_human_auth",
+      "command_status": "available | missing",
+      "install_decision": "already_available | install_attempted | install_unavailable_needs_platform_source",
+      "installer_status": "not_needed | executed | failed | missing | not_executable",
+      "version_status": "checked | failed | not_checked",
+      "project_status": "available | missing | not_checked",
+      "tool_bin_dir": "/workspace/state/project-bootstrap-tools/bin",
+      "minimum_user_action": "status-only minimal action text"
+    }
+  },
   "reports": {
     "stitch_adc_setup": "not_applicable | already_present | generated | script_missing | not_generated",
     "eas_robot_auth_setup": "not_applicable | already_present | generated | script_missing | not_generated"
