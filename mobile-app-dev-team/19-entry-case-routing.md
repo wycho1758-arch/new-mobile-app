@@ -1,6 +1,6 @@
 # Entry Case Routing
 
-This is managed-doc guidance (SoT priority 5); runtime enforcement in skills/validators is a deferred follow-up and this document does not supersede them.
+This is managed-doc guidance (SoT priority 5) and does not supersede higher-priority SoT. Runtime enforcement is largely a deferred follow-up, with two deterministic slices already enforced in `scripts/lib/work-unit-machine.mjs`: a `01-design` stage in `not-applicable` state must carry `non-goal` evidence (see §P-1), and a `production-submit` `human-gate/v1` decision must carry `rollback_owner`/`rollback_plan` (see `20-app-eas-ota-rollback-runbook.md`). The remaining governance stays managed-doc/process-owned.
 
 This document is a navigational taxonomy for how an incoming user input is classified and routed to the correct skill, operating role, or human gate. Every routing claim below is grounded in an actual line of a higher-priority SoT file and cites it as `<path>` §<section>. Where the SoT does not define a state, the gap is named explicitly rather than filled.
 
