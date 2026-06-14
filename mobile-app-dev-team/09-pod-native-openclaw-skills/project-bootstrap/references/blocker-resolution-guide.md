@@ -188,14 +188,21 @@ is a blocker. The agent must report user-facing blockers from the report
 
 Project-bootstrap required baseline:
 
-- `mcp.expo`, `mcp.atlassian`, `mcp.node_repl`, and `mcp.playwright` are
-  required, along with `mobile-mcp`, `serena`, and `stitch`.
+- `mcp.expo`, `mcp.atlassian`, and `mcp.playwright` are required, along with
+  `mobile-mcp`, `serena`, and `stitch`.
+- `mcp.node_repl` is optional Codex app/plugin inventory. Missing `node_repl`
+  does not block `project-bootstrap`.
 - `cli.railway: missing` is a bootstrap blocker. The agent may check status and
-  may install Railway only from an explicit approved non-secret installer source.
-  Login/token work remains human/platform-owned.
+  installs Railway with `npm i -g @railway/cli` when npm is available. The
+  agent starts `railway login`; the user completes sign-in only in the real
+  Railway surface.
 - `cli.gcloud: missing` is a bootstrap blocker. The agent may check status and
-  may install gcloud only from an explicit approved non-secret installer source.
-  ADC login, project selection, and service enablement remain human/platform-owned.
+  may install gcloud only from an approved official Google Cloud CLI installer
+  source. The agent starts `gcloud auth login` and when needed
+  `gcloud auth application-default login`; the user completes Google approval in
+  the real surface. The user provides only the non-secret project ID, then the
+  agent runs `gcloud config set project <project-id>` and verifies
+  `gcloud config get-value project`.
 - `cli.eas: missing` is the baseline exception. It is status-only until
   QA/Release EAS work or another approved EAS action is selected.
 - `cli.eas: missing` is a tool inventory result. It is not a Product/Planning
@@ -353,7 +360,6 @@ Related blockers:
 - `missing required MCP stitch`
 - `missing required MCP expo`
 - `missing required MCP atlassian`
-- `missing required MCP node_repl`
 - `missing required MCP playwright`
 
 Resolution:
@@ -361,7 +367,8 @@ Resolution:
 - Compare `codex mcp list` with repo `.codex/config.toml` and
   `PROJECT_ENVIRONMENT.md`.
 - Required project MCPs are `mobile-mcp`, `serena`, `stitch`, `expo`,
-  `atlassian`, `node_repl`, and `playwright`.
+  `atlassian`, and `playwright`. `node_repl` is optional Codex app/plugin
+  inventory.
 - Some MCP auth, such as Expo or Google ADC/Stitch, may require human-owned
   login or mounted credential files.
 
@@ -372,8 +379,9 @@ Agent action:
 - The agent may register `expo`, `atlassian`, and `playwright` from pinned repo
   config. Expo OAuth and Atlassian remote auth still require user presence when
   the real login surface appears.
-- `node_repl` is Codex app/plugin environment owned. Do not invent a repo-local
-  path or copy another user's absolute app path.
+- `node_repl` is Codex app/plugin environment owned and optional for
+  project-bootstrap. Do not invent a repo-local path or copy another user's
+  absolute app path.
 - The agent may prepare exact non-secret setup commands from repo-pinned config
   only when Codex CLI itself is unavailable or registration fails for a
   source-backed reason.
@@ -489,27 +497,38 @@ Resolution:
   Railway QA/API evidence workflows.
 - gcloud CLI is required for project-bootstrap readiness because Stitch uses
   Google ADC and project state.
-- The agent may install Railway or gcloud only from explicit approved
-  non-secret installer executables such as
-  `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH` and
-  `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`.
-- Approved installer output is placed under
-  `${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
-  persisted in `/workspace/state/project-bootstrap-role.env`, and rechecked with
-  `railway --version` or `gcloud --version`.
-- Railway login/token setup, Google ADC login, project selection, and service
-  enablement remain human/platform owned.
+- The agent installs Railway with `npm i -g @railway/cli` when missing and npm
+  is available, then rechecks `railway --version`.
+- The agent may install gcloud only from an approved official Google Cloud CLI
+  installer source, then rechecks `gcloud --version`.
+- The agent starts `railway login`, `gcloud auth login`, and when needed
+  `gcloud auth application-default login`; users enter credentials and approve
+  only in the real provider surface.
+- Project selection uses only the non-secret project ID:
+  `gcloud config set project <project-id>`, then
+  `gcloud config get-value project`.
+- Railway token setup, Google ADC JSON, service account JSON, and credential
+  contents remain human/platform owned and must never be sent in chat.
 - EAS CLI is the only baseline exception and stays status-only until EAS work is
   selected.
 
 Agent action:
 
-- Check `railway --version`, `railway whoami`, `gcloud --version`, and
-  `gcloud config get-value project` as status-only when available.
+- Check `railway --version`, `railway whoami`, `gcloud --version`,
+  `gcloud auth list`, and `gcloud config get-value project` as status-only when
+  available.
 - Use browser/computer-use to open or guide the real login surface when possible
   and a human is present.
-- Never ask for Railway tokens, Google ADC JSON, service account JSON, OAuth
-  codes, or private project credentials in chat.
+- Do not open Finder or a file explorer during routine checks. Report terminal
+  metadata only by default.
+- Open Ubuntu file explorer for `/root/.railway/`, `/root/.config/gcloud/`,
+  GitHub, and Expo credential directories only when the user explicitly asks for
+  visual credential-location proof and
+  `PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER=true`; otherwise report
+  terminal metadata only. Metadata means path, filename, owner/group, mode,
+  size, and modification time.
+- Never ask for or print Railway tokens, Google ADC JSON, service account JSON,
+  OAuth codes, private project credentials, or credential file contents.
 
 ## Role-Specific Setup Report Blockers
 

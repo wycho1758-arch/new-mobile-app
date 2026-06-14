@@ -47,7 +47,7 @@ Configure or verify these MCP servers:
 | `stitch` | Design handoff/generation/export | Yes | No `codex mcp login`; requires Google ADC for actual Stitch use |
 | `expo` | Official Expo MCP/plugin workflows | Yes | `codex mcp login expo` OAuth |
 | `atlassian` | Jira/Confluence/internal knowledge | Yes | Remote/plugin-specific auth |
-| `node_repl` | Codex app/browser/plugin support | Yes | Codex app managed |
+| `node_repl` | Codex app/browser/plugin support | Optional inventory | Codex app managed |
 | `playwright` | MCP browser automation support | Yes | No `codex mcp login`; stdio server |
 
 Configure or verify these auxiliary CLIs:
@@ -131,7 +131,6 @@ Expected repo-required entries:
 - `stitch`
 - `expo`
 - `atlassian`
-- `node_repl`
 - `playwright`
 
 Expected required CLI surfaces:
@@ -395,6 +394,8 @@ Purpose:
 
 - Codex app/browser/plugin support surface.
 - Usually managed by the Codex app/runtime, not by this repo.
+- Optional project-bootstrap inventory. Missing `node_repl` does not block
+  project-bootstrap readiness.
 
 Verify:
 
@@ -406,8 +407,8 @@ codex mcp get node_repl
 If missing:
 
 - Do not copy another user's absolute app path into shared docs or repo config.
-- Restore it through the Codex app/plugin environment rather than inventing a
-  repo-local path.
+- Treat it as optional app/plugin inventory unless a separate Codex app/runtime
+  task explicitly requires it.
 
 ## `playwright` MCP
 
@@ -456,14 +457,14 @@ Purpose:
 Railway is not a Codex MCP in this repo. It is required for project-bootstrap
 readiness.
 
-`project-bootstrap-agent-setup.sh` may install Railway only when an explicit
-approved non-secret installer executable is provided at
-`PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH`. It installs into
-`${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
-adds that bin directory to `/workspace/state/project-bootstrap-role.env`, and
-rechecks `railway --version`.
+`project-bootstrap-agent-setup.sh` installs Railway with the approved
+non-secret command when it is missing and npm is available:
 
-Railway login or secure token source remains human/platform-owned.
+```bash
+npm i -g @railway/cli
+```
+
+Then it rechecks:
 
 Verify:
 
@@ -472,17 +473,15 @@ railway --version
 railway whoami
 ```
 
-Manual macOS install, when a human/platform owner chooses that path:
-
-```bash
-brew install railway
-```
-
 Login:
 
 ```bash
 railway login
 ```
+
+The agent starts `railway login` when a human is present. The user signs in only
+in the Railway browser surface. If the environment has no browser, use the
+official pairing flow:
 
 Browserless login:
 
@@ -561,13 +560,16 @@ Purpose:
   project-bootstrap readiness.
 
 `project-bootstrap-agent-setup.sh` may install gcloud only when an explicit
-approved non-secret installer executable is provided at
-`PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`. It installs into
-`${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}`,
-adds that bin directory to `/workspace/state/project-bootstrap-role.env`, and
-rechecks `gcloud --version`.
+approved official Google Cloud CLI installer source is available. On Ubuntu,
+the official package setup adds the Google Cloud apt source with a signed
+keyring, imports the Google Cloud public key, runs `sudo apt-get update`, and
+installs `google-cloud-cli`. If the runtime cannot use the approved installer
+source, keep the installer precondition blocked instead of inventing another
+source.
 
-ADC login, project selection, and service enablement remain human/platform-owned.
+The agent rechecks `gcloud --version` after install. gcloud account login, ADC
+approval, and project ID selection require the user in the official Google
+surface; the agent starts the CLI commands and records status only.
 
 Verify CLI:
 
@@ -601,7 +603,24 @@ Verify Stitch service enablement:
 gcloud services list --enabled --filter='stitch.googleapis.com' --format='value(config.name)'
 ```
 
-Do not store ADC credential files or token values in this repo or in evidence.
+Do not store ADC credential file contents or token values in this repo or in
+evidence. Metadata-only proof may record path, filename, owner/group, mode,
+size, modification time, and status command results for:
+
+- `/root/.railway/` or `${HOME}/.railway/`
+- `/root/.config/gcloud/` or `${HOME}/.config/gcloud/`
+- `/root/.config/gcloud/application_default_credentials.json` when present
+- GitHub CLI storage location reported by `gh auth status`, or
+  `${HOME}/.config/gh/` when present
+- Expo/EAS directories such as `${HOME}/.expo/` or `${HOME}/.eas/` when present
+
+Do not open Finder or a file explorer during routine checks. Use terminal
+metadata output by default. Open the Ubuntu file explorer with `xdg-open`,
+`gio open`, or `nautilus` only when the user explicitly asks for visual
+credential-location proof and the run sets
+`PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER=true`. If no file explorer
+exists or opening is disabled, use terminal metadata output only. Never print
+credential file contents.
 
 ## Final Verification Checklist
 

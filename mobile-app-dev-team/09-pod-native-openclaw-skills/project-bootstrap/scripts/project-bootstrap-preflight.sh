@@ -363,7 +363,6 @@ for (const [name, status] of [
   ['stitch', stitchMcp],
   ['expo', expoMcp],
   ['atlassian', atlassianMcp],
-  ['node_repl', nodeReplMcp],
   ['playwright', playwrightMcp],
 ]) {
   if (status !== 'configured') blockers.push(`missing required MCP ${name}`);
@@ -575,15 +574,12 @@ function buildEnglishResult(ctx, language) {
     lines.push('- Package manager status was checked against `package.json`, `pnpm-lock.yaml`, `corepack --version`, and `pnpm --version`; the repo pin is `pnpm@9.15.9`.');
   }
   if (ctx.hasProjectEnvironmentTools) {
-    lines.push('- Missing project environment tools must be ready before project-bootstrap can pass. The required baseline includes Expo MCP, Atlassian MCP, node_repl, Playwright MCP, Railway CLI, and gcloud CLI. EAS CLI is the only baseline exception.');
-    if (ctx.missingRequiredMcps.includes('node_repl')) {
-      lines.push('- node_repl is mandatory and must be restored by the Codex app/plugin environment owner; I cannot create a repo-local replacement for it.');
-    }
+    lines.push('- Missing project environment tools must be ready before project-bootstrap can pass. The required baseline includes Expo MCP, Atlassian MCP, Playwright MCP, Railway CLI, and gcloud CLI. node_repl is optional Codex app/plugin inventory. EAS CLI is the only baseline exception.');
     if (ctx.missingRequiredClis.includes('railway')) {
-      lines.push('- Railway CLI is mandatory. I can install it only from an approved non-secret Railway CLI installer source, then you complete Railway login in the official surface or through an approved secure token source.');
+      lines.push('- Railway CLI is mandatory. I will install it with `npm i -g @railway/cli` when npm is available, recheck `railway --version`, then run `railway login` so you can complete sign-in in the official browser surface.');
     }
     if (ctx.missingRequiredClis.includes('gcloud')) {
-      lines.push('- gcloud CLI is mandatory. I can install it only from an approved non-secret gcloud CLI installer source, then you complete Google ADC login and project selection in the official surface.');
+      lines.push('- gcloud CLI is mandatory. I will use an approved official Google Cloud CLI installer source, recheck `gcloud --version`, run `gcloud auth login`, run `gcloud auth application-default login` when ADC is needed, and set the non-secret project id with `gcloud config set project <project-id>` before verifying `gcloud config get-value project`.');
     }
   }
 
@@ -639,10 +635,10 @@ function buildEnglishResult(ctx, language) {
 	  }
 	  if (ctx.hasMissingRequiredCli) {
 	    if (ctx.missingRequiredClis.includes('railway')) {
-	      userRequests.push('Provide or approve an approved non-secret Railway CLI installer source. After I install and recheck it, complete Railway login only in the real login surface or through an approved secure token source.');
+	      userRequests.push('Be present for the Railway login flow. I will run `npm i -g @railway/cli`, recheck `railway --version`, and run `railway login`; you only complete sign-in in the browser. Do not send Railway tokens in chat.');
 	    }
 	    if (ctx.missingRequiredClis.includes('gcloud')) {
-	      userRequests.push('Provide or approve an approved non-secret gcloud CLI installer source. After I install and recheck it, complete Google ADC login and project selection only in the official gcloud/browser surface.');
+	      userRequests.push('Approve the official Google Cloud CLI install source and be present for Google login. I will run `gcloud auth login`, `gcloud auth application-default login` when ADC is needed, ask only for the non-secret project id, run `gcloud config set project <project-id>`, and verify with `gcloud config get-value project`.');
 	    }
 	    const otherMissingClis = ctx.missingRequiredClis.filter((name) => !['railway', 'gcloud'].includes(name));
 	    if (otherMissingClis.length) {
@@ -709,14 +705,11 @@ function buildKoreanResult(ctx, language) {
   if (ctx.hasMissingCodexCli) lines.push('- Codex CLI/runtime 상태가 준비되지 않았습니다.');
   if (ctx.hasMissingRequiredMcp) lines.push(`- MCP 설정이 누락되었습니다: ${ctx.missingRequiredMcps.join(', ')}.`);
   if (ctx.hasMissingRequiredCli) lines.push(`- 프로젝트 환경 도구가 누락되었습니다: ${ctx.missingRequiredClis.join(', ')}. EAS CLI만 기본 예외입니다.`);
-  if (ctx.missingRequiredMcps.includes('node_repl')) {
-    lines.push('- node_repl은 필수입니다. Codex app/plugin environment 소유자가 복구/활성화해야 하며, 제가 repo-local 대체 경로를 만들면 안 됩니다.');
-  }
   if (ctx.missingRequiredClis.includes('railway')) {
-    lines.push('- Railway CLI는 필수입니다. 승인된 비밀값 없는 Railway CLI installer source가 있으면 제가 설치와 재확인을 진행하고, 로그인은 공식 화면/승인된 secure token source에서만 진행합니다.');
+    lines.push('- Railway CLI는 필수입니다. 제가 `npm i -g @railway/cli`를 실행하고 `railway --version`으로 확인한 뒤 `railway login`을 실행하면, 사용자는 열린 브라우저에서 로그인만 하면 됩니다.');
   }
   if (ctx.missingRequiredClis.includes('gcloud')) {
-    lines.push('- gcloud CLI는 필수입니다. 승인된 비밀값 없는 gcloud CLI installer source가 있으면 제가 설치와 재확인을 진행하고, ADC 로그인과 프로젝트 선택은 공식 gcloud/browser 화면에서만 진행합니다.');
+    lines.push('- gcloud CLI는 필수입니다. 승인된 공식 설치 source로 설치한 뒤 제가 `gcloud auth login`과 필요 시 `gcloud auth application-default login`을 실행합니다. 프로젝트 ID는 비밀이 아니므로 알려주시면 제가 `gcloud config set project <project-id>`를 실행하고 `gcloud config get-value project`로 확인합니다.');
   }
   if (ctx.hasPackageManager) lines.push('- package-manager 상태를 확인했습니다. repo SoT는 `package.json`과 `pnpm-lock.yaml`이며 pin은 `pnpm@9.15.9`입니다.');
   if (ctx.hasPublicAppConfig) lines.push('- 공개 앱 설정(public non-secret app config) 출처가 필요합니다.');
@@ -776,14 +769,14 @@ function buildKoreanResult(ctx, language) {
     userRequests.push('누락된 프로젝트 파일의 올바른 checkout 또는 승인된 파일 source를 제공해 주세요.');
   }
   if (ctx.hasMissingPodSkill || ctx.hasMissingCodexCli || ctx.hasMissingRequiredMcp || ctx.hasPackageManager) {
-    userRequests.push('제가 pinned repo config로 추가할 수 있는 MCP는 먼저 처리하겠습니다. 그래도 남는 MCP/tool-auth, node_repl 앱 환경 또는 `pnpm@9.15.9` 기반 package-manager setup은 platform owner refresh나 실제 로그인 화면 승인이 필요합니다.');
+    userRequests.push('제가 pinned repo config로 추가할 수 있는 MCP는 먼저 처리하겠습니다. 그래도 남는 MCP/tool-auth 또는 `pnpm@9.15.9` 기반 package-manager setup은 platform owner refresh나 실제 로그인 화면 승인이 필요합니다.');
   }
   if (ctx.hasMissingRequiredCli) {
     if (ctx.missingRequiredClis.includes('railway')) {
-      userRequests.push('승인된 비밀값 없는 Railway CLI installer source만 제공/승인해 주세요. 설치와 재확인은 제가 하고, Railway 로그인은 공식 화면 또는 승인된 secure token source에서만 진행합니다.');
+      userRequests.push('Railway는 제가 `npm i -g @railway/cli`를 실행하고 `railway login`을 열겠습니다. 사용자는 브라우저에서 로그인만 해 주세요. 토큰은 채팅으로 보내지 마세요.');
     }
     if (ctx.missingRequiredClis.includes('gcloud')) {
-      userRequests.push('승인된 비밀값 없는 gcloud CLI installer source만 제공/승인해 주세요. 설치와 재확인은 제가 하고, Google ADC 로그인/프로젝트 선택은 공식 gcloud/browser 화면에서만 진행합니다.');
+      userRequests.push('gcloud는 제가 공식 설치 source로 설치하고 `gcloud auth login`, 필요 시 `gcloud auth application-default login`을 실행하겠습니다. 프로젝트 ID만 알려주시면 `gcloud config set project <project-id>`와 `gcloud config get-value project` 확인도 제가 합니다.');
     }
   }
   if (ctx.hasPublicAppConfig) {
@@ -847,7 +840,7 @@ if (blockers.length) {
     `- Required MCP stitch: ${stitchMcp}`,
     `- Required MCP expo: ${expoMcp}`,
     `- Required MCP atlassian: ${atlassianMcp}`,
-    `- Required MCP node_repl: ${nodeReplMcp}`,
+    `- Optional MCP node_repl: ${nodeReplMcp}`,
     `- Required MCP playwright: ${playwrightMcp}`,
     `- Required CLI railway: ${railwayCli}`,
     `- Required CLI gcloud: ${gcloudCli}`,
@@ -912,8 +905,10 @@ const report = {
       stitch: stitchMcp,
       expo: expoMcp,
       atlassian: atlassianMcp,
-      node_repl: nodeReplMcp,
       playwright: playwrightMcp,
+    },
+    optional_inventory: {
+      node_repl: nodeReplMcp,
     },
     baseline_exception: {
       eas_cli: 'status_only_until_eas_workflow_selected',

@@ -226,24 +226,27 @@ Local mirror update: 2026-06-14
 
 `project-bootstrap` requires these tool surfaces before bootstrap can pass:
 
-- MCPs: `mobile-mcp`, `serena`, `stitch`, `expo`, `atlassian`, `node_repl`, and `playwright`.
+- MCPs: `mobile-mcp`, `serena`, `stitch`, `expo`, `atlassian`, and `playwright`.
+- Optional inventory: `node_repl` is Codex app/plugin-owned and does not block bootstrap.
 - CLIs: `railway` and `gcloud`.
 - Baseline exception: EAS CLI remains status-only until QA/Release EAS work or another approved EAS action is selected.
 
 Agent-owned setup:
 
 - The agent registers pinned, credential-free MCPs from repo SoT when possible.
-- `node_repl` is Codex app/plugin environment owned. The agent checks and reports it but must not invent a repo-local replacement path.
-- Railway/gcloud may be installed only from explicit approved non-secret installer executables:
-  - `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH`
-  - `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`
-  - optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`
-- After an approved installer runs, the agent persists the tool bin path in `/workspace/state/project-bootstrap-role.env` and rechecks `railway --version` or `gcloud --version`.
+- `node_repl` is Codex app/plugin environment owned and optional. The agent may check/report it as inventory but must not invent a repo-local replacement path.
+- Railway missing CLI is installed by the agent with `npm i -g @railway/cli`, then verified with `railway --version`.
+- If Railway auth is missing and a human is present, the agent runs `railway login`; the user signs in only in the Railway browser surface. Browserless fallback uses `railway login --browserless`.
+- gcloud may be installed only from an approved official Google Cloud CLI installer source, then verified with `gcloud --version`.
+- If gcloud auth is missing and a human is present, the agent runs `gcloud auth login`. If ADC is needed, the agent runs `gcloud auth application-default login`.
+- If project selection is missing, the user provides only the non-secret project ID. The agent runs `gcloud config set project <project-id>` and verifies with `gcloud config get-value project`.
+- Credential storage proof for GitHub, Expo, Railway, and gcloud is metadata-only: path, filename, owner/group, mode, size, and modification time. File contents are never read.
 
 Human/platform-owned actions:
 
-- Railway login or secure token source.
-- Google ADC login, project selection, and Stitch service enablement.
+- Provider login approval in the real browser/CLI surface.
+- Google Cloud project ID selection and Stitch service enablement.
+- Secret/token/ADC/service-account material remains out of chat, docs, and evidence.
 - Live Confluence publication itself remains human-gated and requires target page IDs, current versions, proposed body changes, reviewer evidence, and explicit approval.
 
 ## Codex Runtime / Local Harness

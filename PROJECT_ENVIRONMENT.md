@@ -304,14 +304,14 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - status: enabled
   - authentication: run `codex mcp login expo` when the target Codex session reports Expo MCP is not logged in, then verify with `codex mcp list`; auth display can be session-specific.
   - this does not replace `mobile-mcp` for local visual QA/device automation.
-- Additional project-bootstrap-required MCP servers:
+- Additional project-bootstrap MCP servers:
   - `atlassian`
   - command: `npx`
   - args: `-y mcp-remote@0.1.38 https://mcp.atlassian.com/v1/mcp`
   - Jira/Confluence/internal knowledge MCP. Remote auth may require user presence in the real login surface.
   - `node_repl`
   - Codex app/plugin support surface.
-  - app/plugin environment owned; do not invent a repo-local absolute path or copy another user's local path.
+  - optional project-bootstrap inventory; app/plugin environment owned; do not invent a repo-local absolute path or copy another user's local path.
   - `playwright`
   - command: `npx`
   - args: `-y @executeautomation/playwright-mcp-server@1.0.12`
@@ -319,13 +319,17 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - Project-bootstrap-required CLI surfaces:
   - `railway`
   - required for Railway QA/API deploy/evidence readiness checks.
-  - `project-bootstrap-agent-setup.sh` may install it only from an explicit approved non-secret installer path, then recheck `railway --version`.
-  - Railway login or secure token source remains human/platform-owned and secret-safe.
+  - `project-bootstrap-agent-setup.sh` installs it with `npm i -g @railway/cli` when missing and npm is available, then rechecks `railway --version`.
+  - If Railway auth is missing and a human is present, the agent runs `railway login`; the user signs in only in the Railway browser surface. Browserless fallback uses `railway login --browserless`.
+  - Railway token values remain secret-safe and must not be sent in chat or evidence.
   - `gcloud`
   - required for Stitch/Google ADC readiness checks.
-  - `project-bootstrap-agent-setup.sh` may install it only from an explicit approved non-secret installer path, then recheck `gcloud --version`.
-  - ADC login, project selection, and service enablement remain human/platform-owned.
-  - Approved installer env vars are `PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH`, `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH`, and optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`.
+  - `project-bootstrap-agent-setup.sh` may install it only from an approved official Google Cloud CLI installer source, then recheck `gcloud --version`.
+  - If gcloud auth is missing and a human is present, the agent runs `gcloud auth login`. If ADC is needed, the agent runs `gcloud auth application-default login`.
+  - If project selection is missing, the user provides only the non-secret project ID; the agent runs `gcloud config set project <project-id>` and verifies with `gcloud config get-value project`.
+  - Google ADC JSON, service account JSON, and token values remain secret-safe and must not be sent in chat or evidence.
+  - Credential storage proof for GitHub, Expo, Railway, and gcloud is metadata-only: path, filename, owner/group, mode, size, and modification time. File contents are never read.
+  - Approved installer env vars are `PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH` and optional `PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR`.
   - EAS CLI remains the baseline exception until QA/Release EAS work or another approved EAS action is selected.
 - Runtime scripts:
   - `scripts/validate-runtime-artifacts.mjs`

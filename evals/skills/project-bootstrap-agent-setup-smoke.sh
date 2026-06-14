@@ -115,6 +115,91 @@ SH
   chmod +x "${script_path}"
 }
 
+make_fake_npm_railway_installer() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  local railway_command_log_path="$3"
+  cat > "${bin_dir}/npm" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+if [[ "\$*" == "i -g @railway/cli" ]]; then
+  cat > "${bin_dir}/railway" <<'CLI'
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${railway_command_log_path}"
+case "\${1:-}" in
+  --version|version)
+    printf 'railway fake version\n'
+    ;;
+  whoami)
+    exit 1
+    ;;
+  login)
+    exit 0
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+CLI
+  chmod +x "${bin_dir}/railway"
+  exit 0
+fi
+exit 64
+SH
+  chmod +x "${bin_dir}/npm"
+}
+
+make_fake_browser_opener() {
+  local bin_dir="$1"
+  cat > "${bin_dir}/xdg-open" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ -n "${FAKE_BROWSER_OPENER_LOG:-}" ]]; then
+  printf '%s\n' "$*" >> "${FAKE_BROWSER_OPENER_LOG}"
+fi
+exit 0
+SH
+  chmod +x "${bin_dir}/xdg-open"
+}
+
+make_fake_gcloud_false_positive() {
+  local bin_dir="$1"
+  local command_log_path="$2"
+  cat > "${bin_dir}/gcloud" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${command_log_path}"
+case "\${1:-} \${2:-}" in
+  "--version ")
+    printf 'Google Cloud SDK fake\n'
+    ;;
+  "auth list")
+    printf 'No credentialed accounts.\n'
+    exit 0
+    ;;
+  "auth login")
+    exit 0
+    ;;
+  "auth application-default")
+    exit 0
+    ;;
+  "config get-value")
+    printf '(unset)\n'
+    exit 0
+    ;;
+  "config set")
+    exit 0
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+SH
+  chmod +x "${bin_dir}/gcloud"
+}
+
 assert_json_field() {
   local report="$1"
   local expression="$2"
@@ -686,19 +771,165 @@ case_required_tool_readiness_without_approved_installers() {
   WM_POD_SELECTOR="boram-product-planning" \
   /bin/bash "${SCRIPT}" >/dev/null
 
-  assert_json_field "${report_path}" "r.tool_readiness.node_repl.required === true"
-  assert_json_field "${report_path}" "r.tool_readiness.node_repl.owner === 'codex_app_plugin'"
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.required === false"
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.owner === 'codex_app_plugin_optional'"
   assert_json_field "${report_path}" "r.tool_readiness.node_repl.status === 'app_environment_missing'"
-  assert_json_field "${report_path}" "r.tool_readiness.node_repl.minimum_user_action.includes('Codex app/plugin')"
-  assert_json_field "${report_path}" "!r.tool_readiness.node_repl.minimum_user_action.includes('codex mcp add')"
+  assert_json_field "${report_path}" "r.tool_readiness.node_repl.minimum_user_action === 'None. node_repl is optional Codex app/plugin inventory and does not block project-bootstrap.'"
   assert_json_field "${report_path}" "r.tool_readiness.railway.required === true"
   assert_json_field "${report_path}" "r.tool_readiness.railway.command_status === 'missing'"
-  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_unavailable_needs_platform_source'"
-  assert_json_field "${report_path}" "r.tool_readiness.railway.minimum_user_action.includes('approved non-secret Railway CLI installer source')"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'install_unavailable_npm_missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.minimum_user_action.includes('npm is required so I can run npm i -g @railway/cli')"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.required === true"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.command_status === 'missing'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_unavailable_needs_platform_source'"
-  assert_json_field "${report_path}" "r.tool_readiness.gcloud.minimum_user_action.includes('approved non-secret gcloud CLI installer source')"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.minimum_user_action.includes('approved official Google Cloud CLI installer source')"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_railway_npm_install_and_login_flow_are_attempted() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_npm_railway_installer "${tmpdir}/bin" "${tmpdir}/npm-command-log" "${tmpdir}/railway-command-log"
+  make_fake_browser_opener "${tmpdir}/bin"
+  mkdir -p "${tmpdir}/home/.railway"
+  : > "${tmpdir}/home/.railway/config.json"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
+  PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER="true" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_file_contains "${tmpdir}/npm-command-log" "i -g @railway/cli"
+  assert_file_contains "${tmpdir}/railway-command-log" "--version"
+  assert_file_contains "${tmpdir}/railway-command-log" "whoami"
+  assert_file_contains "${tmpdir}/railway-command-log" "login"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.install_decision === 'npm_global_install_attempted'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.command_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.version_status === 'checked'"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.login_flow === 'railway_login_started'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.path.endsWith('/.railway')"
+  assert_json_field "${report_path}" "r.credential_storage.railway.contents_checked === false"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.command === 'xdg-open'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.open_attempted === true"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.open_status === 'opened'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.metadata.entries.some((entry) => entry.name === 'config.json' && entry.mode && entry.modified)"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_credential_file_explorer_is_opt_in() {
+  local tmpdir report_path opener_log
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  opener_log="${tmpdir}/opener-log"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_npm_railway_installer "${tmpdir}/bin" "${tmpdir}/npm-command-log" "${tmpdir}/railway-command-log"
+  make_fake_browser_opener "${tmpdir}/bin"
+  mkdir -p "${tmpdir}/home/.railway"
+  : > "${tmpdir}/home/.railway/config.json"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  FAKE_BROWSER_OPENER_LOG="${opener_log}" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  if [[ -e "${opener_log}" ]]; then
+    printf 'assertion failed: file explorer opener should not run without PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER=true\n' >&2
+    exit 1
+  fi
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.command === 'xdg-open'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.open_policy === 'disabled_by_default'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.open_attempted === false"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.open_status === 'disabled'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.fallback === 'terminal_metadata'"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_railway_browserless_fallback_is_attempted() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_npm_railway_installer "${tmpdir}/bin" "${tmpdir}/npm-command-log" "${tmpdir}/railway-command-log"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_file_contains "${tmpdir}/railway-command-log" "login --browserless"
+  assert_json_field "${report_path}" "r.tool_readiness.railway.login_flow === 'railway_login_browserless_started'"
+  assert_json_field "${report_path}" "r.credential_storage.railway.file_explorer.fallback === 'terminal_metadata'"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_gcloud_false_positive_auth_and_project_are_rejected() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/state" "${tmpdir}/repo" "${tmpdir}/home/.config/gcloud"
+  make_fake_codex "${tmpdir}/bin"
+  make_node_only_bin "${tmpdir}/node-bin"
+  make_fake_gcloud_false_positive "${tmpdir}/bin" "${tmpdir}/gcloud-command-log"
+  : > "${tmpdir}/home/.config/gcloud/application_default_credentials.json"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
+
+  HOME="${tmpdir}/home" \
+  PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+  FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
+  STATE_DIR="${tmpdir}/state" \
+  IDENTITY_PATH="${tmpdir}/IDENTITY" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_CANONICAL_REPO_PATH="${tmpdir}/repo" \
+  PROJECT_BOOTSTRAP_HUMAN_PRESENT="true" \
+  PROJECT_BOOTSTRAP_REQUIRE_GCLOUD_ADC="true" \
+  PROJECT_BOOTSTRAP_GCLOUD_PROJECT_ID="wm-test-project" \
+  WM_POD_SELECTOR="boram-product-planning" \
+  /bin/bash "${SCRIPT}" >/dev/null
+
+  assert_file_contains "${tmpdir}/gcloud-command-log" "auth list"
+  assert_file_contains "${tmpdir}/gcloud-command-log" "auth login"
+  assert_file_contains "${tmpdir}/gcloud-command-log" "config get-value project"
+  assert_file_contains "${tmpdir}/gcloud-command-log" "config set project wm-test-project"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.auth_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.login_flow === 'gcloud_auth_login_started'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.project_status === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.project_set_flow === 'attempted'"
+  assert_json_field "${report_path}" "r.credential_storage.gcloud.metadata.entries.some((entry) => entry.name === 'application_default_credentials.json' && entry.mode && entry.modified)"
   assert_json_no_secret_like "${report_path}"
 }
 
@@ -713,7 +944,7 @@ case_required_cli_approved_installers_are_attempted() {
   make_node_only_bin "${tmpdir}/node-bin"
   make_fake_required_cli_installer "${installer_dir}/install-railway.sh" "railway" "${tmpdir}/railway-installer-ran" "${tmpdir}/railway-command-log"
   make_fake_required_cli_installer "${installer_dir}/install-gcloud.sh" "gcloud" "${tmpdir}/gcloud-installer-ran" "${tmpdir}/gcloud-command-log"
-  printf '%s\n' mobile-mcp serena stitch expo atlassian node_repl playwright > "${tmpdir}/mcps.txt"
+  printf '%s\n' mobile-mcp serena stitch expo atlassian playwright > "${tmpdir}/mcps.txt"
 
   PATH="${tmpdir}/bin:${tmpdir}/node-bin:/usr/bin:/bin:/usr/sbin:/sbin" \
   FAKE_CODEX_MCP_STATE="${tmpdir}/mcps.txt" \
@@ -740,6 +971,9 @@ case_required_cli_approved_installers_are_attempted() {
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.install_decision === 'install_attempted'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.command_status === 'available'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.version_status === 'checked'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.project_command === 'gcloud config get-value project'"
+  assert_json_field "${report_path}" "r.credential_storage.gcloud.path.endsWith('/.config/gcloud')"
+  assert_json_field "${report_path}" "r.credential_storage.gcloud.contents_checked === false"
   assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR"
   assert_file_contains "${tmpdir}/state/project-bootstrap-role.env" "PATH="
   assert_json_no_secret_like "${report_path}"
@@ -799,7 +1033,7 @@ case_product_planning_status_only_missing_preflight() {
 	  assert_json_field "${report_path}" "r.reports.pod_role_bootstrap === 'missing'"
 	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP expo')"
 	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP atlassian')"
-	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP node_repl')"
+	  assert_json_field "${report_path}" "!r.blockers.includes('missing required MCP node_repl')"
 	  assert_json_field "${report_path}" "r.blockers.includes('missing required MCP playwright')"
 	  assert_json_field "${report_path}" "r.blockers.includes('missing required CLI railway')"
 	  assert_json_field "${report_path}" "r.blockers.includes('missing required CLI gcloud')"
@@ -810,14 +1044,17 @@ case_product_planning_status_only_missing_preflight() {
 		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Playwright MCP"
 		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Railway CLI"
 		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud CLI"
-		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "node_repl is mandatory"
-		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Codex app/plugin environment"
 		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "Railway CLI is mandatory"
-		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "approved non-secret Railway CLI installer source"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "npm i -g @railway/cli"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "railway login"
 		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud CLI is mandatory"
-		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "approved non-secret gcloud CLI installer source"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud auth login"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud auth application-default login"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud config set project <project-id>"
+		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "gcloud config get-value project"
 		  assert_file_contains "${tmpdir}/state/project-bootstrap-blockers.md" "EAS CLI is the only baseline exception"
 		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required MCP expo"
+		  assert_file_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "node_repl is mandatory"
 		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required MCP node_repl"
 		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required CLI railway"
 		  assert_primary_guidance_not_contains "${tmpdir}/state/project-bootstrap-blockers.md" "missing required CLI gcloud"
@@ -1496,6 +1733,10 @@ case_git_identity_rejects_mixed_approved_sources
 case_github_auth_setup_git_when_authenticated
 case_github_auth_missing_skips_setup_git
 case_required_tool_readiness_without_approved_installers
+case_railway_npm_install_and_login_flow_are_attempted
+case_credential_file_explorer_is_opt_in
+case_railway_browserless_fallback_is_attempted
+case_gcloud_false_positive_auth_and_project_are_rejected
 case_required_cli_approved_installers_are_attempted
 case_product_planning_status_only_missing_preflight
 case_project_preflight_blocks_on_pod_role_report_blocked

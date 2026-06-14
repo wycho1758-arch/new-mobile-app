@@ -35,8 +35,8 @@ preflight report. That report has this shape:
   },
   "tool_readiness": {
     "node_repl": {
-      "required": true,
-      "owner": "codex_app_plugin",
+      "required": false,
+      "owner": "codex_app_plugin_optional",
       "status": "already_configured | app_environment_missing | codex_cli_missing | blocked",
       "install_decision": "already_available | app_environment_owned",
       "minimum_user_action": "status-only minimal action text"
@@ -45,10 +45,11 @@ preflight report. That report has this shape:
       "required": true,
       "owner": "agent_with_approved_installer_then_human_auth",
       "command_status": "available | missing",
-      "install_decision": "already_available | install_attempted | install_unavailable_needs_platform_source",
+      "install_decision": "already_available | npm_global_install_attempted | install_attempted | install_unavailable_npm_missing",
       "installer_status": "not_needed | executed | failed | missing | not_executable",
       "version_status": "checked | failed | not_checked",
       "auth_status": "available | missing | not_checked",
+      "login_flow": "not_checked | not_needed | needs_human_present | railway_login_started | railway_login_failed | railway_login_browserless_started | railway_login_browserless_failed",
       "tool_bin_dir": "/workspace/state/project-bootstrap-tools/bin",
       "minimum_user_action": "status-only minimal action text"
     },
@@ -59,9 +60,131 @@ preflight report. That report has this shape:
       "install_decision": "already_available | install_attempted | install_unavailable_needs_platform_source",
       "installer_status": "not_needed | executed | failed | missing | not_executable",
       "version_status": "checked | failed | not_checked",
+      "auth_status": "available | missing | not_checked",
+      "login_flow": "not_checked | not_needed | needs_human_present | gcloud_auth_login_started | gcloud_auth_login_failed",
+      "adc_status": "available | missing | not_checked",
+      "adc_login_flow": "not_checked | not_needed | needs_human_present | gcloud_adc_login_started | gcloud_adc_login_failed",
       "project_status": "available | missing | not_checked",
+      "project_command": "gcloud config get-value project",
+      "project_set_flow": "not_checked | not_needed | attempted | failed",
       "tool_bin_dir": "/workspace/state/project-bootstrap-tools/bin",
       "minimum_user_action": "status-only minimal action text"
+    }
+  },
+  "credential_storage": {
+    "railway": {
+      "path": "/root/.railway | ${HOME}/.railway",
+      "status": "present | missing",
+      "metadata": {
+        "path": "/root/.railway | ${HOME}/.railway",
+        "status": "present | missing",
+        "contents_checked": false,
+        "file_explorer": {
+          "command": "xdg-open | gio | nautilus | null",
+          "open_policy": "disabled_by_default | explicitly_enabled",
+          "open_attempted": "true | false",
+          "open_status": "opened | failed | disabled | not_available | not_attempted | not_directory",
+          "fallback": "terminal_metadata | null"
+        },
+        "entries": [
+          {
+            "name": "config.json",
+            "type": "file | directory",
+            "mode": "0600",
+            "owner": 0,
+            "group": 0,
+            "size": 123,
+            "modified": "2026-06-14T00:00:00.000Z"
+          }
+        ]
+      },
+      "file_explorer": {
+        "command": "xdg-open | gio | nautilus | null",
+        "open_policy": "disabled_by_default | explicitly_enabled",
+        "open_attempted": "true | false",
+        "open_status": "opened | failed | disabled | not_available | not_attempted | not_directory",
+        "fallback": "terminal_metadata | null"
+      },
+      "contents_checked": false,
+      "proof": "metadata-only path/status; credential contents are never read"
+    },
+    "gcloud": {
+      "path": "/root/.config/gcloud | ${HOME}/.config/gcloud",
+      "status": "present | missing",
+      "metadata": {
+        "path": "/root/.config/gcloud | ${HOME}/.config/gcloud",
+        "status": "present | missing",
+        "contents_checked": false,
+        "file_explorer": {
+          "command": "xdg-open | gio | nautilus | null",
+          "open_policy": "disabled_by_default | explicitly_enabled",
+          "open_attempted": "true | false",
+          "open_status": "opened | failed | disabled | not_available | not_attempted | not_directory",
+          "fallback": "terminal_metadata | null"
+        },
+        "entries": [
+          {
+            "name": "application_default_credentials.json",
+            "type": "file | directory",
+            "mode": "0600",
+            "owner": 0,
+            "group": 0,
+            "size": 123,
+            "modified": "2026-06-14T00:00:00.000Z"
+          }
+        ]
+      },
+      "file_explorer": {
+        "command": "xdg-open | gio | nautilus | null",
+        "open_policy": "disabled_by_default | explicitly_enabled",
+        "open_attempted": "true | false",
+        "open_status": "opened | failed | disabled | not_available | not_attempted | not_directory",
+        "fallback": "terminal_metadata | null"
+      },
+      "adc_path": "/root/.config/gcloud/application_default_credentials.json | ${HOME}/.config/gcloud/application_default_credentials.json",
+      "adc_file_status": "present | missing",
+      "adc_metadata": {
+        "path": "/root/.config/gcloud/application_default_credentials.json | ${HOME}/.config/gcloud/application_default_credentials.json",
+        "status": "present | missing",
+        "contents_checked": false,
+        "file_explorer": {
+          "command": "xdg-open | gio | nautilus | null",
+          "open_policy": "disabled_by_default | explicitly_enabled",
+          "open_attempted": "true | false",
+          "open_status": "disabled | not_directory | not_available",
+          "fallback": "terminal_metadata"
+        },
+        "entries": [
+          {
+            "name": "application_default_credentials.json",
+            "type": "file",
+            "mode": "0600",
+            "owner": 0,
+            "group": 0,
+            "size": 123,
+            "modified": "2026-06-14T00:00:00.000Z"
+          }
+        ]
+      },
+      "contents_checked": false,
+      "proof": "metadata-only path/status; ADC JSON contents are never read"
+    },
+    "github": {
+      "path": "/root/.config/gh | ${HOME}/.config/gh | gh auth status reported location",
+      "status": "present | missing",
+      "metadata": "same metadata-only shape as railway.metadata",
+      "contents_checked": false,
+      "proof": "metadata-only path/status plus gh auth status; token contents are never read"
+    },
+    "expo": {
+      "paths": ["/root/.expo | ${HOME}/.expo", "/root/.eas | ${HOME}/.eas"],
+      "statuses": {
+        "expo": "present | missing",
+        "eas": "present | missing"
+      },
+      "metadata": ["same metadata-only shape as railway.metadata"],
+      "contents_checked": false,
+      "proof": "metadata-only path/status plus Expo/EAS status; token contents are never read"
     }
   },
   "reports": {
@@ -133,8 +256,10 @@ preflight report. That report has this shape:
       "stitch": "configured | missing | skipped",
       "expo": "configured | missing | skipped",
       "atlassian": "configured | missing | skipped",
-      "node_repl": "configured | missing | skipped",
       "playwright": "configured | missing | skipped"
+    },
+    "optional_inventory": {
+      "node_repl": "configured | missing | skipped"
     },
     "baseline_exception": {
       "eas_cli": "status_only_until_eas_workflow_selected"
@@ -277,9 +402,11 @@ Future JSON reports may add more `user_summary` fields with the same shape:
 
 - Treat the report `blockers` array as the source for user-facing blockers.
   A field value of `missing` outside that array can be status-only inventory.
-- `expo`, `atlassian`, `node_repl`, `playwright`, `railway`, and `gcloud` are
-  required for project-bootstrap readiness. Missing values in those fields must
-  appear in the `blockers` array.
+- `expo`, `atlassian`, `playwright`, `railway`, and `gcloud` are required for
+  project-bootstrap readiness. Missing values in those fields must appear in the
+  `blockers` array.
+- `node_repl` is optional Codex app/plugin inventory. Missing `node_repl` must
+  not appear as a project-bootstrap blocker.
 - `cli.eas` is recorded as status inventory and remains the baseline exception
   unless QA/Release EAS work or another approved EAS action is selected.
 - `reports.pod_role_bootstrap: missing` before

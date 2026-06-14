@@ -18,6 +18,8 @@ GIT_IDENTITY_PATH="${PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH:-}"
 AGENT_TOOL_BIN_DIR="${PROJECT_BOOTSTRAP_AGENT_TOOL_BIN_DIR:-${STATE_DIR}/project-bootstrap-tools/bin}"
 RAILWAY_INSTALLER_PATH="${PROJECT_BOOTSTRAP_RAILWAY_INSTALLER_PATH:-}"
 GCLOUD_INSTALLER_PATH="${PROJECT_BOOTSTRAP_GCLOUD_INSTALLER_PATH:-}"
+HUMAN_PRESENT="${PROJECT_BOOTSTRAP_HUMAN_PRESENT:-false}"
+CREDENTIAL_FILE_EXPLORER_OPEN="${PROJECT_BOOTSTRAP_OPEN_CREDENTIAL_FILE_EXPLORER:-false}"
 
 redact() {
   sed -E 's/(token|key|secret|password|credential)([=: ][^ ]+)/\1=***REDACTED***/Ig'
@@ -201,6 +203,84 @@ check_node_repl_status() {
   fi
 }
 
+metadata_status() {
+  local target_path="$1"
+  if [[ -e "${target_path}" ]]; then
+    printf '%s\n' "present"
+  else
+    printf '%s\n' "missing"
+  fi
+}
+
+file_explorer_command() {
+  for candidate in xdg-open gio nautilus; do
+    if command -v "${candidate}" >/dev/null 2>&1; then
+      printf '%s\n' "${candidate}"
+      return
+    fi
+  done
+  printf '%s\n' "unavailable"
+}
+
+safe_login_flow() {
+  local flow_name="$1"
+  shift
+  if [[ "${HUMAN_PRESENT}" != "true" ]]; then
+    printf '%s\n' "needs_human_present"
+    return
+  fi
+
+  if "$@" >/dev/null 2> >(redact >&2); then
+    printf '%s\n' "${flow_name}_started"
+  else
+    printf '%s\n' "${flow_name}_failed"
+  fi
+}
+
+safe_railway_login_flow() {
+  if [[ "${HUMAN_PRESENT}" != "true" ]]; then
+    printf '%s\n' "needs_human_present"
+    return
+  fi
+
+  if [[ "$(file_explorer_command)" == "unavailable" ]]; then
+    if railway login --browserless >/dev/null 2> >(redact >&2); then
+      printf '%s\n' "railway_login_browserless_started"
+    else
+      printf '%s\n' "railway_login_browserless_failed"
+    fi
+    return
+  fi
+
+  if railway login >/dev/null 2> >(redact >&2); then
+    printf '%s\n' "railway_login_started"
+  else
+    printf '%s\n' "railway_login_failed"
+  fi
+}
+
+gcloud_auth_status_check() {
+  local output
+  output="$(gcloud auth list --format='value(account)' 2> >(redact >&2) || true)"
+  if printf '%s\n' "${output}" | grep -E '[^[:space:]]' >/dev/null 2>&1 \
+    && ! printf '%s\n' "${output}" | grep -Eiq 'no credentialed accounts|not logged in'; then
+    printf '%s\n' "available"
+  else
+    printf '%s\n' "missing"
+  fi
+}
+
+gcloud_project_status_check() {
+  local output
+  output="$(gcloud config get-value project 2> >(redact >&2) || true)"
+  output="$(printf '%s' "${output}" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+  if [[ -n "${output}" && "${output}" != "(unset)" ]]; then
+    printf '%s\n' "available"
+  else
+    printf '%s\n' "missing"
+  fi
+}
+
 safe_version_check() {
   local cli_name="$1"
   if "${cli_name}" --version >/dev/null 2> >(redact >&2); then
@@ -274,6 +354,46 @@ ensure_required_cli() {
     printf -v "${status_prefix}_installer_status" '%s' "missing"
   fi
   printf -v "${status_prefix}_version_status" '%s' "not_checked"
+}
+
+ensure_railway_cli() {
+  if command -v railway >/dev/null 2>&1; then
+    railway_command_status="available"
+    railway_install_decision="already_available"
+    railway_installer_status="not_needed"
+    railway_version_status="$(safe_version_check railway)"
+    return
+  fi
+
+  if command -v npm >/dev/null 2>&1; then
+    if npm i -g @railway/cli >/dev/null 2> >(redact >&2); then
+      railway_install_decision="npm_global_install_attempted"
+      railway_installer_status="executed"
+      if command -v railway >/dev/null 2>&1; then
+        railway_command_status="available"
+        railway_version_status="$(safe_version_check railway)"
+      else
+        railway_command_status="missing"
+        railway_version_status="not_checked"
+      fi
+    else
+      railway_command_status="missing"
+      railway_install_decision="npm_global_install_attempted"
+      railway_installer_status="failed"
+      railway_version_status="not_checked"
+    fi
+    return
+  fi
+
+  if [[ -n "${RAILWAY_INSTALLER_PATH}" && -x "${RAILWAY_INSTALLER_PATH}" ]]; then
+    ensure_required_cli "railway" "${RAILWAY_INSTALLER_PATH}" "railway"
+    return
+  fi
+
+  railway_command_status="missing"
+  railway_install_decision="install_unavailable_npm_missing"
+  railway_installer_status="missing"
+  railway_version_status="not_checked"
 }
 
 run_status_precheck() {
@@ -487,18 +607,63 @@ gcloud_install_decision="install_unavailable_needs_platform_source"
 gcloud_installer_status="missing"
 gcloud_version_status="not_checked"
 
-ensure_required_cli "railway" "${RAILWAY_INSTALLER_PATH}" "railway"
+ensure_railway_cli
 ensure_required_cli "gcloud" "${GCLOUD_INSTALLER_PATH}" "gcloud"
 
 railway_auth_status="not_checked"
+railway_login_flow="not_checked"
 if [[ "${railway_command_status}" == "available" ]]; then
   railway_auth_status="$(status_command_check railway_auth railway whoami)"
+  if [[ "${railway_auth_status}" == "missing" ]]; then
+    railway_login_flow="$(safe_railway_login_flow)"
+    railway_auth_status="$(status_command_check railway_auth railway whoami)"
+  else
+    railway_login_flow="not_needed"
+  fi
 fi
 
 gcloud_project_status="not_checked"
+gcloud_auth_status="not_checked"
+gcloud_login_flow="not_checked"
+gcloud_adc_status="not_checked"
+gcloud_adc_login_flow="not_checked"
+gcloud_project_command="gcloud config get-value project"
+gcloud_project_set_flow="not_checked"
 if [[ "${gcloud_command_status}" == "available" ]]; then
-  gcloud_project_status="$(status_command_check gcloud_project gcloud config get-value project)"
+  gcloud_auth_status="$(gcloud_auth_status_check)"
+  if [[ "${gcloud_auth_status}" == "missing" ]]; then
+    gcloud_login_flow="$(safe_login_flow gcloud_auth_login gcloud auth login)"
+    gcloud_auth_status="$(gcloud_auth_status_check)"
+  else
+    gcloud_login_flow="not_needed"
+  fi
+  gcloud_adc_status="$(status_command_check gcloud_adc test -f "${HOME}/.config/gcloud/application_default_credentials.json")"
+  if [[ "${PROJECT_BOOTSTRAP_REQUIRE_GCLOUD_ADC:-false}" == "true" && "${gcloud_adc_status}" == "missing" ]]; then
+    gcloud_adc_login_flow="$(safe_login_flow gcloud_adc_login gcloud auth application-default login)"
+    gcloud_adc_status="$(status_command_check gcloud_adc test -f "${HOME}/.config/gcloud/application_default_credentials.json")"
+  else
+    gcloud_adc_login_flow="not_needed"
+  fi
+  gcloud_project_status="$(gcloud_project_status_check)"
+  if [[ "${gcloud_project_status}" == "missing" && -n "${PROJECT_BOOTSTRAP_GCLOUD_PROJECT_ID:-}" ]]; then
+    if gcloud config set project "${PROJECT_BOOTSTRAP_GCLOUD_PROJECT_ID}" >/dev/null 2> >(redact >&2); then
+      gcloud_project_set_flow="attempted"
+      gcloud_project_status="$(gcloud_project_status_check)"
+    else
+      gcloud_project_set_flow="failed"
+    fi
+  elif [[ "${gcloud_project_status}" == "available" ]]; then
+    gcloud_project_set_flow="not_needed"
+  fi
 fi
+
+railway_credentials_path="${HOME}/.railway"
+gcloud_credentials_path="${HOME}/.config/gcloud"
+gcloud_adc_path="${HOME}/.config/gcloud/application_default_credentials.json"
+github_credentials_path="${HOME}/.config/gh"
+expo_credentials_path="${HOME}/.expo"
+eas_credentials_path="${HOME}/.eas"
+credential_file_explorer="$(file_explorer_command)"
 
 role_requires_stitch="false"
 role_requires_eas="false"
@@ -532,9 +697,10 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_project_status" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 const [
   reportPath,
   resolvedRole,
@@ -558,20 +724,100 @@ const [
   railwayInstallerStatus,
   railwayVersionStatus,
   railwayAuthStatus,
+  railwayLoginFlow,
   gcloudCommandStatus,
   gcloudInstallDecision,
   gcloudInstallerStatus,
   gcloudVersionStatus,
+  gcloudAuthStatus,
+  gcloudLoginFlow,
+  gcloudAdcStatus,
+  gcloudAdcLoginFlow,
   gcloudProjectStatus,
+  gcloudProjectCommand,
+  gcloudProjectSetFlow,
   agentToolBinDir,
   stitchReportStatus,
   easReportStatus,
   gitIdentityStatus,
   githubAuthStatus,
   preflightStatus,
+  credentialFileExplorer,
+  credentialFileExplorerOpen,
+  railwayCredentialsPath,
+  railwayCredentialsStatus,
+  gcloudCredentialsPath,
+  gcloudCredentialsStatus,
+  gcloudAdcPath,
+  gcloudAdcFileStatus,
+  githubCredentialsPath,
+  githubCredentialsStatus,
+  expoCredentialsPath,
+  expoCredentialsStatus,
+  easCredentialsPath,
+  easCredentialsStatus,
 ] = process.argv.slice(2);
 
+function metadataFor(targetPath) {
+  const explorerOpenEnabled = credentialFileExplorerOpen === 'true';
+  const result = {
+    path: targetPath,
+    status: fs.existsSync(targetPath) ? 'present' : 'missing',
+    contents_checked: false,
+    file_explorer: {
+      command: credentialFileExplorer === 'unavailable' ? null : credentialFileExplorer,
+      open_policy: explorerOpenEnabled ? 'explicitly_enabled' : 'disabled_by_default',
+      open_attempted: false,
+      open_status: credentialFileExplorer === 'unavailable'
+        ? 'not_available'
+        : explorerOpenEnabled ? 'not_attempted' : 'disabled',
+      fallback: credentialFileExplorer === 'unavailable' || !explorerOpenEnabled ? 'terminal_metadata' : null,
+    },
+    entries: [],
+  };
+
+  if (!fs.existsSync(targetPath)) return result;
+  const paths = [];
+  const stat = fs.statSync(targetPath);
+  if (stat.isDirectory()) {
+    if (explorerOpenEnabled && credentialFileExplorer !== 'unavailable') {
+      const openArgs = credentialFileExplorer === 'gio' ? ['open', targetPath] : [targetPath];
+      const openResult = spawnSync(credentialFileExplorer, openArgs, { stdio: 'ignore' });
+      result.file_explorer.open_attempted = true;
+      result.file_explorer.open_status = openResult.status === 0 ? 'opened' : 'failed';
+      result.file_explorer.fallback = openResult.status === 0 ? null : 'terminal_metadata';
+    }
+    for (const name of fs.readdirSync(targetPath)) {
+      paths.push(path.join(targetPath, name));
+    }
+  } else {
+    result.file_explorer.open_status = 'not_directory';
+    result.file_explorer.fallback = 'terminal_metadata';
+    paths.push(targetPath);
+  }
+
+  result.entries = paths.map((entryPath) => {
+    const entryStat = fs.statSync(entryPath);
+    return {
+      name: path.basename(entryPath),
+      type: entryStat.isDirectory() ? 'directory' : 'file',
+      mode: `0${(entryStat.mode & 0o777).toString(8)}`,
+      owner: entryStat.uid,
+      group: entryStat.gid,
+      size: entryStat.size,
+      modified: entryStat.mtime.toISOString(),
+    };
+  });
+  return result;
+}
+
 const setupBlocked = managedPathStatus.startsWith('blocked');
+const railwayMetadata = metadataFor(railwayCredentialsPath);
+const gcloudMetadata = metadataFor(gcloudCredentialsPath);
+const gcloudAdcMetadata = metadataFor(gcloudAdcPath);
+const githubMetadata = metadataFor(githubCredentialsPath);
+const expoMetadata = metadataFor(expoCredentialsPath);
+const easMetadata = metadataFor(easCredentialsPath);
 
 const report = {
   schema: 'project-bootstrap-agent-setup/v1',
@@ -600,13 +846,11 @@ const report = {
   },
   tool_readiness: {
     node_repl: {
-      required: true,
-      owner: 'codex_app_plugin',
+      required: false,
+      owner: 'codex_app_plugin_optional',
       status: nodeReplMcpStatus,
       install_decision: nodeReplMcpStatus === 'already_configured' ? 'already_available' : 'app_environment_owned',
-      minimum_user_action: nodeReplMcpStatus === 'already_configured'
-        ? 'None. node_repl is already available in the Codex app/plugin environment.'
-        : 'Ask the platform owner to restore or enable node_repl in the Codex app/plugin environment. Do not invent a repo-local MCP registration path.',
+      minimum_user_action: 'None. node_repl is optional Codex app/plugin inventory and does not block project-bootstrap.',
     },
     railway: {
       required: true,
@@ -616,10 +860,11 @@ const report = {
       installer_status: railwayInstallerStatus,
       version_status: railwayVersionStatus,
       auth_status: railwayAuthStatus,
+      login_flow: railwayLoginFlow,
       tool_bin_dir: agentToolBinDir,
       minimum_user_action: railwayCommandStatus === 'available'
-        ? 'If Railway auth is missing, complete Railway login in the real login surface or provide an approved secure token source. Do not send secrets in chat.'
-        : 'Provide or approve an approved non-secret Railway CLI installer source. After install, complete Railway login in the real login surface or through an approved secure token source; do not send secrets in chat.',
+        ? 'If Railway auth is missing, I will run railway login and you complete Railway sign-in in the browser. Do not send secrets in chat.'
+        : 'npm is required so I can run npm i -g @railway/cli. After install, I will run railway login and you complete Railway sign-in in the browser; do not send secrets in chat.',
     },
     gcloud: {
       required: true,
@@ -628,11 +873,55 @@ const report = {
       install_decision: gcloudInstallDecision,
       installer_status: gcloudInstallerStatus,
       version_status: gcloudVersionStatus,
+      auth_status: gcloudAuthStatus,
+      login_flow: gcloudLoginFlow,
+      adc_status: gcloudAdcStatus,
+      adc_login_flow: gcloudAdcLoginFlow,
       project_status: gcloudProjectStatus,
+      project_command: gcloudProjectCommand,
+      project_set_flow: gcloudProjectSetFlow,
       tool_bin_dir: agentToolBinDir,
       minimum_user_action: gcloudCommandStatus === 'available'
-        ? 'If Google ADC or project selection is missing, complete the official gcloud login/ADC/project selection flow yourself. Do not send ADC JSON or service account JSON in chat.'
-        : 'Provide or approve an approved non-secret gcloud CLI installer source. After install, complete official Google login/ADC/project selection yourself; do not send ADC JSON or service account JSON in chat.',
+        ? 'If Google auth, ADC, or project selection is missing, I will run gcloud auth login, gcloud auth application-default login when needed, and gcloud config set project <project-id> after you provide the non-secret project id. Do not send ADC JSON or service account JSON in chat.'
+        : 'Provide or approve an approved official Google Cloud CLI installer source. After install, I will run gcloud auth login, gcloud auth application-default login when needed, and gcloud config set project <project-id> after you provide the non-secret project id; do not send ADC JSON or service account JSON in chat.',
+    },
+  },
+  credential_storage: {
+    railway: {
+      path: railwayCredentialsPath,
+      status: railwayCredentialsStatus,
+      metadata: railwayMetadata,
+      file_explorer: railwayMetadata.file_explorer,
+      contents_checked: false,
+      proof: 'metadata-only path/status; credential contents are never read',
+    },
+    gcloud: {
+      path: gcloudCredentialsPath,
+      status: gcloudCredentialsStatus,
+      metadata: gcloudMetadata,
+      file_explorer: gcloudMetadata.file_explorer,
+      adc_path: gcloudAdcPath,
+      adc_file_status: gcloudAdcFileStatus,
+      adc_metadata: gcloudAdcMetadata,
+      contents_checked: false,
+      proof: 'metadata-only path/status; ADC JSON contents are never read',
+    },
+    github: {
+      path: githubCredentialsPath,
+      status: githubCredentialsStatus,
+      metadata: githubMetadata,
+      contents_checked: false,
+      proof: 'metadata-only path/status plus gh auth status; token contents are never read',
+    },
+    expo: {
+      paths: [expoCredentialsPath, easCredentialsPath],
+      statuses: {
+        expo: expoCredentialsStatus,
+        eas: easCredentialsStatus,
+      },
+      metadata: [expoMetadata, easMetadata],
+      contents_checked: false,
+      proof: 'metadata-only path/status plus Expo/EAS status; token contents are never read',
     },
   },
   reports: {
