@@ -32,6 +32,24 @@
 | `team-doc/10-structured/03-skills/mvp-skill-matrix.md` | Historical skill matrix identifier; content is validated through root archive files. Current active skill status is validated from `.agents/skills/` and `mobile-app-dev-team/04-skills-and-agents-matrix.md`. |
 | `team-doc/10-structured/03-skills/case-coverage-registry.md` | Historical Case A-H process identifier; content is validated through root archive files. Use `ref-organization/04-workflows-and-handoffs/README.md` for reusable guidance. |
 
+## Confluence Provenance Crosswalk
+
+Each managed repo-local source below is the authoritative input for repo-local
+workflow execution. The Confluence page ID is a provenance/refetch/audit anchor
+only; it is not a live runtime input and must not require live Confluence access.
+This table is the structured home for these page IDs; role `references/sot.md`
+files point here instead of inlining page numbers.
+
+| Label | Repo-local source (authoritative) | Confluence provenance (page ID) |
+| --- | --- | --- |
+| `[01] Mobile App 조직` | `mobile-app-dev-team/01-team-composition.md` | `1373700097` |
+| `01-4. Skills` | `mobile-app-dev-team/04-skills-and-agents-matrix.md` | `1373667362` |
+| `SOUL.md Mobile App Dev` | `mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md` | `1373700159` |
+| `SOUL.md Backend/API Integrator` | `mobile-app-dev-team/02-role-souls/backend-api-integrator-soul.md` | `1373700180` |
+| `Role-specific Codex Runtime` | `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md` | `1374289964` |
+| `mobile-app-dev-workflow` | `.agents/skills/mobile-app-dev-workflow/SKILL.md` | `1374060668` |
+| `mobile-backend-api-integrator-workflow` | `.agents/skills/mobile-backend-api-integrator-workflow/SKILL.md` | `1374388227` |
+
 ## Display Title To Operating Role Crosswalk
 
 | Display Title | Operating Role | Status | Handling |

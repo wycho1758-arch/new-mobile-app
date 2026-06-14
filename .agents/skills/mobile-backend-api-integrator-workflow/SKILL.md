@@ -21,7 +21,7 @@ Review-only contract tasks must use the read-only `wm-contract-reviewer` custom 
 ## Workflow
 
 1. Identify the consuming mobile flow and contract boundary.
-2. Read `references/sot.md` if the task lacks Confluence/source links.
+2. Read `references/sot.md` for the repo-local source map if the task lacks source links.
 3. Produce a Codex API Contract Plan Packet before contract edits and request the plan reviewer when the change is non-trivial.
 4. Define request, response, error, loading, retry, and auth/session behavior.
 5. Define or update `packages/contracts` zod schema names and TypeScript exports before app/API consumers use them.

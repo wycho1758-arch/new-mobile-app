@@ -21,7 +21,7 @@ Review-only tasks must use read-only reviewer agents or code-review mode instead
 ## Workflow
 
 1. Confirm scope and ownership. Do not edit external platform/runtime repositories or backend/auth/payment code.
-2. Read `references/sot.md` for the Confluence SoT map when task context is incomplete.
+2. Read `references/sot.md` for the repo-local source map when task context is incomplete.
 3. Produce a Codex Implementation Plan Packet before implementation and request the plan reviewer when the change is non-trivial.
 4. Confirm design and API contract before implementation.
 5. Write or update tests first.
