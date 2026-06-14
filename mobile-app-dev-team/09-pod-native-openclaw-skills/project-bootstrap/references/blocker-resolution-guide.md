@@ -44,9 +44,10 @@ The agent must not:
 Before reporting a blocker to the user, the agent must inspect and set up every
 non-secret local environment item it can safely control:
 
-- Role identity: derive the canonical role from the pod SOUL, selector, or local
-  role handoff, then write `WM_ROLE`, `WM_EXPECTED_ROLE`, and
-  `/workspace/IDENTITY`.
+- Role identity: read `/workspace/SOUL.md` or an equivalent local role handoff,
+  choose exactly one canonical role slug, then call
+  `project-bootstrap-agent-setup.sh` with `PROJECT_BOOTSTRAP_ROLE_SLUG`. The
+  setup script writes `WM_ROLE`, `WM_EXPECTED_ROLE`, and `/workspace/IDENTITY`.
 - Managed path registry: if `/workspace/CODEX_MANAGED_PATHS.md` is missing or
   lacks the canonical WonderMove repo path, create or update it with the
   normalized non-secret repo path entry. Do not repair unknown or conflicting
@@ -111,6 +112,7 @@ Minimum user request, and the next step where the agent can continue.
 | `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Share a preferred public commit name/email if one exists, or provide an approved local handoff file through `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. If absent, the agent checks whether the approved GitHub account can support a non-invented Git identity source. | Configure Git from one approved source and rerun bootstrap. |
 | `github-auth-unavailable` | GitHub connection is needed before the agent can continue with repository access or upload work. | Be present for the GitHub login screen; sign in with your GitHub account and approve the request. Never send tokens in chat. | Check the GitHub connection, set up Git to use that login after authentication works, then rerun bootstrap. |
 | `pod-role-bootstrap blocked` | `project-bootstrap` found that the generated `pod-role-bootstrap` report is present but not ready. | Resolve the nested blocker requests only; do not create report files manually. | Rerun `pod-role-bootstrap`, then rerun `project-bootstrap` preflight. |
+| `workspace-skills-sync-blocked` | The runtime `/workspace/skills` snapshot was not refreshed from repo SoT, so existing skills may be stale. | No user secret is needed; let the agent rerun `openclaw-pod-skills-sync` from the checked-out repo. | Run `openclaw-pod-skills-sync`, verify `/workspace/state/openclaw-pod-skills-sync-report.json`, then rerun `project-bootstrap`. |
 
 ## Blocker Classification
 
@@ -236,32 +238,49 @@ Related blockers:
 - `/workspace/IDENTITY must use canonical role slug`
 - `WM_ROLE and /workspace/IDENTITY mismatch`
 - `WM_EXPECTED_ROLE mismatch`
+- `explicit-role-slug-conflict`
+- `role-surface-noncanonical`
 
 Resolution:
 
-1. The agent must set the identity itself when the assigned SOUL, pod selector,
-   or local role handoff already identifies the role. Do not ask the user to choose the role in that case.
-2. Use the canonical role slug from the assigned SOUL:
+1. The agent must set the identity itself when `/workspace/SOUL.md`, the pod
+   selector, or a local role handoff already identifies the role. Do not ask the
+   user to choose the role in that case.
+2. Read `/workspace/SOUL.md` and choose exactly one canonical role slug:
    - `product-planning`
    - `design`
    - `mobile-architect`
    - `mobile-app-dev`
    - `backend-api-integrator`
    - `qa-release`
-3. Set all configured role surfaces to the same canonical slug:
+3. Pass the selected slug to `project-bootstrap-agent-setup.sh`. The script
+   validates the slug, writes `/workspace/IDENTITY`, and writes
+   `/workspace/state/project-bootstrap-role.env` with `WM_ROLE` and
+   `WM_EXPECTED_ROLE` set to the same canonical value:
 
 ```bash
 role_slug="<canonical-role-slug>"
-export WM_ROLE="${role_slug}"
-export WM_EXPECTED_ROLE="${role_slug}"
-printf '%s\n' "${role_slug}" > /workspace/IDENTITY
+PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}" \
+PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
+source /workspace/state/project-bootstrap-role.env
 ```
 
 Agent-owned setup actions:
 
 - If the assigned pod role is unambiguous from a user instruction, pod selector,
-  SOUL file, or local role handoff file, the agent should run the non-secret
-  setup commands and rerun the read-only preflight.
+  `/workspace/SOUL.md`, or local role handoff file, the agent should run the
+  non-secret setup commands and rerun the read-only preflight.
+- If `PROJECT_BOOTSTRAP_ROLE_SLUG` conflicts with an existing `WM_ROLE`,
+  `WM_EXPECTED_ROLE`, or `/workspace/IDENTITY`, keep the role blocker. Do not
+  silently override a conflicting role identity.
+- If no explicit slug is provided, existing `WM_ROLE`, `WM_EXPECTED_ROLE`, and
+  `/workspace/IDENTITY` values must still exactly match one canonical slug.
+  Display titles such as `Product/Planning` or `Mobile App Dev` are blocked.
+- `project-bootstrap-agent-setup.sh` does not infer or write a new role from
+  SOUL paths, pod selectors, or hostnames without `PROJECT_BOOTSTRAP_ROLE_SLUG`.
+  The skill/agent must read `/workspace/SOUL.md`, choose one canonical slug, and
+  pass that slug explicitly.
 
 Human-owned blockers:
 
@@ -449,6 +468,7 @@ Related blockers:
 - unreadable project-bootstrap-agent-setup report
 - project-bootstrap-agent-setup blocked
 - project-bootstrap-agent-setup auth readiness missing
+- workspace-skills-sync-blocked
 - railway-cli-unavailable
 - gcloud-cli-unavailable
 - railway-auth-missing

@@ -121,6 +121,7 @@ function requireConfluenceDependencyBoundary() {
 
 requireTerms('AGENTS.md', [
   'REPO_OPERATIONS.md',
+  'After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/09-pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.',
 ]);
 
 requireTerms('REPO_OPERATIONS.md', [
@@ -178,6 +179,12 @@ requireTerms('REPO_OPERATIONS.md', [
   'not a skill and not a custom agent',
 ]);
 
+requireTerms('REPO_OPERATIONS.md', [
+  'openclaw-pod-skills-sync',
+  'repo SoT',
+  'runtime snapshot',
+]);
+
 requirePackageScripts();
 requireConfluenceDependencyBoundary();
 
@@ -208,6 +215,7 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/codex-cli-auth-s
 requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md', [
   'name: project-bootstrap',
   '/workspace/skills/project-bootstrap/SKILL.md',
+  'openclaw-pod-skills-sync',
   'project-bootstrap-agent-setup.sh',
   '/workspace/projects/Wondermove-Inc/new-mobile-app',
   '/workspace/CODEX_MANAGED_PATHS.md',
@@ -229,6 +237,20 @@ requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstra
   'serena',
   'stitch',
   'human-gate/v1',
+  'status only',
+]);
+
+requireTerms('mobile-app-dev-team/09-pod-native-openclaw-skills/openclaw-pod-skills-sync/SKILL.md', [
+  'name: openclaw-pod-skills-sync',
+  '/workspace/skills/openclaw-pod-skills-sync/SKILL.md',
+  '/workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh',
+  'repo SoT',
+  'runtime snapshot',
+  'copy sync',
+  'not symlink',
+  'git clone',
+  'git pull',
+  'project-bootstrap',
   'status only',
 ]);
 

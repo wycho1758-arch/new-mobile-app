@@ -352,6 +352,7 @@ const toolAuth = {
     auth_status: setupStatus('tool_readiness', 'expo_cli', 'auth_status'),
   },
 };
+const workspaceSkillsSyncStatus = setupStatus('workspace_skills', 'sync', 'status');
 const projectBootstrapAgentSetupReportStatus = projectBootstrapAgentSetupNestedReport.status === 'missing'
   ? 'missing'
   : projectBootstrapAgentSetupNestedReport.status === 'unreadable' ? 'unreadable' : 'present';
@@ -421,6 +422,7 @@ if (projectBootstrapAgentSetupNestedReport.status === 'missing') {
   blockers.push('unreadable project-bootstrap-agent-setup report');
 } else {
   if (projectBootstrapAgentSetupNestedReport.status === 'blocked') blockers.push('project-bootstrap-agent-setup blocked');
+  if (workspaceSkillsSyncStatus !== 'completed') blockers.push('workspace-skills-sync-blocked');
   const authValues = [
     toolAuth.railway.auth_status,
     toolAuth.gcloud.auth_status,
