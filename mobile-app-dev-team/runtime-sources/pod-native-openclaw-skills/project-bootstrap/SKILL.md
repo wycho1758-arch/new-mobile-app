@@ -280,11 +280,14 @@ export PROJECT_BOOTSTRAP_CURRENT_USER_LANGUAGE="${AGENT_CURRENT_USER_LANGUAGE:?s
 
 2. Resolve and apply agent-owned identity setup before preflight. Read
    `/workspace/SOUL.md`, select exactly one canonical slug from the six allowed
-   values, and pass that selection to the setup script. For a Product/Planning
-   pod, the selected slug is `product-planning`:
+   values, and pass that selection to the setup script.
+   Do not copy the placeholder literally. Replace it with one of
+   `product-planning`, `design`, `mobile-architect`, `mobile-app-dev`,
+   `backend-api-integrator`, or `qa-release` based on the pod SOUL, selector, or
+   role handoff:
 
 ```bash
-role_slug="product-planning"
+role_slug="<canonical-role-slug>"
 PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}" \
 PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
 bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh

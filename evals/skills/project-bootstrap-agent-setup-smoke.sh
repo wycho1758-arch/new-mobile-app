@@ -77,6 +77,27 @@ SH
   chmod +x "${bin_dir}/${cli_name}"
 }
 
+make_fake_corepack_and_pnpm_loggers() {
+  local bin_dir="$1"
+  local corepack_log_path="$2"
+  local pnpm_log_path="$3"
+  cat > "${bin_dir}/corepack" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${corepack_log_path}"
+exit 0
+SH
+  chmod +x "${bin_dir}/corepack"
+
+  cat > "${bin_dir}/pnpm" <<SH
+#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "\$*" >> "${pnpm_log_path}"
+exit 64
+SH
+  chmod +x "${bin_dir}/pnpm"
+}
+
 make_fake_railway_unauthorized() {
   local bin_dir="$1"
   local command_log_path="$2"
@@ -1742,6 +1763,34 @@ case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted(
   assert_json_no_secret_like "${pod_report_path}"
 }
 
+case_pod_bootstrap_requires_install_approval_before_pnpm_install() {
+  local tmpdir pod_report_path
+  tmpdir="$(mktemp -d)"
+  pod_report_path="${tmpdir}/state/pod-role-bootstrap-install-approval-report.json"
+  mkdir -p "${tmpdir}/bin" "${tmpdir}/repo" "${tmpdir}/state"
+  printf '# Codex-managed Paths\n\n- %s/\n' "${tmpdir}/repo" > "${tmpdir}/CODEX_MANAGED_PATHS.md"
+  make_fake_corepack_and_pnpm_loggers "${tmpdir}/bin" "${tmpdir}/corepack-command-log" "${tmpdir}/pnpm-command-log"
+
+  set +e
+  PATH="${tmpdir}/bin:${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin" \
+  REPORT_PATH="${pod_report_path}" \
+  REPO_PATH="${tmpdir}/repo" \
+  CODEX_MANAGED_PATHS="${tmpdir}/CODEX_MANAGED_PATHS.md" \
+  WM_ROLE="product-planning" \
+  WM_EXPECTED_ROLE="product-planning" \
+  /bin/bash "${POD_BOOTSTRAP_SCRIPT}" >/dev/null 2>"${tmpdir}/pod-bootstrap-stderr"
+  local status=$?
+  set -e
+
+  [[ "${status}" -ne 0 ]]
+  assert_file_contains "${tmpdir}/pod-bootstrap-stderr" "pnpm install requires explicit approval"
+  assert_file_contains "${tmpdir}/corepack-command-log" "prepare pnpm@9.15.9 --activate"
+  [[ ! -f "${tmpdir}/pnpm-command-log" ]]
+  assert_json_field "${pod_report_path}" "r.status === 'blocked'"
+  assert_json_field "${pod_report_path}" "r.preflight.status === 'skipped'"
+  assert_json_field "${pod_report_path}" "r.preflight.blockers.includes('pod-role-bootstrap install approval required')"
+}
+
 case_design_full_setup() {
   local tmpdir
   tmpdir="$(mktemp -d)"
@@ -3113,5 +3162,6 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults
 case_agent_setup_blocks_failed_skill_sync
 case_token_bearing_clone_url_rejected_in_both_paths
 case_token_bearing_clone_url_rejected_even_when_repo_exists_and_report_redacted
+case_pod_bootstrap_requires_install_approval_before_pnpm_install
 
 printf 'project-bootstrap-agent-setup smoke passed\n'

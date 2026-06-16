@@ -1,6 +1,6 @@
 ---
 name: pod-role-bootstrap
-description: Prepare an OpenClaw role pod to work on this WonderMove mobile app template runtime by resolving its WM role, aligning pnpm to the repo packageManager pin, installing the checked-out repo, running repo-local Codex pod preflight, and writing a redacted readiness report.
+description: Prepare an OpenClaw role pod to work on this WonderMove mobile app template runtime by resolving its WM role, aligning pnpm to the repo packageManager pin, installing checked-out repo dependencies only after explicit approval, running repo-local Codex pod preflight, and writing a redacted readiness report.
 ---
 
 # Pod Role Bootstrap
@@ -70,8 +70,15 @@ status-only blocker report and exits non-zero instead of claiming readiness.
 2. Align package manager selection with the repo SoT.
 
 The repo declares `pnpm@9.15.9` in `package.json`. The bootstrap uses corepack
-to activate that pin before `pnpm install --frozen-lockfile`. A pod with pnpm
-`10.33.3` must not proceed as ready until the pin is corrected.
+to activate that pin before `pnpm install --frozen-lockfile`. Before dependency
+installation, the agent must report the exact dependency install plan and wait
+for explicit approval unless the user already approved that install. In
+automation, set
+`POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true` only after that approval. Without it,
+the script writes a blocked readiness report with `pod-role-bootstrap install
+approval required` and exits before `pnpm install --frozen-lockfile`.
+
+A pod with pnpm `10.33.3` must not proceed as ready until the pin is corrected.
 
 3. Run repo-local pod preflight.
 
@@ -138,6 +145,8 @@ whose `/workspace/CODEX_MANAGED_PATHS.md` policy is not ready.
 - the checkout came from an existing directory or explicit `REPO_CLONE_URL`
 - `/workspace/CODEX_MANAGED_PATHS.md` contains the managed path entry
 - pnpm is aligned to `pnpm@9.15.9`
+- repo dependency installation was explicitly approved with
+  `POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true`
 - `pnpm install --frozen-lockfile` exits 0
 - `node scripts/codex-preflight.mjs --pod --json` exits 0
 - the report is written under `/workspace/state/`

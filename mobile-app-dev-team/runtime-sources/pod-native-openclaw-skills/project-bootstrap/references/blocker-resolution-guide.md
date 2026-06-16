@@ -301,7 +301,12 @@ Resolution:
   `pnpm@9.15.9`.
 - `pod-role-bootstrap` intentionally runs `corepack enable`,
   `corepack prepare "pnpm@9.15.9" --activate`, and
-  `pnpm install --frozen-lockfile`.
+  `pnpm install --frozen-lockfile` only after explicit dependency-install
+  approval.
+- `pod-role-bootstrap install approval required` means
+  `POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true` is missing. The agent must report
+  the exact dependency install plan and wait; the user should approve the
+  agent-owned install rather than manually install dependencies.
 - Seeing another currently active `pnpm --version` before bootstrap is a
   blocker candidate, not a reason to manually edit package files.
 
@@ -311,8 +316,9 @@ Agent action:
   and current `pnpm --version`.
 - The agent should run `pod-role-bootstrap` when the setup flow reaches that
   step and the user has authorized bootstrap execution. That script activates
-  the pinned pnpm and installs dependencies. Do not ask the user to manually
-  choose a pnpm version.
+  the pinned pnpm, then installs dependencies only when
+  `POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true` is set after approval. Do not ask
+  the user to manually choose a pnpm version or run `pnpm install`.
 
 ## Git Identity Blockers
 
@@ -492,6 +498,10 @@ Resolution:
   `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`. Without approval, report
   `install_blocked_needs_approval`, list `install_plan`, keep
   `installed_exact` empty, and wait.
+- `pod-role-bootstrap` repo dependency installation uses its own explicit
+  approval flag: `POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true`. Without approval,
+  it reports `pod-role-bootstrap install approval required` and exits before
+  `pnpm install --frozen-lockfile`.
 - After approval, `installed_exact` may list only verified successful installs.
   `npm_global_install_failed` and `install_failed` are failed attempts, not
   installed software.

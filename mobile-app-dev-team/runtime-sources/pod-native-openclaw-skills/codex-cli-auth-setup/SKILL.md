@@ -1,11 +1,12 @@
 ---
 name: codex-cli-auth-setup
-description: Install, verify, and run the OpenAI Codex CLI in an OpenClaw/clawpod-agent Linux workspace, including checking npm/node prerequisites, installing @openai/codex globally, verifying ~/.codex/auth.json without exposing secrets, running codex doctor, and testing codex exec with --dangerously-bypass-approvals-and-sandbox. Use when asked to set up Codex CLI, configure Codex auth, validate no-approval Codex execution, or produce a SoT-style report of Codex CLI readiness.
+description: Verify and, after explicit approval, install or update the OpenAI Codex CLI in an OpenClaw/clawpod-agent Linux workspace, including checking npm/node prerequisites, verifying ~/.codex/auth.json without exposing secrets, running codex doctor, and testing codex exec with --dangerously-bypass-approvals-and-sandbox. Use when asked to set up Codex CLI, configure Codex auth, validate no-approval Codex execution, or produce a SoT-style report of Codex CLI readiness.
 ---
 
 # Codex CLI Auth Setup
 
-Use this pod-native OpenClaw skill to install and validate Codex CLI on an OpenClaw agent host.
+Use this pod-native OpenClaw skill to validate Codex CLI on an OpenClaw agent
+host and install or update it only after explicit approval.
 For fresh role pods, follow the full sequence in
 `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md`: Codex auth readiness
 comes before repo checkout/bootstrap readiness.
@@ -83,10 +84,15 @@ npm list -g --depth=0 2>/dev/null | grep -Ei 'codex|openai' || true
 npm view @openai/codex version name bin --json
 ```
 
-3. Install or update Codex CLI:
+3. Install or update Codex CLI only after approval.
+
+Before running an installer, the agent must report the exact package and version
+target and wait for explicit approval unless the user already approved that
+exact install. Do not use `@latest` unless the user explicitly approved that
+exact target.
 
 ```bash
-npm i -g @openai/codex@latest
+npm i -g @openai/codex@<approved-version>
 ```
 
 4. Verify basic execution:

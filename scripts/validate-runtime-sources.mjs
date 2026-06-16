@@ -73,7 +73,16 @@ for (const roleFile of [
 requireTerms(errors, `${podNativeRoot}/README.md`, [
   'source-only',
   '/workspace/skills/<slug>/SKILL.md',
+  '## Start Here',
   'Normal user-facing setup after clone or pull starts from `openclaw-pod-skills-sync`, then `project-bootstrap`',
+  '/workspace/skills/codex-role-workflow/SKILL.md',
+  'matching role runtime specification',
+  'product-planning-agent-runtime-spec.md',
+  'design-agent-runtime-spec.md',
+  'mobile-architect-agent-runtime-spec.md',
+  'mobile-app-dev-agent-runtime-spec.md',
+  'backend-api-integrator-agent-runtime-spec.md',
+  'qa-release-agent-runtime-spec.md',
   'Do not place repo-local Codex CLI artifacts here',
   '## Per-Role Required Pod Skills',
   'codex-role-workflow',
@@ -120,6 +129,29 @@ requirePodNativeSkill(`${podNativeRoot}/openclaw-pod-skills-sync`, 'openclaw-pod
 requirePodNativeSkill(`${podNativeRoot}/eas-robot-auth-setup`, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh');
 requirePodNativeSkill(`${podNativeRoot}/stitch-adc-setup`, 'stitch-adc-setup', 'stitch-adc-precheck.sh');
 
+requireTerms(errors, `${podNativeRoot}/pod-role-bootstrap/SKILL.md`, [
+  'POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true',
+  'agent must report the exact dependency install plan',
+  'for explicit approval',
+], 'pod-native role bootstrap install approval');
+requireTerms(errors, `${podNativeRoot}/pod-role-bootstrap/scripts/pod-bootstrap.sh`, [
+  'POD_ROLE_BOOTSTRAP_INSTALL_APPROVED',
+  'pnpm install requires explicit approval',
+  'pod-role-bootstrap install approval required',
+], 'pod-native role bootstrap install approval');
+requireTerms(errors, `${podNativeRoot}/codex-cli-auth-setup/SKILL.md`, [
+  'agent must report the exact package and version',
+  'target and wait for explicit approval',
+  '@openai/codex@<approved-version>',
+], 'pod-native codex install approval');
+forbidTerms(errors, `${podNativeRoot}/codex-cli-auth-setup/SKILL.md`, [
+  'npm i -g @openai/codex@latest',
+], 'pod-native codex install approval');
+requireTerms(errors, `${podNativeRoot}/project-bootstrap/references/blocker-resolution-guide.md`, [
+  'POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true',
+  'pod-role-bootstrap install approval required',
+], 'pod-native blocker install approval');
+
 requireTerms(errors, `${podNativeRoot}/codex-role-workflow/SKILL.md`, [
   'name: codex-role-workflow',
   'description:',
@@ -127,19 +159,42 @@ requireTerms(errors, `${podNativeRoot}/codex-role-workflow/SKILL.md`, [
   'repo-local Codex skills',
 ], 'pod-native role workflow skill');
 
-for (const runtimeSpec of [
-  'product-planning-agent-runtime-spec.md',
-  'design-agent-runtime-spec.md',
-  'mobile-architect-agent-runtime-spec.md',
-  'mobile-app-dev-agent-runtime-spec.md',
-  'backend-api-integrator-agent-runtime-spec.md',
-  'qa-release-agent-runtime-spec.md',
-]) {
-  requireTerms(errors, `${podNativeRoot}/${runtimeSpec}`, [
+const podRuntimeSpecs = [
+  ['product-planning-agent-runtime-spec.md', 'product-planning'],
+  ['design-agent-runtime-spec.md', 'design'],
+  ['mobile-architect-agent-runtime-spec.md', 'mobile-architect'],
+  ['mobile-app-dev-agent-runtime-spec.md', 'mobile-app-dev'],
+  ['backend-api-integrator-agent-runtime-spec.md', 'backend-api-integrator'],
+  ['qa-release-agent-runtime-spec.md', 'qa-release'],
+];
+
+for (const [runtimeSpec, roleSlug] of podRuntimeSpecs) {
+  const runtimeSpecPath = `${podNativeRoot}/${runtimeSpec}`;
+  requireTerms(errors, runtimeSpecPath, [
     'Runtime',
     'SOUL',
+    `role_slug="${roleSlug}"`,
+    'PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}"',
+    'PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md"',
+    'bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh',
+    'source /workspace/state/project-bootstrap-role.env',
+    'write those identity surfaces directly as a substitute for the setup script',
+  ], 'pod-native runtime spec');
+  forbidTerms(errors, runtimeSpecPath, [
+    'export WM_ROLE="${role_slug}"',
+    'export WM_EXPECTED_ROLE="${role_slug}"',
+    'printf \'%s\\n\' "${role_slug}" > /workspace/IDENTITY',
+    'Recommended aligned',
   ], 'pod-native runtime spec');
 }
+
+requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
+  'role_slug="<canonical-role-slug>"',
+  'Do not copy the placeholder literally',
+], 'project bootstrap role selection');
+forbidTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
+  'role_slug="product-planning"',
+], 'project bootstrap role selection');
 
 requireTerms(errors, podEnvironmentBootstrapPath, [
   '/workspace/projects/Wondermove-Inc/new-mobile-app',

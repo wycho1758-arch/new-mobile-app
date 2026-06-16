@@ -5,6 +5,7 @@ REPO_PATH="${REPO_PATH:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 REPORT_PATH="${REPORT_PATH:-/workspace/state/pod-role-bootstrap-report.json}"
 EXPECTED_PNPM_VERSION="${EXPECTED_PNPM_VERSION:-9.15.9}"
 CODEX_MANAGED_PATHS="${CODEX_MANAGED_PATHS:-/workspace/CODEX_MANAGED_PATHS.md}"
+INSTALL_APPROVED="${POD_ROLE_BOOTSTRAP_INSTALL_APPROVED:-false}"
 
 redact() {
   sed -E 's/(token|key|secret|password)([=: ][^ ]+)/\1=***REDACTED***/Ig'
@@ -156,6 +157,12 @@ cd "${REPO_PATH}"
 
 corepack enable
 corepack prepare "pnpm@${EXPECTED_PNPM_VERSION}" --activate
+if [[ "${INSTALL_APPROVED}" != "true" ]]; then
+  write_status_report "blocked" "${repo_acquisition}" "${managed_path}" "skipped" "pod-role-bootstrap install approval required"
+  echo "pod-role-bootstrap blocked: pnpm install requires explicit approval; set POD_ROLE_BOOTSTRAP_INSTALL_APPROVED=true after approval; report=${REPORT_PATH}" >&2
+  exit 1
+fi
+
 pnpm install --frozen-lockfile
 
 preflight_tmp="$(mktemp)"

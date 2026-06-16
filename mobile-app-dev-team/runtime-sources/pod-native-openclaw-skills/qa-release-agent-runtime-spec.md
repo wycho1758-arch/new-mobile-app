@@ -75,14 +75,34 @@ WM_EXPECTED_ROLE
 /workspace/IDENTITY
 ```
 
-Recommended aligned QA/Release values:
+Required QA/Release setup command:
 
 ```bash
 role_slug="qa-release"
-export WM_ROLE="${role_slug}"
-export WM_EXPECTED_ROLE="${role_slug}"
-printf '%s\n' "${role_slug}" > /workspace/IDENTITY
+PROJECT_BOOTSTRAP_ROLE_SLUG="${role_slug}" \
+PROJECT_BOOTSTRAP_ROLE_SOUL_PATH="/workspace/SOUL.md" \
+bash /workspace/skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh
+source /workspace/state/project-bootstrap-role.env
 ```
+
+The agent must pass the exact canonical slug as `PROJECT_BOOTSTRAP_ROLE_SLUG`.
+`project-bootstrap-agent-setup.sh` validates the selected slug and writes
+`WM_ROLE`, `WM_EXPECTED_ROLE`, and `/workspace/IDENTITY`. The agent must not
+write those identity surfaces directly as a substitute for the setup script.
+
+Operational meaning:
+
+- `WM_ROLE` is the primary environment role identity after the generated
+  `/workspace/state/project-bootstrap-role.env` file is sourced.
+- `/workspace/IDENTITY` is a file fallback and cross-process persisted identity
+  written by the setup script.
+- `WM_EXPECTED_ROLE` is a guardrail written by the setup script and must match
+  the resolved role when set.
+
+This is intentionally redundant. The redundancy prevents a pod, wrapper,
+bootstrap script, or resumed process from silently running with the wrong role.
+If multiple surfaces are configured, they must resolve to the same canonical
+slug.
 
 If `WM_ROLE`, `/workspace/IDENTITY`, the pod SOUL, or `WM_EXPECTED_ROLE` point to
 different canonical roles, the agent must report `blocked` with a role mismatch
