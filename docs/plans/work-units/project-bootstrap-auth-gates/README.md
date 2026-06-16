@@ -14,7 +14,7 @@ ready, and make pod-native setup reproducible from source:
 - clone `https://github.com/Wondermove-Inc/new-mobile-app.git` to
   `/workspace/projects/Wondermove-Inc/new-mobile-app`;
 - register pod-native OpenClaw skills from
-  `mobile-app-dev-team/09-pod-native-openclaw-skills/` into `/workspace/skills`;
+  `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/` into `/workspace/skills`;
 - ensure `/workspace/AGENTS.md` contains Project Workspace Defaults;
 - block `project-bootstrap` when Railway, gcloud active account, Google ADC,
   Expo MCP auth, or Expo CLI login is absent.

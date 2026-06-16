@@ -1,0 +1,11 @@
+{
+  "name": "invalid-legacy-runtime-top-level",
+  "description": "Current runtime source docs must use structure-based target paths, not numbered top-level legacy paths.",
+  "base": "legacy",
+  "legacyCompatibility": false,
+  "shouldPass": false,
+  "expectedErrors": [
+    "runtime source exists only at legacy path",
+    "unregistered numeric-prefix top-level path"
+  ]
+}

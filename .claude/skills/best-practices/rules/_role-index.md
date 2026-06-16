@@ -1,6 +1,6 @@
 # Role → Rules Index
 
-Maps this repo's operating roles (`mobile-app-dev-team/02-role-souls/`) to the curated rule sets in
+Maps this repo's operating roles (`mobile-app-dev-team/runtime-sources/role-souls/`) to the curated rule sets in
 this library. This index is part of the independent `/best-practices` skill — it does not reference
 or depend on any other skill. Roles not listed below have no code-rule scope.
 

@@ -12,21 +12,51 @@ jobs:
   enable-auto-merge:
     if: >-
       github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.pull_requests &&
-      github.event.workflow_run.pull_requests.length == 1 &&
-      github.event.workflow_run.pull_requests[0].base.ref == 'main'
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Enable GitHub native auto-merge
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_URL: ${{ github.event.workflow_run.pull_requests[0].html_url }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
 
-          pr_json="$(gh pr view "$PR_URL" --json state,isDraft,headRefOid)"
+          prs_json="$(
+            gh api \
+              -H "Accept: application/vnd.github+json" \
+              "/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls"
+          )"
+
+          pr_json="$(PRS_JSON="$prs_json" node <<'NODE'
+          const prs = JSON.parse(process.env.PRS_JSON);
+          const matches = prs.filter((pr) =>
+            pr.state == 'open' &&
+            pr.base?.ref == 'main' &&
+            pr.head?.sha == process.env.HEAD_SHA
+          );
+
+          if (matches.length == 0) {
+            console.log('SKIP_NO_MATCH');
+            process.exit(0);
+          }
+
+          if (matches.length > 1) {
+            console.error(`Refusing auto-merge because ${matches.length} open main pull requests match head ${process.env.HEAD_SHA}.`);
+            process.exit(1);
+          }
+
+          console.log(JSON.stringify({ url: matches[0].html_url }));
+          NODE
+          )"
+
+          if [ "$pr_json" = "SKIP_NO_MATCH" ]; then
+            echo "Skipping auto-merge because no open main pull request matches head $HEAD_SHA."
+            exit 0
+          fi
+
+          PR_URL="$(PR_JSON="$pr_json" node -e "console.log(JSON.parse(process.env.PR_JSON).url)")"
+          pr_json="$(gh pr view "$PR_URL" --json state,isDraft,headRefOid,baseRefName)"
           PR_JSON="$pr_json" node <<'NODE'
           const pr = JSON.parse(process.env.PR_JSON);
 
@@ -37,6 +67,11 @@ jobs:
 
           if (pr.isDraft == true) {
             console.log('Skipping auto-merge because PR is still draft.');
+            process.exit(0);
+          }
+
+          if (pr.baseRefName != 'main') {
+            console.log(`Skipping auto-merge because PR base is ${pr.baseRefName}.`);
             process.exit(0);
           }
 

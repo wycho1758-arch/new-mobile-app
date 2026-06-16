@@ -14,9 +14,9 @@ next responsible role: pod/bootstrap or human/ops owner for live runtime publica
 
 | Planned task | Evidence |
 | --- | --- |
-| Task A: Source-grounded routing contract update | `git diff -- mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md` shows `Codex Substrate`, `Process Routing Sources`, `Common Intake Rule`, `Entry Case Routing`, `Design Relevance`, and `Hotfix And Rollback`. |
-| Task B: Output contract expansion | `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md` now requires `entry_case`, `routing_reason`, `process_sot`, `readiness_state_or_required_gate`, `blocked_reason`, `not_applicable_reason`, and `external_proof_boundary`. |
-| Task C: Design relevance and P0/P1 guardrails | `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md` states screen presence is not decisive, layout/interaction/visual hierarchy is decisive, P0 is before Stitch generation, and P1 is before HTML extraction. |
+| Task A: Source-grounded routing contract update | `git diff -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md` shows `Codex Substrate`, `Process Routing Sources`, `Common Intake Rule`, `Entry Case Routing`, `Design Relevance`, and `Hotfix And Rollback`. |
+| Task B: Output contract expansion | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md` now requires `entry_case`, `routing_reason`, `process_sot`, `readiness_state_or_required_gate`, `blocked_reason`, `not_applicable_reason`, and `external_proof_boundary`. |
+| Task C: Design relevance and P0/P1 guardrails | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md` states screen presence is not decisive, layout/interaction/visual hierarchy is decisive, P0 is before Stitch generation, and P1 is before HTML extraction. |
 | Task D: Validator coverage | `scripts/validate-team-doc.mjs` now requires the routing overlay, runtime path resolution, broader input language, Design guardrails, hotfix/rollback, and output contract fields. |
 | Task E: Source-managed `/workspace/AGENTS.md` alignment | `AGENTS.md` now states WonderMove requirements/specifications/PRDs/work requests must resolve through `codex-role-workflow` and that Codex is the repo-local role-workflow substrate. |
 | Task F: Pod runtime publication path alignment | `00-product-planning/runtime-publication-status.md` records that live `/workspace` mutation was not performed and that runtime publication remains a pod/bootstrap operation. |
@@ -25,7 +25,7 @@ next responsible role: pod/bootstrap or human/ops owner for live runtime publica
 
 | Command | Status | Evidence |
 | --- | --- | --- |
-| `node scripts/validate-team-doc.mjs` before skill implementation | FAIL expected | Failed on missing `Codex Substrate`, `19-entry-case-routing.md`, broader input language, Design/P0/P1, rollback, and output contract terms. |
+| `node scripts/validate-team-doc.mjs` before skill implementation | FAIL expected | Failed on missing `Codex Substrate`, `mobile-app-dev-team/workflows/entry-case-routing.md`, broader input language, Design/P0/P1, rollback, and output contract terms. |
 | `node scripts/validate-team-doc.mjs` after skill implementation | PASS | `04-mobile-app/command-output.md` |
 | `pnpm run test:runtime` | PASS | `04-mobile-app/command-output.md` |
 | `pnpm run test:local-harness` | PASS | `04-mobile-app/command-output.md` |

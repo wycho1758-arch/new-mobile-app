@@ -1,0 +1,13 @@
+{
+  "name": "invalid-top-level-numeric-prefix",
+  "description": "New current top-level docs must not extend the numbered-prefix layout.",
+  "base": "legacy",
+  "legacyCompatibility": true,
+  "shouldPass": false,
+  "add": {
+    "mobile-app-dev-team/23-new-runtime-note.md": "# New Numbered Note\n"
+  },
+  "expectedErrors": [
+    "unregistered numeric-prefix top-level path"
+  ]
+}

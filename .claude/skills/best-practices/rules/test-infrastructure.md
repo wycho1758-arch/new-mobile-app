@@ -1,7 +1,7 @@
 # Test Infrastructure (this repo: Expo RN + TypeScript)
 
 Curated for the `new-mobile-app` stack. Test layers follow the QA/Release evidence ladder
-(`mobile-app-dev-team/02-role-souls/qa-release-soul.md`): L0 unit/component, L1 RN Web, L2 native/EAS.
+(`mobile-app-dev-team/runtime-sources/role-souls/qa-release-soul.md`): L0 unit/component, L1 RN Web, L2 native/EAS.
 
 ## L0 — Unit / Component (Jest + React Native Testing Library)
 

@@ -1,0 +1,15 @@
+{
+  "name": "invalid-quality-gate-missing-repo-operations",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/quality-gate.yml",
+      "from": "|validate-repo-operations",
+      "to": ""
+    }
+  ],
+  "expectedErrors": [
+    "quality-gate.yml must detect scripts/validate-repo-operations.mjs"
+  ]
+}

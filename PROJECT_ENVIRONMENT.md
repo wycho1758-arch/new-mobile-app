@@ -87,7 +87,7 @@ This file is the root source for the current project environment and runtime set
 
 ## Mobile Native Evidence Ladder
 
-- Strategy doc: `mobile-app-dev-team/14-native-e2e-strategy.md`.
+- Strategy doc: `mobile-app-dev-team/workflows/native-e2e-strategy.md`.
 - Work-unit field: `status.json.evidence_ladder`.
 - L0 `jest`: unit/component/contract/runtime checks.
 - L1 `rn-web`: RN Web + Playwright for browser-reproducible flows only.
@@ -261,11 +261,11 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - MCP config: `.codex/config.toml`.
 - Codex MCP/CLI setup guide: `docs/CODEX_MCP_ENVIRONMENT.md`.
 - Pod-native project bootstrap:
-  - Sync source: `mobile-app-dev-team/09-pod-native-openclaw-skills/openclaw-pod-skills-sync/`.
+  - Sync source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/`.
   - Sync runtime shape: `/workspace/skills/openclaw-pod-skills-sync/SKILL.md`.
   - Sync report: `/workspace/state/openclaw-pod-skills-sync-report.json`.
   - After clone or pull, run `openclaw-pod-skills-sync` before `project-bootstrap`.
-  - Source: `mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/`.
+  - Source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/`.
   - Runtime shape: `/workspace/skills/project-bootstrap/SKILL.md`.
   - Default boram checkout: `/workspace/projects/Wondermove-Inc/new-mobile-app`.
   - Required managed path registry: `/workspace/CODEX_MANAGED_PATHS.md`.
@@ -349,6 +349,47 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - the reviewer JSON envelope contains `verdict`, `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`; `GO` requires no Critical/High/Medium findings and required checks `PASS` or source-backed `NOT_APPLICABLE`, failed required checks map to `NO_GO`, missing required checks map to `BLOCKED`, and human-gate blockers map to `NEEDS_HUMAN`.
     - researcher/advisor agents are advisory and are not valid `--json-envelope` targets.
   - `scripts/test-hooks.mjs`
+  - `scripts/validate-team-doc.mjs`
+    - active managed runtime composition wrapper; runs only runtime-source docs
+      and focused `codex-role-workflow` routing-support docs. It intentionally
+      does not make broad structure, workflow, governance, reference, or
+      managed parity checks mandatory for `validate:team-doc`.
+  - `scripts/validate-team-doc-structure.mjs`
+    - structure registry validator for `mobile-app-dev-team/**` target paths,
+      source-map terms, RED/valid fixtures, and the explicit legacy
+      compatibility window before physical rename.
+  - `scripts/validate-runtime-sources.mjs`
+    - repo-local runtime-source doc validator for role SOULs, the Codex
+      skill/agent matrix, pod-native OpenClaw skills, pod-native runtime specs,
+      and pod bootstrap source docs. It does not prove live `/workspace/skills`
+      installation.
+  - `scripts/validate-runtime-routing-support.mjs`
+    - focused runtime routing-support validator for the files directly named by
+      `codex-role-workflow`: entry-case routing, work processes,
+      gates/evidence, GitHub artifact workflow, and app/EAS/OTA rollback. It
+      also rejects resolving managed repo SoT from `/workspace/skills`, which is
+      only a runtime snapshot.
+  - `scripts/validate-workflow-docs.mjs`
+    - standalone docs-quality validator for workflow and durable handoff docs;
+      it is not part of the mandatory active `validate:team-doc` runtime gate
+      unless a direct runtime dependency is separately wired.
+  - `scripts/validate-governance-docs.mjs`
+    - standalone docs-quality validator for governance docs such as
+      `AGENTS.md`, SoT/principles, gates/evidence, human/ops live readiness,
+      and rollback boundaries.
+  - `scripts/validate-reference-docs.mjs`
+    - standalone reference/source-map/archive placement validator for
+      ref-organization and completed-plan crosswalks without treating
+      historical `team-doc/**` as current runtime input.
+  - `scripts/validate-team-doc-archive.mjs`
+    - archive/reference validator for `TEAM_DOC_ARCHIVE_MANIFEST.json`,
+      `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`, and the historical team-doc corpus
+      sourcePath strategy; it is explicit and not part of hidden local harness
+      applicability.
+  - `scripts/validate-team-doc-managed.mjs`
+    - parity backstop preserving the previous managed-doc term checks during
+      the surface-validator split. It is standalone/docs-quality now, not part
+      of the mandatory active `validate:team-doc` runtime gate.
   - `scripts/validate-work-units.mjs`
     - validates committed `docs/plans/work-units/*/status.json` artifacts against the passive `wu-status/v1` status-machine schema.
     - enforces the mobile evidence ladder for `05-qa-release` `done` states.
@@ -392,6 +433,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
 - GitHub quality gate: `.github/workflows/quality-gate.yml`.
 - GitHub auto-merge workflow: `.github/workflows/auto-merge.yml`.
   - Triggered by successful `Quality gate` `workflow_run` events for pull requests targeting `main`.
+  - Resolves the target pull request from the completed workflow run `head_sha` through GitHub's commit pull-request API, then proceeds only when exactly one open pull request targets `main` and still matches that head SHA.
   - Uses GitHub native auto-merge through `gh pr merge --auto --squash --match-head-commit`.
   - Does not check out or execute pull request head code.
   - Does not bypass required reviews, required status checks, branch protection, rulesets, or merge queue requirements.
@@ -403,27 +445,37 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `pnpm run test:runtime`
   - `pnpm turbo run lint test`
 - Does not run `mobile-mcp`; mobile device automation remains a local QA gate.
+- Local harness is required for Codex runtime and harness changes.
 - Runs `pnpm run test:local-harness` when these paths change:
   - `.agents/**`
   - `.codex/**`
-  - `evals/{skills,agents,hooks,local-harness,work-units}/**`
-  - `mobile-app-dev-team/**`
+  - `evals/local-harness/**`
   - `scripts/lib/**`
   - `scripts/validate-runtime-artifacts.mjs`
   - `scripts/validate-repo-operations.mjs`
-  - `scripts/validate-team-doc.mjs`
-  - `scripts/validate-team-doc-archive.mjs`
-  - `scripts/validate-work-units.mjs`
   - `scripts/{codex-headless-review,test-hooks,test-local-harness,clean-tree-guard,codex-preflight}.mjs`
-  - `scripts/ingest-eas-evidence.mjs`
   - `scripts/validate-project-environment.mjs`
-  - `scripts/validate-evidence-hygiene.mjs`
   - `.github/workflows/*.yml`
-  - `PROJECT_ENVIRONMENT.md`
-  - `docs/{confluence,plans}/**`
   - `AGENTS.md`
+  - `PROJECT_ENVIRONMENT.md`
+  - `REPO_OPERATIONS.md`
   - `package.json`
   - `pnpm-lock.yaml`
+- `mobile-app-dev-team/reports/**` changes use `validate:evidence-hygiene` and
+  diff checks; local harness is not required unless a Codex runtime or harness
+  path also changes. They do not trigger active `validate:team-doc` unless a
+  directly managed runtime source or routing-support dependency also changes.
+- `mobile-app-dev-team/ref-organization/**` changes use
+  `validate:reference-docs`; local harness is not required unless a Codex
+  runtime or harness path also changes. They do not trigger active
+  `validate:team-doc` unless a directly managed runtime source or
+  routing-support dependency also changes.
+- `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**` changes
+  use targeted pod-native smoke plus `test:runtime`; local harness is not
+  required unless a Codex runtime or harness path also changes.
+- `evals/skills/**`, `evals/team-doc-structure/**`, and durable
+  `docs/plans/**` changes use their targeted validators instead of requiring
+  local harness by path alone.
 
 ## Current Non-Scope
 

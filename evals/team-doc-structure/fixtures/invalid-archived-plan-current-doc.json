@@ -1,0 +1,13 @@
+{
+  "name": "invalid-archived-plan-current-doc",
+  "description": "Completed plans must not reappear as current top-level team docs.",
+  "base": "legacy",
+  "legacyCompatibility": true,
+  "shouldPass": false,
+  "add": {
+    "mobile-app-dev-team/08-role-title-update-plan.md": "# Stale Plan\n"
+  },
+  "expectedErrors": [
+    "completed plan must not be current top-level doc"
+  ]
+}

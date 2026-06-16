@@ -1,0 +1,13 @@
+{
+  "name": "invalid-runtime-source-in-reports",
+  "description": "Reports cannot contain runtime source material such as role SOUL files.",
+  "base": "target",
+  "legacyCompatibility": false,
+  "shouldPass": false,
+  "add": {
+    "mobile-app-dev-team/reports/role-souls/mobile-app-dev-soul.md": "# Mobile App Dev SOUL\n"
+  },
+  "expectedErrors": [
+    "runtime source must not live under reports"
+  ]
+}

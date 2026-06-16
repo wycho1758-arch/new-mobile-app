@@ -76,13 +76,13 @@ from a repo validation perspective.
 ## OpenClaw And Codex Operational Boundaries
 
 Pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime
-and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/`.
+and are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`.
 Repo-local Codex skills and agents use `.agents/skills/<skill-name>/SKILL.md`
 and `.codex/agents/<agent-name>.toml`.
 
 `openclaw-pod-skills-sync` is the required bridge from repo SoT to runtime
 snapshot: after clone or pull, it copy-syncs
-`mobile-app-dev-team/09-pod-native-openclaw-skills` into `/workspace/skills`.
+`mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`.
 It does not replace the repo SoT, and `/workspace/skills` remains only a
 runtime snapshot.
 
@@ -121,7 +121,7 @@ is deployed in three locations:
 - Codex CLI repo skill: `.agents/skills/<name>/SKILL.md`
 - Claude Code skill: `.claude/skills/<name>/SKILL.md`
 - Pod-native OpenClaw skill: `/workspace/skills/<slug>/SKILL.md` at runtime, authored
-  under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/`
+  under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`
 
 Claude Code ports are deferred unless an approved porting plan creates them. The
 Codex CLI repo skill path remains authoritative for active local runtime
@@ -201,8 +201,29 @@ historical `team-doc/00-source/`, historical `team-doc/10-structured/`, `_meta`
 source maps, or migration crosswalks. Do not treat that command as proof that
 the legacy Confluence-shaped corpus is current team/runtime SoT.
 
-Runtime path or harness changes must also run `pnpm run test:local-harness`
-unless a source-backed blocker is reported.
+## Local Harness Applicability
+
+Codex runtime and harness changes must also run `pnpm run test:local-harness`
+unless a source-backed blocker is reported. This includes `.agents/**`,
+`.codex/**`, `evals/local-harness/**`, local harness scripts, Codex hook/review
+scripts, workflow gate configuration, root runtime policy files, `package.json`,
+and `pnpm-lock.yaml`.
+
+Changes under `mobile-app-dev-team/reports/**` use `validate:evidence-hygiene`
+and diff checks; local harness is not required unless the same change also
+touches Codex runtime or harness paths. They do not trigger the active
+`validate:team-doc` runtime gate unless a directly managed runtime source or
+routing-support dependency is also changed.
+
+Changes under `mobile-app-dev-team/ref-organization/**` use
+`validate:reference-docs`; local harness is not required unless the same change
+also touches Codex runtime or harness paths. They do not trigger the active
+`validate:team-doc` runtime gate unless a directly managed runtime source or
+routing-support dependency is also changed.
+
+Changes under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`
+use targeted pod-native smoke plus `test:runtime`; local harness is not required
+unless the same change also touches Codex runtime or harness paths.
 
 Local validation and local harness evidence prove repo-local rules only. They do
 not prove actual OrbStack/OpenClaw pod execution, Jira or Confluence behavior,
@@ -218,11 +239,40 @@ Validators enforce documented policy; they are not the policy owner.
 - `scripts/validate-repo-operations.mjs` validates root policy ownership,
   `AGENTS.md` linkage, package script composition, and selected cross-document
   operating-policy invariants.
-- `scripts/validate-team-doc.mjs` validates current managed team docs,
-  role/process documents, active repo-local skill and agent contracts, pod-native
-  skill documentation, and current migration documents. It must not require
-  `team-doc/00-source/` or `team-doc/10-structured/` as active current
-  team/runtime inputs.
+- `scripts/validate-team-doc.mjs` is the composition wrapper for current
+  managed runtime docs. It runs only `validate-runtime-sources` and the focused
+  `validate-runtime-routing-support` check so broad reference, archive, report,
+  workflow, governance, structure, and managed parity churn does not become a
+  mandatory runtime gate unless it is directly required by pod-native skills,
+  runtime SOUL identity, or Codex CLI routing.
+- `scripts/validate-team-doc-structure.mjs` validates the current
+  `mobile-app-dev-team/**` structure registry, source-map terms, RED/valid
+  structure fixtures, and rejects numbered current top-level docs after the
+  physical path rename.
+- `scripts/validate-runtime-sources.mjs` validates runtime-source docs such as
+  role SOUL files, the Codex skill/agent matrix, pod-native OpenClaw skills,
+  pod-native runtime specs, and pod bootstrap source docs. It is repo-local and
+  does not prove live `/workspace/skills` installation.
+- `scripts/validate-runtime-routing-support.mjs` validates only the
+  routing-support SoT directly named by `codex-role-workflow` and rejects
+  resolving managed repo SoT from `/workspace/skills/codex-role-workflow`.
+- `scripts/validate-workflow-docs.mjs` validates current workflow and durable
+  handoff docs such as work processes, GitHub artifact workflow, native E2E
+  strategy, entry-case routing, and sample work-unit READMEs. It is standalone
+  docs-quality validation, not part of the active `validate:team-doc` runtime
+  gate.
+- `scripts/validate-governance-docs.mjs` validates governance docs such as
+  `AGENTS.md`, SoT/principles, gates/evidence, human/ops live readiness, and
+  rollback boundaries. It is standalone docs-quality validation.
+- `scripts/validate-reference-docs.mjs` validates `ref-organization`, source
+  map, completed-plan archive placement, and reference/archive crosswalk
+  invariants without treating historical `team-doc/00-source/` or
+  `team-doc/10-structured/` as current runtime inputs.
+- `scripts/validate-team-doc-managed.mjs` is a parity backstop copied from the
+  prior monolithic validator for this split checkpoint. It preserves existing
+  detailed term checks while the new surface validators provide clearer failure
+  ownership. It is not part of active `validate:team-doc` runtime composition
+  and must not become the only validator path again.
 - `scripts/validate-work-units.mjs` validates committed work-unit `status.json`
   artifacts and its own fixtures for the passive `wu-status/v1` status-machine
   schema, including the mobile evidence ladder required before `05-qa-release`

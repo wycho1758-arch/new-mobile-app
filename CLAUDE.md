@@ -58,7 +58,7 @@ Each overloaded term maps to exactly ONE concept; a location is only where that 
 concept lives. Path definitions follow official Codex/Claude Code docs. This is a
 convenience summary — the tracked canonical source is `REPO_OPERATIONS.md`.
 
-- **Skill** (one concept; `SKILL.md` folder): Codex `.agents/skills/<name>/SKILL.md` · Claude `.claude/skills/<name>/SKILL.md` · Pod-native OpenClaw `/workspace/skills/<slug>/SKILL.md` (authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/`). "pod agent skills" = pod-native skills, not agents.
+- **Skill** (one concept; `SKILL.md` folder): Codex `.agents/skills/<name>/SKILL.md` · Claude `.claude/skills/<name>/SKILL.md` · Pod-native OpenClaw `/workspace/skills/<slug>/SKILL.md` (authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`). "pod agent skills" = pod-native skills, not agents.
 - **Custom agent** (one concept): Codex `.codex/agents/<name>.toml` · Claude `.claude/agents/<name>.md`.
 - **AGENTS.md** (distinct third concept): plain custom-instructions standard; not a skill, not an agent.
 - **Directory trap**: `.agents/` holds *skills*; `.codex/agents/` holds *agents* (official asymmetry).

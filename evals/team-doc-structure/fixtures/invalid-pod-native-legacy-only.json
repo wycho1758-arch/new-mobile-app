@@ -1,0 +1,16 @@
+{
+  "name": "invalid-pod-native-legacy-only",
+  "description": "Without an explicit compatibility window, pod-native runtime source cannot live only at the legacy numbered path.",
+  "base": "target",
+  "legacyCompatibility": false,
+  "shouldPass": false,
+  "removePrefixes": [
+    "mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/"
+  ],
+  "add": {
+    "mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/SKILL.md": "---\nname: project-bootstrap\ndescription: fixture\n---\n"
+  },
+  "expectedErrors": [
+    "runtime source exists only at legacy path"
+  ]
+}

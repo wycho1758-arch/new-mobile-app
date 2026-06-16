@@ -212,7 +212,7 @@ function validateEvidence(errors, source, status) {
   }
 }
 
-// Managed-doc guidance P-1 (mobile-app-dev-team/19-entry-case-routing.md): marking the
+// Managed-doc guidance P-1 (mobile-app-dev-team/workflows/entry-case-routing.md): marking the
 // 01-design stage not-applicable requires durable non-goal justification evidence. The
 // semantic relevance judgment stays process-owned; this only enforces that a not-applicable
 // Design stage carries a durable non-goal evidence reference (the existing `non-goal` kind).
@@ -221,7 +221,7 @@ function validateDesignNotApplicableNonGoal(errors, source, status) {
   const hasNonGoalEvidence = Array.isArray(status.evidence)
     && status.evidence.some((item) => isPlainObject(item) && item.kind === 'non-goal');
   if (!hasNonGoalEvidence) {
-    fail(errors, source, "01-design in not-applicable state must carry durable 'non-goal' evidence (mobile-app-dev-team/19-entry-case-routing.md P-1)");
+    fail(errors, source, "01-design in not-applicable state must carry durable 'non-goal' evidence (mobile-app-dev-team/workflows/entry-case-routing.md P-1)");
   }
 }
 
@@ -537,8 +537,8 @@ export function validateHumanGateDecision(decision, options = {}) {
     validateDurableLink(errors, source, decision.failed_check_reference, 'failed_check_reference');
   }
 
-  // Human-authorized P-4 binding (mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md;
-  // mobile-app-dev-team/15-human-ops-live-readiness-annex.md Approval Envelope): a
+  // Human-authorized P-4 binding (mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md;
+  // mobile-app-dev-team/governance/human-ops-live-readiness-annex.md Approval Envelope): a
   // production-submit human-gate decision is a live mutation and must record a rollback owner
   // and a rollback plan. Scoped to production-submit only (per xhigh decision); other
   // categories keep their existing requirements.

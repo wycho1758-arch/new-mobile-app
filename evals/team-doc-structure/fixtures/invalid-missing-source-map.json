@@ -1,0 +1,13 @@
+{
+  "name": "invalid-missing-source-map",
+  "description": "The structure registry must have a source-map authority during and after rename.",
+  "base": "target",
+  "legacyCompatibility": false,
+  "shouldPass": false,
+  "remove": [
+    "mobile-app-dev-team/source-map.md"
+  ],
+  "expectedErrors": [
+    "missing source map"
+  ]
+}

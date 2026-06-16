@@ -25,7 +25,7 @@
 021. Correct concept: Codex is the repo-local role workflow substrate made of skills, custom agents, hooks, MCP config, validators, evidence, and policy.
 022. This definition is grounded in repo-local paths: `.agents/skills`, `.codex/agents`, `.codex/hooks.json`, `.codex/hooks`, `.codex/config.toml`, `scripts`, `evals`, and `.evidence`.
 023. The pod-native OpenClaw surface is a runtime shape under `/workspace/skills/<slug>/SKILL.md`.
-024. The source-managed pod-native skill lives under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/`.
+024. The source-managed pod-native skill lives under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`.
 025. The plan treats `/workspace/skills/codex-role-workflow` as runtime publication output, not as the primary source to edit from this repo.
 026. The plan treats the root `AGENTS.md` as the source text for `/workspace/AGENTS.md`, based on the existing repo statement.
 027. Directly editing `/workspace/AGENTS.md` is not the default repo-scoped implementation path.
@@ -61,13 +61,13 @@
 051. Root execution rules: `AGENTS.md`.
 052. Repo policy ownership: `REPO_OPERATIONS.md`.
 053. Runtime facts and Codex substrate inventory: `PROJECT_ENVIRONMENT.md`.
-054. Current pod-native bridge: `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
-055. Entry taxonomy and routing: `mobile-app-dev-team/19-entry-case-routing.md`.
-056. Work process lifecycle: `mobile-app-dev-team/05-work-processes.md`.
-057. Gates and evidence: `mobile-app-dev-team/06-gates-and-evidence.md`.
-058. Durable pod handoff: `mobile-app-dev-team/10-github-artifact-workflow.md`.
-059. App/EAS/OTA rollback: `mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md`.
-060. Pod environment bootstrap: `mobile-app-dev-team/16-pod-environment-bootstrap.md`.
+054. Current pod-native bridge: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
+055. Entry taxonomy and routing: `mobile-app-dev-team/workflows/entry-case-routing.md`.
+056. Work process lifecycle: `mobile-app-dev-team/workflows/work-processes.md`.
+057. Gates and evidence: `mobile-app-dev-team/governance/gates-and-evidence.md`.
+058. Durable pod handoff: `mobile-app-dev-team/workflows/github-artifact-workflow.md`.
+059. App/EAS/OTA rollback: `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
+060. Pod environment bootstrap: `mobile-app-dev-team/runtime-sources/pod-environment-bootstrap.md`.
 061. Product/Planning office-hours skill: `.agents/skills/po-requirement-office-hours/SKILL.md`.
 062. Product/Planning work-unit planning skill: `.agents/skills/po-work-unit-planning-and-agent-sprint/SKILL.md`.
 063. Product/Planning PRD/project-spec decomposition skill: `.agents/skills/po-prd-to-execution/SKILL.md`.
@@ -92,7 +92,7 @@
 ## 004. Key SoT Findings
 
 081. `AGENTS.md` says pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as runtime shape.
-082. `AGENTS.md` says pod-native OpenClaw skill sources are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/`.
+082. `AGENTS.md` says pod-native OpenClaw skill sources are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/`.
 083. `AGENTS.md` says Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml`.
 084. `AGENTS.md` says `/workspace/AGENTS.md` source text is represented in the repo-local `AGENTS.md`.
 085. `AGENTS.md` says the default OpenClaw checkout path is `/workspace/projects/Wondermove-Inc/new-mobile-app`.
@@ -108,7 +108,7 @@
 095. `REPO_OPERATIONS.md` says `PROJECT_ENVIRONMENT.md` owns current runtime facts.
 096. `REPO_OPERATIONS.md` says `mobile-app-dev-team/` owns team, role, process, reference, and migration documentation.
 097. `REPO_OPERATIONS.md` says pod-native OpenClaw skills use `/workspace/skills/<slug>/SKILL.md` at runtime.
-098. `REPO_OPERATIONS.md` says those skills are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/`.
+098. `REPO_OPERATIONS.md` says those skills are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`.
 099. `REPO_OPERATIONS.md` says repo-local Codex skills and agents use `.agents/skills` and `.codex/agents`.
 100. `REPO_OPERATIONS.md` says OpenClaw pods operating on Codex-managed repositories should route repo work through Codex CLI.
 101. `REPO_OPERATIONS.md` says reports must not print or commit tokens or full secret-bearing config.
@@ -147,92 +147,92 @@
 134. `codex-role-workflow` currently uses statuses `ready`, `blocked`, and `not_applicable`.
 135. `codex-role-workflow` currently lacks explicit `entry_case` output.
 136. `codex-role-workflow` currently lacks explicit routing reason output.
-137. `codex-role-workflow` currently lacks a compact `19-entry-case-routing.md` operational overlay.
+137. `codex-role-workflow` currently lacks a compact `mobile-app-dev-team/workflows/entry-case-routing.md` operational overlay.
 138. `codex-role-workflow` currently lacks explicit project requirement/project specification input language.
 139. `codex-role-workflow` currently lacks explicit Codex substrate definition.
 140. `codex-role-workflow` currently lacks explicit hook/evidence substrate awareness.
-141. `19-entry-case-routing.md` says every user input enters Product/Planning intake first.
-142. `19-entry-case-routing.md` says no input routes directly to an execution role.
-143. `19-entry-case-routing.md` maps unclear input to `po-requirement-office-hours`.
-144. `19-entry-case-routing.md` maps broad input to `po-work-unit-planning-and-agent-sprint`.
-145. `19-entry-case-routing.md` maps ready input to `po-prd-to-execution`.
-146. `19-entry-case-routing.md` maps pre-execution input to `po-planning-completeness-review`.
-147. `19-entry-case-routing.md` names modification requests.
-148. `19-entry-case-routing.md` names issue, bug, or failure requests.
-149. `19-entry-case-routing.md` names direct implementation language.
-150. `19-entry-case-routing.md` names proactive reports.
-151. `19-entry-case-routing.md` treats C1-C5 as a report-derived grouping, not the authoritative SoT-named categories.
-152. `19-entry-case-routing.md` says the authoritative classification is the SoT-named categories.
-153. `19-entry-case-routing.md` maps C4 to Design only when layout, interaction, or visual hierarchy matters.
-154. `19-entry-case-routing.md` warns that screen presence alone is not the trigger.
-155. `19-entry-case-routing.md` maps C5 by relevance, not by a fixed "no screen" shortcut.
-156. `19-entry-case-routing.md` lists E1-E16 expanded routing cases.
-157. `19-entry-case-routing.md` defines work-unit decision enum values.
-158. `19-entry-case-routing.md` defines P-1 Design relevance and `not-applicable` criteria.
-159. `19-entry-case-routing.md` says `01-design` may be `not-applicable` only when no layout, interaction, or visual hierarchy is introduced or changed.
-160. `19-entry-case-routing.md` says Product/Planning classifies Design relevance during planning completeness review.
-161. `19-entry-case-routing.md` says Product/Planning does not own Design quality.
-162. `19-entry-case-routing.md` says uncertain Design relevance defaults to relevant.
-163. `19-entry-case-routing.md` says a text-only or ASCII description never authorizes implementation when layout, interaction, or visual hierarchy is in scope.
-164. `19-entry-case-routing.md` says the durable `non-goal` evidence requirement for `01-design not-applicable` is deterministically enforced.
-165. `19-entry-case-routing.md` defines P-2 cross-work-unit prioritization and conflict.
-166. `19-entry-case-routing.md` says Product/Planning owns prioritization and conflict resolution as scope owner.
-167. `19-entry-case-routing.md` says API contract conflicts route to Backend/API Integrator with Mobile Architect co-review.
-168. `19-entry-case-routing.md` says irreversible scope tradeoffs escalate to human gate.
-169. `19-entry-case-routing.md` defines P-3 emergency hotfix as expedited but still gated.
-170. `19-entry-case-routing.md` says emergency hotfix still enters Product/Planning intake.
-171. `19-entry-case-routing.md` says tests-first still applies to emergency hotfixes.
-172. `19-entry-case-routing.md` says production submit still requires recorded human approval.
-173. `19-entry-case-routing.md` says expedited means prioritization and compression of non-gating steps, not skipping required gates.
-174. `19-entry-case-routing.md` says failed-gate shipping requires `failed-gate-risk` human gate.
-175. `20-app-eas-ota-rollback-runbook.md` defines P-4 rollback governance.
-176. `20-app-eas-ota-rollback-runbook.md` says live EAS, OTA rollback, store rollback, or production execution cannot be authorized by repo-local evidence.
-177. `20-app-eas-ota-rollback-runbook.md` says repo agents document rollback plan/evidence and classify failures.
-178. `20-app-eas-ota-rollback-runbook.md` says external rollback is human/ops owned.
-179. `20-app-eas-ota-rollback-runbook.md` says production-submit `human-gate/v1` requires rollback owner and rollback plan.
-180. `20-app-eas-ota-rollback-runbook.md` says failed-gate risk uses the `failed-gate-risk` human gate.
-181. `05-work-processes.md` says CPO/Product Delivery Lead receives the user request through Product/Planning.
-182. `05-work-processes.md` says if unclear, run `po-requirement-office-hours`.
-183. `05-work-processes.md` says if broad, run `po-work-unit-planning-and-agent-sprint`.
-184. `05-work-processes.md` says if ready, run `po-prd-to-execution`.
-185. `05-work-processes.md` says before execution, run `po-planning-completeness-review`.
-186. `05-work-processes.md` says route technical decisions to Mobile Architect when architecture, runtime, API, route/state, dependency, or releaseability risk exists.
-187. `05-work-processes.md` says route human gates before execution work.
-188. `05-work-processes.md` says pod-isolated role work uses durable GitHub handoff root under `docs/plans/work-units/<work-unit-id>/`.
-189. `05-work-processes.md` says Design readiness requires DESIGN.md decision, P0, P1, extraction/publication, and `design-reviewer`.
-190. `05-work-processes.md` says API readiness updates or confirms `packages/contracts`.
-191. `05-work-processes.md` says implementation adds or updates the narrowest failing test/eval/validator/fixture first.
-192. `05-work-processes.md` says implementation is by the owning role and not delegated to write-capable executor.
-193. `05-work-processes.md` says QA/Release creates an E2E/evidence plan, runs evidence, records outputs, and classifies failures.
-194. `05-work-processes.md` says production submit requires recorded human approval.
-195. `06-gates-and-evidence.md` says Codex runtime artifact changes require `pnpm run test:runtime`.
-196. `06-gates-and-evidence.md` says runtime path/local harness changes require `pnpm run test:local-harness`.
-197. `06-gates-and-evidence.md` defines the mobile evidence ladder L0-L3.
-198. `06-gates-and-evidence.md` says RN Web must not be used as L2 or L3 native proof.
-199. `06-gates-and-evidence.md` says Done requires linked artifacts, not status-only claims.
-200. `06-gates-and-evidence.md` says `$wm` planning evidence must summarize planning sub-agent routing.
-201. `06-gates-and-evidence.md` says durable GitHub handoff uses `docs/plans/work-units/<work-unit-id>/`.
-202. `06-gates-and-evidence.md` says downstream pods consume branch/commit/PR or merged repo artifacts, not another pod local workspace.
-203. `06-gates-and-evidence.md` lists eight human gate categories.
-204. `06-gates-and-evidence.md` says human gate decisions use `human-gate/v1` under the durable work-unit root.
-205. `06-gates-and-evidence.md` says emergency hotfixes are expedited but still gated.
-206. `10-github-artifact-workflow.md` says pod-isolated role agents have no shared storage assumption.
-207. `10-github-artifact-workflow.md` says durable handoff must happen through GitHub branch/commit/PR or merged repo artifact.
-208. `10-github-artifact-workflow.md` defines the durable work-unit root.
-209. `10-github-artifact-workflow.md` defines work-unit stage directories.
-210. `10-github-artifact-workflow.md` says each role artifact must include status, PRD acceptance line or non-goal reference, owner, input artifact, output artifact, acceptance criteria, evidence requirement, dependencies/blockers, open decisions, next responsible role, and GitHub branch/PR handoff link when leaving the pod.
-211. `10-github-artifact-workflow.md` says optional backend, Railway, EAS, native, and mobile-mcp files are not mandatory unless touched.
-212. `10-github-artifact-workflow.md` says Product/Planning owns top-level work-unit packet and routing.
-213. `10-github-artifact-workflow.md` says Product/Planning must not implement app, backend, design, QA, or release work.
-214. `10-github-artifact-workflow.md` says Design owns Design quality and Stitch-backed implementation handoff.
-215. `10-github-artifact-workflow.md` says for UI work, Mobile App Dev must not start until P0, exactly two Stitch options, P1, no pre-P1 HTML extraction, and `design-reviewer` evidence exist.
-216. `10-github-artifact-workflow.md` says actual API schemas remain in `packages/contracts`.
-217. `10-github-artifact-workflow.md` says actual mobile code remains in `apps/mobile`.
-218. `10-github-artifact-workflow.md` says QA/Release files summarize and link canonical evidence.
-219. `10-github-artifact-workflow.md` says PR workflow merges require applicable CI, reviewer evidence, QA evidence, and human-gate decisions.
-220. `16-pod-environment-bootstrap.md` is source guidance and does not modify live pods.
-221. `16-pod-environment-bootstrap.md` says project-bootstrap is the standard user-facing entry point after read-only preflight.
-222. `16-pod-environment-bootstrap.md` says human-owned credentials, live approvals, missing source artifacts, and missing pod skill artifacts remain blockers.
+141. `mobile-app-dev-team/workflows/entry-case-routing.md` says every user input enters Product/Planning intake first.
+142. `mobile-app-dev-team/workflows/entry-case-routing.md` says no input routes directly to an execution role.
+143. `mobile-app-dev-team/workflows/entry-case-routing.md` maps unclear input to `po-requirement-office-hours`.
+144. `mobile-app-dev-team/workflows/entry-case-routing.md` maps broad input to `po-work-unit-planning-and-agent-sprint`.
+145. `mobile-app-dev-team/workflows/entry-case-routing.md` maps ready input to `po-prd-to-execution`.
+146. `mobile-app-dev-team/workflows/entry-case-routing.md` maps pre-execution input to `po-planning-completeness-review`.
+147. `mobile-app-dev-team/workflows/entry-case-routing.md` names modification requests.
+148. `mobile-app-dev-team/workflows/entry-case-routing.md` names issue, bug, or failure requests.
+149. `mobile-app-dev-team/workflows/entry-case-routing.md` names direct implementation language.
+150. `mobile-app-dev-team/workflows/entry-case-routing.md` names proactive reports.
+151. `mobile-app-dev-team/workflows/entry-case-routing.md` treats C1-C5 as a report-derived grouping, not the authoritative SoT-named categories.
+152. `mobile-app-dev-team/workflows/entry-case-routing.md` says the authoritative classification is the SoT-named categories.
+153. `mobile-app-dev-team/workflows/entry-case-routing.md` maps C4 to Design only when layout, interaction, or visual hierarchy matters.
+154. `mobile-app-dev-team/workflows/entry-case-routing.md` warns that screen presence alone is not the trigger.
+155. `mobile-app-dev-team/workflows/entry-case-routing.md` maps C5 by relevance, not by a fixed "no screen" shortcut.
+156. `mobile-app-dev-team/workflows/entry-case-routing.md` lists E1-E16 expanded routing cases.
+157. `mobile-app-dev-team/workflows/entry-case-routing.md` defines work-unit decision enum values.
+158. `mobile-app-dev-team/workflows/entry-case-routing.md` defines P-1 Design relevance and `not-applicable` criteria.
+159. `mobile-app-dev-team/workflows/entry-case-routing.md` says `01-design` may be `not-applicable` only when no layout, interaction, or visual hierarchy is introduced or changed.
+160. `mobile-app-dev-team/workflows/entry-case-routing.md` says Product/Planning classifies Design relevance during planning completeness review.
+161. `mobile-app-dev-team/workflows/entry-case-routing.md` says Product/Planning does not own Design quality.
+162. `mobile-app-dev-team/workflows/entry-case-routing.md` says uncertain Design relevance defaults to relevant.
+163. `mobile-app-dev-team/workflows/entry-case-routing.md` says a text-only or ASCII description never authorizes implementation when layout, interaction, or visual hierarchy is in scope.
+164. `mobile-app-dev-team/workflows/entry-case-routing.md` says the durable `non-goal` evidence requirement for `01-design not-applicable` is deterministically enforced.
+165. `mobile-app-dev-team/workflows/entry-case-routing.md` defines P-2 cross-work-unit prioritization and conflict.
+166. `mobile-app-dev-team/workflows/entry-case-routing.md` says Product/Planning owns prioritization and conflict resolution as scope owner.
+167. `mobile-app-dev-team/workflows/entry-case-routing.md` says API contract conflicts route to Backend/API Integrator with Mobile Architect co-review.
+168. `mobile-app-dev-team/workflows/entry-case-routing.md` says irreversible scope tradeoffs escalate to human gate.
+169. `mobile-app-dev-team/workflows/entry-case-routing.md` defines P-3 emergency hotfix as expedited but still gated.
+170. `mobile-app-dev-team/workflows/entry-case-routing.md` says emergency hotfix still enters Product/Planning intake.
+171. `mobile-app-dev-team/workflows/entry-case-routing.md` says tests-first still applies to emergency hotfixes.
+172. `mobile-app-dev-team/workflows/entry-case-routing.md` says production submit still requires recorded human approval.
+173. `mobile-app-dev-team/workflows/entry-case-routing.md` says expedited means prioritization and compression of non-gating steps, not skipping required gates.
+174. `mobile-app-dev-team/workflows/entry-case-routing.md` says failed-gate shipping requires `failed-gate-risk` human gate.
+175. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` defines P-4 rollback governance.
+176. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says live EAS, OTA rollback, store rollback, or production execution cannot be authorized by repo-local evidence.
+177. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says repo agents document rollback plan/evidence and classify failures.
+178. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says external rollback is human/ops owned.
+179. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says production-submit `human-gate/v1` requires rollback owner and rollback plan.
+180. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says failed-gate risk uses the `failed-gate-risk` human gate.
+181. `mobile-app-dev-team/workflows/work-processes.md` says CPO/Product Delivery Lead receives the user request through Product/Planning.
+182. `mobile-app-dev-team/workflows/work-processes.md` says if unclear, run `po-requirement-office-hours`.
+183. `mobile-app-dev-team/workflows/work-processes.md` says if broad, run `po-work-unit-planning-and-agent-sprint`.
+184. `mobile-app-dev-team/workflows/work-processes.md` says if ready, run `po-prd-to-execution`.
+185. `mobile-app-dev-team/workflows/work-processes.md` says before execution, run `po-planning-completeness-review`.
+186. `mobile-app-dev-team/workflows/work-processes.md` says route technical decisions to Mobile Architect when architecture, runtime, API, route/state, dependency, or releaseability risk exists.
+187. `mobile-app-dev-team/workflows/work-processes.md` says route human gates before execution work.
+188. `mobile-app-dev-team/workflows/work-processes.md` says pod-isolated role work uses durable GitHub handoff root under `docs/plans/work-units/<work-unit-id>/`.
+189. `mobile-app-dev-team/workflows/work-processes.md` says Design readiness requires DESIGN.md decision, P0, P1, extraction/publication, and `design-reviewer`.
+190. `mobile-app-dev-team/workflows/work-processes.md` says API readiness updates or confirms `packages/contracts`.
+191. `mobile-app-dev-team/workflows/work-processes.md` says implementation adds or updates the narrowest failing test/eval/validator/fixture first.
+192. `mobile-app-dev-team/workflows/work-processes.md` says implementation is by the owning role and not delegated to write-capable executor.
+193. `mobile-app-dev-team/workflows/work-processes.md` says QA/Release creates an E2E/evidence plan, runs evidence, records outputs, and classifies failures.
+194. `mobile-app-dev-team/workflows/work-processes.md` says production submit requires recorded human approval.
+195. `mobile-app-dev-team/governance/gates-and-evidence.md` says Codex runtime artifact changes require `pnpm run test:runtime`.
+196. `mobile-app-dev-team/governance/gates-and-evidence.md` says runtime path/local harness changes require `pnpm run test:local-harness`.
+197. `mobile-app-dev-team/governance/gates-and-evidence.md` defines the mobile evidence ladder L0-L3.
+198. `mobile-app-dev-team/governance/gates-and-evidence.md` says RN Web must not be used as L2 or L3 native proof.
+199. `mobile-app-dev-team/governance/gates-and-evidence.md` says Done requires linked artifacts, not status-only claims.
+200. `mobile-app-dev-team/governance/gates-and-evidence.md` says `$wm` planning evidence must summarize planning sub-agent routing.
+201. `mobile-app-dev-team/governance/gates-and-evidence.md` says durable GitHub handoff uses `docs/plans/work-units/<work-unit-id>/`.
+202. `mobile-app-dev-team/governance/gates-and-evidence.md` says downstream pods consume branch/commit/PR or merged repo artifacts, not another pod local workspace.
+203. `mobile-app-dev-team/governance/gates-and-evidence.md` lists eight human gate categories.
+204. `mobile-app-dev-team/governance/gates-and-evidence.md` says human gate decisions use `human-gate/v1` under the durable work-unit root.
+205. `mobile-app-dev-team/governance/gates-and-evidence.md` says emergency hotfixes are expedited but still gated.
+206. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says pod-isolated role agents have no shared storage assumption.
+207. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says durable handoff must happen through GitHub branch/commit/PR or merged repo artifact.
+208. `mobile-app-dev-team/workflows/github-artifact-workflow.md` defines the durable work-unit root.
+209. `mobile-app-dev-team/workflows/github-artifact-workflow.md` defines work-unit stage directories.
+210. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says each role artifact must include status, PRD acceptance line or non-goal reference, owner, input artifact, output artifact, acceptance criteria, evidence requirement, dependencies/blockers, open decisions, next responsible role, and GitHub branch/PR handoff link when leaving the pod.
+211. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says optional backend, Railway, EAS, native, and mobile-mcp files are not mandatory unless touched.
+212. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says Product/Planning owns top-level work-unit packet and routing.
+213. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says Product/Planning must not implement app, backend, design, QA, or release work.
+214. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says Design owns Design quality and Stitch-backed implementation handoff.
+215. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says for UI work, Mobile App Dev must not start until P0, exactly two Stitch options, P1, no pre-P1 HTML extraction, and `design-reviewer` evidence exist.
+216. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says actual API schemas remain in `packages/contracts`.
+217. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says actual mobile code remains in `apps/mobile`.
+218. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says QA/Release files summarize and link canonical evidence.
+219. `mobile-app-dev-team/workflows/github-artifact-workflow.md` says PR workflow merges require applicable CI, reviewer evidence, QA evidence, and human-gate decisions.
+220. `runtime-sources/pod-environment-bootstrap.md` is source guidance and does not modify live pods.
+221. `runtime-sources/pod-environment-bootstrap.md` says project-bootstrap is the standard user-facing entry point after read-only preflight.
+222. `runtime-sources/pod-environment-bootstrap.md` says human-owned credentials, live approvals, missing source artifacts, and missing pod skill artifacts remain blockers.
 223. `scripts/lib/work-unit-machine.mjs` contains the `not-applicable` state.
 224. `scripts/lib/work-unit-machine.mjs` validates `01-design not-applicable` must carry `non-goal` evidence.
 225. `scripts/lib/work-unit-machine.mjs` validates production-submit human-gate decisions must include rollback owner and rollback plan.
@@ -250,7 +250,7 @@
 234. It successfully maps operating roles to durable artifact stages.
 235. It successfully blocks out-of-role ownership absorption.
 236. It successfully blocks human-gate and secret-exposure classes.
-237. It does not yet operationalize `19-entry-case-routing.md`.
+237. It does not yet operationalize `mobile-app-dev-team/workflows/entry-case-routing.md`.
 238. It does not yet make every project requirement or project specification enter Product/Planning intake.
 239. It does not yet distinguish PRD as one project input type among broader requirement artifacts.
 240. It does not yet return an entry-case classification.
@@ -311,7 +311,7 @@
 ## 007. Scope
 
 291. In scope: update the source-managed `codex-role-workflow` skill text in a future implementation.
-292. In scope: make `19-entry-case-routing.md` operationally consumed by `codex-role-workflow`.
+292. In scope: make `mobile-app-dev-team/workflows/entry-case-routing.md` operationally consumed by `codex-role-workflow`.
 293. In scope: broaden project input language from PRD-only to project requirements and project specifications.
 294. In scope: encode Codex substrate framing in `codex-role-workflow`.
 295. In scope: encode Product/Planning common intake.
@@ -346,9 +346,9 @@
 321. Task A title: Source-grounded routing contract update for `codex-role-workflow`.
 322. Task A owner role: Product/Planning.
 323. Task A input artifact: this plan.
-324. Task A input artifact: `mobile-app-dev-team/19-entry-case-routing.md`.
-325. Task A input artifact: current `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
-326. Task A output artifact: updated `mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
+324. Task A input artifact: `mobile-app-dev-team/workflows/entry-case-routing.md`.
+325. Task A input artifact: current `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
+326. Task A output artifact: updated `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
 327. Task A Done-when: skill includes Product/Planning common intake rule.
 328. Task A Done-when: skill includes Codex substrate definition.
 329. Task A Done-when: skill includes compact SoT-named routing categories.
@@ -356,13 +356,13 @@
 331. Task A Done-when: skill includes E1-E16 expanded route map or a compact equivalent.
 332. Task A Done-when: skill includes P-1/P-2/P-3/P-4 operational rules.
 333. Task A Done-when: skill preserves status-only behavior.
-334. Task A evidence requirement: future implementation diff recorded with `git diff -- mobile-app-dev-team/09-pod-native-openclaw-skills/codex-role-workflow/SKILL.md` and reviewer evidence linked from `.evidence/reviews/<YYYYMMDD>-codex-role-workflow-runtime-routing-final-review.md`.
+334. Task A evidence requirement: future implementation diff recorded with `git diff -- mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md` and reviewer evidence linked from `.evidence/reviews/<YYYYMMDD>-codex-role-workflow-runtime-routing-final-review.md`.
 335. Task A next responsible role: Product/Planning reviewer.
 336. Task A open decision: whether to quote all E1-E16 in table form or summarize them with source link and critical classes.
 337. Task B title: Output contract expansion.
 338. Task B owner role: Product/Planning.
 339. Task B input artifact: current output contract.
-340. Task B input artifact: `19-entry-case-routing.md`.
+340. Task B input artifact: `mobile-app-dev-team/workflows/entry-case-routing.md`.
 341. Task B output artifact: updated output contract in `codex-role-workflow`.
 342. Task B Done-when: output includes `entry_case`.
 343. Task B Done-when: output includes `routing_reason`.
@@ -380,8 +380,8 @@
 355. Task C title: Design relevance and P0/P1 guardrail coverage.
 356. Task C owner role: Design for design-quality semantics and Product/Planning for scope/evidence gate routing.
 357. Task C input artifact: `design-mobile-design-handoff`.
-358. Task C input artifact: `10-github-artifact-workflow`.
-359. Task C input artifact: `19-entry-case-routing.md` P-1.
+358. Task C input artifact: `mobile-app-dev-team/workflows/github-artifact-workflow.md`.
+359. Task C input artifact: `mobile-app-dev-team/workflows/entry-case-routing.md` P-1.
 360. Task C output artifact: codex-role-workflow routing rules for Design relevance.
 361. Task C Done-when: screen presence is explicitly not the trigger.
 362. Task C Done-when: layout, interaction, or visual hierarchy is the trigger.
@@ -398,7 +398,7 @@
 373. Task D input artifact: updated `codex-role-workflow` diff.
 374. Task D input artifact: existing `scripts/validate-team-doc.mjs` or runtime validators.
 375. Task D output artifact: narrow test, eval, fixture, or validator assertion.
-376. Task D Done-when: check fails if `codex-role-workflow` does not reference `19-entry-case-routing.md`.
+376. Task D Done-when: check fails if `codex-role-workflow` does not reference `mobile-app-dev-team/workflows/entry-case-routing.md`.
 377. Task D Done-when: check fails if Product/Planning common intake disappears.
 378. Task D Done-when: check fails if Codex substrate language disappears.
 379. Task D Done-when: check fails if direct implementation language can bypass accepted task packet and `READY_FOR_EXECUTION`.
@@ -457,13 +457,13 @@
 429. The section must say Product/Planning uses Codex from intake.
 430. The section must not say Codex is only a coding executor.
 431. Add a section named `Process Routing Sources`.
-432. This section must name `19-entry-case-routing.md`.
-433. This section must name `05-work-processes.md`.
-434. This section must name `06-gates-and-evidence.md`.
-435. This section must name `10-github-artifact-workflow.md`.
-436. This section must name `20-app-eas-ota-rollback-runbook.md`.
+432. This section must name `mobile-app-dev-team/workflows/entry-case-routing.md`.
+433. This section must name `mobile-app-dev-team/workflows/work-processes.md`.
+434. This section must name `mobile-app-dev-team/governance/gates-and-evidence.md`.
+435. This section must name `mobile-app-dev-team/workflows/github-artifact-workflow.md`.
+436. This section must name `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
 437. This section must name relevant repo-local `po-*`, `design-*`, `mobile-*`, and QA skills.
-438. This section must say `19-entry-case-routing.md` supplies taxonomy.
+438. This section must say `mobile-app-dev-team/workflows/entry-case-routing.md` supplies taxonomy.
 439. This section must say `codex-role-workflow` operationalizes taxonomy in pod runtime output.
 440. This section must avoid duplicating every policy statement as independent SoT.
 441. Add a section named `Common Intake Rule`.
@@ -546,7 +546,7 @@
 515. Candidate validator: `scripts/validate-team-doc.mjs`.
 516. Candidate validator: `scripts/validate-runtime-artifacts.mjs`.
 517. Candidate fixtures may be under `evals/skills` or `evals/local-harness` if existing patterns support it.
-518. The validator must check `codex-role-workflow` references `19-entry-case-routing.md`.
+518. The validator must check `codex-role-workflow` references `mobile-app-dev-team/workflows/entry-case-routing.md`.
 519. The validator must check `codex-role-workflow` references broader project requirement/project specification input, not only PRD.
 520. The validator must check Product/Planning common intake.
 521. The validator must check Codex substrate wording.
@@ -592,7 +592,7 @@
 558. The review prompt must instruct the reviewer to avoid line ranges in JSON findings.
 559. The review prompt must instruct the reviewer to use single-line `path:line` references.
 560. The review prompt must instruct the reviewer to use one supported owner per finding.
-561. The review prompt must include `AGENTS.md`, `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md`, `codex-role-workflow`, `19-entry-case-routing`, `05-work-processes`, `06-gates-and-evidence`, `10-github-artifact-workflow`, and `20-app-eas-ota-rollback-runbook`.
+561. The review prompt must include `AGENTS.md`, `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md`, `codex-role-workflow`, `mobile-app-dev-team/workflows/entry-case-routing.md`, `mobile-app-dev-team/workflows/work-processes.md`, `mobile-app-dev-team/governance/gates-and-evidence.md`, `mobile-app-dev-team/workflows/github-artifact-workflow.md`, and `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
 562. If the plan is `GO`, future implementation planning may proceed.
 563. If the plan is `NO_GO`, findings must be addressed before implementation.
 564. If the plan is `BLOCKED`, missing SoT or missing evidence must be supplied.
@@ -605,9 +605,9 @@
 
 ## 012. Risk Register
 
-571. Risk R1: duplicating `19-entry-case-routing.md` too fully creates divergent SoT.
-572. Mitigation R1: include compact operational rules and cite `19-entry-case-routing.md` as process source.
-573. Risk R2: only linking `19-entry-case-routing.md` leaves `codex-role-workflow` non-operational.
+571. Risk R1: duplicating `mobile-app-dev-team/workflows/entry-case-routing.md` too fully creates divergent SoT.
+572. Mitigation R1: include compact operational rules and cite `mobile-app-dev-team/workflows/entry-case-routing.md` as process source.
+573. Risk R2: only linking `mobile-app-dev-team/workflows/entry-case-routing.md` leaves `codex-role-workflow` non-operational.
 574. Mitigation R2: add required entry-case output fields and routing table.
 575. Risk R3: PRD-only wording excludes project requirement and project specification inputs.
 576. Mitigation R3: use broader input language throughout.
@@ -662,7 +662,7 @@
 ## 014. Proposed Future Edit Order
 
 621. Step 1: Create a focused implementation branch.
-622. Step 2: Re-read `AGENTS.md`, `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md`, `codex-role-workflow`, and `19-entry-case-routing.md`.
+622. Step 2: Re-read `AGENTS.md`, `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md`, `codex-role-workflow`, and `mobile-app-dev-team/workflows/entry-case-routing.md`.
 623. Step 3: Decide exact validator/eval location.
 624. Step 4: Add failing validator/eval assertion.
 625. Step 5: Run the narrow check and record expected failure.
@@ -689,7 +689,7 @@
 643. AC3: The plan document treats project requirements and project specifications as first-class inputs.
 644. AC4: The plan document treats PRD as one input form, not the whole planning surface.
 645. AC5: The plan document defines Codex as repo-local role-workflow substrate.
-646. AC6: The plan document states that `codex-role-workflow` must operationalize `19-entry-case-routing.md`.
+646. AC6: The plan document states that `codex-role-workflow` must operationalize `mobile-app-dev-team/workflows/entry-case-routing.md`.
 647. AC7: The plan document states that linking alone is insufficient.
 648. AC8: The plan document preserves source-managed repo artifact boundaries.
 649. AC9: The plan document avoids direct `/workspace` mutation as the default implementation path.
@@ -709,7 +709,7 @@
 
 661. The reviewer prompt must ask whether the plan is SoT-grounded.
 662. The reviewer prompt must ask whether the plan correctly treats Codex as role-workflow substrate.
-663. The reviewer prompt must ask whether the plan correctly operationalizes `19-entry-case-routing.md`.
+663. The reviewer prompt must ask whether the plan correctly operationalizes `mobile-app-dev-team/workflows/entry-case-routing.md`.
 664. The reviewer prompt must ask whether project requirement/project specification input coverage is broad enough.
 665. The reviewer prompt must ask whether Product/Planning ownership is preserved.
 666. The reviewer prompt must ask whether Design ownership is preserved.
@@ -724,7 +724,7 @@
 675. The reviewer prompt must state no human-gate approval.
 676. The reviewer prompt must include this plan file path.
 677. The reviewer prompt must include the current `codex-role-workflow` path.
-678. The reviewer prompt must include `19-entry-case-routing.md`.
+678. The reviewer prompt must include `mobile-app-dev-team/workflows/entry-case-routing.md`.
 679. The reviewer prompt must include root policy files.
 680. The reviewer prompt must include Design P0/P1 sources.
 

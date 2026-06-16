@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh"
-PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh"
-POD_BOOTSTRAP_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh"
+SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-agent-setup.sh"
+PREFLIGHT_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/scripts/project-bootstrap-preflight.sh"
+POD_BOOTSTRAP_SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/pod-role-bootstrap/scripts/pod-bootstrap.sh"
 NODE_BIN_DIR="$(dirname "$(command -v node)")"
 NO_CODEX_PATH="${NODE_BIN_DIR}:/usr/bin:/bin:/usr/sbin:/sbin"
 
@@ -214,7 +214,7 @@ SH
 
 make_fake_pod_skill_sources() {
   local repo_path="$1"
-  local skill_root="${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  local skill_root="${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   for slug in \
     openclaw-pod-skills-sync \
     project-bootstrap \
@@ -733,7 +733,7 @@ setup_project_preflight_ready_fixture() {
     "${tmpdir}/skills/codex-role-workflow" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   make_fake_basic_cli "${tmpdir}/bin" "gh"
   make_fake_basic_cli "${tmpdir}/bin" "railway"
@@ -748,7 +748,7 @@ setup_project_preflight_ready_fixture() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -964,6 +964,13 @@ case_preflight_auth_ready_passes_auth_gate() {
   assert_json_field "${report_path}" "r.tool_auth.gcloud.adc_status === 'available'"
   assert_json_field "${report_path}" "r.tool_auth.expo_mcp.auth_status === 'available'"
   assert_json_field "${report_path}" "r.tool_auth.expo_cli.auth_status === 'available'"
+  assert_json_field "${report_path}" "r.routing.next_skill === 'codex-role-workflow'"
+  assert_json_field "${report_path}" "r.routing.next_runtime_path === '/workspace/skills/codex-role-workflow/SKILL.md'"
+  assert_json_field "${report_path}" "r.routing.required_before_role_work === true"
+  assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/SOUL.md')"
+  assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/IDENTITY')"
+  assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/state/project-bootstrap-role.env')"
+  assert_json_field "${report_path}" "r.routing.repo_sot_root === '/workspace/projects/Wondermove-Inc/new-mobile-app'"
 }
 
 case_agent_setup_detects_unauthorized_provider_state() {
@@ -1108,12 +1115,12 @@ case_role_soul_files_map_to_canonical_bootstrap_roles() {
     assert_json_field "${report_path}" "r.role.resolved === '${expected_role}'"
     assert_json_field "${report_path}" "r.role.status === 'configured'"
   done <<'ROLE_SOULS'
-mobile-app-dev-team/02-role-souls/product-planning-soul.md|Product/Planning|product-planning
-mobile-app-dev-team/02-role-souls/design-soul.md|Design|design
-mobile-app-dev-team/02-role-souls/mobile-architect-soul.md|Mobile Architect|mobile-architect
-mobile-app-dev-team/02-role-souls/mobile-app-dev-soul.md|Mobile App Dev|mobile-app-dev
-mobile-app-dev-team/02-role-souls/backend-api-integrator-soul.md|Backend/API Integrator|backend-api-integrator
-mobile-app-dev-team/02-role-souls/qa-release-soul.md|QA/Release|qa-release
+mobile-app-dev-team/runtime-sources/role-souls/product-planning-soul.md|Product/Planning|product-planning
+mobile-app-dev-team/runtime-sources/role-souls/design-soul.md|Design|design
+mobile-app-dev-team/runtime-sources/role-souls/mobile-architect-soul.md|Mobile Architect|mobile-architect
+mobile-app-dev-team/runtime-sources/role-souls/mobile-app-dev-soul.md|Mobile App Dev|mobile-app-dev
+mobile-app-dev-team/runtime-sources/role-souls/backend-api-integrator-soul.md|Backend/API Integrator|backend-api-integrator
+mobile-app-dev-team/runtime-sources/role-souls/qa-release-soul.md|QA/Release|qa-release
 ROLE_SOULS
 }
 
@@ -2331,7 +2338,7 @@ case_product_planning_status_only_missing_preflight() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   make_node_only_bin "${tmpdir}/node-bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
@@ -2342,7 +2349,7 @@ case_product_planning_status_only_missing_preflight() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2414,7 +2421,7 @@ case_project_preflight_blocks_on_pod_role_report_blocked() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -2424,7 +2431,7 @@ case_project_preflight_blocks_on_pod_role_report_blocked() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2510,7 +2517,7 @@ case_project_preflight_guides_missing_sot_and_mcp() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   : > "${tmpdir}/mcps.txt"
   for file in \
@@ -2519,7 +2526,7 @@ case_project_preflight_guides_missing_sot_and_mcp() {
     PROJECT_ENVIRONMENT.md \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2565,7 +2572,7 @@ case_project_preflight_guides_missing_codex_cli() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   for file in \
     AGENTS.md \
     REPO_OPERATIONS.md \
@@ -2573,7 +2580,7 @@ case_project_preflight_guides_missing_codex_cli() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2615,7 +2622,7 @@ case_project_preflight_guides_role_specific_secure_sources() {
     "${tmpdir}/skills/stitch-adc-setup" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -2625,7 +2632,7 @@ case_project_preflight_guides_role_specific_secure_sources() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2674,7 +2681,7 @@ case_project_preflight_korean_language_contract() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -2684,7 +2691,7 @@ case_project_preflight_korean_language_contract() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2772,7 +2779,7 @@ case_project_preflight_korean_language_fallbacks() {
     "${tmpdir}/skills/pod-role-bootstrap" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
-    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   printf '%s\n' mobile-mcp serena stitch > "${tmpdir}/mcps.txt"
   for file in \
@@ -2782,7 +2789,7 @@ case_project_preflight_korean_language_fallbacks() {
     .codex/config.toml \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done
@@ -2971,7 +2978,7 @@ case_project_preflight_korean_full_blocker_matrix() {
 	    "${tmpdir}/skills/stitch-adc-setup" \
 	    "${repo_path}/.codex" \
 	    "${repo_path}/docs" \
-	    "${repo_path}/mobile-app-dev-team/09-pod-native-openclaw-skills"
+	    "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_fake_codex "${tmpdir}/bin"
   : > "${tmpdir}/mcps.txt"
   for file in \
@@ -2980,7 +2987,7 @@ case_project_preflight_korean_full_blocker_matrix() {
     PROJECT_ENVIRONMENT.md \
     docs/TEMPLATE_VARIABLES.md \
     docs/CREDENTIALS.md \
-    mobile-app-dev-team/09-pod-native-openclaw-skills/README.md
+    mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md
   do
     : > "${repo_path}/${file}"
   done

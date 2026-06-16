@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SCRIPT="${ROOT_DIR}/mobile-app-dev-team/09-pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+SCRIPT="${ROOT_DIR}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
 NODE_BIN_DIR="$(dirname "$(command -v node)")"
 
 assert_file_contains() {
@@ -89,7 +89,7 @@ run_sync() {
 case_copy_sync_all_pod_skills() {
   local tmpdir source_root target_root agents_path report_path
   tmpdir="$(mktemp -d)"
-  source_root="${tmpdir}/repo/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   target_root="${tmpdir}/workspace/skills"
   agents_path="${tmpdir}/workspace/AGENTS.md"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
@@ -136,7 +136,7 @@ case_missing_source_root_blocks() {
 case_unreadable_source_root_blocks() {
   local tmpdir source_root report_path
   tmpdir="$(mktemp -d)"
-  source_root="${tmpdir}/repo/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   mkdir -p "${source_root}"
   chmod 000 "${source_root}"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
@@ -152,7 +152,7 @@ case_unreadable_source_root_blocks() {
 case_empty_source_root_blocks() {
   local tmpdir source_root report_path
   tmpdir="$(mktemp -d)"
-  source_root="${tmpdir}/repo/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   mkdir -p "${source_root}"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
   if run_sync "${source_root}" "${tmpdir}/skills" "${tmpdir}/AGENTS.md" "${report_path}"; then
@@ -165,7 +165,7 @@ case_empty_source_root_blocks() {
 case_missing_skill_entrypoint_blocks() {
   local tmpdir source_root report_path
   tmpdir="$(mktemp -d)"
-  source_root="${tmpdir}/repo/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_source_tree "${source_root}"
   rm -f "${source_root}/project-bootstrap/SKILL.md"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
@@ -179,7 +179,7 @@ case_missing_skill_entrypoint_blocks() {
 case_report_is_secret_safe() {
   local tmpdir source_root report_path
   tmpdir="$(mktemp -d)"
-  source_root="${tmpdir}/repo/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   make_source_tree "${source_root}"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
   OPENAI_API_KEY="token=do-not-persist" run_sync "${source_root}" "${tmpdir}/skills" "${tmpdir}/AGENTS.md" "${report_path}"
@@ -189,7 +189,7 @@ case_report_is_secret_safe() {
 case_no_symlink_runtime_snapshot() {
   local tmpdir source_root target_root report_path
   tmpdir="$(mktemp -d)"
-  source_root="${tmpdir}/repo/mobile-app-dev-team/09-pod-native-openclaw-skills"
+  source_root="${tmpdir}/repo/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
   target_root="${tmpdir}/workspace/skills"
   make_source_tree "${source_root}"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"

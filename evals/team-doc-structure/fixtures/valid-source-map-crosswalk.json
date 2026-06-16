@@ -1,0 +1,7 @@
+{
+  "name": "valid-source-map-crosswalk",
+  "description": "The target source map records the structure registry, fixture gate, and runtime-source target paths.",
+  "base": "target",
+  "legacyCompatibility": false,
+  "shouldPass": true
+}

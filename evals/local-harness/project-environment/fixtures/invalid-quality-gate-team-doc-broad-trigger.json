@@ -1,0 +1,16 @@
+{
+  "name": "invalid-quality-gate-team-doc-broad-trigger",
+  "valid": false,
+  "mutations": [
+    {
+      "type": "replace",
+      "file": ".github/workflows/quality-gate.yml",
+      "from": "scripts/lib/.*",
+      "to": "scripts/lib/.*|mobile-app-dev-team/.*"
+    }
+  ],
+  "expectedErrors": [
+    "quality-gate.yml must not require local harness for mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md",
+    "quality-gate.yml must not require local harness for mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md"
+  ]
+}

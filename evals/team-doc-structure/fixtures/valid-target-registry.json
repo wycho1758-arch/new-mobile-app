@@ -1,0 +1,7 @@
+{
+  "name": "valid-target-registry",
+  "description": "The planned structure-based paths satisfy the registry with legacy compatibility disabled.",
+  "base": "target",
+  "legacyCompatibility": false,
+  "shouldPass": true
+}

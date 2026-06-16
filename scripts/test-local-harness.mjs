@@ -715,12 +715,31 @@ function extractReadmeSection(readme, startHeading, endHeading, failures) {
   return match[1].split('\n');
 }
 
+function validateHarnessApplicabilityReadme(readme) {
+  const failures = [];
+  const requiredTerms = [
+    '## Local Harness Applicability',
+    'required for Codex runtime and harness changes',
+    'not required for `mobile-app-dev-team/reports/**`',
+    'not required for `mobile-app-dev-team/ref-organization/**`',
+    'targeted pod-native smoke',
+    '`mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`',
+  ];
+
+  for (const term of requiredTerms) {
+    if (!readme.includes(term)) addFailure(failures, 'missing local harness applicability term', { term });
+  }
+
+  return failures;
+}
+
 function runSummarySelfTest() {
   const missingAsserts = [];
   extractReadmeSection('## DOES NOT ASSERT\n\n- no external side effects\n\n## Confluence Provenance', 'ASSERTS', 'DOES NOT ASSERT', missingAsserts);
   const missingDoesNotAssert = [];
   extractReadmeSection('## ASSERTS\n\n- local only\n\n## Confluence Provenance', 'DOES NOT ASSERT', 'Confluence Provenance', missingDoesNotAssert);
   const missingProofRows = validateSummaryProofRows('# Local Harness Summary\n\n- Case A: local fixture verified\n- Cross-cutting: local verified\n');
+  const missingApplicability = validateHarnessApplicabilityReadme('# Local Harness Contract\n');
   const failures = [];
 
   if (!missingAsserts.some((failure) => failure.reason === 'missing ASSERTS section in README')) {
@@ -731,6 +750,9 @@ function runSummarySelfTest() {
   }
   if (!missingProofRows.some((failure) => failure.reason === 'missing proof-level row' && failure.row === 'B')) {
     addFailure(failures, 'missing proof-level row self-test did not fail');
+  }
+  if (!missingApplicability.some((failure) => failure.reason === 'missing local harness applicability term')) {
+    addFailure(failures, 'missing applicability self-test did not fail');
   }
 
   return {
@@ -810,6 +832,7 @@ function generateSummary(results) {
   const summaryPath = path.join(RESULTS_DIR, 'summary.md');
   fs.writeFileSync(summaryPath, `${lines.join('\n')}\n`);
   summaryFailures.push(...validateSummaryProofRows(readText(summaryPath)));
+  summaryFailures.push(...validateHarnessApplicabilityReadme(readme));
   return {
     stage: 'summary',
     ok: summaryFailures.length === 0 && skillRegistry.failures.length === 0,

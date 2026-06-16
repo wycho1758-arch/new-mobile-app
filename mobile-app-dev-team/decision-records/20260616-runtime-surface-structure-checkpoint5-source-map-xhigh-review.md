@@ -1,0 +1,16 @@
+**Findings**
+None.
+
+**Verification**
+- `99-source-map.md` is staged as deleted and only `mobile-app-dev-team/source-map.md` remains tracked; the new file is the current source-map path.
+- `source-map.md` has all required sections: [source-map.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:3), [line 47](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:47), [line 65](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:65), [line 101](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:101), [line 116](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:116), [line 126](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:126), [line 193](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:193).
+- The crosswalk includes completed rename families and compatibility-window paths, including `04`, `16`, and `17`: [source-map.md](/Users/tw.kim/Documents/AGA/test/new-mobile-app/mobile-app-dev-team/source-map.md:69).
+- Validators reject `99-source-map.md`: [validate-team-doc-structure.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc-structure.mjs:223), [validate-reference-docs.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-reference-docs.mjs:62). Compatibility remains for out-of-scope future moves via the registry and legacy-compatibility logic: [validate-team-doc-structure.mjs](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc-structure.mjs:17), [line 247](/Users/tw.kim/Documents/AGA/test/new-mobile-app/scripts/validate-team-doc-structure.mjs:247).
+- Stale `99-source-map.md` references are limited to the approved goal-plan notes, validator rejection checks, and source-map crosswalk row, matching the recorded scan: [evidence](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/reviews/20260616-runtime-surface-structure-checkpoint5-source-map-command-output.md:74).
+- Archive root files are unchanged; evidence records that explicitly, and my staged diff check returned zero changed archive files: [evidence](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/reviews/20260616-runtime-surface-structure-checkpoint5-source-map-command-output.md:23).
+- Required evidence is present for RED, green validators, runtime test, archive support, stale scan, and whitespace: [evidence](/Users/tw.kim/Documents/AGA/test/new-mobile-app/.evidence/reviews/20260616-runtime-surface-structure-checkpoint5-source-map-command-output.md:26).
+- No staged `apps/`, `packages/`, `infra/`, `ios/`, or `android/` path changes. The staged `package.json` change is validator script aliases only, not app/API/native behavior.
+
+I also reran the read-only validators directly: structure, reference docs, archive, evidence hygiene non-self-test, and staged whitespace check all passed. I did not rerun full `pnpm run test:runtime` because this read-only sandbox blocks cleanup/self-test writes; the submitted evidence records it green.
+
+Verdict: `GO`.

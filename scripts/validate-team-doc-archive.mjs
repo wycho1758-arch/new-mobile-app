@@ -321,7 +321,7 @@ for (const file of archivedGeneratedFiles) {
   }
 }
 
-const refOrganizationCrosswalk = 'mobile-app-dev-team/ref-organization/99-source-map-and-migration/old-to-new-crosswalk.md';
+const refOrganizationCrosswalk = 'mobile-app-dev-team/ref-organization/source-map-and-migration/old-to-new-crosswalk.md';
 if (exists(refOrganizationCrosswalk)) {
   const body = read(refOrganizationCrosswalk);
   const legacyStructuredFiles = structuredFiles.map((entry) => entry.teamDocRelativePath);

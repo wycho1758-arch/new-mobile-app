@@ -15,17 +15,17 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test:runtime
       - run: pnpm turbo run lint test
-      - id: runtime-changes
-        name: Detect Codex runtime changes
+      - id: local-harness-changes
+        name: Detect Codex local harness changes
         shell: bash
         run: |
           changed_files="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" HEAD)"
           printf '%s\n' "$changed_files"
 
-          if printf '%s\n' "$changed_files" | grep -Eq '^(\.agents/.*|\.codex/.*|evals/(skills|agents|hooks|local-harness|work-units)/.*|mobile-app-dev-team/.*|scripts/lib/.*|scripts/(validate-runtime-artifacts|validate-repo-operations|validate-team-doc|validate-team-doc-archive|validate-work-units|codex-headless-review|test-hooks|test-local-harness|clean-tree-guard|codex-preflight|ingest-eas-evidence|validate-project-environment|validate-evidence-hygiene)\.mjs|\.github/workflows/.*\.yml|AGENTS\.md|PROJECT_ENVIRONMENT\.md|docs/(confluence|plans)/.*|package\.json|pnpm-lock\.yaml)$'; then
+          if printf '%s\n' "$changed_files" | grep -Eq '^(\.agents/.*|\.codex/.*|evals/local-harness/.*|scripts/lib/.*|scripts/(validate-runtime-artifacts|validate-repo-operations|codex-headless-review|test-hooks|test-local-harness|clean-tree-guard|codex-preflight|validate-project-environment)\.mjs|\.github/workflows/.*\.yml|AGENTS\.md|PROJECT_ENVIRONMENT\.md|REPO_OPERATIONS\.md|package\.json|pnpm-lock\.yaml)$'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
-      - if: steps.runtime-changes.outputs.changed == 'true'
+      - if: steps.local-harness-changes.outputs.changed == 'true'
         run: pnpm run test:local-harness

@@ -2,8 +2,8 @@
 
 ## OpenClaw And Codex Skill Routing
 
-- Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape and are authored under `mobile-app-dev-team/09-pod-native-openclaw-skills/<slug>/` using skill-creator structure.
-- After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/09-pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.
+- Pod-native OpenClaw skill-only requests use `/workspace/skills/<slug>/SKILL.md` as the runtime shape and are authored under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>/` using skill-creator structure.
+- After `git clone` or `git pull` for WonderMove new-mobile-app, use `openclaw-pod-skills-sync` to copy-sync `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`, then run `project-bootstrap`.
 - Codex skill or agent requests use `.agents/skills/<skill-name>/SKILL.md` and `.codex/agents/<agent-name>.toml` for primary artifacts; required validators, evals, scripts, and evidence may still be added when the change needs them.
 - WonderMove new-mobile-app project requirements, project specifications, PRDs, work requests, planning artifacts, handoffs, or role workflow requests must first resolve the current role, entry case, allowed repo-local Codex skills, required reviewers, and durable artifact stage through `codex-role-workflow`.
 - Codex is the default repo-local role-workflow substrate for planning, routing, review, handoff, evidence, hooks, MCP, validators, and implementation when implementation is actually authorized; it is not only a coding tool.

@@ -214,7 +214,7 @@
         "mobile-gatekeeper": "Current deterministic gatekeeper coverage: scripts/validate-work-units.mjs, scripts/work-unit-next.mjs, and evidence fixtures."
       },
       "organizationRuntimeSkillMappings": {
-        "mobile-project-bootstrap-workflow": "Pod-native project-bootstrap source under mobile-app-dev-team/09-pod-native-openclaw-skills/project-bootstrap/."
+        "mobile-project-bootstrap-workflow": "Pod-native project-bootstrap source under mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/."
       },
       "adapterExamples": [
         "po-prd-to-execution",

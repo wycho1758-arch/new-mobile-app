@@ -40,8 +40,8 @@ When a user asks the current Codex agent to merge, complete, approve, or otherwi
 
 Required approval owners:
 
-- Product Delivery Lead, using `mobile-app-dev-team/02-role-souls/product-planning-soul.md`, owns scope/readiness/human-gate approval for the requested merge or completion.
-- Mobile Architect / Technical Lead, using `mobile-app-dev-team/02-role-souls/mobile-architect-soul.md`, owns architecture/runtime/releaseability approval when the PR changes repo workflow, runtime policy, architecture, dependencies, route/state behavior, releaseability, or cross-role execution rules.
+- Product Delivery Lead, using `mobile-app-dev-team/runtime-sources/role-souls/product-planning-soul.md`, owns scope/readiness/human-gate approval for the requested merge or completion.
+- Mobile Architect / Technical Lead, using `mobile-app-dev-team/runtime-sources/role-souls/mobile-architect-soul.md`, owns architecture/runtime/releaseability approval when the PR changes repo workflow, runtime policy, architecture, dependencies, route/state behavior, releaseability, or cross-role execution rules.
 
 The approval request packet must include:
 

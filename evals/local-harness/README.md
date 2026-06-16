@@ -62,3 +62,25 @@ live publish.
 Codex headless smoke is local evidence only. It can show that prompts, skills, files, and hook configuration are coherent, but it cannot prove external platform/runtime behavior.
 
 Dirty worktree state is intentionally not a harness failure condition. Runtime configuration and fixtures must remain verifiable while they are being edited.
+
+## Local Harness Applicability
+
+The local harness is required for Codex runtime and harness changes: `.agents/**`,
+`.codex/**`, `evals/local-harness/**`, local harness scripts, Codex hook/review
+scripts, workflow gate configuration, root runtime policy files, `package.json`,
+and `pnpm-lock.yaml`.
+
+The local harness is not required for `mobile-app-dev-team/reports/**` changes
+when no Codex runtime path changes. Reports use `validate:evidence-hygiene` and
+diff checks unless they modify or promote content into a managed runtime source
+or `codex-role-workflow` routing-support dependency.
+
+The local harness is not required for `mobile-app-dev-team/ref-organization/**`
+changes when no Codex runtime path changes. Reference organization changes use
+`validate:reference-docs` when explicitly relevant and do not trigger
+`validate:team-doc` unless they also change a managed runtime source or
+`codex-role-workflow` routing-support dependency.
+
+Changes under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**`
+use targeted pod-native smoke plus `test:runtime` unless the same change also
+touches Codex runtime or harness paths.
