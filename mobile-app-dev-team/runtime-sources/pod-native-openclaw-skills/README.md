@@ -41,6 +41,21 @@ else
 fi
 
 cd "${REPO_PATH}"
+
+# Create or verify the role operator's own GitHub fork after clone or pull.
+# This gives the pod a writable repo remote for commits and PR branches even
+# when it does not have direct write access to the organization repository.
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  if ! gh repo view "$(gh api user --jq .login)/new-mobile-app" >/dev/null 2>&1; then
+    gh repo fork --remote --remote-name fork --default-branch-only
+  elif ! git remote get-url fork >/dev/null 2>&1; then
+    git remote add fork "https://github.com/$(gh api user --jq .login)/new-mobile-app.git"
+  fi
+  git remote -v | grep -E '^(origin|fork)[[:space:]]'
+else
+  printf '%s\n' "GitHub CLI auth is unavailable; ask the Product Delivery Lead for the approved GitHub auth path before creating the role operator fork." >&2
+fi
+
 if [ -x "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" ]; then
   bash "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
 elif [ -x /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh ]; then
