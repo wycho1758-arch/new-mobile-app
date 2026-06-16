@@ -41,8 +41,19 @@ else
 fi
 
 cd "${REPO_PATH}"
-bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh
+if [ -x "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh" ]; then
+  bash "${REPO_PATH}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh"
+elif [ -x /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh ]; then
+  bash /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh
+else
+  printf '%s\n' "openclaw-pod-skills-sync script is missing from repo source and /workspace/skills." >&2
+  exit 1
+fi
 ```
+
+In a fresh pod, the first sync should prefer the repo source script because the
+runtime `/workspace/skills/openclaw-pod-skills-sync` copy may not exist yet. The
+runtime path is only the fallback after a previous successful sync created it.
 
 Then run the role setup and project bootstrap preflight:
 
@@ -133,6 +144,8 @@ Every pod setup report based on this README must include:
   `/workspace/state/project-bootstrap-blockers.md`;
 - commands run for clone or pull, skill sync, role setup, and bootstrap
   preflight, with exit status when available;
+- clone or pull report fields: before/after commit, fetched branches, pruned branches, and changed files summary;
+- repo packageManager pin and active pnpm version, including mismatch and whether any alignment was performed;
 - `project-bootstrap` status: ready or blocked;
 - if blocked, the translated blocker and minimum user-owned request;
 - install and auth approval status, without secret values;
@@ -158,6 +171,8 @@ runtime surface, not pasted into agent instructions.
 - Google ADC or Stitch auth unavailable: ask the user to complete the approved
   Google login or mount the approved credential file. Do not paste ADC JSON or
   service account JSON into chat.
+- gcloud CLI missing: report the approved official Google Cloud CLI install plan
+  and wait for explicit approval before installing.
 - Expo or EAS auth unavailable: ask the user to complete the approved Expo auth
   path or provide the approved runtime secret surface. Do not paste Expo token
   values into chat or reports.
