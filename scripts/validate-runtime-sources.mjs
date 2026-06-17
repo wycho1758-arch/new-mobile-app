@@ -137,6 +137,12 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'Do not send secrets in chat',
   'Do not place repo-local Codex CLI artifacts here',
   '## Per-Role Required Pod Skills',
+  '| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
+  '| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow` |',
   'codex-role-workflow',
 ], 'pod-native runtime source');
 

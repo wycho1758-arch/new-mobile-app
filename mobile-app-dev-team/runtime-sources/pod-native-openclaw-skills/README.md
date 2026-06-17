@@ -202,6 +202,8 @@ Every pod setup report based on this README must include:
   `/workspace/state/project-bootstrap-agent-setup-report.json`;
 - project bootstrap report path:
   `/workspace/state/project-bootstrap-report.json`;
+- Stitch ADC setup report path and status:
+  `/workspace/state/stitch-adc-setup-report.json`;
 - blocker report path when blocked:
   `/workspace/state/project-bootstrap-blockers.md`;
 - commands run for clone or pull, skill sync, role setup, and bootstrap
@@ -258,7 +260,7 @@ runtime surface, not pasted into agent instructions.
 | `pod-role-bootstrap` | `/workspace/skills/pod-role-bootstrap/SKILL.md` | Resolve the role pod identity, align pnpm to the repo pin according to Product Delivery Lead setup direction, install required repo dependencies, run `codex-preflight --pod`, and write a status-only readiness report. |
 | `project-bootstrap` | `/workspace/skills/project-bootstrap/SKILL.md` | Orchestrate project-level boram pod readiness by checking the repo path, managed path, required pod skills, required/conditional MCPs, external CLI/account status, role-specific setup reports, and human gates without exposing secrets. |
 | `eas-robot-auth-setup` | `/workspace/skills/eas-robot-auth-setup/SKILL.md` | Verify QA/Release EAS CLI and Expo robot auth readiness as status only before any human-gated EAS/Maestro run. |
-| `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify Design Google ADC and Stitch MCP readiness as status only before any approved Stitch handoff run. |
+| `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify pod-wide Google ADC and Stitch MCP readiness as status-only setup evidence for every operating role. Live Stitch work still requires approved role scope and gates. |
 | `codex-role-workflow` | `/workspace/skills/codex-role-workflow/SKILL.md` | Resolve a role pod to allowed repo-local Codex skills, reviewers, durable artifact stage, stop conditions, and status-only next action without doing role work. |
 
 ## Per-Role Required Pod Skills
@@ -267,14 +269,17 @@ This is the canonical per-role pod-native skill dependency matrix.
 `runtime-sources/codex-skill-agent-matrix.md` links here instead of duplicating the table.
 It is not the normal user-facing execution order; normal setup uses
 `openclaw-pod-skills-sync`, then `project-bootstrap` as the entry point.
-The matrix below lists role-specific required skills after the common sync
-prerequisite.
+The matrix below lists required skills after the common sync prerequisite.
+`stitch-adc-setup` is listed for every operating role so Google ADC and Stitch
+MCP readiness is always reported as status-only setup evidence. This common
+requirement does not authorize non-Design roles to run live Stitch work or
+bypass approved role scope.
 
 | Operating Role | Required pod-native skills |
 | --- | --- |
-| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
+| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
 | Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
-| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
-| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
-| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `codex-role-workflow` |
-| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `eas-robot-auth-setup`, `codex-role-workflow` |
+| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
+| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
+| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
+| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow` |
