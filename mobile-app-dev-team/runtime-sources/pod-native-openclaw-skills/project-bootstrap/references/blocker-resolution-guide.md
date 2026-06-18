@@ -112,7 +112,7 @@ Minimum user request, and the next step where the agent can continue.
 | `git-identity-missing` | The pod cannot create commits because no approved author name/email pair is available. | Share a preferred public commit name/email if one exists, or provide an approved local handoff file through `PROJECT_BOOTSTRAP_GIT_IDENTITY_PATH`. If absent, the agent checks whether the approved GitHub account can support a non-invented Git identity source. | Configure Git from one approved source and rerun bootstrap. |
 | `github-auth-unavailable` | GitHub connection is needed before the agent can continue with repository access or upload work. | Be present for the GitHub login screen; sign in with your GitHub account and approve the request. Never send tokens in chat. | Check the GitHub connection, set up Git to use that login after authentication works, then rerun bootstrap. |
 | `pod-role-bootstrap blocked` | `project-bootstrap` found that the generated `pod-role-bootstrap` report is present but not ready. | Resolve the nested blocker requests only; do not create report files manually. | Rerun `pod-role-bootstrap`, then rerun `project-bootstrap` preflight. |
-| `workspace-skills-sync-blocked` | The runtime `/workspace/skills` snapshot was not refreshed from repo SoT, so existing skills may be stale. | No user secret is needed; let the agent rerun `openclaw-pod-skills-sync` from the checked-out repo. | Run `openclaw-pod-skills-sync`, verify `/workspace/state/openclaw-pod-skills-sync-report.json`, then rerun `project-bootstrap`. |
+| `workspace-skills-sync-blocked` | The runtime `/workspace/skills` snapshot was not refreshed from repo SoT, so existing skills may be stale or missing, including `codex-interactive-repo-work`. | No user secret is needed; let the agent rerun `openclaw-pod-skills-sync` from the checked-out repo. | Run `openclaw-pod-skills-sync`, verify `/workspace/state/openclaw-pod-skills-sync-report.json`, confirm `/workspace/skills/codex-interactive-repo-work/SKILL.md`, then rerun `project-bootstrap`. |
 
 ## Blocker Classification
 
@@ -131,7 +131,7 @@ The full blocker matrix includes these families:
 | role identity | `missing role identity`, non-canonical role, mismatch | Derive the role from SOUL, selector, or handoff; ask for pod artifact refresh only when no role source exists. |
 | repo/managed path | missing registry, missing managed path entry, conflicting repo path | Repair only the known canonical managed path; ask for approved project source on conflict. |
 | Git identity | `git-identity-missing` | Use one approved public name/email source; do not invent values. |
-| CLI/runtime | missing Codex CLI, invalid runtime | Run approved precheck; ask platform owner refresh or approved Codex CLI artifact only if still blocked. |
+| CLI/runtime | missing Codex CLI, invalid runtime, missing `/workspace/skills/codex-interactive-repo-work/SKILL.md` after sync | Run approved precheck or rerun `openclaw-pod-skills-sync`; ask platform owner refresh or approved Codex/OpenClaw artifact only if still blocked. |
 | package-manager | `pnpm-pin-mismatch`, package manager mismatch | Verify `package.json`, `pnpm-lock.yaml`, `corepack --version`, and `pnpm --version`; use `pod-role-bootstrap` to activate `pnpm@9.15.9`. |
 | MCP | missing required MCP | Compare `codex mcp list` with repo SoT and register pinned credential-free config when possible. |
 | conditional login/auth | provider login or mounted auth requirement | Open or guide the real login surface when possible; the user enters credentials there. |

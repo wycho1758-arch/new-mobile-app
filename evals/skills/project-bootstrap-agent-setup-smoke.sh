@@ -258,7 +258,8 @@ EOF
     pod-role-bootstrap \
     eas-robot-auth-setup \
     stitch-adc-setup \
-    codex-role-workflow
+    codex-role-workflow \
+    codex-interactive-repo-work
   do
     mkdir -p "${skill_root}/${slug}/scripts"
     printf '# skill\n' > "${skill_root}/${slug}/SKILL.md"
@@ -780,6 +781,7 @@ setup_project_preflight_ready_fixture() {
     "${tmpdir}/skills/stitch-adc-setup" \
     "${tmpdir}/skills/eas-robot-auth-setup" \
     "${tmpdir}/skills/codex-role-workflow" \
+    "${tmpdir}/skills/codex-interactive-repo-work" \
     "${repo_path}/.codex" \
     "${repo_path}/docs" \
     "${repo_path}/mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills"
@@ -839,7 +841,8 @@ write_ready_agent_setup_report() {
     "pod-role-bootstrap": "present",
     "eas-robot-auth-setup": "present",
     "stitch-adc-setup": "present",
-    "codex-role-workflow": "present"
+    "codex-role-workflow": "present",
+    "codex-interactive-repo-work": "present"
   },
   "workspace_agents": {
     "path": "/workspace/AGENTS.md",
@@ -1043,6 +1046,7 @@ case_preflight_auth_ready_passes_auth_gate() {
   assert_json_field "${report_path}" "r.tool_auth.expo_cli.auth_status === 'available'"
   assert_json_field "${report_path}" "r.routing.next_skill === 'codex-role-workflow'"
   assert_json_field "${report_path}" "r.routing.next_runtime_path === '/workspace/skills/codex-role-workflow/SKILL.md'"
+  assert_json_field "${report_path}" "r.routing.downstream_execution_contract === '/workspace/skills/codex-interactive-repo-work/SKILL.md'"
   assert_json_field "${report_path}" "r.routing.required_before_role_work === true"
   assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/SOUL.md')"
   assert_json_field "${report_path}" "r.routing.identity_sources.includes('/workspace/IDENTITY')"
@@ -1699,6 +1703,7 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   [[ -e "${skills_root}/eas-robot-auth-setup/SKILL.md" ]]
   [[ -e "${skills_root}/stitch-adc-setup/SKILL.md" ]]
   [[ -e "${skills_root}/codex-role-workflow/SKILL.md" ]]
+  [[ -e "${skills_root}/codex-interactive-repo-work/SKILL.md" ]]
   assert_file_contains "${workspace_agents_path}" "## Project Workspace Defaults"
   assert_file_contains "${workspace_agents_path}" "openclaw-pod-skills-sync"
   assert_file_contains "${workspace_agents_path}" "git clone"
@@ -1712,6 +1717,7 @@ case_default_clone_runtime_skill_registration_workspace_agents_defaults() {
   assert_json_field "${report_path}" "r.workspace_skills['openclaw-pod-skills-sync'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_skills['project-bootstrap'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_skills['codex-role-workflow'] === 'present'"
+  assert_json_field "${report_path}" "r.workspace_skills['codex-interactive-repo-work'] === 'present'"
   assert_json_field "${report_path}" "r.workspace_agents.project_workspace_defaults === 'present'"
   assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.status === 'present'"
   assert_json_field "${report_path}" "r.guidance_artifacts.workspace_organizations.guidance_only === true"
@@ -1728,7 +1734,7 @@ case_agent_setup_missing_workspace_organizations_is_status_only() {
 #!/usr/bin/env bash
 set -euo pipefail
 mkdir -p "${OPENCLAW_POD_SKILLS_ROOT}" "$(dirname "${OPENCLAW_WORKSPACE_AGENTS_PATH}")" "$(dirname "${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH}")"
-for slug in openclaw-pod-skills-sync project-bootstrap codex-cli-auth-setup pod-role-bootstrap eas-robot-auth-setup stitch-adc-setup codex-role-workflow; do
+for slug in openclaw-pod-skills-sync project-bootstrap codex-cli-auth-setup pod-role-bootstrap eas-robot-auth-setup stitch-adc-setup codex-role-workflow codex-interactive-repo-work; do
   mkdir -p "${OPENCLAW_POD_SKILLS_ROOT%/}/${slug}"
   printf '# %s\n' "${slug}" > "${OPENCLAW_POD_SKILLS_ROOT%/}/${slug}/SKILL.md"
 done
@@ -1794,6 +1800,22 @@ case_project_preflight_blocks_missing_codex_role_workflow_skill() {
   assert_json_field "${report_path}" "r.status === 'blocked'"
   assert_json_field "${report_path}" "r.pod_skills.codex_role_workflow === 'missing'"
   assert_json_field "${report_path}" "r.blockers.includes('missing /workspace/skills/codex-role-workflow')"
+}
+
+case_project_preflight_blocks_missing_codex_interactive_repo_work_skill() {
+  local tmpdir report_path setup_report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/project-bootstrap-report.json"
+  setup_report_path="${tmpdir}/state/project-bootstrap-agent-setup-report.json"
+  setup_project_preflight_ready_fixture "${tmpdir}"
+  rm -rf "${tmpdir}/skills/codex-interactive-repo-work"
+  write_ready_agent_setup_report "${setup_report_path}"
+
+  run_ready_preflight "${tmpdir}" "${report_path}" "${setup_report_path}"
+
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.pod_skills.codex_interactive_repo_work === 'missing'"
+  assert_json_field "${report_path}" "r.blockers.includes('missing /workspace/skills/codex-interactive-repo-work')"
 }
 
 case_token_bearing_clone_url_rejected_in_both_paths() {
@@ -1946,6 +1968,7 @@ case_design_full_setup() {
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills.sync.status === 'completed'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['stitch-adc-setup'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'present'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-interactive-repo-work'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.stitch_adc_setup === 'generated'"
 }
 
@@ -2034,6 +2057,7 @@ case_qa_role_report_generation() {
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills.sync.status === 'completed'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['eas-robot-auth-setup'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-role-workflow'] === 'present'"
+  assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.workspace_skills['codex-interactive-repo-work'] === 'present'"
   assert_json_field "${tmpdir}/state/project-bootstrap-agent-setup-report.json" "r.reports.eas_robot_auth_setup === 'generated'"
 }
 
@@ -3250,6 +3274,7 @@ case_gcloud_false_positive_auth_and_project_are_rejected
 case_required_cli_approved_installers_are_attempted
 case_product_planning_status_only_missing_preflight
 case_project_preflight_blocks_missing_codex_role_workflow_skill
+case_project_preflight_blocks_missing_codex_interactive_repo_work_skill
 case_project_preflight_blocks_on_pod_role_report_blocked
 case_project_preflight_guides_missing_sot_and_mcp
 case_project_preflight_guides_missing_codex_cli

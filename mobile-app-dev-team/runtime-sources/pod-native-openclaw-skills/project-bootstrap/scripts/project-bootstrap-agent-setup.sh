@@ -732,6 +732,7 @@ pod_role_bootstrap_skill_status="$(workspace_skill_status pod-role-bootstrap)"
 eas_robot_auth_setup_skill_status="$(workspace_skill_status eas-robot-auth-setup)"
 stitch_adc_setup_skill_status="$(workspace_skill_status stitch-adc-setup)"
 codex_role_workflow_skill_status="$(workspace_skill_status codex-role-workflow)"
+codex_interactive_repo_work_skill_status="$(workspace_skill_status codex-interactive-repo-work)"
 workspace_agents_status="$(workspace_agents_defaults_status)"
 workspace_organizations_status="$(workspace_organizations_guidance_status)"
 
@@ -889,7 +890,7 @@ if [[ "${PROJECT_BOOTSTRAP_RUN_PREFLIGHT:-0}" == "1" ]]; then
   fi
 fi
 
-node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" "$REPO_CLONE_URL" "$repo_checkout_status" "$SKILLS_ROOT" "$workspace_skills_sync_status" "$OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH" "$openclaw_pod_skills_sync_skill_status" "$project_bootstrap_skill_status" "$codex_cli_auth_setup_skill_status" "$pod_role_bootstrap_skill_status" "$eas_robot_auth_setup_skill_status" "$stitch_adc_setup_skill_status" "$codex_role_workflow_skill_status" "$WORKSPACE_AGENTS_PATH" "$workspace_agents_status" "$WORKSPACE_ORGANIZATIONS_PATH" "$workspace_organizations_status" "$expo_mcp_auth_status" "$expo_cli_auth_status" <<'NODE'
+node - "$REPORT_PATH" "$resolved_role" "$role_status" "$IDENTITY_PATH" "$ROLE_ENV_PATH" "$CODEX_MANAGED_PATHS" "$REPO_PATH" "$CANONICAL_REPO_PATH" "$managed_path_status" "$codex_setup_status" "$mobile_mcp_status" "$serena_mcp_status" "$stitch_mcp_status" "$expo_mcp_status" "$atlassian_mcp_status" "$node_repl_mcp_status" "$playwright_mcp_status" "$railway_command_status" "$railway_install_decision" "$railway_installer_status" "$railway_version_status" "$railway_auth_status" "$railway_login_flow" "$gcloud_command_status" "$gcloud_install_decision" "$gcloud_installer_status" "$gcloud_version_status" "$gcloud_auth_status" "$gcloud_login_flow" "$gcloud_adc_status" "$gcloud_adc_login_flow" "$gcloud_project_status" "$gcloud_project_command" "$gcloud_project_set_flow" "$AGENT_TOOL_BIN_DIR" "$stitch_report_status" "$eas_report_status" "$git_identity_status" "$github_auth_status" "$preflight_status" "$credential_file_explorer" "$CREDENTIAL_FILE_EXPLORER_OPEN" "$railway_credentials_path" "$(metadata_status "${railway_credentials_path}")" "$gcloud_credentials_path" "$(metadata_status "${gcloud_credentials_path}")" "$gcloud_adc_path" "$(metadata_status "${gcloud_adc_path}")" "$github_credentials_path" "$(metadata_status "${github_credentials_path}")" "$expo_credentials_path" "$(metadata_status "${expo_credentials_path}")" "$eas_credentials_path" "$(metadata_status "${eas_credentials_path}")" "$REPO_CLONE_URL" "$repo_checkout_status" "$SKILLS_ROOT" "$workspace_skills_sync_status" "$OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH" "$openclaw_pod_skills_sync_skill_status" "$project_bootstrap_skill_status" "$codex_cli_auth_setup_skill_status" "$pod_role_bootstrap_skill_status" "$eas_robot_auth_setup_skill_status" "$stitch_adc_setup_skill_status" "$codex_role_workflow_skill_status" "$codex_interactive_repo_work_skill_status" "$WORKSPACE_AGENTS_PATH" "$workspace_agents_status" "$WORKSPACE_ORGANIZATIONS_PATH" "$workspace_organizations_status" "$expo_mcp_auth_status" "$expo_cli_auth_status" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
@@ -960,6 +961,7 @@ const [
   easRobotAuthSetupSkillStatus,
   stitchAdcSetupSkillStatus,
   codexRoleWorkflowSkillStatus,
+  codexInteractiveRepoWorkSkillStatus,
   workspaceAgentsPath,
   workspaceAgentsStatus,
   workspaceOrganizationsPath,
@@ -1069,6 +1071,7 @@ const report = {
     'eas-robot-auth-setup': easRobotAuthSetupSkillStatus,
     'stitch-adc-setup': stitchAdcSetupSkillStatus,
     'codex-role-workflow': codexRoleWorkflowSkillStatus,
+    'codex-interactive-repo-work': codexInteractiveRepoWorkSkillStatus,
   },
   workspace_agents: {
     path: workspaceAgentsPath,

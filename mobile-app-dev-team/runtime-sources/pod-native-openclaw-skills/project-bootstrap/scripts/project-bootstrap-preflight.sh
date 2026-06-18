@@ -214,6 +214,7 @@ node - "$REPORT_PATH" \
   "$(dir_status "${SKILLS_ROOT%/}/stitch-adc-setup")" \
   "$(dir_status "${SKILLS_ROOT%/}/eas-robot-auth-setup")" \
   "$(dir_status "${SKILLS_ROOT%/}/codex-role-workflow")" \
+  "$(dir_status "${SKILLS_ROOT%/}/codex-interactive-repo-work")" \
   "$(command_status codex)" \
   "$(command_status gh)" \
   "$(command_status railway)" \
@@ -279,6 +280,7 @@ const [
   stitchAdcSetupSkill,
   easRobotAuthSetupSkill,
   codexRoleWorkflowSkill,
+  codexInteractiveRepoWorkSkill,
   codexCli,
   ghCli,
   railwayCli,
@@ -370,6 +372,8 @@ const toolAuth = {
 const routing = {
   next_skill: 'codex-role-workflow',
   next_runtime_path: '/workspace/skills/codex-role-workflow/SKILL.md',
+  downstream_execution_contract: '/workspace/skills/codex-interactive-repo-work/SKILL.md',
+  downstream_execution_contract_when: 'codex_interactive_required: true',
   required_before_role_work: true,
   identity_sources: [
     '/workspace/SOUL.md',
@@ -420,6 +424,7 @@ requirePresent('missing /workspace/skills/project-bootstrap', projectBootstrapSk
 requirePresent('missing /workspace/skills/codex-cli-auth-setup', codexCliAuthSetupSkill);
 requirePresent('missing /workspace/skills/pod-role-bootstrap', podRoleBootstrapSkill);
 requirePresent('missing /workspace/skills/codex-role-workflow', codexRoleWorkflowSkill);
+requirePresent('missing /workspace/skills/codex-interactive-repo-work', codexInteractiveRepoWorkSkill);
 if (codexCli !== 'available') blockers.push('missing codex CLI');
 for (const [name, status] of [
   ['mobile-mcp', mobileMcp],
@@ -1015,6 +1020,7 @@ const report = {
     stitch_adc_setup: stitchAdcSetupSkill,
     eas_robot_auth_setup: easRobotAuthSetupSkill,
     codex_role_workflow: codexRoleWorkflowSkill,
+    codex_interactive_repo_work: codexInteractiveRepoWorkSkill,
   },
   routing,
   mcp: {

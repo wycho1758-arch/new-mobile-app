@@ -186,6 +186,13 @@ Common setup:
 - `/workspace/skills/codex-cli-auth-setup/SKILL.md`
 - `/workspace/skills/pod-role-bootstrap/SKILL.md`
 - `/workspace/skills/codex-role-workflow/SKILL.md`
+- `/workspace/skills/codex-interactive-repo-work/SKILL.md`
+
+`openclaw-pod-skills-sync` copy-syncs every
+`mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/<slug>` directory
+into `/workspace/skills/<slug>`. The `codex-interactive-repo-work` skill is a
+required common skill in that runtime snapshot so downstream managed-repo edits
+cannot proceed without the Codex CLI interactive PTY execution contract.
 
 Role-specific setup:
 
@@ -209,6 +216,13 @@ complete, apply `/workspace/skills/codex-role-workflow/SKILL.md` before any role
 work so the pod resolves the current role, entry case, allowed repo-local Codex
 skills, required reviewers, durable artifact stage, and human/external proof
 blocks from the managed repo SoT.
+
+If `codex-role-workflow` returns `codex_interactive_required: true`, the next
+execution contract is
+`/workspace/skills/codex-interactive-repo-work/SKILL.md`. `project-bootstrap`
+must verify that this skill was included in the `/workspace/skills` sync before
+role work starts; it must not let a role pod substitute direct file edits for
+the Codex CLI interactive PTY contract.
 
 The required routing identity sources are:
 

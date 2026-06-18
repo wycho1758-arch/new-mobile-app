@@ -67,7 +67,8 @@ make_source_tree() {
     pod-role-bootstrap \
     eas-robot-auth-setup \
     stitch-adc-setup \
-    codex-role-workflow
+    codex-role-workflow \
+    codex-interactive-repo-work
   do
     make_source_skill "${source_root}" "${slug}"
   done
@@ -117,7 +118,8 @@ case_copy_sync_all_pod_skills() {
     pod-role-bootstrap \
     eas-robot-auth-setup \
     stitch-adc-setup \
-    codex-role-workflow
+    codex-role-workflow \
+    codex-interactive-repo-work
   do
     [[ -f "${target_root}/${slug}/SKILL.md" ]]
     [[ -x "${target_root}/${slug}/scripts/${slug}.sh" ]]
@@ -240,7 +242,7 @@ case_no_symlink_runtime_snapshot() {
   make_source_tree "${source_root}"
   report_path="${tmpdir}/state/openclaw-pod-skills-sync-report.json"
   run_sync "${source_root}" "${target_root}" "${tmpdir}/AGENTS.md" "${report_path}"
-  for slug in project-bootstrap openclaw-pod-skills-sync codex-role-workflow; do
+  for slug in project-bootstrap openclaw-pod-skills-sync codex-role-workflow codex-interactive-repo-work; do
     [[ ! -L "${target_root}/${slug}" ]]
   done
   assert_json_field "${report_path}" "r.mode === 'copy'"

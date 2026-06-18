@@ -131,6 +131,11 @@ Then apply `/workspace/skills/codex-role-workflow/SKILL.md` to resolve the
 allowed repo-local skill, reviewer, durable artifact stage, stop conditions, and
 next action for that bootstrapped role.
 
+If that routing output sets `codex_interactive_required: true`, apply
+`/workspace/skills/codex-interactive-repo-work/SKILL.md` so managed-repo edits
+run through the scoped Codex CLI interactive PTY contract instead of direct
+role-agent file edits.
+
 Reading every runtime specification is not authorization to perform every role.
 The agent should read only the matching role runtime specification, then
 `codex-role-workflow`, and then follow the resolved allowed repo-local skill,
@@ -217,7 +222,9 @@ Every pod setup report based on this README must include:
   execution, external auth surfaces, GitHub branch protection, EAS submit, or
   other external platform state;
 - next action: read the matching runtime spec and
-  `/workspace/skills/codex-role-workflow/SKILL.md` only when ready, otherwise
+  `/workspace/skills/codex-role-workflow/SKILL.md` only when ready; if
+  `codex_interactive_required: true`, continue with
+  `/workspace/skills/codex-interactive-repo-work/SKILL.md`; otherwise
   ask the Product Delivery Lead for the required install/auth direction and rerun
   setup after the unblock action is complete.
 
@@ -262,6 +269,7 @@ runtime surface, not pasted into agent instructions.
 | `eas-robot-auth-setup` | `/workspace/skills/eas-robot-auth-setup/SKILL.md` | Verify QA/Release EAS CLI and Expo robot auth readiness as status only before any human-gated EAS/Maestro run. |
 | `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify pod-wide Google ADC and Stitch MCP readiness as status-only setup evidence for every operating role. Live Stitch work still requires approved role scope and gates. |
 | `codex-role-workflow` | `/workspace/skills/codex-role-workflow/SKILL.md` | Resolve a role pod to allowed repo-local Codex skills, reviewers, durable artifact stage, stop conditions, and status-only next action without doing role work. |
+| `codex-interactive-repo-work` | `/workspace/skills/codex-interactive-repo-work/SKILL.md` | Require scoped Codex CLI interactive PTY execution for managed-repo edits after `codex-role-workflow` returns `codex_interactive_required: true`. |
 
 ## Per-Role Required Pod Skills
 
@@ -277,9 +285,9 @@ bypass approved role scope.
 
 | Operating Role | Required pod-native skills |
 | --- | --- |
-| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
-| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
-| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
-| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
-| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |
-| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow` |
+| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |
+| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |
+| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |
+| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |
+| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |
+| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |

@@ -67,6 +67,28 @@ If the managed repository root differs, use the root declared by project-bootstr
 
 If `workflows/entry-case-routing.md` cannot be read from the managed repository root, return `blocked` with `blocked_reason: missing accepted entry-case routing SoT`. Do not infer the routing overlay from memory or from a stale copy under `/workspace/skills`.
 
+## Codex Interactive Execution Boundary
+
+This skill does not launch Codex, start a PTY, edit files, or run implementation
+commands. It only returns status-only routing.
+
+When a routed role action is allowed to edit the managed repository, return an
+explicit execution contract pointer:
+
+- `codex_interactive_required: true`
+- `codex_execution_contract: /workspace/skills/codex-interactive-repo-work/SKILL.md`
+
+Direct role-agent file edits under `/workspace/projects/Wondermove-Inc/new-mobile-app`
+are forbidden for managed repo implementation work after routing. The role pod
+must use the `codex-interactive-repo-work` contract so repository edits happen
+inside a scoped Codex CLI interactive PTY session.
+
+The status-only routing result must remind the role pod that the interactive
+Codex session is constrained by the approved role scope, the resolved
+repo-local Codex skill, `$wm` planning and read-only reviewer gates, applicable
+tests-first evidence, and the final `git diff`, validation output, reviewer
+evidence, and `git status --short` completion checks.
+
 ## Role Matrix
 
 | Operating Role | Allowed repo-local Codex skills | Primary reviewers | Durable artifact stage |
@@ -166,7 +188,8 @@ Apply these rules:
 5. Block out-of-role work instead of absorbing ownership.
 6. Block any human gate, failed-gate risk acceptance, production-submit, billing, privacy, legal, external messaging, business/budget owner decision, irreversible scope tradeoff, or external proof decision until the required human owner has approved it.
 7. Block secret exposure requests. Do not print auth token values, credential values, private account values, or secret file contents.
-8. Remind the role pod that implementation completion requires reviewer evidence, `git diff`, and `git status --short` before reporting Done.
+8. For routed managed-repo implementation work, set `codex_interactive_required: true` and point `codex_execution_contract` to `/workspace/skills/codex-interactive-repo-work/SKILL.md`; do not launch Codex or edit files from this skill.
+9. Remind the role pod that implementation completion requires reviewer evidence, `git diff`, and `git status --short` before reporting Done.
 
 ## Output Contract
 
@@ -188,6 +211,8 @@ Include:
 - `blocked_reason` when status is `blocked`;
 - `not_applicable_reason` when status is `not_applicable`;
 - `human_gate_or_external_proof_blocker`;
+- `codex_interactive_required`;
+- `codex_execution_contract`;
 - `next_action`;
 - `secret_safety_statement`;
 - `external_proof_boundary`.
@@ -212,6 +237,7 @@ required_reviewers: po-planning-reviewer
 durable_artifact_stage: 00-product-planning
 process_sot: mobile-app-dev-team/workflows/entry-case-routing.md
 next_action: clarify facts, assumptions, unknowns, non-goals, and readiness state
+codex_interactive_required: false
 ```
 
 Direct implementation request without readiness:
@@ -223,6 +249,7 @@ entry_case: direct_implementation_language
 readiness_state_or_required_gate: accepted task packet plus READY_FOR_EXECUTION required
 blocked_reason: direct implementation language cannot bypass Product/Planning intake
 next_action: route to po-work-unit-planning-and-agent-sprint or po-planning-completeness-review
+codex_interactive_required: false
 ```
 
 Design not applicable route:
@@ -234,6 +261,7 @@ entry_case: design_relevance
 not_applicable_reason: no layout, interaction, or visual hierarchy is introduced or changed
 durable_artifact_stage: 01-design
 next_action: record durable non-goal evidence before marking 01-design not_applicable
+codex_interactive_required: false
 ```
 
 Production-submit route:
@@ -245,6 +273,7 @@ entry_case: human_gate_or_external_proof
 readiness_state_or_required_gate: production-submit human-gate/v1
 human_gate_or_external_proof_blocker: production-submit requires human approval plus rollback_owner and rollback_plan
 external_proof_boundary: repo-local evidence does not prove store submission or production readiness
+codex_interactive_required: false
 ```
 
 Proactive report route:
@@ -255,4 +284,21 @@ status: ready
 entry_case: proactive_report
 routing_reason: proactive report requires Product/Planning triage and no-auto-execution
 next_action: classify as REJECT, NON_GOAL, BACKLOG_CANDIDATE, SPRINT_IMPROVEMENT, HUMAN_DECISION_REQUIRED, or RUNTIME_CAPABILITY_BLOCKED
+codex_interactive_required: false
+```
+
+Ready downstream implementation route:
+
+```text
+schema: codex-role-workflow/v1
+status: ready
+resolved_role: Mobile App Dev
+entry_case: direct_implementation_language
+readiness_state_or_required_gate: accepted task packet plus READY_FOR_EXECUTION
+allowed_repo_local_codex_skills: mobile-app-dev-workflow
+required_reviewers: wm-implementation-reviewer
+durable_artifact_stage: 04-mobile-app
+codex_interactive_required: true
+codex_execution_contract: /workspace/skills/codex-interactive-repo-work/SKILL.md
+next_action: run the Codex interactive execution contract from the managed repo root with approved scope only
 ```

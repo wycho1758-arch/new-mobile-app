@@ -41,7 +41,8 @@ preflight report. That report has this shape:
     "pod-role-bootstrap": "present | missing",
     "eas-robot-auth-setup": "present | missing",
     "stitch-adc-setup": "present | missing",
-    "codex-role-workflow": "present | missing"
+    "codex-role-workflow": "present | missing",
+    "codex-interactive-repo-work": "present | missing"
   },
   "workspace_agents": {
     "path": "/workspace/AGENTS.md",
@@ -319,11 +320,14 @@ enforcement policy.
     "pod_role_bootstrap": "present | missing",
     "stitch_adc_setup": "present | missing",
     "eas_robot_auth_setup": "present | missing",
-    "codex_role_workflow": "present | missing"
+    "codex_role_workflow": "present | missing",
+    "codex_interactive_repo_work": "present | missing"
   },
   "routing": {
     "next_skill": "codex-role-workflow",
     "next_runtime_path": "/workspace/skills/codex-role-workflow/SKILL.md",
+    "downstream_execution_contract": "/workspace/skills/codex-interactive-repo-work/SKILL.md",
+    "downstream_execution_contract_when": "codex_interactive_required: true",
     "required_before_role_work": true,
     "identity_sources": [
       "/workspace/SOUL.md",

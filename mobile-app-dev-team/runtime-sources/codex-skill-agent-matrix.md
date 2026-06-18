@@ -64,6 +64,11 @@ The role-aware pod bridge is `codex-role-workflow`; it resolves a bootstrapped
 pod role to allowed repo-local Codex skills, reviewers, durable artifact stage,
 and stop conditions before role work proceeds.
 
+The managed-repo execution contract is `codex-interactive-repo-work`; it is used
+after `codex-role-workflow` returns `codex_interactive_required: true` so
+approved repository edits run inside a scoped Codex CLI interactive PTY session
+instead of direct role-agent file edits.
+
 Do not place repo-local Codex skills or agents in that pod-native skill tree.
 Repo-local Codex artifacts remain under `.agents/skills/<slug>/SKILL.md` and
 `.codex/agents/<agent>.toml`.

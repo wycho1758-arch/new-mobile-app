@@ -137,13 +137,14 @@ requireTerms(errors, `${podNativeRoot}/README.md`, [
   'Do not send secrets in chat',
   'Do not place repo-local Codex CLI artifacts here',
   '## Per-Role Required Pod Skills',
-  '| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
-  '| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
-  '| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
-  '| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
-  '| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow` |',
-  '| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow` |',
+  '| Product/Planning | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |',
+  '| Design | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |',
+  '| Mobile Architect | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |',
+  '| Mobile App Dev | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |',
+  '| Backend/API Integrator | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |',
+  '| QA/Release | `codex-cli-auth-setup`, `pod-role-bootstrap`, `stitch-adc-setup`, `eas-robot-auth-setup`, `codex-role-workflow`, `codex-interactive-repo-work` |',
   'codex-role-workflow',
+  'codex-interactive-repo-work',
 ], 'pod-native runtime source');
 
 requireTerms(errors, organizationsPath, [
@@ -196,6 +197,7 @@ requirePodNativeSkill(`${podNativeRoot}/project-bootstrap`, 'project-bootstrap',
 requirePodNativeSkill(`${podNativeRoot}/openclaw-pod-skills-sync`, 'openclaw-pod-skills-sync', 'sync-pod-skills.sh');
 requirePodNativeSkill(`${podNativeRoot}/eas-robot-auth-setup`, 'eas-robot-auth-setup', 'eas-robot-auth-precheck.sh');
 requirePodNativeSkill(`${podNativeRoot}/stitch-adc-setup`, 'stitch-adc-setup', 'stitch-adc-precheck.sh');
+requirePodNativeSkill(`${podNativeRoot}/codex-interactive-repo-work`, 'codex-interactive-repo-work', 'codex-interactive-preflight.sh');
 
 requireTerms(errors, `${podNativeRoot}/openclaw-pod-skills-sync/SKILL.md`, [
   '/workspace/ORGANIZATIONS.md',
@@ -222,6 +224,12 @@ requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
   'must not block bootstrap or preflight by itself',
   'must not parse reporting lines, approval boundaries, or role contracts',
 ], 'project bootstrap organizations guidance');
+requireTerms(errors, `${podNativeRoot}/project-bootstrap/SKILL.md`, [
+  '/workspace/skills/codex-interactive-repo-work/SKILL.md',
+  'codex_interactive_required: true',
+  'copy-syncs every',
+  'must verify that this skill was included',
+], 'project bootstrap interactive contract');
 
 requireTerms(errors, `${podNativeRoot}/project-bootstrap/scripts/project-bootstrap-agent-setup.sh`, [
   'PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH',
@@ -229,12 +237,15 @@ requireTerms(errors, `${podNativeRoot}/project-bootstrap/scripts/project-bootstr
   'OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH',
   'guidance_artifacts',
   'not_enforced_by_this_report',
+  'codex-interactive-repo-work',
 ], 'project bootstrap organizations guidance');
 
 requireTerms(errors, `${podNativeRoot}/project-bootstrap/scripts/project-bootstrap-preflight.sh`, [
   'PROJECT_BOOTSTRAP_WORKSPACE_ORGANIZATIONS_PATH',
   'guidance_artifacts',
   'not_enforced_by_preflight',
+  'codex_interactive_repo_work',
+  'missing /workspace/skills/codex-interactive-repo-work',
 ], 'project bootstrap organizations guidance');
 
 requireTerms(errors, `${podNativeRoot}/pod-role-bootstrap/SKILL.md`, [
@@ -265,6 +276,9 @@ requireTerms(errors, `${podNativeRoot}/codex-role-workflow/SKILL.md`, [
   'description:',
   'human-gate/v1',
   'repo-local Codex skills',
+  'Codex Interactive Execution Boundary',
+  'codex_interactive_required',
+  '/workspace/skills/codex-interactive-repo-work/SKILL.md',
 ], 'pod-native role workflow skill');
 
 const podRuntimeSpecs = [

@@ -267,6 +267,12 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - After clone or pull, run `openclaw-pod-skills-sync` before `project-bootstrap`.
   - Source: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/`.
   - Runtime shape: `/workspace/skills/project-bootstrap/SKILL.md`.
+  - Required routing bridge: `/workspace/skills/codex-role-workflow/SKILL.md`.
+  - Required managed-repo execution contract:
+    `/workspace/skills/codex-interactive-repo-work/SKILL.md`; `project-bootstrap`
+    must verify it is present in `/workspace/skills` after
+    `openclaw-pod-skills-sync`, and role pods use it when
+    `codex-role-workflow` returns `codex_interactive_required: true`.
   - Default boram checkout: `/workspace/projects/Wondermove-Inc/new-mobile-app`.
   - Required managed path registry: `/workspace/CODEX_MANAGED_PATHS.md`.
   - Default report: `/workspace/state/project-bootstrap-report.json`.
