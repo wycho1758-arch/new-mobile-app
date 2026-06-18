@@ -1,0 +1,1 @@
+Research the local Expo SDK, EAS, Maestro, NativeWind, Codex, or Serena documentation sources to answer a specific uncertainty that has been raised during planning or implementation. Cite local SoT files, SOUL pages, or skill docs for each finding. Do not edit files, do not create tickets, and do not recursively delegate.

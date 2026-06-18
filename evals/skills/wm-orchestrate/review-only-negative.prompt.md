@@ -1,0 +1,1 @@
+Review the current work-unit status.json and resolver output for role-mismatch risks, missing human-gate decisions, and reviewer evidence gaps. Do not edit files, do not apply any status.json transition, and do not advance or resume any blocked stage.

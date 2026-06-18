@@ -1,0 +1,1 @@
+Describe the general concept of work-unit orchestration in an Expo monorepo without reading a status.json, running the next-action resolver, or following any role-boundary or gate rules from this repository.

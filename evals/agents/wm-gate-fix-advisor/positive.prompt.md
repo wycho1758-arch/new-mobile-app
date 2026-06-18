@@ -1,0 +1,1 @@
+Triage the failing gate, test, build, or evidence output and advise on likely root causes and next fix actions. Cite the specific failed command output, error message, and relevant local SoT or skill reference for each finding. Do not edit files, do not mark failed gates as passed, and do not recursively delegate.

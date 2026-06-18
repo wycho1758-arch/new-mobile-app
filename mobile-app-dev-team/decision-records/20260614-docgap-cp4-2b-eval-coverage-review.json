@@ -1,0 +1,95 @@
+{
+  "verdict": "GO",
+  "reviewer": "wm-implementation-reviewer",
+  "mode": "final",
+  "scope": {
+    "baseline": "bd18fb7949493269fc558ed4d2c90ae88d7e8f80",
+    "target": "worktree:chore/doc-gap-remediation",
+    "paths_reviewed": [
+      "AGENTS.md",
+      "PROJECT_ENVIRONMENT.md",
+      "evals/skills/wm-orchestrate/positive.prompt.md",
+      "evals/skills/wm-orchestrate/negative.prompt.md",
+      "evals/skills/wm-orchestrate/review-only-negative.prompt.md",
+      "evals/agents/wm-docs-researcher/positive.prompt.md",
+      "evals/agents/wm-docs-researcher/negative.prompt.md",
+      "evals/agents/wm-gate-fix-advisor/positive.prompt.md",
+      "evals/agents/wm-gate-fix-advisor/negative.prompt.md",
+      "evals/agents/po-docs-researcher/positive.prompt.md",
+      "evals/agents/po-docs-researcher/negative.prompt.md",
+      "evals/agents/design-researcher/positive.prompt.md",
+      "evals/agents/design-researcher/negative.prompt.md",
+      "evals/hooks/COVERAGE.md",
+      ".codex/hooks.json",
+      ".codex/hooks/mobile-pretool-policy.mjs",
+      ".codex/hooks/mobile-posttool-evidence-reminder.mjs",
+      ".codex/hooks/mobile-stop-gatekeeper-advisory.mjs",
+      ".codex/hooks/mobile-stop-call-check.mjs",
+      ".codex/hooks/mobile-subagent-context.mjs",
+      ".codex/hooks/shared.mjs",
+      "scripts/validate-runtime-artifacts.mjs",
+      "scripts/test-hooks.mjs",
+      "package.json",
+      ".evidence/reviews/20260614-docgap-cp4-2b-eval-coverage-prompt.md"
+    ]
+  },
+  "findings": [],
+  "checks_reviewed": [
+    {
+      "command": "source review: scope against AGENTS.md, PROJECT_ENVIRONMENT.md, and affected paths",
+      "status": "PASS",
+      "evidence": "Runtime eval/evidence paths are in scope at AGENTS.md:24-31 and AGENTS.md:89-95; required runtime gates are documented at PROJECT_ENVIRONMENT.md:14-20; git status shows additive untracked eval/evidence files only."
+    },
+    {
+      "command": "source review: wm-orchestrate eval fixture validator conditions",
+      "status": "PASS",
+      "evidence": "Validator conditional checks are at scripts/validate-runtime-artifacts.mjs:337-350; fixtures satisfy them at evals/skills/wm-orchestrate/positive.prompt.md:1, evals/skills/wm-orchestrate/negative.prompt.md:1, and evals/skills/wm-orchestrate/review-only-negative.prompt.md:1."
+    },
+    {
+      "command": "source review: advisory wm agent fixtures and no verdict-envelope language",
+      "status": "PASS",
+      "evidence": "Non-verdict advisory agents are listed at scripts/validate-runtime-artifacts.mjs:42-47 and barred from reviewer-envelope terms at scripts/validate-runtime-artifacts.mjs:317-321; new prompts are advisory/read-only at evals/agents/wm-docs-researcher/positive.prompt.md:1 and evals/agents/wm-gate-fix-advisor/positive.prompt.md:1, matching existing conventions at evals/agents/po-docs-researcher/positive.prompt.md:1 and evals/agents/design-researcher/positive.prompt.md:1."
+    },
+    {
+      "command": "source review: eval registry/snapshot/manifest requirement",
+      "status": "PASS",
+      "evidence": "Current validation discovers skills from .agents/skills at scripts/validate-runtime-artifacts.mjs:155-158 and applies optional eval checks when files exist at scripts/validate-runtime-artifacts.mjs:337-350; repo-wide search found no separate evals/skills or evals/agents manifest/snapshot registry requiring updates for these new dirs."
+    },
+    {
+      "command": "source review: evals/hooks/COVERAGE.md factual accuracy",
+      "status": "PASS",
+      "evidence": "Hook wiring lists SessionStart, PreToolUse, PostToolUse, and Stop at .codex/hooks.json:3-60; coverage doc names five hooks plus shared.mjs at evals/hooks/COVERAGE.md:11-25; informational hooks only emit hookSpecificOutput at .codex/hooks/mobile-posttool-evidence-reminder.mjs:10-22 and .codex/hooks/mobile-subagent-context.mjs:6-10; enforcement coverage is represented in scripts/test-hooks.mjs:190-635."
+    },
+    {
+      "command": "node scripts/validate-runtime-artifacts.mjs",
+      "status": "PASS",
+      "evidence": "Local read-only run exited 0 with output: Validated 14 skills, 13 agents, and 4 hook events."
+    },
+    {
+      "command": "node scripts/test-hooks.mjs",
+      "status": "PASS",
+      "evidence": "Full gate PASS / exit 0 is recorded in the supplied review evidence at .evidence/reviews/20260614-docgap-cp4-2b-eval-coverage-prompt.md:20; independent sandbox rerun was not usable because local listener setup failed with EPERM on 127.0.0.1, which is an environment restriction rather than a source finding."
+    },
+    {
+      "command": "validate, test-local-harness --stage all, validate:team-doc, validate:evidence-hygiene",
+      "status": "PASS",
+      "evidence": "Reported as all PASS / exit 0 in the supplied review evidence at .evidence/reviews/20260614-docgap-cp4-2b-eval-coverage-prompt.md:20."
+    },
+    {
+      "command": "mobile-mcp / native visual QA",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No mobile UI, React Native runtime, selector, or native behavior files are changed; the reviewed scope is eval prompt/documentation coverage only."
+    },
+    {
+      "command": "API contract drift review",
+      "status": "NOT_APPLICABLE",
+      "evidence": "No apps/api, apps/mobile API integration, or packages/contracts source files are changed; AGENTS.md:91-104 contract rules are not touched by this eval-only scope."
+    }
+  ],
+  "residual_risks": [
+    "Reviewed target files are currently untracked in the local worktree and must be added before commit/PR so the intended coverage is included.",
+    "Full hook harness rerun could not be independently completed in this reviewer sandbox because binding 127.0.0.1 is denied; source review and supplied PASS evidence were used for the gate verdict.",
+    "No mobile UI/runtime code changed, so mobile-mcp/native visual QA is correctly not applicable for this review scope."
+  ],
+  "next_action": "proceed"
+}

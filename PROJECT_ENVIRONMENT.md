@@ -277,6 +277,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - tracked Claude Code helper artifacts:
     - `CLAUDE.md`
     - `.claude/skills/`
+    - `.claude/agents/reviewer.md` (read-only bridge that dispatches to Codex reviewers via `scripts/codex-headless-review.mjs`; not a reviewer-logic port — full Codex→Claude reviewer ports remain deferred)
   - ignored transient Claude local state:
     - `.claude/memory/`
     - `.claude-state/`
@@ -340,7 +341,7 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - EAS CLI remains the baseline exception until QA/Release EAS work or another approved EAS action is selected.
 - Runtime scripts:
   - `scripts/validate-runtime-artifacts.mjs`
-    - The root `validate` package script removes transient `.claude-state/` before running this validator, while the validator itself requires only `.claude-state/` to remain covered by `.gitignore`. Tracked Claude Code helper artifacts such as `CLAUDE.md` and `.claude/skills/` are documentation/helper files, not active Codex runtime inputs.
+    - The root `validate` package script removes transient `.claude-state/` before running this validator, while the validator itself requires only `.claude-state/` to remain covered by `.gitignore`. Tracked Claude Code helper artifacts such as `CLAUDE.md`, `.claude/skills/`, and the `.claude/agents/reviewer.md` bridge are documentation/helper files, not active Codex runtime inputs.
   - `scripts/codex-headless-review.mjs`
     - Codex-only read-only helper: `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
     - no Claude, `--engine auto`, or `review_engine_preference` fallback path.

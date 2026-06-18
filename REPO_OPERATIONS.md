@@ -51,6 +51,26 @@ Do not delete, rewrite, or migrate `team-doc/00-source/` or
 Classify each reference first as current invariant, source/export integrity,
 generated/reference traceability, migration evidence, or accidental coupling.
 
+## Plan Lifecycle
+
+Planning documents move through three layers with different durability and gate
+coupling:
+
+- `docs/plans/active/` is an intentionally gitignored, local scratch workspace
+  for in-progress planning. It is not tracked, not shared through PRs, and not a
+  durable SoT. Do not treat files there as committed plan state, and do not
+  schedule them for repo cleanup or archival — they never enter git history.
+  Durable execution handoff must use commits, PRs, `.evidence/`, and
+  `docs/plans/work-units/`.
+- `docs/plans/work-units/` is the tracked, durable work-unit structure enforced
+  by `scripts/validate-work-units.mjs`. Work that must survive across sessions or
+  drive role handoffs belongs here, not in `active/`.
+- `mobile-app-dev-team/_archive/` holds completed team-level plans retained for
+  history. A tracked plan becomes archive-eligible once its PR is merged and its
+  status is terminal; move it there, preserving any source-map crosswalk entries
+  validated by `scripts/validate-team-doc.mjs`, rather than leaving terminal
+  plans in place indefinitely.
+
 ## Source And Archive Rules
 
 `team-doc/00-source/` is immutable source/export evidence by default. If it is
@@ -85,6 +105,14 @@ snapshot: after clone or pull, it copy-syncs
 `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills` into `/workspace/skills`.
 It does not replace the repo SoT, and `/workspace/skills` remains only a
 runtime snapshot.
+
+A skill's only required entrypoint is its `SKILL.md`. An optional
+`references/sot.md` pointer is a convenience SoT aid used by some role skills
+(currently the write-side `mobile-app-dev-workflow` and
+`mobile-backend-api-integrator-workflow`); it is not a required artifact and its
+presence is intentionally not uniform across skills. Validators do not require
+`references/sot.md`, so its absence on a skill such as `mobile-architect-workflow`
+is an accepted exception, not a gap.
 
 ### Codex-only Repo Work Policy
 
@@ -137,7 +165,13 @@ concept is stored in two locations:
 
 - Codex CLI custom agent: `.codex/agents/<name>.toml` (TOML; the internal `name` field
   is the identity source of truth, the filename is conventional)
-- Claude Code custom agent: `.claude/agents/<name>.md` (markdown; standard path only; currently not generated)
+- Claude Code custom agent: `.claude/agents/<name>.md` (markdown; standard path only; currently not generated for reviewer-logic ports).
+  The sole generated file is `.claude/agents/reviewer.md`, a read-only **bridge** that
+  dispatches to the five Codex verdict reviewers (`wm-implementation-reviewer`,
+  `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`,
+  `design-reviewer`) and the `po-docs-researcher` researcher via
+  `scripts/codex-headless-review.mjs` and relays the result. The bridge is not a port of
+  reviewer logic; full Codex→Claude reviewer ports remain deferred/NO_GO.
 
 ### AGENTS.md (a distinct third concept)
 
@@ -200,6 +234,23 @@ or auditing `TEAM_DOC_ARCHIVE_MANIFEST.json`, `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`,
 historical `team-doc/00-source/`, historical `team-doc/10-structured/`, `_meta`
 source maps, or migration crosswalks. Do not treat that command as proof that
 the legacy Confluence-shaped corpus is current team/runtime SoT.
+
+`validate:team-doc-archive` is intentionally a manual, dedicated-trigger gate. It
+is deliberately excluded from `test:runtime` and from the default CI runtime
+composition, and `scripts/validate-repo-operations.mjs` fails the build if
+`test:runtime` ever includes it. This keeps the historical archive/reference
+corpus check out of the active runtime gate.
+
+No automated gate runs `validate:team-doc-archive`. The change-detection filter
+in `.github/workflows/quality-gate.yml` only triggers `pnpm run
+test:local-harness`, and `test:local-harness` composes `test:runtime`, which
+excludes the archive validator; the filter also does not list the root archive
+SoT files `TEAM_DOC_ARCHIVE_MANIFEST.json` or `TEAM_DOC_ARCHIVE_BUNDLE.jsonl`.
+Archive integrity is therefore enforced solely by running
+`validate:team-doc-archive` manually whenever you change those root archive files
+or the historical source/reference corpus. Treat that manual run as a required
+step of any archive-affecting change. It is not, and must not become, part of
+`test:runtime`.
 
 ## Local Harness Applicability
 

@@ -27,3 +27,7 @@ Migrated records:
   expedited hotfix governance decision.
 - `20260614-followup1-precise-rule-decision.md` — `production-submit`
   rollback field validation decision.
+- `20260614-docgap-*` — reviewer prompts and verdicts for the CP-3/CP-4
+  documentation gap remediation package.
+- `20260614-reviewer-bridge-*` — reviewer prompts, verdicts, and gate record for
+  the Claude reviewer bridge stacked PR.

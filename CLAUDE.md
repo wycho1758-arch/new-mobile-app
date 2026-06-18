@@ -44,9 +44,29 @@ or any write-capable executor.
 - **best-practices** — directly-invocable curated coding-rules library (TS, RN-applicable React,
   backend/contract, testing) with a role→rules index (`rules/_role-index.md`). Trigger: `/best-practices [role|topic]`.
 
+## Reviewer bridge agent (`.claude/agents/reviewer.md`, generated)
+
+`.claude/agents/reviewer.md` exists and is the one generated Claude Code custom agent.
+It is a **bridge, not a port**: it does not re-implement reviewer logic in Claude. When
+the user says "reviewer", it routes the request to the correct Codex reviewer and invokes
+it through `scripts/codex-headless-review.mjs`, then relays the verdict/answer verbatim.
+Routing (five Codex verdict reviewers + one researcher): implementation/diff/tests/
+evidence/PR → `wm-implementation-reviewer`; API contract/schemas/auth → `wm-contract-reviewer`;
+planning/PRD/tasks/Design P0·P1 → `po-planning-reviewer`; scope/non-goals/human-gates/risk
+→ `po-scope-gate-reviewer`; Stitch/design handoff/DESIGN.md/design quality → `design-reviewer`;
+SoT/research questions → `po-docs-researcher` (researcher, no verdict). The explicitly
+requested primary four are wm-implementation/po-planning/po-scope-gate/po-docs-researcher;
+contract and design routes are included so no review situation is silently dropped. It uses
+no Edit/Write tools and never modifies repo source or approves gates — it only emits its own
+review prompt and the wrapper's evidence file under `.evidence/reviews/` — and must not soften
+verdicts.
+The full Codex→Claude reviewer ports below remain deferred/NO_GO; this bridge does not
+change that.
+
 ## Deferred read-only custom agent ports (not generated)
 These Codex read-only custom agents are authoritative under `.codex/agents/<name>.toml`
-and are only candidates for future Claude Code ports under `.claude/agents/<name>.md`.
+and are only candidates for future Claude Code ports under `.claude/agents/<name>.md`
+(the `reviewer` bridge agent above is not such a port).
 Verdict-producing reviewers (emit JSON verdict envelope): `wm-implementation-reviewer`, `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`, `design-reviewer`.
 Researchers/advisors (advisory only): `wm-docs-researcher`, `wm-gate-fix-advisor`, `po-docs-researcher`, `design-researcher`.
 Mobile reviewers/advisors: `mobile-implementation-reviewer`, `mobile-contract-reviewer`, `mobile-docs-researcher`, `mobile-gate-fix-advisor`.
