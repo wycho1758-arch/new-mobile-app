@@ -160,6 +160,17 @@ Before reporting Done, include:
 - `git diff` material summary;
 - `git status --short`.
 
+Backend/API Integrator workflow Review meetings follow the accepted
+`wm-meeting-process` baseline and the Product/Planning meeting-process
+reference in `Product_Planning_WORKFLOW.md`. If in-scope `change-required`
+feedback is raised, the Review meeting stops and the correction proceeds through
+1:1 corrective follow-up. The next Review meeting may resume only after the
+corrective PR/review/merge is complete or a recorded no-change decision exists.
+
+This reference does not change Backend/API ownership, Mobile Architect
+co-review boundary, Design/Mobile App Dev/QA handoff ownership, reviewer gates,
+human approval, Codex execution contracts, or release approval.
+
 ## 0D. Secret, Human-Gate, Production, And External-Proof Boundaries
 
 Do not print, persist, request, or commit tokens, credentials, private `.env`
@@ -303,6 +314,7 @@ Backend/API Integrator coordinates with:
 | Role | Handoff purpose |
 | --- | --- |
 | Product/Planning | approved API/backend scope, non-goals, human gates, risk acceptance, and work-unit readiness |
+| Design | API-backed data, auth/session behavior, error states, permission-denied states, API contract status uncertainty, and `01-design/handoff-index.md` dependency notes flow into Backend/API-owned `03-contract-api` contract/status artifacts or equivalent contract/status pointers. Design does not define or change API contracts; Backend/API Integrator does not approve Design quality. |
 | Mobile Architect | contract impact, route/state impact, runtime/dependency risk, API co-sign, and route/service/db boundary |
 | Mobile App Dev | stable contract, mock/fixture paths, compatibility notes, loading/retry/error behavior, and API-backed implementation readiness |
 | QA/Release | runtime smoke expectations, deployment config note, rollback note, service evidence, and release-readiness evidence planning |
