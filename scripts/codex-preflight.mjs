@@ -2,10 +2,15 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  createActualCodexResolver,
+  createFixtureCodexResolver,
+  selectCodexBinary,
+  unique,
+} from './lib/codex-binary-resolver.mjs';
 
 const FIXTURE_DIR = 'evals/local-harness/preflight/fixtures';
 const RESULT_FILE = 'evals/local-harness/results/preflight.json';
-const DEFAULT_CANDIDATES = ['/opt/homebrew/bin/codex', '/usr/local/bin/codex'];
 const READ_ONLY_SMOKE_ARGS = ['exec', '--sandbox', 'read-only', 'Return exactly: LOCAL_CODEX_HEADLESS_OK'];
 
 function parseArgs(argv) {
@@ -17,41 +22,12 @@ function parseArgs(argv) {
   };
 }
 
-function unique(items) {
-  return [...new Set(items.filter(Boolean))];
-}
-
-function candidatePaths(env = process.env) {
-  return unique([env.CODEX_BIN, ...DEFAULT_CANDIDATES]);
-}
-
-function normalizeVersion(stdout) {
-  return stdout.trim().split('\n')[0] || '';
-}
-
-function expectedArch(unameMachine) {
-  if (unameMachine === 'arm64' || unameMachine === 'aarch64') return 'arm64';
-  if (unameMachine === 'x86_64' || unameMachine === 'amd64') return 'x86_64';
-  return unameMachine;
-}
-
-function fileMatchesHostArch(fileOutput, unameMachine) {
-  const detectedArch = fileArch(fileOutput);
-  if (detectedArch === 'unknown') return true;
-  return detectedArch === expectedArch(unameMachine);
-}
-
-function fileArch(fileOutput) {
-  if (/\barm64\b|aarch64/i.test(fileOutput)) return 'arm64';
-  if (/\bx86_64\b|amd64/i.test(fileOutput)) return 'x86_64';
-  return 'unknown';
-}
-
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd,
     encoding: 'utf8',
     timeout: options.timeoutMs || 30000,
+    shell: options.shell || false,
   });
 
   return {
@@ -62,13 +38,13 @@ function run(command, args, options = {}) {
 }
 
 function createActualResolver() {
+  const codexResolver = createActualCodexResolver();
   return {
     platform: () => process.platform,
-    unameMachine: () => {
-      const arm64Capable = run('sysctl', ['-n', 'hw.optional.arm64']);
-      if (arm64Capable.status === 0 && arm64Capable.stdout.trim() === '1') return 'arm64';
-      return run('/usr/bin/uname', ['-m']).stdout.trim() || run('uname', ['-m']).stdout.trim();
-    },
+    unameMachine: () => codexResolver.hostArch(),
+    hostArch: () => codexResolver.hostArch(),
+    candidatePaths: (env = process.env) => codexResolver.candidatePaths(env),
+    probeCandidate: (candidate, unameMachine) => codexResolver.probeCandidate(candidate, unameMachine),
     command: (name) => {
       const commands = {
         nodeVersion: () => ({ status: 0, stdout: `${process.version}\n`, stderr: '' }),
@@ -92,124 +68,86 @@ function createActualResolver() {
       }
     },
     codexConfigExists: () => fs.existsSync('.codex/config.toml'),
-    probeCandidate: (candidate, unameMachine) => {
-      let executable = false;
-      try {
-        fs.accessSync(candidate, fs.constants.X_OK);
-        executable = true;
-      } catch {
-        executable = false;
-      }
-
-      const baseProbe = {
-        path: candidate,
-        exists: fs.existsSync(candidate),
-        executable,
-        fileOutput: run('file', [candidate]).stdout.trim(),
-      };
-
-      if (!baseProbe.exists || !baseProbe.executable || !fileMatchesHostArch(baseProbe.fileOutput, unameMachine)) {
-        return {
-          ...baseProbe,
-          version: { status: null, stdout: '', stderr: 'not executed before arch validation' },
-          execHelp: { status: null, stdout: '', stderr: 'not executed before arch validation' },
-          smoke: { status: null, stdout: '', stderr: 'not executed before arch validation' },
-        };
-      }
-
-      return {
-        ...baseProbe,
-        version: run(candidate, ['--version']),
-        execHelp: run(candidate, ['exec', '--help']),
-        smoke: run(candidate, READ_ONLY_SMOKE_ARGS, { timeoutMs: 60000 }),
-      };
-    },
   };
 }
 
 function createFixtureResolver(fixture) {
-  const byPath = new Map(fixture.candidates.map((candidate) => [candidate.path, candidate]));
+  const codexResolver = createFixtureCodexResolver(fixture);
   return {
     platform: () => fixture.platform || 'darwin',
     unameMachine: () => fixture.unameMachine,
+    hostArch: () => fixture.unameMachine,
+    candidatePaths: (env = fixture.env || {}) => codexResolver.candidatePaths(env),
     command: (name) => fixture.commands?.[name] || { status: 1, stdout: '', stderr: `missing fixture command: ${name}` },
     readWorkspaceIdentity: () => fixture.files?.workspaceIdentity || '',
     codexConfigExists: () => Boolean(fixture.files?.codexConfigToml),
-    probeCandidate: (candidatePath) => byPath.get(candidatePath) || {
-      path: candidatePath,
-      exists: false,
-      executable: false,
-      fileOutput: '',
-      version: { status: 1, stdout: '', stderr: 'missing fixture candidate' },
-      execHelp: { status: 1, stdout: '', stderr: 'missing fixture candidate' },
-      smoke: { status: 1, stdout: '', stderr: 'missing fixture candidate' },
-    },
+    probeCandidate: (candidatePath, unameMachine) => codexResolver.probeCandidate(candidatePath, unameMachine),
   };
 }
 
-function rejection(reason, candidate, detail = {}) {
-  return {
-    path: candidate.path,
-    accepted: false,
-    reason,
-    fileArch: fileArch(candidate.fileOutput || ''),
-    ...detail,
-  };
-}
+function addSmokeValidation(selection, resolver, unameMachine) {
+  if (!selection.selected) return selection;
 
-function evaluateCandidate(candidate, unameMachine) {
-  if (!candidate.exists) return rejection('missing', candidate);
-  if (!candidate.executable) return rejection('not-executable', candidate);
-  if (!fileMatchesHostArch(candidate.fileOutput, unameMachine)) {
-    return rejection('arch-mismatch', candidate, {
-      hostArch: unameMachine,
-      fileOutput: candidate.fileOutput,
+  const probes = [...selection.probes];
+  const smokeCandidates = probes.filter((probe) => probe.reason === 'accepted' || probe.reason === 'not-selected-first-valid');
+
+  for (const probe of smokeCandidates) {
+    const candidate = resolver.probeCandidate(probe.path, unameMachine);
+    const descriptor = candidate.descriptor || probe.descriptor || { command: probe.path, argsPrefix: [] };
+    const smoke = candidate.smoke || run(descriptor.command, [...descriptor.argsPrefix, ...READ_ONLY_SMOKE_ARGS], {
+      timeoutMs: 60000,
+      shell: descriptor.shell,
     });
-  }
-  if (candidate.version.status !== 0) return rejection('version-failed', candidate, { stderr: candidate.version.stderr });
-  if (candidate.execHelp.status !== 0) return rejection('exec-help-failed', candidate, { stderr: candidate.execHelp.stderr });
-  if (candidate.smoke.status !== 0) return rejection('smoke-failed', candidate, { stderr: candidate.smoke.stderr });
-  if (!candidate.smoke.stdout.includes('LOCAL_CODEX_HEADLESS_OK')) {
-    return rejection('smoke-sentinel-missing', candidate, {
-      stdout: candidate.smoke.stdout,
-      stderr: candidate.smoke.stderr,
-    });
+    const probeIndex = probes.findIndex((item) => item.path === probe.path);
+
+    if (smoke.status !== 0 || !smoke.stdout.includes('LOCAL_CODEX_HEADLESS_OK')) {
+      probes[probeIndex] = {
+        ...probe,
+        accepted: false,
+        reason: smoke.status !== 0 ? 'smoke-failed' : 'smoke-sentinel-missing',
+        stdout: smoke.stdout,
+        stderr: smoke.stderr,
+      };
+      continue;
+    }
+
+    const selected = {
+      ...probe,
+      accepted: true,
+      reason: 'accepted',
+      smokeUsedSandboxReadOnly: true,
+    };
+    probes[probeIndex] = selected;
+    return {
+      ...selection,
+      status: 'available',
+      reason: 'accepted',
+      acceptedPath: selected.path,
+      version: selected.version,
+      selected,
+      probes,
+    };
   }
 
   return {
-    path: candidate.path,
-    accepted: true,
-    reason: 'accepted',
-    fileArch: fileArch(candidate.fileOutput || ''),
-    version: normalizeVersion(candidate.version.stdout),
-    smokeUsedSandboxReadOnly: true,
+    ...selection,
+    status: 'skipped',
+    reason: 'no-valid-codex-binary',
+    acceptedPath: null,
+    version: null,
+    selected: null,
+    probes,
   };
 }
 
 function runPreflight(options = {}) {
   const env = options.env || process.env;
   const resolver = options.resolver || createActualResolver();
-  const candidates = options.candidates || candidatePaths(env);
+  const candidates = options.candidates || resolver.candidatePaths(env);
   const unameMachine = resolver.unameMachine();
-  const probes = [];
-  let accepted = null;
-
-  for (const candidatePath of candidates) {
-    const candidate = resolver.probeCandidate(candidatePath, unameMachine);
-    const evaluated = evaluateCandidate(candidate, unameMachine);
-    if (evaluated.accepted && !accepted) {
-      accepted = evaluated;
-      probes.push(evaluated);
-    } else if (evaluated.accepted) {
-      probes.push({
-        ...evaluated,
-        accepted: false,
-        reason: 'not-selected-first-valid',
-      });
-    } else {
-      probes.push(evaluated);
-    }
-  }
+  const selection = addSmokeValidation(selectCodexBinary({ resolver, candidates, env, hostArch: unameMachine }), resolver, unameMachine);
+  const accepted = selection.selected;
+  const probes = selection.probes;
 
   const environment = runtimeEnvironment();
 
@@ -219,7 +157,7 @@ function runPreflight(options = {}) {
       acceptedPath: accepted.path,
       version: accepted.version,
       hostArch: unameMachine,
-      smokeCommand: ['codex', ...READ_ONLY_SMOKE_ARGS],
+      smokeCommand: [accepted.descriptor?.command || accepted.path, ...(accepted.descriptor?.argsPrefix || []), ...READ_ONLY_SMOKE_ARGS],
       smokeUsedSandboxReadOnly: true,
       environment,
       probes,
@@ -279,7 +217,7 @@ function parseNodeMajor(versionOutput) {
 
 function podCandidatePaths(env, resolver) {
   const whichCodex = resolver.command('whichCodex');
-  return unique([env.CODEX_BIN, whichCodex.status === 0 ? whichCodex.stdout.trim() : '', ...DEFAULT_CANDIDATES]);
+  return unique([env.CODEX_BIN, whichCodex.status === 0 ? whichCodex.stdout.trim() : '', ...resolver.candidatePaths(env)]);
 }
 
 function resolvePodRole(env, resolver) {
@@ -350,25 +288,9 @@ function runPodPreflight(options = {}) {
   }
 
   const candidates = options.candidates?.length ? options.candidates : podCandidatePaths(env, resolver);
-  const probes = [];
-  let accepted = null;
-
-  for (const candidatePath of candidates) {
-    const candidate = resolver.probeCandidate(candidatePath, unameMachine);
-    const evaluated = evaluateCandidate(candidate, unameMachine);
-    if (evaluated.accepted && !accepted) {
-      accepted = evaluated;
-      probes.push(evaluated);
-    } else if (evaluated.accepted) {
-      probes.push({
-        ...evaluated,
-        accepted: false,
-        reason: 'not-selected-first-valid',
-      });
-    } else {
-      probes.push(evaluated);
-    }
-  }
+  const selection = addSmokeValidation(selectCodexBinary({ resolver, candidates, env, hostArch: unameMachine }), resolver, unameMachine);
+  const accepted = selection.selected;
+  const probes = selection.probes;
 
   const nodeVersion = resolver.command('nodeVersion');
   const pnpmVersion = resolver.command('pnpmVersion');
@@ -451,6 +373,11 @@ function readJson(filePath) {
 function runSelfTest() {
   const fixtureNames = [
     'codex.valid-arm64.json',
+    'codex.valid-darwin-arm64-skips-x86_64-first.json',
+    'codex.valid-darwin-universal.json',
+    'codex.valid-fallback-after-smoke-failure.json',
+    'codex.valid-linux-homebrew.json',
+    'codex.valid-windows-cmd.json',
     'codex.invalid-x86_64.json',
     'codex.invalid-missing-sentinel.json',
     'pod.invalid-pnpm-mismatch.json',

@@ -2,6 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import {
+  formatCodexSelectionFailure,
+  selectCodexBinary,
+} from './lib/codex-binary-resolver.mjs';
 
 const root = process.cwd();
 const allowedAgents = new Set([
@@ -259,7 +263,10 @@ const reviewPrompt = [
   prompt,
 ].join('\n');
 
-const run = spawnSync('codex', [
+const selectedCodex = selectCodexBinary();
+if (!selectedCodex.selected) fail(formatCodexSelectionFailure(selectedCodex));
+
+const codexArgs = [
   '-a',
   'never',
   'exec',
@@ -274,13 +281,22 @@ const run = spawnSync('codex', [
   '--output-last-message',
   outputPath,
   '-',
+];
+
+const run = spawnSync(selectedCodex.selected.descriptor.command, [
+  ...selectedCodex.selected.descriptor.argsPrefix,
+  ...codexArgs,
 ], {
   input: reviewPrompt,
   encoding: 'utf8',
   stdio: ['pipe', 'inherit', 'inherit'],
+  shell: selectedCodex.selected.descriptor.shell || false,
 });
 
-if ((run.status ?? 1) !== 0) process.exit(run.status ?? 1);
+if ((run.status ?? 1) !== 0) {
+  console.error(`Codex headless review failed using ${selectedCodex.acceptedPath}`);
+  process.exit(run.status ?? 1);
+}
 
 if (jsonEnvelope) {
   const markdown = fs.readFileSync(outputPath, 'utf8');

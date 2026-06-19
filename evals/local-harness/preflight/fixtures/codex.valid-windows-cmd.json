@@ -1,0 +1,33 @@
+{
+  "name": "windows accepts PATHEXT cmd wrapper by version and exec help",
+  "platform": "win32",
+  "unameMachine": "x86_64",
+  "candidates": [
+    {
+      "path": "C:\\Users\\runner\\AppData\\Roaming\\npm\\codex.cmd",
+      "exists": true,
+      "executable": true,
+      "fileOutput": "",
+      "version": {
+        "status": 0,
+        "stdout": "codex-cli 0.140.0\n",
+        "stderr": ""
+      },
+      "execHelp": {
+        "status": 0,
+        "stdout": "Usage: codex exec [OPTIONS]\n",
+        "stderr": ""
+      },
+      "smoke": {
+        "status": 0,
+        "stdout": "LOCAL_CODEX_HEADLESS_OK\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "expected": {
+    "status": "available",
+    "acceptedPath": "C:\\Users\\runner\\AppData\\Roaming\\npm\\codex.cmd",
+    "version": "codex-cli 0.140.0"
+  }
+}

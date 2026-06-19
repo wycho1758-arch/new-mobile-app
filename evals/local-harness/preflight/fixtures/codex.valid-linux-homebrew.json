@@ -1,0 +1,33 @@
+{
+  "name": "linux accepts Homebrew Linux prefix absolute codex path",
+  "platform": "linux",
+  "unameMachine": "aarch64",
+  "candidates": [
+    {
+      "path": "/home/linuxbrew/.linuxbrew/bin/codex",
+      "exists": true,
+      "executable": true,
+      "fileOutput": "/home/linuxbrew/.linuxbrew/bin/codex: ELF 64-bit LSB executable, ARM aarch64",
+      "version": {
+        "status": 0,
+        "stdout": "codex-cli 0.140.0\n",
+        "stderr": ""
+      },
+      "execHelp": {
+        "status": 0,
+        "stdout": "Usage: codex exec [OPTIONS]\n",
+        "stderr": ""
+      },
+      "smoke": {
+        "status": 0,
+        "stdout": "LOCAL_CODEX_HEADLESS_OK\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "expected": {
+    "status": "available",
+    "acceptedPath": "/home/linuxbrew/.linuxbrew/bin/codex",
+    "version": "codex-cli 0.140.0"
+  }
+}

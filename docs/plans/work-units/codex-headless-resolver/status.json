@@ -1,0 +1,59 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "codex-headless-resolver",
+  "stage": "00-product-planning",
+  "state": "done",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "wm-implementation-reviewer",
+    "evidence": "docs/plans/work-units/codex-headless-resolver/00-product-planning/final-review.md"
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/codex-headless-resolver/00-product-planning/task-packet.md",
+      "kind": "planning-artifact"
+    },
+    {
+      "path": "docs/plans/work-units/codex-headless-resolver/00-product-planning/implementation-evidence.md",
+      "kind": "implementation-evidence"
+    },
+    {
+      "path": "docs/plans/work-units/codex-headless-resolver/00-product-planning/final-review.md",
+      "kind": "reviewer-evidence"
+    }
+  ],
+  "handoff": {
+    "next_role": "Mobile App Dev",
+    "next_artifact": "docs/plans/work-units/codex-headless-resolver/00-product-planning/implementation-evidence.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-19T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "created revised resolver plan from reviewer findings"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-19T00:00:00.000Z",
+      "actor": "Mobile App Dev",
+      "action": "implemented shared resolver, fixtures, headless helper integration, and documentation"
+    },
+    {
+      "seq": 3,
+      "at": "2026-06-19T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "requested final wm-implementation-reviewer review"
+    },
+    {
+      "seq": 4,
+      "at": "2026-06-19T00:00:00.000Z",
+      "actor": "wm-implementation-reviewer",
+      "action": "returned GO final review with no findings"
+    }
+  ]
+}

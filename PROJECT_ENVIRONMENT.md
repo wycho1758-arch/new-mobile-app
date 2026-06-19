@@ -1,6 +1,6 @@
 # Project Environment
 
-Last updated: 2026-06-14
+Last updated: 2026-06-19
 
 This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
@@ -349,7 +349,9 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
   - `scripts/validate-runtime-artifacts.mjs`
     - The root `validate` package script removes transient `.claude-state/` before running this validator, while the validator itself requires only `.claude-state/` to remain covered by `.gitignore`. Tracked Claude Code helper artifacts such as `CLAUDE.md`, `.claude/skills/`, and the `.claude/agents/reviewer.md` bridge are documentation/helper files, not active Codex runtime inputs.
   - `scripts/codex-headless-review.mjs`
-    - Codex-only read-only helper: `codex -a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
+    - Codex-only read-only helper: runs the selected Codex binary with `-a never exec -m gpt-5.5 -c 'model_reasoning_effort="high"' -s read-only`.
+    - Codex binary selection uses the shared resolver in `scripts/lib/codex-binary-resolver.mjs`: prefer `CODEX_BIN`, then platform-specific absolute candidates such as `/opt/homebrew/bin/codex`, `/usr/local/bin/codex`, `/usr/bin/codex`, and `/home/linuxbrew/.linuxbrew/bin/codex`, then PATH candidates. Candidates are checked for executable status, architecture compatibility where detectable, `--version`, and `exec --help` before use.
+    - On Windows, resolver validation uses executable/PATHEXT candidates and command validation instead of POSIX `file` output; `.cmd` and `.bat` wrappers are executed through the Windows command processor descriptor.
     - no Claude, `--engine auto`, or `review_engine_preference` fallback path.
     - optional machine-readable reviewer verdict validation: `node scripts/codex-headless-review.mjs --json-envelope --agent <verdict-reviewer> --prompt <text-or-file> --out <path>`.
     - verdict-producing reviewers are `wm-implementation-reviewer`, `wm-contract-reviewer`, `po-planning-reviewer`, `po-scope-gate-reviewer`, and `design-reviewer`.

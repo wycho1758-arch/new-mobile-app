@@ -1,0 +1,55 @@
+{
+  "name": "preflight falls back after first otherwise valid codex candidate fails smoke",
+  "platform": "darwin",
+  "unameMachine": "arm64",
+  "candidates": [
+    {
+      "path": "/opt/homebrew/bin/codex",
+      "exists": true,
+      "executable": true,
+      "fileOutput": "/opt/homebrew/bin/codex: Mach-O 64-bit executable arm64",
+      "version": {
+        "status": 0,
+        "stdout": "codex-cli 0.140.0\n",
+        "stderr": ""
+      },
+      "execHelp": {
+        "status": 0,
+        "stdout": "Usage: codex exec [OPTIONS]\n",
+        "stderr": ""
+      },
+      "smoke": {
+        "status": 0,
+        "stdout": "unexpected smoke output\n",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/usr/local/bin/codex",
+      "exists": true,
+      "executable": true,
+      "fileOutput": "/usr/local/bin/codex: Mach-O 64-bit executable arm64",
+      "version": {
+        "status": 0,
+        "stdout": "codex-cli 0.140.0\n",
+        "stderr": ""
+      },
+      "execHelp": {
+        "status": 0,
+        "stdout": "Usage: codex exec [OPTIONS]\n",
+        "stderr": ""
+      },
+      "smoke": {
+        "status": 0,
+        "stdout": "LOCAL_CODEX_HEADLESS_OK\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "expected": {
+    "status": "available",
+    "acceptedPath": "/usr/local/bin/codex",
+    "version": "codex-cli 0.140.0",
+    "rejectionReason": "smoke-sentinel-missing"
+  }
+}
