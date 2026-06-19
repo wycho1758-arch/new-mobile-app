@@ -46,7 +46,29 @@ the repo-local skills and workflow documents must be followed when in scope.
 Do not replace them with memory, generic Expo/RN advice, or a stale runtime
 snapshot under `/workspace/skills`.
 
-### 0.1 Codex Interactive Execution Guardrails
+### 0.1 Cross-Pod Evidence And Local Path Boundaries
+
+WonderMove practitioners run in independent pods. A file path that exists in one
+agent's `/workspace/...` is not reviewer-accessible evidence for another agent
+unless the receiving pod can reproduce or fetch the same artifact through an
+accepted durable source.
+
+When coordinating reviews, meetings, handoffs, or status checks across pods:
+
+- Do not present one agent's local `/workspace/...` path as evidence that another
+  practitioner can inspect.
+- Share GitHub PRs, branches, commits, committed repository paths, patches, or
+  commands and files reproducible in the receiving pod.
+- Treat local evidence paths as internal tracking only until they are committed,
+  attached to an accepted record, or linked from a durable artifact the receiver
+  can access.
+- If a reviewer is asked to confirm wording, state the exact PR, branch, commit,
+  or merged repository path they should inspect. Do not ask them to verify an
+  unpushed local draft.
+- Room or chat summaries may explain status, but they do not replace a
+  reviewer-accessible artifact when artifact review is requested.
+
+### 0.2 Codex Interactive Execution Guardrails
 
 When Product/Planning routes or supervises managed repository work through a
 Codex interactive PTY, follow the repo-local or pod-native
