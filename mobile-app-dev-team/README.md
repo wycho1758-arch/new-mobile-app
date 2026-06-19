@@ -54,10 +54,6 @@ openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specifica
 | `runtime-sources/orbstack-pod-config-values.md` | 현재 repo SoT에서 확인 가능한 OrbStack role pod 설정 실제값과 owner/operator가 추가 제공해야 하는 누락값 목록 |
 | `workflows/entry-case-routing.md` | 진입 케이스 라우팅 taxonomy(공통 intake, SoT 명명 입력 분류, 보고서 파생 C1~C5, 확장 E1~E16)와 Design 관련성/not-applicable(P-1)·동시 work-unit 우선순위(P-2)·긴급 hotfix expedited-but-gated(P-3) 거버넌스 |
 | `governance/app-eas-ota-rollback-runbook.md` | 앱/EAS Update(OTA)/store 롤백 ownership·decision·gate·evidence 런북(P-4 거버넌스, 15-annex 롤백 규칙 기반) |
-| `reports/team-doc-validator-and-soul-runtime-explainer.md` | 팀 문서 검증기와 role SOUL 문서의 repo-local 검증 범위, pod runtime 관계, local harness 경계 설명 |
-| `reports/runtime-surface-classification-improvement-report.md` | 사용자 목표 운영 모델 기준 runtime surface 분류, validator/CI/local-harness 재구성 필요 수정 보고서 |
-| `reports/runtime-surface-classification-improvement-report-v2.md` | pod-native runtime 소비 여부 기준으로 22 보고서의 한계와 validator 유효 범위를 재정의한 v2 보고서 |
-| `reports/runtime-surface-structure-goal-plan.md` | v2 결론을 구조 기반 rename, validator split, local harness 범위 재정의로 실행하기 위한 goal plan |
 | `ref-organization/` | Reference organization 재사용 가이드와 current-project example |
 | `source-map.md` | 근거 파일과 active/historical crosswalk |
 
@@ -65,11 +61,6 @@ openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specifica
 
 | Archived plan | Current replacement |
 | --- | --- |
-| `_archive/completed-plans/ref-organization-goal-plan.md` | `ref-organization/` consolidated section READMEs and `source-map.md` |
-| `_archive/completed-plans/pod-organization-e2e-improvement-plan.md` | Repo-local/offline portions are implemented in runtime validators, pod-native skills, `workflows/native-e2e-strategy.md`, `governance/human-ops-live-readiness-annex.md`, and `runtime-sources/pod-environment-bootstrap.md`; live pod/EAS/Maestro/human approval remains evidence-gated. |
-| `_archive/historical-inspections/20260609-structure-inspection-sot.md` | `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, and active validators under `scripts/` |
-| `_archive/completed-plans/orbstack-pod-config-setup-runbook-plan.md` | `runtime-sources/pod-environment-bootstrap.md` and `runtime-sources/orbstack-pod-config-values.md` |
-| `_archive/completed-plans/orbstack-pod-operator-input-request.md` | `runtime-sources/orbstack-pod-config-values.md` |
 
 ## 운영 원칙
 

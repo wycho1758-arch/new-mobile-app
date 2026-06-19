@@ -6,7 +6,6 @@ Upstream SoT:
 
 - `AGENTS.md`
 - `PROJECT_ENVIRONMENT.md`
-- `mobile-app-dev-team/_archive/completed-plans/ref-organization-goal-plan.md`
 
 Downstream consumers:
 
@@ -18,7 +17,6 @@ Reviewer evidence: .evidence/reviews/ref-organization-checkpoint-2-xhigh-2026061
 
 ## Purpose
 
-This consolidated section keeps the reusable reference-organization guidance in one navigable document. The former per-topic markdown files are listed below and preserved in `mobile-app-dev-team/_archive/preconsolidation/ref-organization-20260612/` for historical traceability.
 
 ## Consolidated Former Files
 

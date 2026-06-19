@@ -26,10 +26,6 @@
 | `mobile-app-dev-team/workflows/entry-case-routing.md` | Current entry-case routing taxonomy (common intake, SoT-named input categories, report-derived C1-C5, expanded E1-E16) and managed-doc governance for Design relevance/not-applicable (P-1), cross-work-unit prioritization (P-2), and expedited-but-gated hotfix (P-3) |
 | `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` | Current app / EAS Update (OTA) / store rollback ownership, decision, gate, and evidence runbook (P-4 managed-doc governance) building on the 15-annex rollback rules |
 | `mobile-app-dev-team/source-map.md` | Current old-to-new path crosswalk, runtime surface class registry, validator responsibility map, harness applicability map, archive crosswalk, and external proof boundary |
-| `mobile-app-dev-team/reports/team-doc-validator-and-soul-runtime-explainer.md` | Current explainer for team-doc validator scope, role SOUL repo-local validation, pod runtime relationship, and local harness boundaries |
-| `mobile-app-dev-team/reports/runtime-surface-classification-improvement-report.md` | Current improvement report for target runtime-surface classification, validator/CI/local-harness narrowing, and pod-runtime team structure alignment |
-| `mobile-app-dev-team/reports/runtime-surface-classification-improvement-report-v2.md` | Current v2 report redefining the validator value boundary around actual pod-native runtime consumption, persona-based SOUL creation, and `/workspace/skills` sync surfaces |
-| `mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md` | Current goal plan for structure-based `mobile-app-dev-team/**` path rename, `source-map.md` de-numbering, validator split, and local harness applicability narrowing based on the v2 runtime-surface conclusion |
 | `scripts/validate-team-doc.mjs` | Current managed team-doc composition wrapper for structure, runtime-source, workflow, governance, reference, and managed parity checks |
 | `scripts/validate-team-doc-structure.mjs` | Structure registry validator for the `mobile-app-dev-team/**` surface rename; rejects current numbered top-level paths and old `99-source-map.md` |
 | `scripts/validate-runtime-sources.mjs` | Runtime-source document validator for role SOULs, Codex skill/agent matrix, pod-native OpenClaw skills, runtime specs, and pod bootstrap source docs |
@@ -86,10 +82,6 @@ platform state.
 | `mobile-app-dev-team/17-orbstack-pod-config-values.md` | `mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md` | `R1` | Completed; old numbered top-level file is rejected by validators. |
 | `mobile-app-dev-team/19-entry-case-routing.md` | `mobile-app-dev-team/workflows/entry-case-routing.md` | `W1` | Completed. |
 | `mobile-app-dev-team/20-app-eas-ota-rollback-runbook.md` | `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` | `G1` | Completed. |
-| `mobile-app-dev-team/21-team-doc-validator-and-soul-runtime-explainer.md` | `mobile-app-dev-team/reports/team-doc-validator-and-soul-runtime-explainer.md` | `P1` | Completed. |
-| `mobile-app-dev-team/22-runtime-surface-classification-improvement-report.md` | `mobile-app-dev-team/reports/runtime-surface-classification-improvement-report.md` | `P1` | Completed. |
-| `mobile-app-dev-team/22-runtime-surface-classification-improvement-report-v2.md` | `mobile-app-dev-team/reports/runtime-surface-classification-improvement-report-v2.md` | `P1` | Completed. |
-| `mobile-app-dev-team/runtime-surface-structure-goal-plan.md` | `mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md` | `P1` | Completed. |
 | `mobile-app-dev-team/ref-organization/00-orientation-and-sot/` | `mobile-app-dev-team/ref-organization/orientation-and-sot/` | `H1` | Completed. |
 | `mobile-app-dev-team/ref-organization/01-organization-model/` | `mobile-app-dev-team/ref-organization/organization-model/` | `H1` | Completed. |
 | `mobile-app-dev-team/ref-organization/02-runtime-surfaces/` | `mobile-app-dev-team/ref-organization/runtime-surfaces/` | `H1` | Completed. |
@@ -122,11 +114,9 @@ platform state.
 | --- | --- | --- |
 | Codex runtime and harness paths (`.agents/**`, `.codex/**`, `evals/local-harness/**`, selected runtime scripts, workflow YAML, root runtime policy files, package metadata) | `pnpm run test:runtime`, `pnpm run test:local-harness` | Required. |
 | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**` | `pnpm run test:runtime`, targeted pod-native smoke such as `bash evals/skills/openclaw-pod-skills-sync-smoke.sh` and `bash evals/skills/project-bootstrap-agent-setup-smoke.sh` | Not required unless Codex runtime or harness paths also change. |
-| `mobile-app-dev-team/reports/**` | `pnpm run validate:team-doc`, `pnpm run validate:evidence-hygiene`, diff checks | Not required unless Codex runtime or harness paths also change. |
 | `mobile-app-dev-team/ref-organization/**` | `pnpm run validate:reference-docs`, `pnpm run validate:team-doc` | Not required unless Codex runtime or harness paths also change. |
-| Historical archive metadata/content | `pnpm run validate:team-doc-archive` plus applicable runtime validators | Not required unless Codex runtime or harness paths also change. |
 
-## Historical/Archive Crosswalk
+## Historical Source Crosswalk
 
 ### Historical Structured Inputs
 
@@ -179,23 +169,10 @@ files point here instead of inlining page numbers.
 | `mobile-gatekeeper` | historical deterministic concept | Not an LLM skill in the current managed docs. Treat as deterministic required-check concept. |
 | `mobile-project-bootstrap-workflow` | historical/planned source name | No active repo-local skill in current `.agents/skills`. Current pod-native handling is `project-bootstrap` under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`, with runtime shape `/workspace/skills/project-bootstrap/SKILL.md`; Case A still requires human/operator coordination for live pod and external-platform proof. |
 
-## Completed/Superseded Plans
-
-| Archived Plan | Current Replacement |
-| --- | --- |
-| `mobile-app-dev-team/_archive/completed-plans/role-title-update-plan.md` | Display title handling is now current in the `Display Title To Operating Role Crosswalk` section above, `mobile-app-dev-team/organization/team-composition.md`, and `mobile-app-dev-team/runtime-sources/role-souls/` metadata. |
-| `mobile-app-dev-team/_archive/completed-plans/pod-native-openclaw-skill-plan.md` | Pod-native OpenClaw skill source now lives under `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/`. |
-| `mobile-app-dev-team/_archive/completed-plans/openclaw-codex-completion-hooks-plan.md` | Repo-local hook implementation now lives under `.codex/hooks/` and `.codex/hooks.json`; pod runtime-surface guidance lives in `mobile-app-dev-team/ref-organization/runtime-surfaces/README.md`. |
-| `mobile-app-dev-team/_archive/completed-plans/ref-organization-goal-plan.md` | Reference organization work is now represented by consolidated `mobile-app-dev-team/ref-organization/` section READMEs and this source map. |
-| `mobile-app-dev-team/_archive/preconsolidation/ref-organization-20260612/README.md` | Pre-consolidation reference organization files are retained for historical traceability; current reference organization work lives under `mobile-app-dev-team/ref-organization/`. |
-| `mobile-app-dev-team/_archive/completed-plans/pod-organization-e2e-improvement-plan.md` | Repo-local/offline portions are implemented by runtime validators, work-unit fixtures, pod-native skills, `workflows/native-e2e-strategy.md`, `governance/human-ops-live-readiness-annex.md`, and `runtime-sources/pod-environment-bootstrap.md`; live pod, EAS/Maestro, branch protection, and human approvals still require separate evidence. |
-| `mobile-app-dev-team/_archive/historical-inspections/20260609-structure-inspection-sot.md` | Current runtime facts and validation policy live in `PROJECT_ENVIRONMENT.md`, `REPO_OPERATIONS.md`, and active validators under `scripts/`; this report is historical inspection evidence. |
-| `mobile-app-dev-team/_archive/completed-plans/orbstack-pod-config-setup-runbook-plan.md` | Owner/operator setup flow and official reference URLs are folded into `runtime-sources/pod-environment-bootstrap.md`; non-secret value inventory remains in `runtime-sources/orbstack-pod-config-values.md`. |
-| `mobile-app-dev-team/_archive/completed-plans/orbstack-pod-operator-input-request.md` | Current non-secret OrbStack role pod value handoff and owner/operator input list live in `runtime-sources/orbstack-pod-config-values.md`. |
 
 ## External Proof Boundary
 
-Local validators, local harness, source-map checks, and archive checks prove
+Local validators, local harness, source-map checks prove
 repo-local consistency only. They do not prove live OpenClaw pod execution,
 `/workspace/skills` installation, Jira or Confluence behavior, GitHub branch
 protection, EAS production submit, Maestro/mobile-mcp device behavior, or

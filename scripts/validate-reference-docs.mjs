@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-import { exists, finish, listFiles, read, requireTerms, teamRoot } from './lib/team-doc-validation-helpers.mjs';
+import { exists, finish, read, requireTerms, teamRoot } from './lib/team-doc-validation-helpers.mjs';
 
 const errors = [];
 const refRoot = `${teamRoot}/ref-organization`;
-const archiveRoot = `${teamRoot}/_archive`;
 
 for (const section of [
   'orientation-and-sot',
@@ -70,63 +69,9 @@ requireTerms(errors, `${teamRoot}/source-map.md`, [
   'Old-To-New Rename Crosswalk',
   'Validator Responsibility Crosswalk',
   'Harness Applicability Crosswalk',
-  'Historical/Archive Crosswalk',
+  'Historical Source Crosswalk',
   'External Proof Boundary',
 ], 'source map');
-
-const completedPlanArchives = [
-  {
-    targetPath: `${archiveRoot}/completed-plans/role-title-update-plan.md`,
-    stalePath: `${archiveRoot}/08-role-title-update-plan.md`,
-  },
-  {
-    targetPath: `${archiveRoot}/completed-plans/pod-native-openclaw-skill-plan.md`,
-    stalePath: `${archiveRoot}/09-pod-native-openclaw-skill-plan.md`,
-  },
-  {
-    targetPath: `${archiveRoot}/completed-plans/openclaw-codex-completion-hooks-plan.md`,
-    stalePath: `${archiveRoot}/11-openclaw-codex-completion-hooks-plan.md`,
-  },
-  {
-    targetPath: `${archiveRoot}/completed-plans/ref-organization-goal-plan.md`,
-    stalePath: `${archiveRoot}/12-ref-organization-goal-plan.md`,
-  },
-  {
-    targetPath: `${archiveRoot}/completed-plans/pod-organization-e2e-improvement-plan.md`,
-    stalePath: `${archiveRoot}/13-pod-organization-e2e-improvement-plan.md`,
-  },
-  {
-    targetPath: `${archiveRoot}/completed-plans/orbstack-pod-config-setup-runbook-plan.md`,
-    stalePath: `${archiveRoot}/18-orbstack-pod-config-setup-runbook-plan.md`,
-  },
-  {
-    targetPath: `${archiveRoot}/completed-plans/orbstack-pod-operator-input-request.md`,
-    stalePath: `${archiveRoot}/orbstack-pod-operator-input-request.md`,
-  },
-];
-
-for (const { targetPath, stalePath } of completedPlanArchives) {
-  if (!exists(targetPath)) errors.push(`missing completed-plan archive: ${targetPath}`);
-  if (exists(stalePath)) errors.push(`completed-plan archive must be reclassified out of archive root: ${stalePath}`);
-}
-
-const archiveReclassifications = [
-  {
-    targetPath: `${archiveRoot}/historical-inspections/20260609-structure-inspection-sot.md`,
-    stalePath: `${archiveRoot}/20260609-structure-inspection-sot.md`,
-    label: 'historical inspection archive',
-  },
-  {
-    targetPath: `${archiveRoot}/preconsolidation/ref-organization-20260612/README.md`,
-    stalePath: `${archiveRoot}/ref-organization-preconsolidation-20260612`,
-    label: 'preconsolidation archive',
-  },
-];
-
-for (const { targetPath, stalePath, label } of archiveReclassifications) {
-  if (!exists(targetPath)) errors.push(`missing ${label}: ${targetPath}`);
-  if (exists(stalePath)) errors.push(`${label} must be reclassified out of archive root: ${stalePath}`);
-}
 
 for (const staleTopLevel of [
   `${teamRoot}/08-role-title-update-plan.md`,
