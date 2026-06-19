@@ -60,6 +60,26 @@ guard with a 5 minute larger interval: `+5m`, `+10m`, `+15m`, `+20m`, and so on.
 If the Workboard or wake guard cannot be registered, do not launch Codex. Return
 a blocked status with the missing guard and evidence path.
 
+## Project-Management Source Of Truth
+
+Before Codex launch, resolve any project-management source of truth that exists
+for the bounded work: Tasks task, Jira issue, or Confluence page.
+
+If a Tasks, Jira, or Confluence source exists, record its id or link in the
+Workboard guard, Codex prompt, and evidence path. For work larger than a quick
+local fix, if no Tasks task exists, create one with the Tasks skill or request
+one before Codex execution. Do not invent Jira or Confluence records without
+authorization.
+
+Workboard is an execution guard and wake tracker, not a replacement for Tasks,
+Jira, or Confluence. Confluence is the source of truth for PRD, design,
+decision, and procedure records; Tasks and Jira should link to it instead of
+duplicating long text.
+
+Commit or PR handoff must update the relevant Tasks or Jira record with the PR
+URL, validation, reviewer evidence, and residual risks when such records exist.
+Preserve human gates, secret safety, and external-proof boundaries.
+
 ## Launch Contract
 
 Use the configured Codex hook wrapper when it is available and compatible with
