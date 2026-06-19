@@ -27,7 +27,7 @@
 | `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` | Current app / EAS Update (OTA) / store rollback ownership, decision, gate, and evidence runbook (P-4 managed-doc governance) building on the 15-annex rollback rules |
 | `mobile-app-dev-team/governance/secret-store-and-atlassian-connectivity-guide.md` | One-off operational guide for protected secret-store handling and status-only Jira/Confluence connectivity reporting |
 | `mobile-app-dev-team/source-map.md` | Current old-to-new path crosswalk, runtime surface class registry, validator responsibility map, harness applicability map, archive crosswalk, and external proof boundary |
-| `scripts/validate-team-doc.mjs` | Current managed team-doc composition wrapper for structure, runtime-source, workflow, governance, reference, and managed parity checks |
+| `scripts/validate-team-doc.mjs` | Active runtime wrapper over runtime source docs and runtime routing support docs |
 | `scripts/validate-team-doc-structure.mjs` | Structure registry validator for the `mobile-app-dev-team/**` surface rename; rejects current numbered top-level paths and old `99-source-map.md` |
 | `scripts/validate-runtime-sources.mjs` | Runtime-source document validator for role SOULs, Codex skill/agent matrix, pod-native OpenClaw skills, runtime specs, and pod bootstrap source docs |
 | `scripts/validate-workflow-docs.mjs` | Workflow document validator for work processes, GitHub artifact workflow, native E2E strategy, entry-case routing, and durable work-unit handoff docs |
@@ -38,6 +38,7 @@
 | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/project-bootstrap/SKILL.md` | Current pod-native OpenClaw project bootstrap source for boram pod readiness, runtime-shaped as `/workspace/skills/project-bootstrap/SKILL.md` |
 | `mobile-app-dev-team/ref-organization/` | Consolidated reference organization reusable guidance, current-project examples, and migration crosswalk |
 | `mobile-app-dev-team/ref-organization/source-map-and-migration/README.md` | Migration source priority, active-vs-historical rules, old-to-new crosswalk, and validator requirements for historical `team-doc/10-structured/**` identifiers |
+| `mobile-app-dev-team/reports/runtime-surface-structure-goal-plan.md` | Historical P1 report path retained as a structure-registry term; archive/report path cleanup is outside this wording slice |
 | `docs/plans/work-units/<work-unit-id>/` | Durable GitHub work-unit artifact root for role-pod handoff |
 | `TEAM_DOC_ARCHIVE_MANIFEST.json` | Root archive metadata for historical `team-doc/00-source/`, `team-doc/10-structured/`, and `_meta` paths |
 | `TEAM_DOC_ARCHIVE_BUNDLE.jsonl` | Root archive content bundle for historical `team-doc/00-source/`, `team-doc/10-structured/`, and `_meta` files |
@@ -50,7 +51,7 @@
 | --- | --- | --- |
 | `I1` | Index/navigation and source-map files | `scripts/validate-team-doc-structure.mjs`, `scripts/validate-reference-docs.mjs` |
 | `G1` | Governance and policy-facing team docs | `scripts/validate-governance-docs.mjs` |
-| `O1` | Organization model and role capability docs | `scripts/validate-team-doc.mjs` via structure/reference validators |
+| `O1` | Organization model and role capability docs | `scripts/validate-team-doc-structure.mjs`, `scripts/validate-reference-docs.mjs` where applicable |
 | `W1` | Workflow, handoff, and entry-case docs | `scripts/validate-workflow-docs.mjs` |
 | `R1` | Pod-native runtime sources and pod setup docs | `scripts/validate-runtime-sources.mjs` |
 | `R2` | Role SOUL runtime sources | `scripts/validate-runtime-sources.mjs` |
@@ -98,7 +99,7 @@ platform state.
 
 | Validator | Responsibility |
 | --- | --- |
-| `scripts/validate-team-doc.mjs` | Composition wrapper for current managed team docs. |
+| `scripts/validate-team-doc.mjs` | Active runtime wrapper over `scripts/validate-runtime-sources.mjs` and `scripts/validate-runtime-routing-support.mjs`. |
 | `scripts/validate-team-doc-structure.mjs` | Structure registry, `source-map.md`, top-level numeric-prefix rejection, runtime-source placement, and RED/valid fixtures in `evals/team-doc-structure/fixtures/`. |
 | `scripts/validate-runtime-sources.mjs` | Runtime-source docs: role SOULs, Codex skill/agent matrix, pod-native OpenClaw skills, pod runtime specs, and pod bootstrap docs. |
 | `scripts/validate-workflow-docs.mjs` | Workflows, entry-case routing, native E2E strategy, GitHub artifact workflow, and durable work-unit handoff docs. |
@@ -115,9 +116,9 @@ platform state.
 | --- | --- | --- |
 | Codex runtime and harness paths (`.agents/**`, `.codex/**`, `evals/local-harness/**`, selected runtime scripts, workflow YAML, root runtime policy files, package metadata) | `pnpm run test:runtime`, `pnpm run test:local-harness` | Required. |
 | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/**` | `pnpm run test:runtime`, targeted pod-native smoke such as `bash evals/skills/openclaw-pod-skills-sync-smoke.sh` and `bash evals/skills/project-bootstrap-agent-setup-smoke.sh` | Not required unless Codex runtime or harness paths also change. |
-| `mobile-app-dev-team/ref-organization/**` | `pnpm run validate:reference-docs`, `pnpm run validate:team-doc` | Not required unless Codex runtime or harness paths also change. |
+| `mobile-app-dev-team/ref-organization/**` | `pnpm run validate:reference-docs`; `pnpm run validate:team-doc` only when touched scope also affects runtime source or runtime routing support docs | Not required unless Codex runtime or harness paths also change. |
 
-## Historical Source Crosswalk
+## Historical/Archive Crosswalk (Historical Source Crosswalk)
 
 ### Historical Structured Inputs
 

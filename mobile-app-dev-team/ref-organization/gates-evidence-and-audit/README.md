@@ -98,6 +98,9 @@ Former file: `required-gates.md`
 
 ### Core Gates
 
+Run gates as applicable by touched scope and PR policy, not universally for
+every reference wording edit.
+
 - `pnpm run validate:team-doc`
 - `pnpm run test:runtime`
 - `pnpm turbo run lint test`

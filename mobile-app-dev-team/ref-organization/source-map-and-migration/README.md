@@ -165,7 +165,7 @@ This file defines validator requirements before the full `ref-organization/` con
 
 ### Minimum Validator Requirements For Future Checkpoints
 
-When `scripts/validate-team-doc.mjs` is updated for `ref-organization/`, it should verify:
+Focused reference/source-map validators for `ref-organization/` should verify:
 
 1. `mobile-app-dev-team/ref-organization/README.md` exists after Checkpoint 2.
 2. Each planned top-level section exists after Checkpoint 2:
@@ -232,16 +232,17 @@ When `scripts/validate-team-doc.mjs` is updated for `ref-organization/`, it shou
 
 ### Validation Commands For Future Implementation Checkpoints
 
-Run as applicable:
+Run as applicable by touched scope and PR policy:
 
 ```text
+pnpm run validate:reference-docs
 pnpm run validate:team-doc
 pnpm run test:runtime
 pnpm turbo run lint test
 pnpm run test:local-harness
 ```
 
-`pnpm run test:local-harness` is required when runtime paths, validators, scripts, `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, or docs/plans scope is touched. Local validation does not prove actual OpenClaw pod execution.
+These commands are not universal for every reference wording edit. `pnpm run validate:reference-docs` owns focused reference/source-map checks. `pnpm run validate:team-doc` applies when touched scope also affects runtime source or runtime routing support docs. `pnpm run test:runtime`, `pnpm turbo run lint test`, and `pnpm run test:local-harness` apply by PR policy or when their owned runtime, workspace, validator, script, `AGENTS.md`, `PROJECT_ENVIRONMENT.md`, or docs/plans scope is touched. Local validation does not prove actual OpenClaw pod execution or external platform state.
 
 ### Checkpoint 1 Note
 

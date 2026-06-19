@@ -10,7 +10,7 @@ Upstream SoT:
 Downstream consumers:
 
 - Future team and organization design work.
-- `scripts/validate-team-doc.mjs` ref-organization checks.
+- `scripts/validate-reference-docs.mjs` ref-organization checks.
 
 Last reviewed date: 2026-06-10
 Reviewer evidence: .evidence/reviews/ref-organization-checkpoint-2-xhigh-20260610.md
