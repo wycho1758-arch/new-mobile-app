@@ -687,6 +687,7 @@ cases.push({
     from_agent_id: 'sohee-fixture',
     room_id: 637,
     contentIncludes: [
+      '[Codex Stop Hook] Sohee pod 작업 완료 알림',
       'Task/run identifier: task=TASK-1; run=fixture-run',
       'Implemented the hook. Verification: pnpm run test:hooks passed.',
       'Next-step runbook:',

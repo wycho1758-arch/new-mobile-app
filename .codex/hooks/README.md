@@ -54,7 +54,7 @@ Do not store gateway tokens, private endpoints, or other sensitive values in tra
 
 The Stop hook message includes:
 
-1. Role completion notice.
+1. Role pod completion notice, for example `[Codex Stop Hook] Spring pod 작업 완료 알림`.
 2. `task=<id>; run=<id>` identifier.
 3. Completion summary from the final assistant message.
 4. Next-step runbook.

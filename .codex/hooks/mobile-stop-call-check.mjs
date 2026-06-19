@@ -158,10 +158,14 @@ function completionDmRole() {
   return String(agentId).split('-')[0].toLowerCase();
 }
 
+function displayRoleName(role) {
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
 function completionDmContent({ role, taskId, runId, completion, runbook }) {
   const safeCompletion = completion ? completion.slice(0, 1200) : 'No final assistant message was provided by the Stop hook input.';
   return [
-    `[Codex Stop Hook] ${role} completion notice`,
+    `[Codex Stop Hook] ${displayRoleName(role)} pod 작업 완료 알림`,
     '',
     `Task/run identifier: task=${taskId}; run=${runId}`,
     '',
