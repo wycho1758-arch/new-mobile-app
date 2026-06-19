@@ -133,6 +133,38 @@ state, Codex prompt/evidence path, changed paths, validation commands and
 outputs, reviewer verdicts and evidence paths, residual risks, external proof
 limits, and the relevant Tasks/Jira/GitHub links when such records exist.
 
+## 0.3 Review Meeting Process And Stop/Resume Rules
+
+When Product/Planning opens or supervises workflow reviews, role coordination
+reviews, or comprehensive review meetings, use the accepted pod-native
+`wm-meeting-process` skill as the shared meeting-operation source of truth. In
+the standard pod runtime, that skill is synced to:
+
+```text
+/workspace/skills/wm-meeting-process/SKILL.md
+```
+
+The durable source for that runtime snapshot lives in this repository under:
+
+```text
+mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/wm-meeting-process/SKILL.md
+```
+
+A Review meeting must review exactly one target artifact, handoff, topic, or
+workflow at a time and must declare its target, purpose, owner, allowed roles,
+excluded roles, feedback scope, and stop condition before feedback begins.
+
+If any in-scope feedback is classified as `change-required`, Product/Planning
+must stop the current Review meeting and route corrective 1:1 follow-up to the
+responsible owner. Do not start the next Review meeting until the correction has
+a completed PR/review/merge path or a recorded no-change decision, all feedback
+has a disposition, and Product/Planning explicitly starts the next Review
+meeting.
+
+This section only connects the shared meeting-operation rule to the
+Product/Planning workflow. It does not change role ownership, reviewer gates,
+human approval boundaries, Codex execution contracts, or release approval.
+
 ## 0A. Standard Work Lifecycle
 
 At work start, the owning role confirms the goal, owner, scope, deadline, expected output, and approval boundary.
