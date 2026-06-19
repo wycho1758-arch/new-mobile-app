@@ -136,6 +136,11 @@ If that routing output sets `codex_interactive_required: true`, apply
 run through the scoped Codex CLI interactive PTY contract instead of direct
 role-agent file edits.
 
+For structured meetings, 1:1 instructions, 1:n coordination, announcements,
+brainstorming, or comprehensive sequential reviews, apply
+`/workspace/skills/wm-meeting-process/SKILL.md` after the relevant role scope and
+source of truth are known.
+
 Reading every runtime specification is not authorization to perform every role.
 The agent should read only the matching role runtime specification, then
 `codex-role-workflow`, and then follow the resolved allowed repo-local skill,
