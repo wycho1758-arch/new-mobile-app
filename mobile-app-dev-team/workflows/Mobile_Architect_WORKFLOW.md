@@ -124,6 +124,14 @@ Required reviewer for this workflow is `wm-implementation-reviewer`. Use
 or error semantics, mock/fixture drift, or Backend/API Integrator boundaries are
 materially changed or disputed.
 
+Mobile Architect workflow Review meetings, `change-required` feedback, 1:1
+corrective follow-up, corrective PR/review/merge or recorded no-change
+decisions, and next Review meeting resume rules follow the accepted pod-native
+`wm-meeting-process` skill and the Product/Planning meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference
+does not change role ownership, reviewer gates, human approval, Codex execution
+contracts, or release approval.
+
 ## 0D. Safety, Human Gate, And External Proof Boundaries
 
 Secret safety is mandatory. Do not print, persist, or transmit tokens,
