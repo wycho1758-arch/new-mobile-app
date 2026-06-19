@@ -399,6 +399,14 @@ A Design handoff is not ready for Mobile App Dev until it includes:
 - accessibility notes;
 - implementation constraints for Expo Router, React Native primitives,
   NativeWind, semantic tokens, and stable `testID` values;
+- backend/API dependency status in the Design package and
+  `01-design/handoff-index.md`, including whether the design depends on
+  API-backed data, auth/session behavior, error states, or permission-denied
+  states; whether API contract status is known, unknown, not-applicable, or
+  blocked; the Backend/API Integrator handoff target when uncertainty exists;
+  and the relevant `03-contract-api` artifact pointer when applicable. Design
+  records dependency and routing status only and must not define or change API
+  contracts;
 - UX acceptance criteria and measurable acceptance signals;
 - open decisions and next responsible role;
 - `design-reviewer` evidence.
