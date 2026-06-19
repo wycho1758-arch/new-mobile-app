@@ -11,8 +11,8 @@ principles. Use this file for Mobile App Dev mechanics after
 repo-local `mobile-app-dev-workflow` skill as allowed.
 
 This file is not the workspace-neutral `/workspace/WORKFLOW.md`; role-specific
-follow-up there is out of scope for this PR. Validator script target changes are
-also out of scope for this PR.
+follow-up there is out of scope for this workflow document. Validator script
+target changes are also out of scope for this workflow document.
 
 ## 0. Codex Skill And Path Resolution
 
@@ -111,7 +111,11 @@ Required inputs before implementation:
 - accepted execution task and non-goals;
 - Design handoff when layout, interaction, or visual hierarchy matters;
 - selected Design option and five-state matrix for UI work;
+- `01-design/handoff-index.md` backend/API dependency status for UI or
+  API-backed work;
 - API contract, approved mock/fixture, or explicit API non-goal;
+- applicable `03-contract-api` contract/status artifact pointer when the Design
+  handoff identifies backend/API dependency, or an explicit API non-goal;
 - Mobile Architect handoff when route/state/runtime/dependency/releaseability
   risk exists;
 - expected evidence commands and evidence location;
@@ -134,7 +138,14 @@ UI work requires:
 - committed publication artifacts;
 - selected Design option;
 - default, loading, empty, error, and permission-denied state matrix;
-- design-reviewer evidence.
+- design-reviewer evidence;
+- backend/API dependency status from `01-design/handoff-index.md`.
+
+When the Design handoff marks a backend/API dependency as applicable, Mobile App
+Dev must confirm the relevant `03-contract-api` contract/status artifact pointer
+or an explicit API non-goal before implementation. This check does not make
+Design the owner of API contracts and does not make Mobile App Dev the approver
+of Design quality or API contract ownership.
 
 API-backed work must use `packages/contracts` as the single source of truth for
 shared API/domain schemas and request/response types. Mobile App Dev consumes
@@ -241,6 +252,19 @@ Reviewer evidence should identify reviewer role, reviewed scope, verdict,
 findings, checks reviewed, residual risks, and next action. Link reviewer
 evidence from the PR body, work-unit artifact, or accepted task record.
 
+Mobile App Dev workflow Review meetings follow the accepted pod-native
+`wm-meeting-process` skill and the meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. In-scope
+`change-required` feedback stops the Review meeting and proceeds through 1:1
+corrective follow-up. The next Review meeting, and any downstream Mobile App
+Dev implementation readiness that depends on the reviewed handoff, cannot start
+or resume until the corrective path is resolved through PR/review/merge or a
+recorded no-change decision. This reference does not change Mobile App Dev
+implementation ownership, Mobile Architect route/state/runtime/releaseability
+handoff, Backend/API contract ownership, Design quality ownership, QA/Release
+evidence ownership, reviewer gates, human approval, Codex execution contracts,
+or release approval.
+
 ## 7. Systems Of Record
 
 Use the narrowest durable system of record for each work item.
@@ -323,10 +347,10 @@ transcripts, reports, files, evidence, or PR text.
 
 ## 10. Docs-Only Residual Risk And Limits
 
-For the docs-only `Mobile_App_Dev_WORKFLOW.md` PR:
+For docs-only changes to `Mobile_App_Dev_WORKFLOW.md`:
 
 - Spring approved docs-only execution after reclassifying external platform
-  bootstrap blockers as not relevant to this docs-only PR.
+  bootstrap blockers as not relevant to the docs-only workflow change.
 - `project-bootstrap` external platform readiness remains blocked for
   Railway/gcloud/Expo auth in the broader environment.
 - No Expo, EAS, Railway, gcloud, mobile-mcp, simulator, emulator, physical
@@ -334,7 +358,7 @@ For the docs-only `Mobile_App_Dev_WORKFLOW.md` PR:
 - Future Mobile App Dev live or external work still requires the relevant
   blockers, approvals, credentials, and role-owned evidence to be resolved.
 - `wm-implementation-reviewer` remains mandatory for the PR.
-- `wm-contract-reviewer` is conditional/not required for this docs-only workflow
-  PR because the file references the existing `packages/contracts` boundary and
+- `wm-contract-reviewer` is conditional/not required for a docs-only workflow
+  change because the file references the existing `packages/contracts` boundary and
   does not define or change API schemas, request/response types, backend
   behavior, or contract ownership.
