@@ -46,6 +46,71 @@ the repo-local skills and workflow documents must be followed when in scope.
 Do not replace them with memory, generic Expo/RN advice, or a stale runtime
 snapshot under `/workspace/skills`.
 
+### 0.1 Codex Interactive Execution Guardrails
+
+When Product/Planning routes or supervises managed repository work through a
+Codex interactive PTY, follow the repo-local or pod-native
+`codex-interactive-repo-work` execution contract in addition to this workflow.
+Do not treat the summary below as a replacement for that contract.
+
+Before Codex launch:
+
+1. Resolve the current project-management source of truth when present: Tasks
+   task, Jira issue, Confluence/wiki page, GitHub issue/PR, or committed
+   work-unit artifact. Record the id or link in the Workboard card, Codex
+   prompt, and evidence path.
+2. Create or update a Workboard guard for the bounded work. The guard must
+   record owner, scope, routing artifact or SoT, evidence path, blockers, and
+   completion proof. Workboard tracks execution and wake/follow-through only;
+   it does not replace Tasks, Jira, Confluence/wiki, GitHub, or work-unit SoT.
+3. Register a wake-guard before launch and keep it active until a complete
+   commit or PR handoff is ready. If work is incomplete at wake time, register
+   the next wake with a 5 minute larger interval: `+5m`, `+10m`, `+15m`,
+   `+20m`, and so on.
+4. Confirm the `codex-role-workflow` routing artifact or equivalent approved
+   routing source is ready, including resolved operating role, allowed
+   repo-local Codex skill, required reviewers, human-gate state, and affected
+   scope. Missing routing blocks Codex launch.
+5. Give the Codex PTY a distinguishable title or task label and evidence path.
+
+Codex prompt and execution requirements:
+
+1. State whether the session is a specific-goal session or a
+   progressive-improvement loop. Use `/goal` only for one specific bounded
+   target. Use a loop objective, checkpoints, and stop condition for
+   progressive improvement work. Do not collapse these concepts into each
+   other.
+2. Literally invoke `$wm` or `/wm` for the repo-scoped implementation workflow
+   and include the resulting plan in the session plan.
+3. Put the narrowest test, eval, validator, or fixture update before the
+   implementation change when practical.
+4. Make the minimal scoped change only. Do not add unrelated refactors,
+   metadata churn, or external platform changes.
+5. Inspect `/diff` or an equivalent material diff for the changed paths before
+   handoff.
+6. Obtain required read-only reviewer evidence from the reviewers recorded in
+   the routing source. Reviewer evidence must cover approved plan, diff,
+   validation output, residual risks, and next action.
+7. Preserve human gates, secret safety, and external-proof boundaries. Codex
+   must not self-approve, merge, accept failed-gate risk, expose secrets, or
+   claim production/external proof.
+
+Concurrent Codex PTY rules:
+
+- If new independent bounded work appears while another Codex PTY is active, do
+  not wait unnecessarily. Launch a separate titled PTY only when the scope is
+  independent and separately guarded.
+- Use at most 3 concurrent Codex PTYs. Each PTY needs its own routing source,
+  Workboard guard, wake-guard, goal or loop objective, reviewer evidence,
+  validation output, and evidence path.
+- Close completed PTYs promptly to preserve Codex context and operator
+  attention.
+
+Commit or PR handoff must include routing source, Workboard card, wake-guard
+state, Codex prompt/evidence path, changed paths, validation commands and
+outputs, reviewer verdicts and evidence paths, residual risks, external proof
+limits, and the relevant Tasks/Jira/GitHub links when such records exist.
+
 ## 0A. Standard Work Lifecycle
 
 At work start, the owning role confirms the goal, owner, scope, deadline, expected output, and approval boundary.
