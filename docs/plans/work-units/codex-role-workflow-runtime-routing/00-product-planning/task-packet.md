@@ -63,7 +63,7 @@
 053. Runtime facts and Codex substrate inventory: `PROJECT_ENVIRONMENT.md`.
 054. Current pod-native bridge: `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`.
 055. Entry taxonomy and routing: `mobile-app-dev-team/workflows/entry-case-routing.md`.
-056. Work process lifecycle: `mobile-app-dev-team/workflows/work-processes.md`.
+056. Work process lifecycle: `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`.
 057. Gates and evidence: `mobile-app-dev-team/governance/gates-and-evidence.md`.
 058. Durable pod handoff: `mobile-app-dev-team/workflows/github-artifact-workflow.md`.
 059. App/EAS/OTA rollback: `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
@@ -191,20 +191,20 @@
 178. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says external rollback is human/ops owned.
 179. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says production-submit `human-gate/v1` requires rollback owner and rollback plan.
 180. `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` says failed-gate risk uses the `failed-gate-risk` human gate.
-181. `mobile-app-dev-team/workflows/work-processes.md` says CPO/Product Delivery Lead receives the user request through Product/Planning.
-182. `mobile-app-dev-team/workflows/work-processes.md` says if unclear, run `po-requirement-office-hours`.
-183. `mobile-app-dev-team/workflows/work-processes.md` says if broad, run `po-work-unit-planning-and-agent-sprint`.
-184. `mobile-app-dev-team/workflows/work-processes.md` says if ready, run `po-prd-to-execution`.
-185. `mobile-app-dev-team/workflows/work-processes.md` says before execution, run `po-planning-completeness-review`.
-186. `mobile-app-dev-team/workflows/work-processes.md` says route technical decisions to Mobile Architect when architecture, runtime, API, route/state, dependency, or releaseability risk exists.
-187. `mobile-app-dev-team/workflows/work-processes.md` says route human gates before execution work.
-188. `mobile-app-dev-team/workflows/work-processes.md` says pod-isolated role work uses durable GitHub handoff root under `docs/plans/work-units/<work-unit-id>/`.
-189. `mobile-app-dev-team/workflows/work-processes.md` says Design readiness requires DESIGN.md decision, P0, P1, extraction/publication, and `design-reviewer`.
-190. `mobile-app-dev-team/workflows/work-processes.md` says API readiness updates or confirms `packages/contracts`.
-191. `mobile-app-dev-team/workflows/work-processes.md` says implementation adds or updates the narrowest failing test/eval/validator/fixture first.
-192. `mobile-app-dev-team/workflows/work-processes.md` says implementation is by the owning role and not delegated to write-capable executor.
-193. `mobile-app-dev-team/workflows/work-processes.md` says QA/Release creates an E2E/evidence plan, runs evidence, records outputs, and classifies failures.
-194. `mobile-app-dev-team/workflows/work-processes.md` says production submit requires recorded human approval.
+181. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says CPO/Product Delivery Lead receives the user request through Product/Planning.
+182. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says if unclear, run `po-requirement-office-hours`.
+183. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says if broad, run `po-work-unit-planning-and-agent-sprint`.
+184. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says if ready, run `po-prd-to-execution`.
+185. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says before execution, run `po-planning-completeness-review`.
+186. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says route technical decisions to Mobile Architect when architecture, runtime, API, route/state, dependency, or releaseability risk exists.
+187. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says route human gates before execution work.
+188. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says pod-isolated role work uses durable GitHub handoff root under `docs/plans/work-units/<work-unit-id>/`.
+189. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says Design readiness requires DESIGN.md decision, P0, P1, extraction/publication, and `design-reviewer`.
+190. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says API readiness updates or confirms `packages/contracts`.
+191. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says implementation adds or updates the narrowest failing test/eval/validator/fixture first.
+192. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says implementation is by the owning role and not delegated to write-capable executor.
+193. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says QA/Release creates an E2E/evidence plan, runs evidence, records outputs, and classifies failures.
+194. `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` says production submit requires recorded human approval.
 195. `mobile-app-dev-team/governance/gates-and-evidence.md` says Codex runtime artifact changes require `pnpm run test:runtime`.
 196. `mobile-app-dev-team/governance/gates-and-evidence.md` says runtime path/local harness changes require `pnpm run test:local-harness`.
 197. `mobile-app-dev-team/governance/gates-and-evidence.md` defines the mobile evidence ladder L0-L3.
@@ -458,7 +458,7 @@
 430. The section must not say Codex is only a coding executor.
 431. Add a section named `Process Routing Sources`.
 432. This section must name `mobile-app-dev-team/workflows/entry-case-routing.md`.
-433. This section must name `mobile-app-dev-team/workflows/work-processes.md`.
+433. This section must name `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`.
 434. This section must name `mobile-app-dev-team/governance/gates-and-evidence.md`.
 435. This section must name `mobile-app-dev-team/workflows/github-artifact-workflow.md`.
 436. This section must name `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
@@ -592,7 +592,7 @@
 558. The review prompt must instruct the reviewer to avoid line ranges in JSON findings.
 559. The review prompt must instruct the reviewer to use single-line `path:line` references.
 560. The review prompt must instruct the reviewer to use one supported owner per finding.
-561. The review prompt must include `AGENTS.md`, `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md`, `codex-role-workflow`, `mobile-app-dev-team/workflows/entry-case-routing.md`, `mobile-app-dev-team/workflows/work-processes.md`, `mobile-app-dev-team/governance/gates-and-evidence.md`, `mobile-app-dev-team/workflows/github-artifact-workflow.md`, and `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
+561. The review prompt must include `AGENTS.md`, `REPO_OPERATIONS.md`, `PROJECT_ENVIRONMENT.md`, `codex-role-workflow`, `mobile-app-dev-team/workflows/entry-case-routing.md`, `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`, `mobile-app-dev-team/governance/gates-and-evidence.md`, `mobile-app-dev-team/workflows/github-artifact-workflow.md`, and `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md`.
 562. If the plan is `GO`, future implementation planning may proceed.
 563. If the plan is `NO_GO`, findings must be addressed before implementation.
 564. If the plan is `BLOCKED`, missing SoT or missing evidence must be supplied.

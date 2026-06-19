@@ -160,7 +160,7 @@ architecture artifacts. Required SoT includes:
 - `mobile-app-dev-team/runtime-sources/role-souls/mobile-architect-soul.md`
 - `mobile-app-dev-team/organization/team-composition.md`
 - `mobile-app-dev-team/organization/role-capability-matrix.md`
-- `mobile-app-dev-team/workflows/work-processes.md`
+- `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`
 - `mobile-app-dev-team/governance/gates-and-evidence.md`
 - `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/README.md`
 - `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/codex-role-workflow/SKILL.md`
@@ -370,7 +370,7 @@ routing_reason: <source-backed reason>
 process_sot:
   - mobile-app-dev-team/runtime-sources/role-souls/mobile-architect-soul.md
   - mobile-app-dev-team/workflows/entry-case-routing.md
-  - mobile-app-dev-team/workflows/work-processes.md
+  - mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md
   - mobile-app-dev-team/governance/gates-and-evidence.md
   - mobile-app-dev-team/workflows/github-artifact-workflow.md
   - PROJECT_ENVIRONMENT.md

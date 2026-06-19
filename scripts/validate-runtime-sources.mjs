@@ -151,11 +151,63 @@ requireTerms(errors, organizationsPath, [
   '# ORGANIZATIONS.md - Organizations and Reporting',
   'This file is guidance only',
   'Overspec Controls',
+  'WonderMove Practitioner Crosswalk',
+  'WonderMove Mobile App Delivery Organization',
+  '| Spring | Mobile App Delivery | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | product-planning | Human Owner / Chairman for delivery status, decision requests, and human-gated decisions |',
+  'Practitioner names appear only in this crosswalk metadata section',
+  'CPO / Product Delivery Lead Planning And Orchestration Guidance',
+  'CPO / Product Delivery Lead does not perform practitioner\nimplementation work',
+  'Product/Planning Route And Handoff Criteria',
+  'Before reporting or routing current status, Product/Planning re-checks the\nrelevant source of truth',
+  'Role Operating Matrix',
+  '| Runtime role | Reports to | Escalation owner | Owns | Must not own | Handoff targets | Human-gate boundary |',
+  'Workspace Reporting Channels',
+  'assigned Chatroom',
+  'Escalation Matrix',
+  'approved workspace human-gate mechanism',
+  'Systems Of Record And Reporting Tools',
+  'Workboard',
+  'Gatekeeper Result Consumers',
+  'Failed API or contract check',
+  'Mobile Architect is a technical lead and advisory/co-review owner',
   'Role Archetypes',
   'Approval Boundaries',
   'Deterministic Gatekeeper / System Check',
-  '## 한국어',
 ], 'organizations runtime source');
+
+forbidTerms(errors, organizationsPath, [
+  '## Korean',
+  '## 한국어',
+  'Human Owner through `human-gate/v1`',
+  'Human Owner / Chairman through `human-gate/v1`',
+], 'English-only organizations runtime source');
+
+if (exists(organizationsPath) && /[가-힣]/.test(read(organizationsPath))) {
+  errors.push(`${organizationsPath} must remain English-only and must not contain Hangul content`);
+}
+
+if (exists(organizationsPath) && read(organizationsPath).includes('human-gate/v1')) {
+  errors.push(`${organizationsPath} must use approved workspace human-gate wording instead of schema-specific human-gate/v1`);
+}
+
+if (exists(organizationsPath) && /\b(?:chatroom|room)(?:[\s#:/()[\]\-]*(?:id|no|number))?[\s#:/()[\]\-]*\d+\b/i.test(read(organizationsPath))) {
+  errors.push(`${organizationsPath} must not hardcode Chatroom or room numbers`);
+}
+
+if (exists(organizationsPath)) {
+  const organizationsText = read(organizationsPath);
+  const crosswalkMatch = organizationsText.match(/### WonderMove Practitioner Crosswalk[\s\S]*?(?=\n### )/);
+  if (!crosswalkMatch) {
+    errors.push(`${organizationsPath} must contain an explicit practitioner crosswalk section`);
+  } else {
+    const textOutsideCrosswalk = organizationsText.replace(crosswalkMatch[0], '');
+    for (const practitionerName of ['Spring', 'Seulgi', 'Sohee', 'Hyunwoo', 'Jihoon', 'Sarah']) {
+      if (textOutsideCrosswalk.includes(practitionerName)) {
+        errors.push(`${organizationsPath} must keep practitioner name ${practitionerName} only in the explicit crosswalk metadata section`);
+      }
+    }
+  }
+}
 
 function requirePodNativeSkill(relativePath, slug, scriptName) {
   const skillPath = `${relativePath}/SKILL.md`;

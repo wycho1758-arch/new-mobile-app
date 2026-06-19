@@ -30,8 +30,8 @@ const supportSotRequiredTerms = {
     'SoT-Named Input Categories',
     'not-applicable',
   ],
-  'mobile-app-dev-team/workflows/work-processes.md': [
-    '# Work Processes',
+  'mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md': [
+    '# Product Planning Workflow',
     'Design Readiness',
     'API Readiness',
     'human gates',

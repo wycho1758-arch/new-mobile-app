@@ -1,16 +1,22 @@
 # ORGANIZATIONS.md - Organizations and Reporting
 
-## English
-
 ### Purpose
 
-Use this file to describe the organizations, roles, responsibilities, reporting lines, routing guidance, and escalation paths that agents should understand while working in this workspace.
+Use this file to describe organization composition, roles, reporting lines,
+routing guidance, escalation criteria, and ownership boundaries that agents
+should understand while working in this workspace.
 
-This file is guidance only. It does not automatically enforce routing, approvals, delegation, access control, security policy, or workflow state. Humans or approved tools must still make explicit decisions.
+This file is guidance only. It does not automatically enforce routing,
+approvals, delegation, access control, security policy, or workflow state.
+Humans or approved tools must still make explicit decisions through the
+approved workspace workflow sources.
 
-Do not paste secrets, API keys, tokens, passwords, credentials, private keys, sensitive personal data, or exhaustive people records into this file. Summarize sensitive organization or people details instead of copying raw records.
+Do not paste secrets, API keys, tokens, passwords, credentials, private keys,
+sensitive personal data, or exhaustive people records into this file. Summarize
+sensitive organization or people details instead of copying raw records.
 
-Agents may help draft or update this file, but user-editable content remains the source of truth.
+Agents may help draft or update this file, but user-editable content remains
+the source of truth.
 
 ### Overspec Controls
 
@@ -18,17 +24,24 @@ This file should stay portable. It must not become a project-specific runbook.
 
 Use these controls when editing:
 
-- Keep organization and reporting guidance here.
-- Keep concrete commands, validators, evidence paths, ticket workflows, code-review workflows, skill names, tool names, and repository paths in workspace-specific workflow or policy files.
+- Keep organization, reporting, ownership, routing, and escalation guidance here.
+- Keep concrete commands, validators, evidence paths, ticket workflows,
+  code-review workflows, skill names, tool names, state machines, and repository
+  paths in workspace-specific workflow or policy files.
 - Do not duplicate full role contracts from specialist role documents.
 - Do not treat the example chart as fixed company structure.
 - Do not define a new approval schema here.
 - Do not make deterministic gates look like human or LLM roles.
-- If a detail only makes sense in one repository, move it out of this file and link to the approved workspace document instead.
+- If a detail only makes sense in one repository, move it out of this file and
+  link to the approved workspace document instead.
+- Named approval record types may be referenced only as decision-owner routing
+  labels when needed. Schema details and state transitions belong in governance
+  or workflow documents.
 
 ### Organization Records
 
-For each organization, record only the information needed to understand ownership and escalation.
+For each organization, record only the information needed to understand
+ownership and escalation.
 
 ```md
 ### <Organization Name>
@@ -43,65 +56,132 @@ For each organization, record only the information needed to understand ownershi
 - Escalation owner:
 ```
 
-### Suggested Reporting Pattern
+### WonderMove Mobile App Delivery Organization
 
-The following tree is an example reporting pattern, not a mandatory hierarchy.
+- Mission: Coordinate WonderMove mobile-app delivery from intake through
+  planning, specialist handoff, evidence readiness, and release-risk routing
+  without collapsing specialist ownership.
+- Owner: Product/Planning / Chief Product Officer (CPO) / Product Delivery
+  Lead.
+- Members: Product/Planning, Design, Mobile Architect, Mobile App Dev,
+  Backend/API Integrator, and QA/Release.
+- Interfaces / dependencies: Product/Planning, Design, Mobile Architect,
+  Mobile App Dev, Backend/API Integrator, QA/Release, deterministic Gatekeeper,
+  and Human Owner / Chairman for human-gated decisions.
+- Parent organization: Human Owner / Chairman for human-gated business, risk,
+  legal, production, payment, privacy, budget, irreversible tradeoff, and
+  failed-gate-risk decisions.
+- Child organizations: Product/Planning, Design, Mobile Architecture, Mobile
+  App Development, Backend/API Integration, QA/Release.
+- Decision surfaces owned: intake coordination, role routing, reporting lines,
+  escalation routing, and organization-level handoff expectations.
+- Escalation owner: Product/Planning for delivery coordination; Human Owner /
+  Chairman for human-gated decisions.
 
-```text
-Chairman / Human Owner
-  Organization Lead / Product Delivery Lead
-    Product / Planning Owner
-    Design Owner
-    Technical Lead / Architect
-      Integration / API Owner
-      Implementation Owner
-      QA / Release Owner
-    Deterministic Gatekeeper / System Check
-```
+### WonderMove Practitioner Crosswalk
 
-Interpretation:
+This workspace uses the following practitioner display titles and operating
+roles for reporting and escalation. The canonical runtime slug is crosswalk
+metadata only. Role identity, routing, workflow state, approval, and execution
+remain controlled by the approved workspace workflow sources.
+Practitioner names appear only in this crosswalk metadata section so the rest
+of this file operates by runtime role.
 
-- The tree shows coordination and escalation paths.
-- It does not grant unrestricted decision authority.
-- Specialist quality remains with the specialist owner.
-- Human-gated decisions remain with the assigned human owner.
-- Deterministic gates report check status only; they do not approve risk.
+| Practitioner | Team / Function | Display Title | Operating Role | Canonical runtime slug | Normal reports to |
+| --- | --- | --- | --- | --- | --- |
+| Spring | Mobile App Delivery | Chief Product Officer (CPO) / Product Delivery Lead | Product/Planning | product-planning | Human Owner / Chairman for delivery status, decision requests, and human-gated decisions |
+| Seulgi | Design | Product Designer | Design | design | Product/Planning for delivery coordination; Design retains specialist ownership |
+| Sohee | Mobile Architecture | Mobile Architect / Technical Lead | Mobile Architect | mobile-architect | Product/Planning for delivery coordination; Mobile Architect retains specialist ownership |
+| Hyunwoo | Mobile App Development | Mobile App Developer | Mobile App Dev | mobile-app-dev | Product/Planning for delivery coordination; Mobile App Dev retains implementation ownership |
+| Jihoon | Backend/API Integration | Backend/API Engineer | Backend/API Integrator | backend-api-integrator | Product/Planning for delivery coordination; Backend/API retains contract and service ownership |
+| Sarah | QA/Release | QA/Release Engineer | QA/Release | qa-release | Product/Planning for delivery coordination; QA/Release retains evidence and release-risk ownership |
 
-Optional Mermaid preview:
+### CPO / Product Delivery Lead Planning And Orchestration Guidance
 
-```mermaid
-flowchart TD
-  HumanOwner[Chairman / Human Owner] --> OrgLead[Organization Lead / Product Delivery Lead]
-  OrgLead --> Product[Product / Planning Owner]
-  OrgLead --> Design[Design Owner]
-  OrgLead --> Tech[Technical Lead / Architect]
-  Tech --> Integration[Integration / API Owner]
-  Tech --> Implementation[Implementation Owner]
-  Tech --> QA[QA / Release Owner]
-  OrgLead --> Gatekeeper[Deterministic Gatekeeper / System Check]
-```
+The CPO / Product Delivery Lead coordinates Product/Planning intake, scope,
+readiness, non-goals, evidence expectations, role routing, reporting, and
+escalation. The CPO / Product Delivery Lead does not perform practitioner
+implementation work, approve specialist quality, replace read-only reviewers,
+replace deterministic gate results, or approve human-gated risk.
 
-### Role Archetypes
+At the organization/reporting level, the normal feedback loop is:
 
-Use role archetypes to clarify ownership. Replace names when a workspace uses different role names, but keep ownership boundaries explicit.
+1. The CPO / Product Delivery Lead receives the request through
+   Product/Planning unless an accepted durable work-unit state already assigns
+   the next action to a downstream role.
+2. The CPO / Product Delivery Lead asks the appropriate practitioner for a
+   role-owned plan instead of asking for immediate execution.
+3. The CPO / Product Delivery Lead reviews the practitioner plan for scope,
+   acceptance mapping, non-goals, readiness, evidence expectations, human-gate
+   routing, dependencies, blockers, open decisions, and handoff completeness.
+4. The CPO / Product Delivery Lead sends planning feedback to the practitioner.
+5. The practitioner keeps specialist ownership and reports whether the plan
+   needs an update.
+6. Practitioner execution starts only when the approved workflow source records
+   execution readiness or deterministic next action for the owning role.
+7. When actual work is complete, the practitioner reports outcome, evidence,
+   blockers, reviewer state, gate state, and handoff state back to
+   Product/Planning.
+8. The CPO / Product Delivery Lead runs the same feedback loop for completion:
+   scope fit, readiness, evidence completeness, gate state, open decisions, and
+   next responsible role.
 
-| Role archetype | Owns | Routes to | Escalates | Must not |
-| --- | --- | --- | --- | --- |
-| Chairman / Human Owner | Final human-owned business, risk, policy, or approval decisions | Organization Lead | Higher business or legal authority when needed | Receive secrets through this file; imply approval through silence unless approved policy says so |
-| Organization Lead / Product Delivery Lead | Intake coordination, scope framing, readiness, owner assignment, non-goals, and escalation routing | Product, Design, Technical, Integration, Implementation, QA, Human Owner | Human Owner for gated decisions; specialist owner for domain decisions | Implement specialist work; approve specialist quality; bypass human gates |
-| Product / Planning Owner | Clarification, bounded work definition, acceptance framing, planning completeness, and handoff readiness | Design, Technical Lead, Integration, Implementation, QA, Human Owner | Human Owner for gated decisions; Organization Lead for priority conflicts | Turn unclear requests into execution work; treat chat as final source of truth without an accepted record |
-| Design Owner | UX quality, interaction, visual hierarchy, design options, and design handoff quality | Product/Planning, Technical Lead, Implementation, QA | Product/Planning for scope; Human Owner for gated decisions | Own product scope alone; ask a non-design owner to approve design quality |
-| Technical Lead / Architect | Architecture, technical feasibility, dependency impact, integration risk, runtime boundaries, and releaseability | Product/Planning, Integration, Implementation, QA | Human Owner for risk acceptance; Product/Planning for scope change | Absorb implementation or integration ownership by default; accept failed-gate risk |
-| Integration / API Owner | Contract shape, data boundaries, integration behavior, auth/session behavior, error mapping, compatibility, and rollback concerns | Technical Lead, Implementation, QA | Product/Planning for scope; Technical Lead for architecture; Human Owner for gated decisions | Invent product scope; duplicate contracts when a shared source exists |
-| Implementation Owner | Approved implementation tasks, local implementation details, tests, and implementation evidence | QA, reviewer, Technical Lead, Integration, Product/Planning | Product/Planning for scope; Technical Lead or Integration for uncertainty | Expand scope; invent contracts; skip required evidence; self-approve gated readiness |
-| QA / Release Owner | Evidence planning, test records, release-readiness summary, failure classification, and release-risk reporting | Implementation, Technical Lead, Product/Planning, Human Owner | Human Owner for production or risk acceptance | Fix implementation as default owner; approve production submit; treat untested surfaces as proven |
-| Deterministic Gatekeeper / System Check | Defined pass/fail or status result from required evidence | Owning workflow or role | Owning workflow when a check fails | Perform LLM judgment; replace review; replace human approval; accept failed-gate risk |
+Workflow mechanics, state transitions, command requirements, evidence paths,
+validator behavior, reviewer contracts, and durable work-unit records belong in
+the approved workspace workflow documents, not in this organizations guidance
+file.
+
+### Product/Planning Route And Handoff Criteria
+
+Product/Planning routes work by matching the request, plan, or completion
+report to the smallest runtime role that owns the next decision or artifact.
+
+Before reporting or routing current status, Product/Planning re-checks the
+relevant source of truth, task/card/PR/session, or latest practitioner report.
+Product/Planning should not report stale memory as current state.
+
+| Trigger | Route / handoff owner | Product/Planning responsibility |
+| --- | --- | --- |
+| Ambiguous request, unclear scope, broad goal, missing acceptance signal, non-goal decision, execution sequencing, role handoff priority, or readiness question | Product/Planning | Clarify, size, record non-goals, request role plans, and confirm readiness before execution |
+| Layout, interaction, visual hierarchy, accessibility, UX quality, design option, or design handoff quality | Design | Route for a Design-owned plan or artifact; review only scope fit and evidence readiness |
+| Architecture, runtime boundary, route/state impact, dependency policy, integration risk, releaseability, or EAS strategy | Mobile Architect | Route for architecture review or ADR; do not decide technical architecture alone |
+| API contract, schema, auth/session, data boundary, error mapping, mock, fixture, backend service delivery, or rollback concern | Backend/API Integrator | Route API ownership to Backend/API Integrator; request Mobile Architect co-review when mobile integration or architecture risk exists |
+| Approved Expo React Native implementation, selectors, tests, app integration, or implementation evidence | Mobile App Dev | Handoff only after approved task packet and readiness source exist |
+| QA plan, evidence ladder, RN Web, Maestro, mobile-mcp, release-risk summary, failure classification, or release readiness | QA/Release | Require evidence plan and completion evidence; do not classify failed gates as passed |
+| Deterministic required check result | Release Gatekeeper / System Check | Consume status only; route failures back to the owning workflow or role |
+| Business priority, roadmap priority, budget/resource tradeoff, production submit, payment, privacy, external messaging, legal/compliance, irreversible scope tradeoff, privileged access, or failed-gate-risk decision | Human Owner / Chairman through the approved workspace human-gate mechanism | Stop affected work, request recorded human decision, and resume only after approval or scope change |
+
+### Role Operating Matrix
+
+| Runtime role | Reports to | Escalation owner | Owns | Must not own | Handoff targets | Human-gate boundary |
+| --- | --- | --- | --- | --- | --- | --- |
+| Product/Planning | Human Owner for delivery status, decision requests, and human-gated decisions | Product/Planning for delivery coordination; Human Owner for human-gated decisions | Intake, scope framing, non-goals, readiness, evidence expectations, role routing, reporting, and handoff completeness | App/backend/design/QA/release implementation; specialist quality approval; deterministic gate replacement; human-gated risk approval | Design, Mobile Architect, Backend/API Integrator, Mobile App Dev, QA/Release, Human Owner | Stops for the approved workspace human-gate mechanism |
+| Design | Product/Planning for delivery coordination | Design for design quality; Product/Planning for scope mismatch | UX quality, interaction, visual hierarchy, design options, and design handoff quality | Product scope, app implementation, or non-design approval of design quality | Product/Planning, Mobile Architect, Mobile App Dev, QA/Release | Escalates human-gated decisions to Human Owner through Product/Planning |
+| Mobile Architect | Product/Planning for delivery coordination | Mobile Architect for architecture/runtime/releaseability; Human Owner for risk acceptance | Architecture, route/state impact, runtime boundaries, integration risk, dependency policy, and releaseability | Mobile App Dev implementation ownership, Backend/API service ownership, QA evidence ownership, or failed-gate risk acceptance | Product/Planning, Backend/API Integrator, Mobile App Dev, QA/Release | Escalates risk acceptance to Human Owner through the approved workspace human-gate mechanism |
+| Backend/API Integrator | Product/Planning for delivery coordination | Backend/API Integrator for contract/API issues; Mobile Architect for integration architecture risk | Mobile-facing API contracts, shared schemas, mocks, fixtures, auth/session behavior, error mapping, bounded backend/API delivery when approved, and rollback notes | Native UI, duplicated schemas outside the shared source, QA readiness approval, or product scope | Mobile Architect, Mobile App Dev, QA/Release, Product/Planning | Escalates human-gated API/service risk to Human Owner through Product/Planning |
+| Mobile App Dev | Product/Planning for delivery coordination | Mobile App Dev for implementation failures; Mobile Architect or Backend/API Integrator for technical uncertainty | Approved Expo React Native implementation, selectors, local implementation tests, app integration, and implementation evidence | Product scope expansion, invented API contracts, backend behavior, design quality approval, QA readiness approval, or failed-gate risk acceptance | QA/Release, reviewer, Mobile Architect, Backend/API Integrator, Product/Planning | Stops on human-gated scope/risk and routes through Product/Planning |
+| QA/Release | Product/Planning for delivery coordination | QA/Release for evidence classification; owning role for fixes; Human Owner for risk acceptance | Evidence planning, E2E results, release-readiness summary, failure classification, and release-risk reporting | Implementation fixes as default owner, production submit approval, or failed-gate risk acceptance | Failed task owner, Product/Planning, Human Owner | Escalates production or failed-gate risk to Human Owner through the approved workspace human-gate mechanism |
+| Gatekeeper | Owning workflow or role receives status | Owning workflow or role when a check fails | Deterministic pass/fail or status result from required evidence | LLM judgment, human approval, review replacement, SOUL ownership, implementation, or risk acceptance | Owning workflow or role | Gatekeeper is a system role and cannot approve human-gated decisions |
+| Human Owner | N/A | Human Owner / Chairman | Human-owned business, budget, legal, privacy, production, irreversible tradeoff, and risk decisions | Specialist execution, deterministic check operation, or routine implementation ownership | Product/Planning or explicitly assigned approval owner | Owns the approved human-gate decision |
+
+### Workspace Reporting Channels
+
+- Product/Planning reports WonderMove work/status, blockers, decision requests,
+  and completion summaries to the Human Owner through the assigned Chatroom
+  unless a higher-priority inbound Chatroom route requires otherwise.
+- Design, Mobile Architect, Mobile App Dev, Backend/API Integrator, and
+  QA/Release report routine work status, blockers, questions, evidence, and
+  completion to Product/Planning through their assigned Chatrooms.
+- The assigned team Chatroom is for Product/Planning announcements, common
+  coordination, active discussion, or urgent meetings. It is not the default
+  place for practitioner detailed work reports.
 
 ### Reporting Lines
 
 Use reporting lines to clarify communication, not to collapse ownership.
 
-- Direct reporting line: who normally receives progress, blocker, and completion reports.
+- Direct reporting line: who normally receives progress, blocker, and
+  completion reports.
 - Peer relationship: who must coordinate as an equal owner.
 - Advisory relationship: who provides specialist input without taking ownership.
 - Escalation owner: who can resolve or route a blocked decision.
@@ -111,7 +191,108 @@ Rules:
 1. A lead can coordinate work without owning every specialist decision.
 2. Peer review is not approval unless an approved workflow says so.
 3. Silence is not approval unless an approved source defines timeout behavior.
-4. If reporting and decision ownership conflict, stop and resolve ownership before execution.
+4. If reporting and decision ownership conflict, stop and resolve ownership
+   before execution.
+5. Design, Mobile Architect, Mobile App Dev, Backend/API Integrator, and
+   QA/Release report progress, blockers, completion status, evidence status,
+   reviewer status, and handoff state to Product/Planning while retaining
+   specialist ownership.
+6. Product/Planning reports human-gated blockers, decision requests, and
+   unresolved delivery risks to the Human Owner / Chairman through the approved
+   workspace human-gate mechanism.
+
+### Escalation Matrix
+
+| Decision or blocker | Escalate to | Boundary |
+| --- | --- | --- |
+| Scope, acceptance mapping, non-goal, readiness, execution sequencing, role handoff priority, or cross-role handoff gap | Product/Planning | Product/Planning coordinates and routes; Product/Planning does not implement specialist work |
+| Design quality, selected option quality, UX acceptance, visual hierarchy, or design handoff quality | Design | Product/Planning may approve scope/evidence fit, not design quality |
+| Architecture, route/state impact, dependency, runtime boundary, releaseability, or EAS strategy | Mobile Architect | Mobile Architect decides structure without absorbing app/backend implementation ownership |
+| API contract, shared schema, auth/session, error mapping, mock, fixture, backend service evidence, or rollback note | Backend/API Integrator | Backend/API Integrator owns contract and service surfaces; Mobile Architect co-reviews integration risk |
+| Expo React Native code, selectors, app integration, local tests, or implementation evidence | Mobile App Dev | Mobile App Dev implements only approved tasks and does not invent contracts |
+| Evidence plan, E2E result, release readiness, failure classification, or release-risk summary | QA/Release | QA/Release reports evidence and risk; it does not fix implementation or accept failed gates |
+| Required check pass/fail status | Release Gatekeeper / System Check | Gatekeeper reports deterministic status only |
+| Business priority, roadmap priority, budget/resource tradeoff, production submit, payment, privacy, external messaging, legal/compliance, irreversible scope tradeoff, privileged access, or failed-gate-risk acceptance | Human Owner / Chairman through the approved workspace human-gate mechanism | No role, reviewer, pod, LLM, or Gatekeeper can replace human approval |
+
+### Gatekeeper Result Consumers
+
+The deterministic Gatekeeper reports pass/fail status only. Failed checks route
+to the owner that can classify or fix the failed surface:
+
+| Failed result | First consumer | Expected routing |
+| --- | --- | --- |
+| Failed implementation check | Mobile App Dev | Mobile App Dev fixes app implementation when the failure is in approved mobile code |
+| Failed API or contract check | Backend/API Integrator | Backend/API Integrator fixes contract/API/schema/auth/error-mapping issues and requests Mobile Architect co-review when integration risk exists |
+| Failed architecture or releaseability check | Mobile Architect | Mobile Architect classifies architecture/runtime/releaseability risk without absorbing implementation ownership |
+| Failed QA or release evidence | QA/Release | QA/Release classifies the failure and routes the fix to the owning implementation, API, architecture, design, or planning role |
+| Failed scope or readiness gate | Product/Planning | Product/Planning resolves planning, scope, acceptance, non-goal, owner, or handoff gaps |
+| Failed-gate risk acceptance | Human Owner / Chairman | Only the Human Owner can accept residual risk through the approved workspace human-gate mechanism |
+
+### Systems Of Record And Reporting Tools
+
+Project-management systems such as Tasks, Jira, Confluence/wiki, GitHub, and
+Workboard are not reporting-line owners. They are systems of record or execution
+tracking tools. Ownership still follows the role and escalation model in this
+file.
+
+### Suggested Reporting Pattern
+
+The following tree is an example reporting pattern, not a mandatory hierarchy.
+
+```text
+Human Owner / Chairman
+  Product/Planning / Chief Product Officer (CPO) / Product Delivery Lead
+    Design / Product Designer
+    Mobile Architect / Technical Lead
+    Backend/API Integrator / Backend/API Engineer
+    Mobile App Dev / Mobile App Developer
+    QA/Release / QA/Release Engineer
+    Gatekeeper - Release Gatekeeper (System)
+```
+
+Interpretation:
+
+- The tree shows coordination and escalation paths.
+- It does not grant unrestricted decision authority.
+- Specialist quality remains with the specialist owner.
+- Product/Planning is the operating role, not an additional practitioner under
+  the CPO / Product Delivery Lead.
+- Mobile Architect is a technical lead and advisory/co-review owner for
+  architecture, route/state, runtime, integration risk, and releaseability. This
+  does not make Backend/API, Mobile App Dev, or QA/Release direct reports to
+  Mobile Architect.
+- Human-gated decisions remain with the assigned human owner.
+- Deterministic gates report check status only; they do not approve risk.
+
+Optional Mermaid preview:
+
+```mermaid
+flowchart TD
+  HumanOwner[Human Owner / Chairman] --> ProductPlanning[Product/Planning / CPO / Product Delivery Lead]
+  ProductPlanning --> Design[Design / Product Designer]
+  ProductPlanning --> Architect[Mobile Architect / Technical Lead]
+  ProductPlanning --> Integration[Backend/API Integrator / Backend API Engineer]
+  ProductPlanning --> Implementation[Mobile App Dev / Mobile App Developer]
+  ProductPlanning --> QA[QA/Release / QA Release Engineer]
+  ProductPlanning --> Gatekeeper[Gatekeeper - Release Gatekeeper System]
+```
+
+### Role Archetypes
+
+Use role archetypes to clarify ownership. Replace names when a workspace uses
+different role names, but keep ownership boundaries explicit.
+
+| Role archetype | Owns | Routes to | Escalates | Must not |
+| --- | --- | --- | --- | --- |
+| Chairman / Human Owner | Final human-owned business, risk, policy, or approval decisions | Product Delivery Lead | Higher business or legal authority when needed | Receive secrets through this file; imply approval through silence unless approved policy says so |
+| Product Delivery Lead / Product Planning | Intake coordination, scope framing, readiness, owner assignment, non-goals, evidence expectations, reporting lines, and escalation routing | Product, Design, Technical, Integration, Implementation, QA, Human Owner | Human Owner for gated decisions; specialist owner for domain decisions | Implement specialist work; approve specialist quality; bypass human gates |
+| Product / Planning Owner | Clarification, bounded work definition, acceptance framing, planning completeness, and handoff readiness | Design, Technical Lead, Integration, Implementation, QA, Human Owner | Human Owner for gated decisions; Product Delivery Lead for priority conflicts | Turn unclear requests into execution work; treat chat as final source of truth without an accepted record |
+| Design Owner | UX quality, interaction, visual hierarchy, design options, and design handoff quality | Product/Planning, Technical Lead, Implementation, QA | Product/Planning for scope; Human Owner for gated decisions | Own product scope alone; ask a non-design owner to approve design quality |
+| Technical Lead / Architect | Architecture, technical feasibility, dependency impact, integration risk, runtime boundaries, and releaseability | Product/Planning, Integration, Implementation, QA | Human Owner for risk acceptance; Product/Planning for scope change | Absorb implementation or integration ownership by default; accept failed-gate risk |
+| Integration / API Owner | Contract shape, data boundaries, integration behavior, auth/session behavior, error mapping, compatibility, and rollback concerns | Technical Lead, Implementation, QA | Product/Planning for scope; Technical Lead for architecture; Human Owner for gated decisions | Invent product scope; duplicate contracts when a shared source exists |
+| Implementation Owner | Approved implementation tasks, local implementation details, tests, and implementation evidence | QA, reviewer, Technical Lead, Integration, Product/Planning | Product/Planning for scope; Technical Lead or Integration for uncertainty | Expand scope; invent contracts; skip required evidence; self-approve gated readiness |
+| QA / Release Owner | Evidence planning, test records, release-readiness summary, failure classification, and release-risk reporting | Implementation, Technical Lead, Product/Planning, Human Owner | Human Owner for production or risk acceptance | Fix implementation as default owner; approve production submit; treat untested surfaces as proven |
+| Deterministic Gatekeeper / System Check | Defined pass/fail or status result from required evidence | Owning workflow or role | Owning workflow when a check fails | Perform LLM judgment; replace review; replace human approval; accept failed-gate risk |
 
 ### Routing Guidance
 
@@ -145,7 +326,8 @@ Stop and request explicit approval when work involves:
 - Accepting risk after a failed required check.
 - Access changes, credential changes, or privileged operations.
 
-Record approvals using the approved workspace mechanism. This file only describes when approval is expected.
+Record approvals using the approved workspace mechanism. This file only
+describes when approval is expected.
 
 ### Escalation Workflow
 
@@ -153,13 +335,16 @@ When escalation is needed:
 
 1. Identify the trigger and decision owner.
 2. Summarize the minimum decision needed.
-3. Include scope, options, risks, evidence links, affected roles, and recommended next step.
+3. Include scope, options, risks, evidence links, affected roles, and
+   recommended next step.
 4. Stop affected work if proceeding would assume the decision.
 5. Request approval through the approved workspace channel.
 6. Record the decision using the approved workspace mechanism.
-7. Resume only when the decision is approved or the scope changes to avoid the blocked area.
+7. Resume only when the decision is approved or the scope changes to avoid the
+   blocked area.
 
-Do not use escalation to hide missing requirements, missing evidence, or role confusion. If the issue is a planning gap, route it back to Product / Planning.
+Do not use escalation to hide missing requirements, missing evidence, or role
+confusion. If the issue is a planning gap, route it back to Product / Planning.
 
 ### Handoff Requirements
 
@@ -174,9 +359,13 @@ Every actionable handoff should include:
 - Open decisions.
 - Next responsible role.
 - Review or approval requirement.
-- Durable handoff location when work moves across separate runtimes, teams, or tools.
+- Durable handoff location when work moves across separate runtimes, teams, or
+  tools.
 
-If agents, teams, or systems do not share local state, use an approved durable record such as a shared document, ticket, change record, workflow state record, or artifact registry entry. Do not rely on another actor's local workspace as the handoff.
+If agents, teams, or systems do not share local state, use an approved durable
+record such as a shared document, ticket, change record, workflow state record,
+or artifact registry entry. Do not rely on another actor's local workspace as
+the handoff.
 
 ### Maintenance Checklist
 
@@ -189,193 +378,3 @@ Before updating this file, check:
 - Does it keep deterministic gates separate from human or LLM roles?
 - Are secrets and sensitive personal details excluded?
 - If workspace-specific detail is needed, is it linked rather than copied?
-
-## 한국어
-
-### 목적
-
-이 파일은 이 workspace에서 작업하는 agent가 이해해야 하는 조직, 역할, 책임, 보고 라인, 라우팅 기준, escalation 경로를 설명한다.
-
-이 파일은 안내 문서일 뿐이다. 이 파일은 routing, approval, delegation, access control, security policy, workflow state를 자동으로 집행하지 않는다. 명시적 결정은 human 또는 승인된 tool이 내려야 한다.
-
-secret, API key, token, password, credential, private key, 민감한 개인정보, 과도하게 상세한 인명 기록을 이 파일에 붙여넣지 않는다. 민감한 조직 정보나 사람 관련 정보는 원본 기록을 복사하지 말고 요약한다.
-
-agent는 이 파일의 초안 작성이나 업데이트를 도울 수 있지만, 사용자가 편집 가능한 내용이 source of truth로 남는다.
-
-### 오버스펙 방지 기준
-
-이 파일은 portable해야 한다. project-specific runbook이 되면 안 된다.
-
-수정할 때 아래 기준을 적용한다.
-
-- 조직과 보고 guidance만 이 파일에 둔다.
-- 구체적인 command, validator, evidence path, ticket workflow, code-review workflow, skill name, tool name, repository path는 workspace-specific workflow 또는 policy 파일에 둔다.
-- specialist role 문서의 full role contract를 중복하지 않는다.
-- example chart를 고정된 회사 조직 구조로 취급하지 않는다.
-- 여기서 새 approval schema를 정의하지 않는다.
-- deterministic gate를 human role 또는 LLM role처럼 보이게 만들지 않는다.
-- 어떤 detail이 특정 repository에서만 의미가 있다면 이 파일 밖으로 옮기고 승인된 workspace 문서로 링크한다.
-
-### 조직 기록
-
-각 조직에는 ownership과 escalation을 이해하는 데 필요한 정보만 기록한다.
-
-```md
-### <조직명>
-
-- 미션:
-- 소유자:
-- 구성원:
-- 인터페이스 / 의존성:
-- 상위 조직:
-- 하위 조직:
-- 소유하는 의사결정 영역:
-- escalation owner:
-```
-
-### 권장 보고 패턴
-
-아래 tree는 예시 보고 패턴이며 필수 hierarchy가 아니다.
-
-```text
-Chairman / Human Owner
-  Organization Lead / Product Delivery Lead
-    Product / Planning Owner
-    Design Owner
-    Technical Lead / Architect
-      Integration / API Owner
-      Implementation Owner
-      QA / Release Owner
-    Deterministic Gatekeeper / System Check
-```
-
-해석:
-
-- 이 tree는 coordination과 escalation path를 보여준다.
-- 무제한 의사결정 권한을 부여하지 않는다.
-- specialist quality는 specialist owner에게 남아 있다.
-- human-gated decision은 배정된 human owner에게 남아 있다.
-- deterministic gate는 check status만 보고한다. risk를 승인하지 않는다.
-
-선택적 Mermaid preview:
-
-```mermaid
-flowchart TD
-  HumanOwner[Chairman / Human Owner] --> OrgLead[Organization Lead / Product Delivery Lead]
-  OrgLead --> Product[Product / Planning Owner]
-  OrgLead --> Design[Design Owner]
-  OrgLead --> Tech[Technical Lead / Architect]
-  Tech --> Integration[Integration / API Owner]
-  Tech --> Implementation[Implementation Owner]
-  Tech --> QA[QA / Release Owner]
-  OrgLead --> Gatekeeper[Deterministic Gatekeeper / System Check]
-```
-
-### 역할 Archetype
-
-role archetype은 ownership을 명확히 하기 위해 사용한다. workspace가 다른 role name을 사용한다면 이름은 바꿔도 되지만 ownership boundary는 명확히 유지한다.
-
-| Role archetype | 소유 | 라우팅 대상 | Escalation | 금지 |
-| --- | --- | --- | --- | --- |
-| Chairman / Human Owner | human-owned business, risk, policy, approval decision의 최종 책임 | Organization Lead | 필요 시 상위 business 또는 legal authority | 이 파일을 통해 secret을 받기; 승인된 policy가 없는 침묵을 approval로 해석하기 |
-| Organization Lead / Product Delivery Lead | intake coordination, scope framing, readiness, owner assignment, non-goal, escalation routing | Product, Design, Technical, Integration, Implementation, QA, Human Owner | gated decision은 Human Owner; domain decision은 specialist owner | specialist work 구현; specialist quality 승인; human gate 우회 |
-| Product / Planning Owner | clarification, bounded work definition, acceptance framing, planning completeness, handoff readiness | Design, Technical Lead, Integration, Implementation, QA, Human Owner | gated decision은 Human Owner; priority conflict는 Organization Lead | unclear request를 execution work로 전환; accepted record 없는 chat을 source of truth로 취급 |
-| Design Owner | UX quality, interaction, visual hierarchy, design option, design handoff quality | Product/Planning, Technical Lead, Implementation, QA | scope는 Product/Planning; gated decision은 Human Owner | product scope 단독 소유; design quality 승인을 non-design owner에게 요구 |
-| Technical Lead / Architect | architecture, technical feasibility, dependency impact, integration risk, runtime boundary, releaseability | Product/Planning, Integration, Implementation, QA | risk acceptance는 Human Owner; scope change는 Product/Planning | implementation 또는 integration ownership을 기본적으로 흡수; failed-gate risk 수락 |
-| Integration / API Owner | contract shape, data boundary, integration behavior, auth/session behavior, error mapping, compatibility, rollback concern | Technical Lead, Implementation, QA | scope는 Product/Planning; architecture는 Technical Lead; gated decision은 Human Owner | product scope 발명; shared source가 있는 contract 중복 |
-| Implementation Owner | approved implementation task, local implementation detail, test, implementation evidence | QA, reviewer, Technical Lead, Integration, Product/Planning | scope는 Product/Planning; uncertainty는 Technical Lead 또는 Integration | scope 확장; contract 발명; required evidence 생략; gated readiness self-approval |
-| QA / Release Owner | evidence planning, test record, release-readiness summary, failure classification, release-risk reporting | Implementation, Technical Lead, Product/Planning, Human Owner | production 또는 risk acceptance는 Human Owner | 기본 owner로 implementation 수정; production submit 승인; 테스트하지 않은 surface를 proven으로 취급 |
-| Deterministic Gatekeeper / System Check | required evidence에서 나온 정의된 pass/fail 또는 status result | owning workflow 또는 role | check 실패 시 owning workflow | LLM judgment 수행; review 대체; human approval 대체; failed-gate risk 수락 |
-
-### 보고 라인
-
-보고 라인은 커뮤니케이션을 명확히 하기 위한 것이며 ownership을 합치는 수단이 아니다.
-
-- direct reporting line: 보통 progress, blocker, completion report를 받는 사람 또는 역할.
-- peer relationship: 같은 수준의 owner로 조율해야 하는 관계.
-- advisory relationship: ownership을 가져가지 않고 specialist input을 제공하는 관계.
-- escalation owner: blocked decision을 해결하거나 라우팅할 수 있는 owner.
-
-규칙:
-
-1. lead는 작업을 조율할 수 있지만 모든 specialist decision을 소유하지 않는다.
-2. 승인된 workflow가 명시하지 않는 한 peer review는 approval이 아니다.
-3. 승인된 source가 timeout behavior를 정의하지 않는 한 silence는 approval이 아니다.
-4. reporting과 decision ownership이 충돌하면 실행 전에 멈추고 ownership을 해결한다.
-
-### 라우팅 기준
-
-아래 내용은 human과 agent를 위한 제안이며 자동 routing rule이 아니다.
-
-| 작업 유형 | 권장 라우팅 |
-| --- | --- |
-| 모호한 요청, 불명확한 scope, 부족한 acceptance signal | Product / Planning Owner |
-| 넓은 목표 또는 과도하게 큰 요청 | sizing을 위해 Product / Planning Owner |
-| 준비된 bounded requirement | task framing과 handoff를 위해 Product / Planning Owner |
-| layout, interaction, visual hierarchy, UX quality | Design Owner |
-| architecture, technical feasibility, dependency, runtime, releaseability risk | Technical Lead / Architect |
-| contract, schema, integration, auth/session, data boundary, error behavior | Integration / API Owner |
-| 승인된 implementation task | Implementation Owner |
-| test evidence, release readiness, failure classification | QA / Release Owner |
-| required deterministic check | Deterministic Gatekeeper / System Check |
-| production, payment, privacy, legal, compliance, budget, irreversible tradeoff, privileged access, failed-gate risk | Human Owner 또는 명시적으로 배정된 approval owner |
-
-### 승인 경계
-
-아래 작업은 멈추고 명시적 approval을 요청한다.
-
-- destructive infrastructure change.
-- production submission 또는 public release.
-- payment, billing, money movement, commercial commitment.
-- privacy-sensitive behavior, identity, account access, sensitive user data.
-- external messaging 또는 public communication.
-- legal, terms, contract, policy, compliance decision.
-- 배정된 역할 권한을 벗어나는 business, budget, priority decision.
-- irreversible scope tradeoff.
-- failed required check 이후 risk acceptance.
-- access change, credential change, privileged operation.
-
-approval은 승인된 workspace mechanism으로 기록한다. 이 파일은 approval이 필요한 상황만 설명한다.
-
-### Escalation Workflow
-
-escalation이 필요할 때:
-
-1. trigger와 decision owner를 식별한다.
-2. 필요한 최소 결정을 요약한다.
-3. scope, option, risk, evidence link, affected role, recommended next step을 포함한다.
-4. 결정 없이 진행하면 가정이 되는 작업은 멈춘다.
-5. 승인된 workspace channel로 approval을 요청한다.
-6. 승인된 workspace mechanism으로 decision을 기록한다.
-7. decision이 approved되거나 blocked area를 피하도록 scope가 변경된 경우에만 재개한다.
-
-missing requirement, missing evidence, role confusion을 숨기기 위해 escalation을 사용하지 않는다. 문제가 planning gap이면 Product / Planning으로 되돌린다.
-
-### Handoff Requirements
-
-실행 가능한 모든 handoff에는 아래 항목이 있어야 한다.
-
-- Owner.
-- Input artifact.
-- Output artifact.
-- Acceptance criteria.
-- Evidence requirement.
-- Dependencies and blockers.
-- Open decisions.
-- Next responsible role.
-- Review 또는 approval requirement.
-- 별도 runtime, team, tool로 작업이 넘어갈 때 durable handoff location.
-
-agent, team, system이 local state를 공유하지 않는다면 shared document, ticket, change record, workflow state record, artifact registry entry 같은 승인된 durable record를 사용한다. 다른 actor의 local workspace를 handoff로 의존하지 않는다.
-
-### 유지보수 Checklist
-
-이 파일을 업데이트하기 전에 확인한다.
-
-- 변경 내용이 project execution이 아니라 organization/reporting에 관한 것인가?
-- repository-specific command, path, tool, validator를 피했는가?
-- full role contract를 중복하지 않는가?
-- human approval boundary를 유지하는가?
-- deterministic gate를 human 또는 LLM role과 분리하는가?
-- secret과 민감한 개인정보가 제외되어 있는가?
-- workspace-specific detail이 필요하다면 복사하지 않고 링크했는가?

@@ -14,7 +14,7 @@
 | `mobile-app-dev-team/organization/team-composition.md` | Current team composition and role boundary source |
 | `mobile-app-dev-team/organization/role-capability-matrix.md` | Current operating role capability, output, and forbidden-scope matrix |
 | `mobile-app-dev-team/organization/new-team-template-guide.md` | Current guide for reusing the team structure for another development team |
-| `mobile-app-dev-team/workflows/work-processes.md` | Current repo-local work process and role handoff workflow |
+| `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` | Current repo-local work process and role handoff workflow |
 | `mobile-app-dev-team/governance/gates-and-evidence.md` | Current gate, evidence, human-gate, and durable handoff policy |
 | `mobile-app-dev-team/workflows/github-artifact-workflow.md` | Current pod-isolated GitHub artifact handoff workflow |
 | `mobile-app-dev-team/workflows/native-e2e-strategy.md` | Current native E2E evidence ladder and offline EAS/Maestro ingest strategy |
@@ -75,7 +75,7 @@ platform state.
 | `mobile-app-dev-team/02-role-souls/` | `mobile-app-dev-team/runtime-sources/role-souls/` | `R2` | Completed. |
 | `mobile-app-dev-team/03-role-capability-matrix.md` | `mobile-app-dev-team/organization/role-capability-matrix.md` | `O1` | Completed. |
 | `mobile-app-dev-team/04-skills-and-agents-matrix.md` | `mobile-app-dev-team/runtime-sources/codex-skill-agent-matrix.md` | `C1` | Completed; old numbered top-level file is rejected by validators. |
-| `mobile-app-dev-team/05-work-processes.md` | `mobile-app-dev-team/workflows/work-processes.md` | `W1` | Completed. |
+| `mobile-app-dev-team/05-work-processes.md` | `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` | `W1` | Completed. |
 | `mobile-app-dev-team/06-gates-and-evidence.md` | `mobile-app-dev-team/governance/gates-and-evidence.md` | `G1` | Completed. |
 | `mobile-app-dev-team/07-new-team-template-guide.md` | `mobile-app-dev-team/organization/new-team-template-guide.md` | `O1` | Completed. |
 | `mobile-app-dev-team/09-pod-native-openclaw-skills/` | `mobile-app-dev-team/runtime-sources/pod-native-openclaw-skills/` | `R1` | Completed. |

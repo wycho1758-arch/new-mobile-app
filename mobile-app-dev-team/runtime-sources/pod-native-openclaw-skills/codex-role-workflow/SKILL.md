@@ -28,7 +28,7 @@ Product/Planning uses this substrate from intake. Implementation is only one pos
 Use these SoT files before recommending a repo-local Codex skill:
 
 - `mobile-app-dev-team/workflows/entry-case-routing.md` for the operational routing overlay, input taxonomy, C1-C5 convenience mapping, E1-E16 expanded cases, Design relevance, prioritization, hotfix, and gap decisions.
-- `mobile-app-dev-team/workflows/work-processes.md` for intake, planning, Design readiness, API readiness, implementation, QA/release evidence, and failure loop.
+- `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md` for intake, planning, Design readiness, API readiness, implementation, QA/release evidence, and failure loop.
 - `mobile-app-dev-team/governance/gates-and-evidence.md` for required gates, evidence ladder, human gates, and external proof boundaries.
 - `mobile-app-dev-team/workflows/github-artifact-workflow.md` for durable work-unit handoff and role artifact ownership.
 - `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` for app/EAS/OTA rollback ownership and production-submit rollback requirements.

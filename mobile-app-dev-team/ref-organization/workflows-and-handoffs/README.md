@@ -4,7 +4,7 @@ Status: reusable template guidance
 Source class: index
 Upstream SoT:
 
-- `mobile-app-dev-team/workflows/work-processes.md`
+- `mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`
 - `mobile-app-dev-team/workflows/github-artifact-workflow.md`
 - `mobile-app-dev-team/_archive/completed-plans/ref-organization-goal-plan.md`
 

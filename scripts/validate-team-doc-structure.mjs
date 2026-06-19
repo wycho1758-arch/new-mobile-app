@@ -15,7 +15,7 @@ const registry = [
   { legacyPath: `${teamRoot}/02-role-souls/`, targetPath: `${teamRoot}/runtime-sources/role-souls/`, kind: 'dir', surfaceClass: 'R2', strength: 'strong' },
   { legacyPath: `${teamRoot}/03-role-capability-matrix.md`, targetPath: `${teamRoot}/organization/role-capability-matrix.md`, kind: 'file', surfaceClass: 'O1', strength: 'medium' },
   { legacyPath: `${teamRoot}/04-skills-and-agents-matrix.md`, targetPath: `${teamRoot}/runtime-sources/codex-skill-agent-matrix.md`, kind: 'file', surfaceClass: 'C1', strength: 'strong' },
-  { legacyPath: `${teamRoot}/05-work-processes.md`, targetPath: `${teamRoot}/workflows/work-processes.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
+  { legacyPath: `${teamRoot}/05-work-processes.md`, targetPath: `${teamRoot}/workflows/Product_Planning_WORKFLOW.md`, kind: 'file', surfaceClass: 'W1', strength: 'medium' },
   { legacyPath: `${teamRoot}/06-gates-and-evidence.md`, targetPath: `${teamRoot}/governance/gates-and-evidence.md`, kind: 'file', surfaceClass: 'G1', strength: 'medium' },
   { legacyPath: `${teamRoot}/07-new-team-template-guide.md`, targetPath: `${teamRoot}/organization/new-team-template-guide.md`, kind: 'file', surfaceClass: 'O1', strength: 'low/medium' },
   { legacyPath: `${teamRoot}/09-pod-native-openclaw-skills/`, targetPath: `${teamRoot}/runtime-sources/pod-native-openclaw-skills/`, kind: 'dir', surfaceClass: 'R1', strength: 'strong' },

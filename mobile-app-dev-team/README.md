@@ -44,7 +44,7 @@ openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specifica
 | `runtime-sources/role-souls/` | 6개 LLM 실무자별 SOUL.md 초안 |
 | `organization/role-capability-matrix.md` | 역할별 능력, 산출물, 금지 범위 |
 | `runtime-sources/codex-skill-agent-matrix.md` | 현재 `.agents/skills`와 `.codex/agents` 매핑 |
-| `workflows/work-processes.md` | 실제 작업 프로세스 |
+| `workflows/Product_Planning_WORKFLOW.md` | 실제 작업 프로세스 |
 | `governance/gates-and-evidence.md` | 게이트, 검증, evidence 규칙 |
 | `organization/new-team-template-guide.md` | 다른 개발팀 생성 시 재사용 절차 |
 | `workflows/github-artifact-workflow.md` | pod-isolated role agent의 GitHub PR 산출물 handoff 규칙 |

@@ -400,7 +400,7 @@ routing_reason: <source-backed reason>
 process_sot:
   - DESIGN.md
   - mobile-app-dev-team/workflows/entry-case-routing.md
-  - mobile-app-dev-team/workflows/work-processes.md
+  - mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md
   - mobile-app-dev-team/governance/gates-and-evidence.md
   - mobile-app-dev-team/workflows/github-artifact-workflow.md
 allowed_repo_local_codex_skills:
