@@ -47,6 +47,32 @@ requireTerms(errors, `${teamRoot}/workflows/Product_Planning_WORKFLOW.md`, [
   'API Readiness',
 ], 'workflow doc');
 
+requireTerms(errors, `${teamRoot}/workflows/QA_Release_WORKFLOW.md`, [
+  '# QA/Release Workflow',
+  'agent-consumed QA/Release workflow',
+  'not the workspace-neutral `/workspace/WORKFLOW.md`',
+  'Product_Planning_WORKFLOW.md',
+  'e2e-test',
+  'qa-railway-workflow',
+  'wm-implementation-reviewer',
+  '05-qa-release',
+  'Cross-Pod Evidence And Local Path Boundaries',
+  'Systems Of Record',
+  'Workboard is not a replacement',
+  'Secret safety',
+  'readiness/status-only',
+  'human-gate/v1',
+  'Evidence Ladder',
+  'Reset Record',
+  'RN Web Boundary',
+  'Native, EAS, Maestro, Mobile-MCP, And Device Boundary',
+  'Railway And API Evidence Boundary',
+  'Failure Classification',
+  'Release-Risk Summary',
+  'Done Criteria',
+  'Failure Loop',
+], 'workflow doc');
+
 requireTerms(errors, `${teamRoot}/workflows/github-artifact-workflow.md`, [
   '# GitHub Artifact Workflow',
   'pod-isolated',
