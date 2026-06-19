@@ -172,6 +172,14 @@ reviewed scope/path, verdict, findings, checks reviewed, residual risks, and
 next action. Reviews do not replace Product/Planning P0/P1 approvals, human
 approval, deterministic gates, merge approval, or release/production approval.
 
+Design workflow Review meetings, `change-required` feedback, 1:1 corrective
+follow-up, corrective PR/review/merge or recorded no-change decisions, and next
+Review meeting resume rules follow the accepted pod-native
+`wm-meeting-process` skill and the Product/Planning meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference
+only governs meeting operation and does not change Design gates, Design quality
+ownership, reviewer evidence, human approvals, or release approval.
+
 ## 0D. Safety And Approval Boundaries
 
 Secret safety is mandatory. Do not print, persist, or transmit auth tokens,
