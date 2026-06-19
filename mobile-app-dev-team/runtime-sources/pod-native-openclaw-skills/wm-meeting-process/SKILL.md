@@ -1,224 +1,279 @@
 ---
 name: wm-meeting-process
-description: Run WonderMove role-scoped meetings including 1:1, 1:n, announcements, brainstorming, and sequential comprehensive reviews with explicit participation limits, stop/revision/resume rules, Codex-based corrective work, and chat-room reporting.
+description: Run WonderMove meeting flows for review meetings, announcements, and short brainstorming, including role participation limits, memory-required announcements, corrective 1:1 follow-up, Codex PR handoff, and next-meeting stop conditions.
 ---
 
 # WonderMove Meeting Process
 
 Runtime shape: `/workspace/skills/wm-meeting-process/SKILL.md`
 
-This pod-native OpenClaw skill defines reusable meeting operation rules for
-WonderMove delivery work. Use it when a Product Delivery Lead or role owner must
-run a structured meeting, review, announcement, 1:1 instruction, 1:n discussion,
-brainstorming session, or comprehensive workflow review across role pods.
+Use this pod-native OpenClaw skill when WonderMove agents need to run a
+structured meeting flow. It covers three meeting modes:
 
-It is a meeting-process skill only. It does not replace Product/Planning scope
-ownership, role workflow documents, repo-local Codex skills, Workboard guards,
-reviewer evidence, human gates, or GitHub PR review.
+1. Review meeting, including workflow review and 1:n coordination.
+2. Announcement.
+3. Brainstorming.
 
-## Core Principles
+This skill defines meeting operation only. It does not replace Product/Planning
+scope authority, role workflow documents, Workboard guards, Codex execution
+contracts, reviewer evidence, GitHub PR review, human approval, or release
+approval.
 
-- One meeting has one owner, one purpose, one explicit participant set, and one
-  durable outcome.
-- The meeting owner must state whether the meeting is 1:1, 1:n, announcement,
-  brainstorming, review, or comprehensive sequential review.
-- Only roles related to the meeting scope may participate. Unrelated roles must
-  not add feedback, decisions, or side topics.
-- Meeting chat is coordination evidence only. Durable decisions, fixes, PRs,
-  review evidence, and handoffs must be recorded in the accepted system of
-  record.
-- If feedback requires a document or code change, stop the meeting before
-  assigning correction work.
-- Corrective repository work must follow the approved role workflow, Workboard
-  guard, wake guard, Codex execution contract when applicable, validation,
-  reviewer evidence, PR handoff, and Spring/Product Delivery Lead review.
+## 1. Meeting Mode Selection
 
-## Meeting Modes
+Choose exactly one mode before opening the meeting.
 
-### 1:1 Instruction
+### Review Meeting
 
-Use for direct owner-to-practitioner instructions, blocker handling, corrective
-work assignment, or role-specific clarification.
+Use `Review meeting` when the purpose is to inspect, coordinate, or agree on a
+workflow, artifact, handoff, role boundary, policy, or execution plan.
 
-Required opening:
+Workflow-related comprehensive reviews and `1:n coordination` have the same
+character in this skill: they are Review meetings. Do not create a separate
+heavy process for 1:n coordination when the actual purpose is review,
+coordination, feedback, or agreement.
 
-- target practitioner or role;
-- exact task or question;
-- source of truth or artifact path;
-- allowed actions;
-- forbidden actions;
-- expected reply format;
-- deadline or wake-guard timing when needed.
+Examples:
 
-### 1:n Coordination
-
-Use when multiple related roles must coordinate a bounded handoff or resolve an
-interface question.
-
-Required opening:
-
-- meeting owner;
-- participating roles;
-- excluded roles;
-- agenda;
-- decision owner for each topic;
-- expected output;
-- stop condition.
+- reviewing `Design_WORKFLOW.md`;
+- coordinating Design to Mobile App Dev handoff;
+- reviewing Backend/API contract handoff expectations;
+- checking Mobile Architect route/state workflow boundaries;
+- reviewing QA/Release evidence ownership.
 
 ### Announcement
 
-Use for one-way status, policy, completion, schedule, or instruction broadcasts.
-Announcements do not accept feedback unless the owner explicitly opens a follow
-up meeting.
+Use `Announcement` when a specific agent broadcasts a fact, policy, schedule,
+completion, or instruction. Announcement is one-way by default.
 
-Required opening:
+Responders should only acknowledge, normally with:
 
-- audience;
-- announcement purpose;
-- what changed;
-- action required or no-action-required;
-- source of truth link or path;
-- escalation path for objections.
+```text
+확인 완료
+```
+
+If someone needs discussion, correction, or objection handling, open a separate
+Review meeting or 1:1 corrective follow-up. Do not turn the announcement thread
+itself into a discussion.
+
+Every Announcement must be recorded in agent memory by the responsible agent.
+Record the announcement content, source, audience, required action, and whether
+acknowledgement was requested. Do not store secrets in memory.
 
 ### Brainstorming
 
-Use only when the purpose is option generation, not approval or execution.
-Brainstorming output must be converted into a bounded decision request or task
-before implementation begins.
+Use `Brainstorming` only for short idea generation.
 
-Required opening:
+Brainstorming must have:
 
-- problem statement;
-- participant roles;
-- non-goals;
-- idea capture format;
-- selection criteria;
-- who converts ideas into a decision or task;
-- time box.
+- a specific topic;
+- a specific purpose;
+- named participants;
+- a time box of 5 minutes or less;
+- a simple output format.
 
-### Comprehensive Sequential Review
+Brainstorming does not approve execution. At the end, the owner converts the
+ideas into one of: Review meeting, task, decision request, or no-action summary.
 
-Use when a set of related workflow, policy, design, architecture, contract,
-implementation, QA, or release documents must be reviewed one at a time.
+## 2. Review Meeting Protocol
 
-This mode is strict:
-
-1. The meeting owner selects exactly one target artifact.
-2. The owner states the exact path, review scope, participating roles, excluded
-   roles, expected feedback format, and stop condition.
-3. Only related roles may participate.
-4. If feedback requires correction, the owner must strongly pause or stop that
-   review meeting.
-5. The owner must send a 1:1 corrective instruction to the artifact's main
-   author before starting any other target artifact review.
-6. The correction must follow the applicable Codex, Workboard, wake-guard,
-   validation, reviewer, PR, and merge/review process.
-7. The next artifact review cannot start until the current artifact is accepted,
-   corrected and merged, or explicitly closed as no-change-needed by the owner.
-
-## Participation Rules
-
-Before opening a meeting, classify each role as one of:
-
-- required participant;
-- optional participant;
-- observer only;
-- excluded.
-
-For role-scoped workflow reviews:
-
-- Product/Planning participates when scope, approval, non-goals, evidence,
-  human gates, or cross-role handoff are affected.
-- Design participates when UX quality, interaction, visual hierarchy, design
-  options, accessibility, Stitch, publication, or Design handoff are affected.
-- Mobile Architect participates when route/state, module boundary, dependency,
-  runtime, API co-sign, or releaseability risk is affected.
-- Backend/API Integrator participates when contracts, schemas, mocks, fixtures,
-  auth/session behavior, error behavior, API service scope, or migrations are
-  affected.
-- Mobile App Dev participates when mobile implementation, app integration,
-  selectors, screens, routes, runtime behavior, or implementation evidence are
-  affected.
-- QA/Release participates when evidence ladder, test plan, release readiness,
-  failure classification, EAS/release evidence, or risk reporting is affected.
-
-If a role is not related to the selected artifact or agenda item, the meeting
-owner must state that the role is excluded from feedback for that meeting.
-
-## Feedback Handling
-
-Feedback must be recorded as one of:
-
-- no-change-needed;
-- clarification-only;
-- correction-required;
-- blocked-by-missing-source;
-- human-decision-required;
-- out-of-scope-for-this-meeting.
-
-When feedback is `correction-required`, `blocked-by-missing-source`, or
-`human-decision-required`, the meeting owner must stop the current review and
-route the next action before any other review begins.
-
-Use this stop phrase or a close equivalent:
+A Review meeting starts with a compact declaration:
 
 ```text
-MEETING STOPPED: feedback requires owner-routed follow-up. No further review on
-this artifact or next artifact may continue until the corrective path is issued.
+REVIEW MEETING START
+Target:
+Purpose:
+Owner:
+Allowed roles:
+Excluded roles:
+Feedback scope:
+Stop condition:
 ```
 
-## Corrective Work Routing
+Rules:
 
-For repository artifact changes, the owner must send a 1:1 instruction to the
-main author or assigned role owner. The instruction must include:
+- Review exactly one target artifact, handoff, topic, or workflow at a time.
+- Only `Allowed roles` may provide feedback.
+- Roles not listed in `Allowed roles` are excluded from feedback for this
+  meeting.
+- If an excluded role appears relevant during the meeting, the owner must pause
+  and explicitly add that role before accepting feedback from it.
+- Keep feedback inside `Feedback scope`.
+- Treat out-of-scope feedback as out-of-scope instead of expanding the meeting.
 
-- target artifact path;
-- exact feedback to address;
-- accepted source of truth;
-- non-goals;
-- required branch/commit/PR handoff;
-- required validation;
-- required reviewer evidence;
-- forbidden actions;
-- reporting room or channel;
-- deadline or wake-guard cadence.
+For workflow reviews, use the exact committed path or PR URL as the target.
+Local `/workspace/...` paths are not cross-pod evidence unless the receiver can
+fetch or reproduce the artifact from an accepted durable source.
 
-If the correction modifies the managed repository, use the applicable
-WonderMove role workflow and Codex execution contract. Do not allow direct
-ad-hoc edits when the accepted workflow requires Codex.
+## 3. Announcement Protocol
 
-## Resume And Completion
+An Announcement starts with:
 
-A stopped meeting may resume only when one of these is true:
+```text
+ANNOUNCEMENT
+Announcer:
+Audience:
+Content:
+Action required: yes/no
+Expected response: 확인 완료
+Memory record required: yes
+```
 
-- corrective PR is merged and post-merge review is accepted;
-- feedback is explicitly withdrawn by the feedback owner;
-- Product/Planning or the meeting owner records a no-change-needed decision with
-  reason;
-- required human decision is recorded through the approved workspace mechanism;
-- the review is closed as blocked with next owner and wake-guard.
+Rules:
 
-Completion report must include:
+- The announcer must be a specific agent or role owner.
+- Responders only acknowledge unless the announcer explicitly asks for a
+  different response.
+- The responsible agent records the announcement in memory.
+- If the announcement creates a task, review, or decision need, open a separate
+  workflow for that work.
+- Do not store secret values, credentials, tokens, private endpoints, auth file
+  contents, or sensitive personal details in memory.
 
-- meeting mode;
-- target artifact;
-- participants and excluded roles;
-- decisions;
-- feedback disposition;
-- corrective PR or issue links when any;
-- residual blockers;
-- next action;
-- system of record updated.
+## 4. Brainstorming Protocol
 
-## Safety And Boundaries
+A Brainstorming session starts with:
+
+```text
+BRAINSTORMING START
+Topic:
+Purpose:
+Participants:
+Time box: <=5 minutes
+Output format:
+Owner for summary:
+```
+
+Rules:
+
+- Maximum duration is 5 minutes.
+- The topic and purpose must be explicit before the session begins.
+- Brainstorming output is ideas only, not approval.
+- The owner closes with a short summary and the next container: Review meeting,
+  task, decision request, or no action.
+
+Close with:
+
+```text
+BRAINSTORMING CLOSED
+Ideas summary:
+Next container:
+Next owner:
+```
+
+## 5. Feedback Disposition
+
+In Review meetings, classify each feedback item as one of:
+
+- `accepted-no-change`;
+- `clarification-only`;
+- `change-required`;
+- `out-of-scope`.
+
+Record feedback in this compact form:
+
+```text
+Feedback:
+Raised by:
+Disposition:
+Reason:
+Next action:
+```
+
+If any feedback is `change-required`, the owner must stop the Review meeting and
+route corrective follow-up before any next Review meeting begins.
+
+## 6. Corrective 1:1 Follow-Up
+
+`1:1` is not a separate meeting mode in this skill. It is the corrective
+follow-up mechanism used when a Review meeting finds `change-required` feedback
+or when a single owner must resolve a blocker.
+
+Stop phrase:
+
+```text
+REVIEW MEETING STOPPED
+Reason:
+Feedback item:
+Next action: 1:1 corrective follow-up
+```
+
+The 1:1 corrective instruction must include:
+
+```text
+1:1 CORRECTIVE FOLLOW-UP
+Source review:
+Target file:
+Required change:
+Non-goals:
+Execution method:
+Validation:
+Reviewer:
+PR required: yes/no
+Forbidden actions:
+Report back with:
+```
+
+For managed repository changes, default to the applicable WonderMove role
+workflow and Codex execution contract. The corrective owner should use a branch,
+commit, PR, validation, reviewer evidence, and Spring/Product Delivery Lead
+review unless the owner explicitly records why that is not applicable.
+
+## 7. Codex, PR, Reviewer, Validation, And Merge Handoff
+
+When corrective follow-up modifies repository files, use the smallest safe
+handoff:
+
+1. Start from latest `main`.
+2. Create a focused branch.
+3. Make only the requested change.
+4. Run `git diff --check -- <changed-paths>`.
+5. Run the validator matching the changed surface:
+   - workflow docs: `node scripts/validate-workflow-docs.mjs`;
+   - runtime sources or pod-native skills: `node scripts/validate-runtime-sources.mjs`.
+6. Request the relevant reviewer or record why Spring/Product Planning review is
+   sufficient for docs-only meeting-process changes.
+7. Open a PR with feedback mapping, validation, reviewer evidence, and residual
+   limits.
+8. Spring/Product Delivery Lead decides merge or feedback.
+
+Merge handoff requires:
+
+- PR exists;
+- validation passed or residual limit is explicitly accepted;
+- reviewer or Spring review passed;
+- no scope drift;
+- no secret exposure;
+- no unresolved human gate.
+
+## 8. Stop Conditions Before The Next Review Meeting
+
+Do not start the next Review meeting while the current Review meeting has open
+feedback, pending corrective follow-up, pending PR, or pending human decision.
+
+The next Review meeting may start only when all are true:
+
+1. Current Review meeting is closed.
+2. Every feedback item has a disposition.
+3. Any `change-required` item has a completed corrective PR/review/merge or a
+   recorded no-change decision.
+4. Spring/Product Delivery Lead explicitly starts the next Review meeting.
+
+Close a Review meeting with:
+
+```text
+REVIEW MEETING CLOSED
+Decision:
+Feedback disposition:
+Next meeting allowed: yes/no
+```
+
+## 9. Safety Boundaries
 
 Do not expose secrets, environment variables, tokens, credentials, private
 endpoints, auth files, Google ADC JSON, service account JSON, OAuth codes, or
-private config contents in meeting prompts, chat, evidence, or reports.
+private config contents in meetings, memory, PR bodies, comments, prompts, or
+reports.
 
-Do not use meetings to bypass human gates, approval boundaries, reviewer gates,
-failed validation, production restrictions, release gates, or role ownership.
-
-Meetings can coordinate decisions. They cannot replace required validation,
-reviewer evidence, GitHub PR review, human approval, or production/release
-approval.
+Meetings cannot bypass human gates, approval boundaries, reviewer gates,
+validation failures, production restrictions, release gates, or role ownership.
