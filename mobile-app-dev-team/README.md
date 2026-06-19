@@ -54,6 +54,7 @@ openclaw-pod-skills-sync -> project-bootstrap -> matching role runtime specifica
 | `runtime-sources/orbstack-pod-config-values.md` | 현재 repo SoT에서 확인 가능한 OrbStack role pod 설정 실제값과 owner/operator가 추가 제공해야 하는 누락값 목록 |
 | `workflows/entry-case-routing.md` | 진입 케이스 라우팅 taxonomy(공통 intake, SoT 명명 입력 분류, 보고서 파생 C1~C5, 확장 E1~E16)와 Design 관련성/not-applicable(P-1)·동시 work-unit 우선순위(P-2)·긴급 hotfix expedited-but-gated(P-3) 거버넌스 |
 | `governance/app-eas-ota-rollback-runbook.md` | 앱/EAS Update(OTA)/store 롤백 ownership·decision·gate·evidence 런북(P-4 거버넌스, 15-annex 롤백 규칙 기반) |
+| `governance/secret-store-and-atlassian-connectivity-guide.md` | Jira/Confluence credential attachment, protected secret-store handling, and status-only connectivity reporting one-off guide |
 | `ref-organization/` | Reference organization 재사용 가이드와 current-project example |
 | `source-map.md` | 근거 파일과 active/historical crosswalk |
 

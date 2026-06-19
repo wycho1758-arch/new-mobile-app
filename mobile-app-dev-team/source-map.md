@@ -25,6 +25,7 @@
 | `mobile-app-dev-team/runtime-sources/orbstack-pod-config-values.md` | Current non-secret OrbStack role pod value handoff and missing owner/operator input list |
 | `mobile-app-dev-team/workflows/entry-case-routing.md` | Current entry-case routing taxonomy (common intake, SoT-named input categories, report-derived C1-C5, expanded E1-E16) and managed-doc governance for Design relevance/not-applicable (P-1), cross-work-unit prioritization (P-2), and expedited-but-gated hotfix (P-3) |
 | `mobile-app-dev-team/governance/app-eas-ota-rollback-runbook.md` | Current app / EAS Update (OTA) / store rollback ownership, decision, gate, and evidence runbook (P-4 managed-doc governance) building on the 15-annex rollback rules |
+| `mobile-app-dev-team/governance/secret-store-and-atlassian-connectivity-guide.md` | One-off operational guide for protected secret-store handling and status-only Jira/Confluence connectivity reporting |
 | `mobile-app-dev-team/source-map.md` | Current old-to-new path crosswalk, runtime surface class registry, validator responsibility map, harness applicability map, archive crosswalk, and external proof boundary |
 | `scripts/validate-team-doc.mjs` | Current managed team-doc composition wrapper for structure, runtime-source, workflow, governance, reference, and managed parity checks |
 | `scripts/validate-team-doc-structure.mjs` | Structure registry validator for the `mobile-app-dev-team/**` surface rename; rejects current numbered top-level paths and old `99-source-map.md` |
