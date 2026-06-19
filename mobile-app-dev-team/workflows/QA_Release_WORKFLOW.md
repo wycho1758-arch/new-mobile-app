@@ -149,6 +149,15 @@ artifacts, validation output, residual risks, release proof limits, and next
 action. A reviewer cannot grant production submit, accept failed-gate risk, or
 replace a required human owner.
 
+QA/Release workflow Review meetings follow the accepted pod-native
+`wm-meeting-process` baseline and the meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. Each Review
+meeting has one target and an allowed-role feedback scope. In-scope
+`change-required` feedback stops the meeting and moves correction to 1:1
+corrective follow-up. The next step, final sync, or next Review meeting cannot
+start until the corrective PR/review/merge or recorded no-change decision is
+complete.
+
 ## 0D. Safety And Approval Boundaries
 
 Secret safety is mandatory. QA/Release must never print, persist, commit,
@@ -455,11 +464,11 @@ QA/Release work is Done only when:
 Docs-only workflow PRs do not prove live Railway, gcloud, Expo, EAS, Maestro,
 mobile-mcp, native/device, store, production, or OpenClaw pod behavior.
 
-For this PR class, project-bootstrap external platform readiness blockers for
-Railway, gcloud, Expo auth, EAS auth, Maestro, mobile-mcp, simulator, emulator,
-or device access are not relevant to docs-only validation because no live action
-is performed. Future live QA or external-platform work still requires those
-blockers and approvals to be resolved before execution.
+For docs-only workflow changes, project-bootstrap external platform readiness
+blockers for Railway, gcloud, Expo auth, EAS auth, Maestro, mobile-mcp,
+simulator, emulator, or device access are not relevant to docs-only validation
+when no live action is performed. Future live QA or external-platform work still
+requires those blockers and approvals to be resolved before execution.
 
 ## 14. Failure Loop
 
