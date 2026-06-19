@@ -233,11 +233,16 @@ Design can:
 - select a Design-quality candidate;
 - publish approved Option A/B HTML, images, `manifest.json`, and `handoff.md`;
 - hand off NativeWind, React Native primitives, semantic tokens, stable `testID`,
-  and implementation constraints to Mobile App Dev.
+  and implementation constraints to Mobile App Dev;
+- record backend/API dependency status in the Design package and
+  `01-design/handoff-index.md`, including applicable Backend/API handoff target
+  and `03-contract-api` pointer when API uncertainty exists.
 
 Design must not:
 
 - implement app code, backend APIs, migrations, QA flows, or release operations;
+- define or change API contracts, backend behavior, auth/session policy, or error
+  mapping;
 - run Stitch generation before Product/Planning P0 approval;
 - fetch or publish HTML before Product/Planning P1 approval;
 - ask Product/Planning to own Design quality;
@@ -259,7 +264,8 @@ The P0 packet must include:
 - expected evidence paths;
 - requested publication date;
 - `DESIGN.md` decision;
-- human-gate matrix.
+- human-gate matrix;
+- external proof boundary.
 
 P0 Product/Planning approval is scope/evidence approval only. It is not Design
 quality approval.
@@ -274,7 +280,8 @@ The P1 packet must include:
 - Design-selected candidate and rationale;
 - alternate rejection or defer reason;
 - risk and open decision list;
-- human-gate matrix.
+- human-gate matrix;
+- external proof boundary.
 
 Before P1 approval, do not call or persist HTML extraction through
 `fetch_screen_code`, official ZIP `code.html`, SDK `getHtml`,
@@ -319,7 +326,24 @@ design-pub-html/<YYYY-MM-DD>/<work-unit-id>/
 
 `01-design/handoff-index.md` must link the exact committed publication package.
 For UI work, Mobile App Dev must not start implementation until P0, exactly two
-Stitch options, P1, publication artifacts, and `design-reviewer` evidence exist.
+Stitch options, P1, publication artifacts, backend/API dependency status where
+applicable, and `design-reviewer` evidence exist. The dependency status records
+whether API-backed data, auth/session behavior, error states, or
+permission-denied states are in scope; whether API contract status is known,
+unknown, not-applicable, or blocked; the Backend/API Integrator handoff target
+when uncertainty exists; and the relevant `03-contract-api` artifact pointer
+when applicable. Design records dependency and routing status only and must not
+define or change API contracts.
+
+## Meeting Process Reference
+
+Design workflow Review meetings, `change-required` feedback, 1:1 corrective
+follow-up, corrective PR/review/merge or recorded no-change decisions, and next
+Review meeting resume rules follow the accepted pod-native `wm-meeting-process`
+skill and the Product/Planning meeting-process reference in
+`mobile-app-dev-team/workflows/Product_Planning_WORKFLOW.md`. This reference only
+governs meeting operation and does not change Design gates, Design quality
+ownership, reviewer evidence, human approvals, or release approval.
 
 ## Runtime Status And Output Contract
 

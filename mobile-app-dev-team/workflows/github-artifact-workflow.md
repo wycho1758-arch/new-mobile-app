@@ -166,6 +166,10 @@ design-pub-html/<YYYY-MM-DD>/<work-unit-id>/
 - exactly two Stitch options
 - P1 before HTML/image extraction
 - no `fetch_screen_code`, `code.html`, SDK `getHtml`, `htmlCode.downloadUrl`, or equivalent HTML extraction metadata before P1
+- backend/API dependency status in the Design package and
+  `01-design/handoff-index.md`, including applicable Backend/API handoff target
+  and `03-contract-api` pointer; Design records dependency and routing status
+  only and does not define or change API contracts
 - `design-reviewer` evidence
 
 ### Mobile Architect
