@@ -194,16 +194,22 @@ Project-bootstrap required baseline:
   `mobile-mcp`, `serena`, and `stitch`.
 - `mcp.node_repl` is optional Codex app/plugin inventory. Missing `node_repl`
   does not block `project-bootstrap`.
-- `cli.railway: missing` is a bootstrap blocker. The agent may check status and
-  installs Railway with `npm i -g @railway/cli` when npm is available. The
-  agent starts `railway login`; the user completes sign-in only in the real
-  Railway surface.
-- `cli.gcloud: missing` is a bootstrap blocker. The agent may check status and
+- `cli.railway: missing` is CLI inventory and may be a setup/install blocker
+  for completing full project-bootstrap readiness. The agent may check status
+  and installs Railway with `npm i -g @railway/cli` when npm is available and
+  installation is approved. Railway auth, service, or deployed API evidence is
+  a user-facing blocker only for API, Railway, deployment, or deployed-backend
+  verification work. If Railway login is needed, the agent starts
+  `railway login`; the user completes sign-in only in the real Railway surface.
+- `cli.gcloud: missing` is CLI inventory and may be a setup/install blocker for
+  completing full project-bootstrap readiness. The agent may check status and
   may install gcloud only from an approved official Google Cloud CLI installer
-  source. The agent starts `gcloud auth login` and when needed
-  `gcloud auth application-default login`; the user completes Google approval in
-  the real surface. The user provides only the non-secret project ID, then the
-  agent runs `gcloud config set project <project-id>` and verifies
+  source. Google ADC, Stitch auth, and project selection are user-facing
+  blockers only for approved Design/Stitch work or other scoped Google Cloud
+  work. If Google auth is needed, the agent starts `gcloud auth login` and when
+  needed `gcloud auth application-default login`; the user completes Google
+  approval in the real surface. The user provides only the non-secret project
+  ID, then the agent runs `gcloud config set project <project-id>` and verifies
   `gcloud config get-value project`.
 - `cli.eas: missing` is the baseline exception. It is status-only until
   QA/Release EAS work or another approved EAS action is selected.
@@ -569,10 +575,12 @@ Related blockers:
 
 Resolution:
 
-- Railway CLI is required for project-bootstrap readiness because this repo has
-  Railway QA/API evidence workflows.
-- gcloud CLI is required for project-bootstrap readiness because Stitch uses
-  Google ADC and project state.
+- Railway CLI is inventoried by project-bootstrap because this repo has Railway
+  QA/API evidence workflows. Missing CLI availability may block full bootstrap
+  setup until an approved install path completes.
+- gcloud CLI is inventoried by project-bootstrap because Stitch uses Google ADC
+  and project state. Missing CLI availability may block full bootstrap setup
+  until an approved install path completes.
 - The agent installs Railway with `npm i -g @railway/cli` when missing and npm
   is available, then rechecks `railway --version`.
 - The agent may install gcloud only from an approved official Google Cloud CLI
@@ -585,8 +593,9 @@ Resolution:
   `gcloud config get-value project`.
 - Railway token setup, Google ADC JSON, service account JSON, and credential
   contents remain human/platform owned and must never be sent in chat.
-- EAS CLI is the only baseline exception and stays status-only until EAS work is
-  selected.
+- EAS CLI stays status-only until EAS work is selected. Railway auth/service
+  evidence, Google ADC, and Stitch auth are likewise user-facing blockers only
+  when the selected role/work scope needs that live/auth surface.
 
 Agent action:
 

@@ -510,9 +510,12 @@ Future JSON reports may add more `user_summary` fields with the same shape:
 
 - Treat the report `blockers` array as the source for user-facing blockers.
   A field value of `missing` outside that array can be status-only inventory.
-- `expo`, `atlassian`, `playwright`, `railway`, and `gcloud` are required for
-  project-bootstrap readiness. Missing values in those fields must appear in the
-  `blockers` array.
+- `expo`, `atlassian`, and `playwright` MCP readiness plus Railway and gcloud
+  CLI inventory are part of project-bootstrap readiness. Missing CLI
+  availability may appear in the `blockers` array when full bootstrap setup
+  needs an approved install path. Railway auth/service evidence, Google ADC,
+  and Stitch auth must appear as user-facing blockers only when the current
+  role/work scope needs that live/auth surface.
 - `node_repl` is optional Codex app/plugin inventory. Missing `node_repl` must
   not appear as a project-bootstrap blocker.
 - `cli.eas` is recorded as status inventory and remains the baseline exception

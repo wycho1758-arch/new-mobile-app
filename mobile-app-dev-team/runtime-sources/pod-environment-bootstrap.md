@@ -310,6 +310,16 @@ pod evidence, or a substitute for `human-gate/v1` approval.
    - QA/Release: `eas-robot-auth-setup` verifies EAS CLI and Expo robot auth
      readiness before any human-gated EAS/Maestro run.
 
+`project-bootstrap` inventory/status checks do not make every external surface a
+universal role blocker. Design requires Stitch/Google ADC readiness before
+approved Stitch work; QA/Release requires EAS readiness before approved
+EAS/Maestro work; Railway auth/service evidence is required for API, Railway,
+deployment, or deployed-backend verification work. Product/Planning may
+explicitly reclassify unrelated live/auth gaps as not applicable for bounded
+docs-only, review-only, or other non-live work. Install approval and secret
+safety boundaries still apply whenever a missing CLI or credential surface is
+actually in scope.
+
 ## Missing Or Blocked Criteria
 
 | Missing Condition | Required Action |

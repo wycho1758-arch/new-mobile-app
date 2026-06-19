@@ -176,9 +176,14 @@ or other secrets.
 If `project-bootstrap is blocked`, role work is forbidden for implementation,
 live/external work, Design generation, EAS work, Stitch work, QA execution,
 external publication, and repo-local role skills as a substitute for a ready
-bootstrap result. Docs-only or review-only work may proceed only when
+bootstrap result when the blocker is relevant to the selected role/work scope.
+Docs-only, review-only, or other non-live work may proceed only when
 Product/Planning records an explicit reclassification or approval that the
-bootstrap blocker is not relevant to that bounded non-live scope.
+bootstrap blocker is unrelated to that bounded scope. Examples: Design remains
+blocked for approved Stitch work until Stitch/Google ADC readiness is resolved;
+QA/Release remains blocked for approved EAS/Maestro work until EAS readiness is
+resolved; API/Railway/deployment work remains blocked until Railway auth/service
+evidence is resolved.
 
 When setup is blocked, pod agents must give a user-understandable translated
 blocker instead of raw blocker names. The result must explain:
@@ -274,7 +279,7 @@ runtime surface, not pasted into agent instructions.
 | `pod-role-bootstrap` | `/workspace/skills/pod-role-bootstrap/SKILL.md` | Resolve the role pod identity, align pnpm to the repo pin according to Product Delivery Lead setup direction, install required repo dependencies, run `codex-preflight --pod`, and write a status-only readiness report. |
 | `project-bootstrap` | `/workspace/skills/project-bootstrap/SKILL.md` | Orchestrate project-level boram pod readiness by checking the repo path, managed path, required pod skills, required/conditional MCPs, external CLI/account status, role-specific setup reports, and human gates without exposing secrets. |
 | `eas-robot-auth-setup` | `/workspace/skills/eas-robot-auth-setup/SKILL.md` | Verify QA/Release EAS CLI and Expo robot auth readiness as status only before any human-gated EAS/Maestro run. |
-| `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify pod-wide Google ADC and Stitch MCP readiness as status-only setup evidence for every operating role. Live Stitch work still requires approved role scope and gates. |
+| `stitch-adc-setup` | `/workspace/skills/stitch-adc-setup/SKILL.md` | Verify Google ADC and Stitch MCP readiness as status-only setup inventory and as required evidence before approved Stitch work. Live Stitch work still requires approved role scope and gates. |
 | `codex-role-workflow` | `/workspace/skills/codex-role-workflow/SKILL.md` | Resolve a role pod to allowed repo-local Codex skills, reviewers, durable artifact stage, stop conditions, and status-only next action without doing role work. |
 | `codex-interactive-repo-work` | `/workspace/skills/codex-interactive-repo-work/SKILL.md` | Require scoped Codex CLI interactive PTY execution for managed-repo edits after `codex-role-workflow` returns `codex_interactive_required: true`. |
 
@@ -286,9 +291,11 @@ It is not the normal user-facing execution order; normal setup uses
 `openclaw-pod-skills-sync`, then `project-bootstrap` as the entry point.
 The matrix below lists required skills after the common sync prerequisite.
 `stitch-adc-setup` is listed for every operating role so Google ADC and Stitch
-MCP readiness is always reported as status-only setup evidence. This common
-requirement does not authorize non-Design roles to run live Stitch work or
-bypass approved role scope.
+MCP readiness can be reported as status-only setup inventory. Missing
+Stitch/Google ADC readiness blocks approved Stitch work, not unrelated
+non-Design or non-live work. This common inventory requirement does not
+authorize non-Design roles to run live Stitch work or bypass approved role
+scope.
 
 | Operating Role | Required pod-native skills |
 | --- | --- |

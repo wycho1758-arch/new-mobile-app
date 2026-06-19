@@ -49,18 +49,28 @@ Primary setup script:
 
 The generated report contains both actionable blockers and status inventory.
 Agents must decide user-facing blockers from the `blockers` array, role flags,
-and workflow phase, not from the word `missing` alone.
+selected work scope, and workflow phase, not from the word `missing` alone.
 
-For every pod role, these project environment entries are required before
-`project-bootstrap` can pass:
+For every pod role, `project-bootstrap` must inventory these project environment
+entries before role work starts:
 
 - Required MCPs: `mobile-mcp`, `serena`, `stitch`, `expo`, `atlassian`, and
   `playwright`.
 - Optional MCP inventory: `node_repl` is Codex app/plugin-owned and does not
   block `project-bootstrap`.
-- Required CLIs: `railway` and `gcloud`.
+- CLI inventory: `railway` and `gcloud`.
 - EAS CLI is the baseline exception. `cli.eas: missing` is status-only until
   QA/Release EAS work or another approved EAS action is selected.
+
+Inventory or CLI availability gaps can block completion of the common
+project-bootstrap setup flow and must preserve the install approval boundaries
+below. Live/auth readiness is role/work-scope conditional: Design needs
+Stitch/Google ADC readiness before approved Stitch work; QA/Release needs EAS
+readiness before approved EAS/Maestro work; Railway auth, service, and deployed
+API evidence are required only for API, Railway, deployment, or deployed-backend
+verification work. Non-Design, non-Railway, and non-EAS work must not be blocked
+by unrelated live/auth readiness when Product/Planning has explicitly bounded
+the work to local docs/review or another non-live scope.
 
 The agent must first perform non-secret setup that it can own:
 
@@ -431,14 +441,18 @@ exists for the exact action and evidence path.
   inventory.
 - Missing required MCPs are registered from pinned repo SoT when Codex CLI is
   available and no credential flow or app-owned runtime restoration is required.
-- Required CLIs are status-checked: Railway and gcloud. Missing values are
-  blockers. Any package/system install requires explicit
+- Railway and gcloud CLI availability is status-checked and inventoried.
+  Missing CLI availability can block completion of the common setup flow, but
+  Railway auth/service evidence and Google ADC/Stitch auth evidence are
+  user-facing blockers only when the selected role/work scope needs that
+  surface. Any package/system install requires explicit
   `PROJECT_BOOTSTRAP_INSTALL_APPROVED=true`; otherwise the agent reports
   `install_blocked_needs_approval`, lists the `install_plan`, keeps
   `installed_exact` empty, and waits. After approved installs, the report lists
   only verified successful installs in `installed_exact`; failed attempts must
   not be reported as installed. Railway auth, gcloud auth, and gcloud ADC are
-  separate status fields and blockers.
+  separate status fields; they become blockers only when the selected role/work
+  scope needs that live/auth surface.
 - Expo MCP auth and workspace Expo CLI auth are separate readiness surfaces.
   Expo MCP is checked for the target Codex session, while Expo CLI is checked
   with `npx --no-install expo whoami` so status checks do not install packages.
