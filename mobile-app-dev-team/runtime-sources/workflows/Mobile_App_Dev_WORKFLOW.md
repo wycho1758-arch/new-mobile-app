@@ -84,9 +84,9 @@ design tokens.
 
 ## 2. Entry And Readiness
 
-Mobile App Dev does not receive work directly from chat. It starts only after
-Product/Planning or deterministic work-unit routing provides an accepted
-execution path.
+Direct chat alone is not an accepted Mobile App Dev execution packet. Mobile
+App Dev starts only after Product/Planning, Tasks, or deterministic durable
+work-unit routing provides an accepted execution path.
 
 Required entry state:
 
@@ -366,22 +366,24 @@ auth tokens, credentials, private `.env` values, signing keys, bearer tokens,
 private endpoints, or secret-bearing config contents in prompts, logs,
 transcripts, reports, files, evidence, or PR text.
 
-## 10. Docs-Only Residual Risk And Limits
+## 10. Historical Docs-Only Residual Risk Note
 
-For docs-only changes to `Mobile_App_Dev_WORKFLOW.md`:
+For prior docs-only changes to `Mobile_App_Dev_WORKFLOW.md`, Spring approved
+execution after reclassifying external platform bootstrap blockers as not
+relevant to that docs-only workflow change. This historical note does not weaken
+future task entry, reviewer, gate, or live-platform requirements.
 
-- Spring approved docs-only execution after reclassifying external platform
-  bootstrap blockers as not relevant to the docs-only workflow change.
-- `project-bootstrap` external platform readiness remains blocked for
+- `project-bootstrap` external platform readiness remained blocked for
   Railway/gcloud/Expo auth in the broader environment.
 - No Expo, EAS, Railway, gcloud, mobile-mcp, simulator, emulator, physical
-  device, auth, login, token, or live external-platform action was performed.
+  device, auth, login, token, or live external-platform action was performed for
+  that docs-only workflow change.
 - Future Mobile App Dev live or external work still requires the relevant
   blockers, approvals, credentials, and role-owned evidence to be resolved.
-- `wm-implementation-reviewer` remains mandatory for the PR.
+- `wm-implementation-reviewer` remains mandatory for Mobile App Dev workflow PRs.
 - `wm-contract-reviewer` is conditional/not required for a docs-only workflow
-  change because the file references the existing `packages/contracts` boundary and
-  does not define or change API schemas, request/response types, backend
+  change when the file only references the existing `packages/contracts` boundary
+  and does not define or change API schemas, request/response types, backend
   behavior, or contract ownership.
 
 ## Practitioner Dreaming Output Contract
