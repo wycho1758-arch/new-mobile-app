@@ -134,6 +134,27 @@ Use the narrowest durable system of record:
 Chat summaries and local notes are coordination evidence only. They do not
 replace committed work-unit artifacts, reviewer evidence, or branch/PR state.
 
+## 0B.1 Mandatory Backend/API Tasks, Workboard, Wake-Guard, And Reminder Handling
+
+Backend/API Integrator treats repeated Tasks notifications, Workboard signals,
+wake guards, reminders, and runtime-continuity prompts as unfinished work only
+when they reference Backend/API-owned contract, schema, mock, fixture, reviewer,
+service-evidence, or `03-contract-api` follow-through. Before reporting
+Backend/API work closed or done, re-check the current SoT and confirm those
+Backend/API-owned items are resolved, blocked with owner, or out of scope.
+
+Avoid self-echo duplicates: do not repost a status, reminder, wake response, or
+Workboard update that only repeats this role's last durable update without new
+Backend/API state. Keep or register the wake guard while work is blocked,
+waiting, delegated, or still needs Backend/API follow-through. Remove it only
+after the stop condition is met and the durable state, task, Workboard card, or
+PR handoff has been updated.
+
+These signals do not authorize contract or backend implementation, migrations,
+live/auth/external checks, production or release action, failed-gate risk
+acceptance, PR merge, scope expansion, native UI work, QA/Release approval, or
+Design quality approval.
+
 ## 0C. Reporting, Review, And Approval Boundary
 
 Backend/API Integrator status reports must state:
