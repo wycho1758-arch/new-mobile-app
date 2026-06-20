@@ -522,6 +522,43 @@ organization-level reporting guidance.
    release work; must not approve specialist quality; and must not replace
    read-only reviewers, deterministic gates, or required human-gate approvals.
 
+
+### 1C. PRD-To-Execution Traceability Container
+
+When downstream work is PRD-derived, Product/Planning must record a
+PRD-to-execution traceability container before marking the work ready for
+practitioner execution. The container may live in the work-unit `status.json`, a
+Tasks/Jira field or comment, or a GitHub/work-unit handoff artifact.
+
+The container must include:
+
+- PRD or source artifact link, identifier, or not-applicable reason;
+- PRD section, accepted requirement bullets, or acceptance criteria mapped to
+  the execution task packet;
+- confirmed non-goals, open PRD questions, and the owner for each unresolved
+  question;
+- role-by-role output artifact and evidence requirement, including Design,
+  Mobile Architect, Backend/API, Mobile App Dev, and QA/Release when relevant;
+- human-gate state and external-proof status;
+- downstream handoff traceability, including the role owner, input artifact,
+  output artifact, expected evidence, and next responsible role;
+- QA applicability, required evidence level, QA artifact or owner, QA
+  not-applicable reason, external-proof status, and acceptance-to-evidence
+  mapping when QA is applicable.
+
+Product/Planning owns the required evidence expectation, routing readiness, and
+scope/acceptance clarification. Product/Planning does not own QA execution,
+achieved evidence, failure classification, release-risk evidence,
+failed-gate-risk acceptance, production submit, release approval, specialist
+implementation, or specialist quality approval.
+
+If PRD acceptance mapping is missing, ambiguous, or unmapped for an affected
+role surface, Product/Planning must stop the affected handoff, clarify the
+scope or acceptance criteria, and re-issue the traceability container before the
+role proceeds. QA/Release must not fill missing PRD acceptance mapping by
+assumption; route the gap back to Product/Planning as scope or acceptance
+clarification.
+
 ## 2. Design Readiness
 
 1. Product Designer receives an approved requirement or task through Design.
