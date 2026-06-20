@@ -380,9 +380,14 @@ approved SoT.
 3. If broad, run the repo-local Codex adapter `po-work-unit-planning-and-agent-sprint`.
 4. If ready, run the repo-local Codex adapter `po-prd-to-execution`.
 5. Before execution, run the repo-local Codex adapter `po-planning-completeness-review`.
-6. Route technical decisions to Mobile Architect / Technical Lead before execution when architecture, runtime, API, route/state, dependency, or releaseability risk exists.
+6. Route technical decisions to Mobile Architect / Technical Lead before
+   execution when architecture, runtime, API, route/state, dependency, or
+   releaseability risk exists.
 7. Route human gates before any execution work.
-8. For pod-isolated role-agent work, create or update the durable GitHub handoff root under the managed project path `docs/plans/work-units/<work-unit-id>/` as defined in `workflows/github-artifact-workflow.md`.
+8. For pod-isolated role-agent work, create or update the durable GitHub
+   handoff root under the managed project path
+   `docs/plans/work-units/<work-unit-id>/` as defined in
+   `workflows/github-artifact-workflow.md`.
 
 ### 1A. CPO Planning And Feedback Loop
 
@@ -451,69 +456,71 @@ organization-level reporting guidance.
    release work; must not approve specialist quality; must not replace
    read-only reviewers, deterministic gates, or required human-gate approvals.
 
-### 1B. CPO 계획 및 피드백 루프
+### 1B. CPO Planning And Feedback Loop
 
-CPO / Product Delivery Lead는 planning과 orchestration을 소유하며 실무 실행을
-소유하지 않는다. 이 loop는 조직 수준 보고 guidance의 실제 workflow mechanics를
-정의한다.
+The CPO / Product Delivery Lead owns planning and orchestration, not
+practitioner execution. This loop defines the workflow mechanics for the
+organization-level reporting guidance.
 
-1. Intake classification: committed durable work-unit `status.json`이 이미
-   downstream role에 next action을 배정한 경우를 제외하고 Product/Planning이
-   요청을 받는다.
-2. Routing resolution: Product/Planning은 pod-native `codex-role-workflow`
-   status-only bridge로 role identity, `entry_case`, allowed repo-local Codex
-   skill/adapter, required reviewer, durable artifact stage, blocking gate를
-   먼저 해석한다.
-3. Entry-case routing: `unclear`는 `po-requirement-office-hours`, `broad`는
-   `po-work-unit-planning-and-agent-sprint`, `ready_bounded`는
-   `po-prd-to-execution`, `pre_execution`은 `po-planning-completeness-review`로
-   route한다. direct implementation language는 accepted task packet과
-   `READY_FOR_EXECUTION` 또는 deterministic `status.json` next action 없이는
-   실무 실행으로 넘어가지 않는다.
-4. 실무자 계획 요청: Product/Planning은 관련 실무자에게 role-owned plan을
-   요청한다. 이 요청은 execution approval이 아니다.
-5. 계획 리뷰: Product/Planning은 scope, acceptance mapping, non-goal,
-   readiness, evidence requirement, human-gate routing, dependency, blocker,
-   open decision, next responsible role을 검토한다.
-6. Task packet completeness: 모든 execution task는 owner, input artifact,
-   output artifact, Done-when acceptance criteria, evidence requirement,
-   dependency, open decision, next responsible role, 그리고 work가 현재 pod를
-   떠날 때 GitHub branch/PR handoff link를 포함해야 한다. 향후
-   edit/archive/delete slice 또는 실무 실행을 시작하기 전에 packet은 QA
-   applicability, required evidence level, QA artifact/owner, QA
-   not-applicable reason, external-proof status도 기록해야 한다.
-7. QA/Release inclusion: Product/Planning은 관련 있는 QA/Release task,
-   evidence requirement, release-readiness task, handoff path를 누락하지 않는다.
-   QA/Release 실행을 소유하지 않는다는 사실은 QA/Release 계획을 생략할 수
-   있다는 뜻이 아니다. QA/Release가 not applicable이면 Product/Planning은 그
-   reason과 external-proof status를 기록한다. Product/Planning은 required
-   evidence와 QA applicability를 정하고, QA/Release는 applicable한 경우 achieved
-   evidence, failure classification, release-risk evidence를 소유한다. Evidence
-   ladder, QA-owned artifact, external-proof boundary는 `QA_Release_WORKFLOW.md`와
-   `governance/gates-and-evidence.md`를 사용한다.
-8. Design P0/P1 boundary: Product/Planning P0/P1 approval은 PRD fit, non-goal,
-   evidence readiness, human-gate routing, scope alignment에 대한 scope/evidence
-   approval이다. Design quality, selected option quality, Stitch authorship,
-   HTML implementation approval이 아니다. P1 approval 전에는 HTML extraction
-   metadata나 artifact를 fetch, persist, publish하지 않는다.
-9. 피드백 handoff: Product/Planning은 실무자에게 feedback을 전달한다.
-   실무자는 specialist ownership을 유지하고 role-owned plan 업데이트 필요
-   여부를 판단한다.
-10. 실행 readiness: accepted task packet과 `READY_FOR_EXECUTION`이 있거나
-   deterministic `status.json` next action이 downstream role을 배정한 경우에만
-   실무 실행을 시작할 수 있다. `READY_FOR_EXECUTION`은 work-unit `status.json`,
-   Tasks/Jira field 또는 comment, GitHub/work-unit handoff artifact 같은 durable
-   SoT에 기록되어야 하며 chat-only text만으로는 충분하지 않다.
-11. 완료 보고: 작업 완료 후 실무자는 outcome, command/evidence summary,
-   blocker, reviewer state, gate state, handoff state를 Product/Planning에
-   보고한다.
-12. CPO 완료 피드백 루프: Product/Planning은 완료 작업을 scope fit,
-   readiness, evidence completeness, gate status, open decision, next
-   responsible role 기준으로 검토한다. scope, evidence, gate, handoff 누락은
-   owning practitioner 또는 필요한 reviewer/gate owner에게 되돌린다.
-13. 경계: Product/Planning은 app, backend, design, QA, release work를 구현하지
-   않고, specialist quality를 승인하지 않으며, read-only reviewer,
-   deterministic gate, required human-gate approval을 대체하지 않는다.
+1. Intake classification: Product/Planning receives the request unless a
+   committed durable work-unit `status.json` already assigns the next action to
+   a downstream role.
+2. Routing resolution: Product/Planning first uses the pod-native
+   `codex-role-workflow` status-only bridge to resolve role identity,
+   `entry_case`, allowed repo-local Codex skill or adapter, required reviewer,
+   durable artifact stage, and blocking gate.
+3. Entry-case routing: route `unclear` to `po-requirement-office-hours`,
+   `broad` to `po-work-unit-planning-and-agent-sprint`, `ready_bounded` to
+   `po-prd-to-execution`, and `pre_execution` to
+   `po-planning-completeness-review`. Direct implementation language does not
+   move to practitioner execution unless an accepted task packet plus
+   `READY_FOR_EXECUTION`, or a deterministic `status.json` next action, exists.
+4. Practitioner plan request: Product/Planning asks the relevant practitioner
+   for a role-owned plan. This request is not execution approval.
+5. Plan review: Product/Planning reviews scope, acceptance mapping, non-goals,
+   readiness, evidence requirements, human-gate routing, dependencies,
+   blockers, open decisions, and next responsible role.
+6. Task packet completeness: every execution task must include owner, input
+   artifact, output artifact, Done-when acceptance criteria, evidence
+   requirement, dependency, open decision, next responsible role, and the
+   GitHub branch or PR handoff link when work leaves the current pod. Before a
+   future edit/archive/delete slice or practitioner execution starts, the
+   packet must also record QA applicability, required evidence level, QA
+   artifact/owner, QA not-applicable reason, and external-proof status.
+7. QA/Release inclusion: Product/Planning must not omit relevant QA/Release
+   tasks, evidence requirements, release-readiness tasks, or handoff paths. Not
+   owning QA/Release execution does not allow Product/Planning to skip
+   QA/Release planning. If QA/Release is not applicable, Product/Planning
+   records the reason and external-proof status. Product/Planning sets required
+   evidence and QA applicability; QA/Release owns achieved evidence, failure
+   classification, and release-risk evidence when applicable. Use
+   `QA_Release_WORKFLOW.md` and `governance/gates-and-evidence.md` for the
+   evidence ladder, QA-owned artifacts, and external-proof boundary.
+8. Design P0/P1 boundary: Product/Planning P0/P1 approval is scope/evidence
+   approval for PRD fit, non-goals, evidence readiness, human-gate routing, and
+   scope alignment. It is not Design quality approval, selected option quality
+   approval, Stitch authorship approval, or HTML implementation approval. Do
+   not fetch, persist, or publish HTML extraction metadata or artifacts before
+   P1 approval.
+9. Feedback handoff: Product/Planning delivers feedback to the practitioner.
+   The practitioner keeps specialist ownership and decides whether the
+   role-owned plan needs an update.
+10. Execution readiness: practitioner execution may start only when an accepted
+   task packet plus `READY_FOR_EXECUTION` exists, or when a deterministic
+   `status.json` next action assigns the downstream role. `READY_FOR_EXECUTION`
+   must be recorded in durable SoT such as work-unit `status.json`, a Tasks or
+   Jira field/comment, or a GitHub/work-unit handoff artifact; chat-only text is
+   not sufficient.
+11. Completion report: after work is complete, the practitioner reports
+   outcome, command/evidence summary, blockers, reviewer state, gate state, and
+   handoff state back to Product/Planning.
+12. CPO completion feedback loop: Product/Planning reviews completed work for
+   scope fit, readiness, evidence completeness, gate status, open decisions,
+   and next responsible role. Missing scope, evidence, gate, or handoff items
+   route back to the owning practitioner or required reviewer/gate owner.
+13. Boundary: Product/Planning must not implement app, backend, design, QA, or
+   release work; must not approve specialist quality; and must not replace
+   read-only reviewers, deterministic gates, or required human-gate approvals.
 
 ## 2. Design Readiness
 
@@ -534,7 +541,9 @@ CPO / Product Delivery Lead는 planning과 orchestration을 소유하며 실무 
 1. Backend/API Engineer receives API-backed task or contract uncertainty through Backend/API Integrator.
 2. Update or confirm `packages/contracts`.
 3. Align mocks, fixtures, auth/session, and error mapping.
-4. If the approved scope includes backend service delivery, implement the bounded `apps/api` change with DB schema/migration note, deployment config note, runtime smoke result, rollback note, and service evidence.
+4. If the approved scope includes backend service delivery, implement the
+   bounded `apps/api` change with DB schema/migration note, deployment config
+   note, runtime smoke result, rollback note, and service evidence.
 5. Ask Mobile Architect / Technical Lead to co-review contract impact when integration starts.
 6. Hand off stable contract and service evidence to Mobile App Dev and QA/Release.
 
@@ -544,21 +553,30 @@ CPO / Product Delivery Lead는 planning과 orchestration을 소유하며 실무 
 2. `$wm` routes material planning decisions to the relevant existing read-only custom agent when practical, or records the skip reason.
 3. `$wm` records planning sub-agent results with agent, question, conclusion, source refs or evidence path, and reflection/impact.
 4. Add or update the narrowest failing test/eval/validator/fixture first.
-5. Mobile App Developer or Backend/API Engineer implements the smallest scoped change through the relevant operating role; do not delegate implementation to a write-capable executor.
+5. Mobile App Developer or Backend/API Engineer implements the smallest
+   scoped change through the relevant operating role. Do not delegate
+   implementation to a write-capable executor.
 6. Run applicable local checks.
 7. Request read-only reviewer evidence.
 8. Prepare PR-ready diff and evidence summary.
-9. When another pod must consume the result, commit the role artifact and GitHub branch/PR link under the managed project path `docs/plans/work-units/<work-unit-id>/`; do not rely on local workspace state as handoff.
+9. When another pod must consume the result, commit the role artifact and
+   GitHub branch/PR link under the managed project path
+   `docs/plans/work-units/<work-unit-id>/`. Do not rely on local workspace
+   state as handoff.
 
 ## 5. QA And Release Evidence
 
 1. QA/Release Engineer creates an E2E/evidence plan through QA/Release using the repo-local Codex skill `$e2e-test` when E2E evidence is in scope.
 2. Reset the tested instance.
-3. Run planned RN Web, Maestro, mobile-mcp, Railway, or manual HUMAN-GATE evidence; use the repo-local Codex skill `$qa-railway-workflow` for Railway-owned deploy/evidence operations.
+3. Run planned RN Web, Maestro, mobile-mcp, Railway, or manual HUMAN-GATE
+   evidence. Use the repo-local Codex skill `$qa-railway-workflow` for
+   Railway-owned deploy/evidence operations.
 4. Record commands, logs, screenshots, issues, and summary.
 5. Classify failures and route to owner.
 6. Production submit requires recorded human approval.
-7. Work-unit QA files summarize and link canonical evidence paths; they do not replace `.evidence/e2e-test/...`, mobile-mcp, EAS, Railway, or human-gate evidence records.
+7. Work-unit QA files summarize and link canonical evidence paths; they do
+   not replace `.evidence/e2e-test/...`, mobile-mcp, EAS, Railway, or
+   human-gate evidence records.
 
 ## 6. Failure Loop
 
