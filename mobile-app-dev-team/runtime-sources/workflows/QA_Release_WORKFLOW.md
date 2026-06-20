@@ -220,13 +220,16 @@ Before reporting, handing off, or marking QA/Release work ready, check:
 
 ## 1. Intake And Routing
 
-QA/Release starts only from accepted scope: a task, Jira item, work-unit
-`status.json` next action, GitHub/PR handoff, or `codex-role-workflow/v1`
-routing artifact that assigns QA/Release work.
+QA/Release starts only from accepted scope: a task, Jira item, PRD-to-execution
+packet or Product/Planning requirement source, work-unit `status.json` next
+action, GitHub/PR handoff, or `codex-role-workflow/v1` routing artifact that
+assigns QA/Release work.
 
 The intake record must identify:
 
 - target task, work-unit id, Workboard card, and wake guard when present;
+- PRD/source artifact link plus PRD section or acceptance criteria mapping when
+  the QA work is PRD-derived;
 - target route, screen, user flow, API, deployment, or release candidate;
 - required evidence level from Product/Planning or `status.json`;
 - target surface/build: L0 local, L1 RN Web, L2 EAS/Maestro, L3 human-device, or
@@ -239,7 +242,9 @@ The intake record must identify:
 
 If accepted QA/release scope, target, reset method, evidence path, required
 level, or approval state is missing, QA/Release reports blocked instead of
-running checks from assumptions.
+running checks from assumptions. If PRD acceptance criteria are missing,
+ambiguous, or unmapped to the QA target surface, QA/Release blocks only the
+affected evidence and routes the gap to Product/Planning.
 
 ## 2. Evidence Ladder
 
@@ -269,12 +274,16 @@ Use `$e2e-test` when E2E evidence is in scope. The plan must be written before
 execution and include:
 
 - SoT inputs and task/work-unit references;
+- PRD/source artifact link and PRD section or acceptance criteria mapping when
+  applicable;
 - target route, screen, user flow, API, deployment, or release candidate;
 - target layer and surface/build;
 - required evidence level and expected achieved level;
 - selectors, preferably stable kebab-case `testID` values;
 - reset steps and reset verification;
 - commands to run and expected exit criteria;
+- mapping from planned checks to PRD acceptance criteria or Product/Planning
+  acceptance items when applicable;
 - screenshots, console logs, device logs, Railway logs, EAS result files, or
   mobile-mcp artifacts expected;
 - native availability and external approval state;
@@ -473,6 +482,8 @@ human-gate boundary changes.
 QA/Release work is Done only when:
 
 - accepted QA/Release scope is linked;
+- PRD/source artifact and acceptance criteria traceability are recorded when the
+  QA work is PRD-derived;
 - required and achieved evidence levels are recorded;
 - reset record exists or is explicitly not applicable;
 - commands and exit statuses are recorded;
