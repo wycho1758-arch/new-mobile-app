@@ -95,6 +95,8 @@ Required entry state:
 - `allowed_repo_local_codex_skills` includes `mobile-app-dev-workflow`;
 - direct implementation language is backed by an accepted task packet and
   `READY_FOR_EXECUTION`, or by an accepted durable next action;
+- when a PRD is upstream, PRD-derived acceptance criteria and non-goals are
+  mapped into the accepted execution task packet or durable work-unit handoff;
 - required reviewer routing is known.
 
 Required reviewer routing:
@@ -109,6 +111,8 @@ Required reviewer routing:
 Required inputs before implementation:
 
 - accepted execution task and non-goals;
+- PRD-derived acceptance criteria and non-goal mapping when the execution task
+  is PRD-derived;
 - Design handoff when layout, interaction, or visual hierarchy matters;
 - selected Design option and five-state matrix for UI work;
 - `01-design/handoff-index.md` backend/API dependency status for UI or
@@ -237,6 +241,11 @@ tests, API contracts, Design artifacts, QA evidence, or Gatekeeper results.
 be redacted, minimized, and linked or summarized according to the accepted
 evidence requirement.
 
+When a PRD is upstream, `implementation-summary.md` and `test-plan.md` should
+trace the implemented scope and planned/proven checks back to the accepted PRD
+acceptance criteria or Product/Planning acceptance items, and should state any
+accepted non-goals that bounded the Mobile App Dev work.
+
 Cross-pod evidence boundary:
 
 - local `/workspace/...` paths and raw local logs are internal tracking only;
@@ -318,6 +327,8 @@ Stop when:
 
 - role identity is missing or mismatched;
 - accepted Product/Planning task or durable work-unit next action is missing;
+- PRD-derived acceptance criteria or non-goals are missing, ambiguous, or
+  unmapped to the accepted execution task packet or durable work-unit handoff;
 - UI work lacks Design handoff, selected option, five-state matrix, or
   design-reviewer evidence;
 - API-backed work lacks contract, approved mock/fixture, auth/session behavior,
