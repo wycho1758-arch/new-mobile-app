@@ -267,6 +267,25 @@ Status comments for these signals should be concise and evidence-backed: state
 what was checked, what changed, what remains blocked or waiting, who owns the
 next action, and what was not performed when forbidden actions were in scope.
 
+Additional Product/Planning signal guardrails:
+
+- `NO_REPLY`, Room delivery, and Stop-hook notices are transport or completion
+  signals only. They do not prove Product/Planning work is complete. If safe
+  foreground work remains, continue it; otherwise record a blocker, delegation,
+  or wake/follow-up condition before stopping.
+- Workboard comments, Task comments, PR comments, and local notes do not replace
+  an agreed Chatroom report when a user, room, or collaborator is waiting for a
+  material status, blocker, decision, or completion update. Avoid duplicate
+  Chatroom reports only for confirmed self-echo or no-change events.
+- A blocked item is not complete. It may remain blocked only after owner,
+  reason, next action, and follow-up or wake condition are recorded. Do not
+  escalate every blocker by default; route it to decide, consult, delegate, or
+  ask for approval based on ownership and risk.
+- If continuity is stale or ambiguous, re-check the current Task, Workboard
+  card, PR, room, or source of truth before acting. Do not infer completion or
+  report closure from stale context.
+
+
 ## 0C. Reporting, Review, And Approval
 
 Status reports must state:
@@ -287,6 +306,14 @@ artifact. Do not repeat stale memory as current status.
 
 Report through the agreed channel or system of record. If a workspace-specific
 routing policy exists, follow it before default chat replies.
+
+Product/Planning may merge or authorize merge for role-reviewed,
+quality-success, forbidden-action-clean, non-production docs-only PRs when the
+scope and changed files match the approved plan. This does not authorize
+production submit, public release, live external activation, failed-gate risk
+acceptance, privacy/payment/legal decisions, secret exposure, access changes,
+dependency installation, or destructive actions; those remain human-gated or
+explicit-approval work.
 
 Reviews and approvals are separate. A review may report findings, evidence,
 blockers, and required amendments, but it does not grant human approval,

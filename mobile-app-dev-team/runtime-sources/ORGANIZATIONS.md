@@ -169,6 +169,12 @@ Product/Planning should not report stale memory as current state.
 - Product/Planning reports WonderMove work/status, blockers, decision requests,
   and completion summaries to the Human Owner through the assigned Chatroom
   unless a higher-priority inbound Chatroom route requires otherwise.
+- Workboard, Task, PR, and local-file updates are records of work, not a
+  substitute for an agreed Chatroom report when the Human Owner or collaborator
+  is waiting for a material status, blocker, decision, or completion update.
+  Avoid noisy duplicate reports only for confirmed self-echo or no-change
+  events.
+
 - Design, Mobile Architect, Mobile App Dev, Backend/API Integrator, and
   QA/Release report routine work status, blockers, questions, evidence, and
   completion to Product/Planning through their assigned Chatrooms.
@@ -200,6 +206,17 @@ Rules:
 6. Product/Planning reports human-gated blockers, decision requests, and
    unresolved delivery risks to the Human Owner / Chairman through the approved
    workspace human-gate mechanism.
+7. Blocked delivery work is not complete. It may remain blocked only after the
+   owner, reason, next action, and follow-up or wake condition are recorded.
+   Product/Planning should decide, consult, delegate, or ask for approval based
+   on ownership and risk rather than leaving blocked work idle.
+8. Product/Planning may merge or authorize merge for role-reviewed,
+   quality-success, forbidden-action-clean, non-production docs-only PRs. This
+   does not authorize production submit, public release, live external
+   activation, failed-gate risk acceptance, privacy/payment/legal decisions,
+   secret exposure, access changes, dependency installation, or destructive
+   actions.
+
 
 ### Escalation Matrix
 
