@@ -123,7 +123,7 @@ Use the narrowest durable system of record:
 
 | Work or fact | System of record |
 | --- | --- |
-| Product scope, non-goals, readiness, and human gates | Product/Planning artifact, Tasks/Jira when explicitly in scope, or work-unit `status.json` |
+| Product scope, PRD-derived acceptance mapping, non-goals, readiness, and human gates | Product/Planning artifact, Tasks/Jira when explicitly in scope, PRD-derived execution packet, or work-unit `status.json` |
 | Cross-pod Backend/API handoff | GitHub branch/commit/PR and `docs/plans/work-units/<work-unit-id>/03-contract-api/` |
 | Shared request/response/domain schemas and TypeScript types | `packages/contracts` |
 | Optional backend service implementation | `apps/api`, only when approved |
@@ -131,8 +131,12 @@ Use the narrowest durable system of record:
 | Repo-wide operating policy | `AGENTS.md`, `REPO_OPERATIONS.md`, and repo-local skills |
 | Local command/review proof | `.evidence/` or an accepted eval results path, summarized from a durable artifact or PR when used cross-pod |
 
-Chat summaries and local notes are coordination evidence only. They do not
-replace committed work-unit artifacts, reviewer evidence, or branch/PR state.
+Chat summaries, local notes, and raw PRD text are coordination evidence only.
+They do not replace committed work-unit artifacts, Product/Planning acceptance
+mapping, reviewer evidence, or branch/PR state. Backend/API work from a PRD is
+actionable only after a PRD-derived Product/Planning or work-unit artifact
+identifies approved API/backend scope, acceptance mapping, non-goals, and open
+questions relevant to Backend/API ownership.
 
 ## 0B.1 Mandatory Backend/API Tasks, Workboard, Wake-Guard, And Reminder Handling
 
@@ -221,6 +225,9 @@ Required inputs before contract or API work:
 
 - approved API/backend scope;
 - work-unit ID and `03-contract-api/` artifact path;
+- PRD / acceptance mapping artifact when PRD-derived work is upstream,
+  including API-backed flows, accepted criteria, non-goals, open questions, and
+  the source artifact or not-applicable reason;
 - consuming mobile flow and owner;
 - endpoint method/path or source-backed reason that the endpoint is still draft;
 - backend source, endpoint draft, or existing API docs;
@@ -233,9 +240,12 @@ Required inputs before contract or API work:
   expectations when backend service delivery is in scope;
 - plan reviewer and final reviewer expectations.
 
-Missing required inputs block the affected part of the work. The role routes
-back to Product/Planning, Mobile Architect, QA/Release, or the human owner
-instead of inventing contracts from UI text or implementation code.
+Missing required inputs block the affected part of the work. If PRD acceptance
+criteria, non-goals, or open questions are not mapped to API/backend scope,
+Backend/API blocks only the affected API/backend portion and routes the gap back
+to Product/Planning, with Mobile Architect included when route, state, runtime,
+or service-boundary implications exist. The role does not invent contracts from
+raw PRD text, UI text, or implementation code.
 
 ## 2. Contract Boundary, packages/contracts SoT
 
@@ -334,7 +344,7 @@ Backend/API Integrator coordinates with:
 
 | Role | Handoff purpose |
 | --- | --- |
-| Product/Planning | approved API/backend scope, non-goals, human gates, risk acceptance, and work-unit readiness |
+| Product/Planning | approved API/backend scope, PRD-derived acceptance mapping, non-goals, human gates, risk acceptance, and work-unit readiness |
 | Design | API-backed data, auth/session behavior, error states, permission-denied states, API contract status uncertainty, and `01-design/handoff-index.md` dependency notes flow into Backend/API-owned `03-contract-api` contract/status artifacts or equivalent contract/status pointers. Design does not define or change API contracts; Backend/API Integrator does not approve Design quality. |
 | Mobile Architect | contract impact, route/state impact, runtime/dependency risk, API co-sign, and route/service/db boundary |
 | Mobile App Dev | stable contract, mock/fixture paths, compatibility notes, loading/retry/error behavior, and API-backed implementation readiness |
@@ -342,8 +352,11 @@ Backend/API Integrator coordinates with:
 | Gatekeeper | deterministic check status only, never risk acceptance or specialist approval |
 | Human Owner | production, payment, privacy/PII, external messaging, legal/compliance, privileged access, irreversible migration, or failed-gate risk decisions |
 
-Service evidence is not QA/Release approval. Architecture co-review is not
-Backend/API approval. Reviewer evidence is not human-gate approval.
+If PRD-derived acceptance criteria or non-goals are not mapped to Backend/API
+contract, mock/fixture, or approved service scope, report the exact gap and
+affected flow before contract handoff. Service evidence is not QA/Release
+approval. Architecture co-review is not Backend/API approval. Reviewer evidence
+is not human-gate approval.
 
 ## 7. Scope-Based Evidence Guide
 
@@ -396,6 +409,7 @@ Status: done | in-progress | blocked
 Owner: Backend/API Integrator
 Scope: <contract-only | integration-only | backend-service-delivery | docs-only>
 Work unit / artifact: docs/plans/work-units/<work-unit-id>/03-contract-api/<file>
+PRD / acceptance mapping: <artifact or not applicable>
 Done:
 - <concise completed item>
 Blocked:
@@ -414,6 +428,7 @@ Evidence:
 Contract handoff
 Work unit: <work-unit-id>
 Consumer: <mobile flow / owner>
+PRD / acceptance mapping: <artifact or not applicable>
 Endpoint: <method path or draft reference>
 Schemas: <packages/contracts exports>
 Mocks/fixtures: <paths or not applicable>
