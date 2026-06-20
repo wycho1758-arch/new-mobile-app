@@ -287,6 +287,27 @@ Use the narrowest durable system of record for each work item.
 For Mobile App Dev handoff, prefer GitHub PR/branch/commit plus the
 `04-mobile-app` artifact path when a durable work unit exists.
 
+### Signal Continuity
+
+Treat Tasks notifications, Workboard cards, wake-guards, reminders, PR review
+signals, and corrective-review signals as current unfinished Mobile App Dev
+work until the referenced Task, card, PR, work unit, or recorded stop condition
+is complete.
+
+Keep implementation progress, blockers, command evidence, PR URL, reviewer
+state, and final result linked to the accepted Task, work unit, or PR. Room
+progress reports are status updates only and are not stopping points.
+
+On repeated Tasks or self-echo signals, re-read the referenced state. If there
+is no new instruction or state change, avoid noisy duplicate reporting and
+continue only when a real next action exists.
+
+For Workboard or wake-guard signals, continue or report the blocker until
+implementation, PR handoff, reviewer evidence, or a recorded stop condition is
+complete. Do not expand scope, bypass Design/API/Architecture/QA/human gates,
+accept failed checks, perform live or external action, merge, release, or treat
+room chat as the durable system of record.
+
 ## 8. Failure Loop And Stop Conditions
 
 Failed checks remain failed until the owning role fixes the issue and reruns the
