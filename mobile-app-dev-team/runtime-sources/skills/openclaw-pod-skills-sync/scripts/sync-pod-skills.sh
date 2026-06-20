@@ -10,6 +10,9 @@ WORKSPACE_AGENTS_PATH="${OPENCLAW_WORKSPACE_AGENTS_PATH:-/workspace/AGENTS.md}"
 WORKSPACE_WORKFLOW_PATH="${OPENCLAW_WORKSPACE_WORKFLOW_PATH:-/workspace/WORKFLOW.md}"
 WORKSPACE_HEARTBEAT_PATH="${OPENCLAW_WORKSPACE_HEARTBEAT_PATH:-/workspace/HEARTBEAT.md}"
 WORKSPACE_TOOLS_PATH="${OPENCLAW_WORKSPACE_TOOLS_PATH:-/workspace/TOOLS.md}"
+CODEX_HOOK_SOURCE_PATH="${OPENCLAW_CODEX_RUN_SOURCE_PATH:-${SOURCE_ROOT%/}/codex-interactive-repo-work/scripts/codex-run}"
+CODEX_HOOKS_ROOT="${OPENCLAW_CODEX_HOOKS_ROOT:-/workspace/codex-hooks}"
+CODEX_RUN_TARGET_PATH="${OPENCLAW_CODEX_RUN_TARGET_PATH:-${CODEX_HOOKS_ROOT%/}/codex-run}"
 ORGANIZATIONS_SOURCE_PATH="${OPENCLAW_ORGANIZATIONS_SOURCE_PATH:-${REPO_PATH%/}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md}"
 WORKSPACE_ORGANIZATIONS_PATH="${OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH:-/workspace/ORGANIZATIONS.md}"
 ROLE_SLUG="${OPENCLAW_ROLE_SLUG:-${PROJECT_BOOTSTRAP_ROLE_SLUG:-${WM_ROLE:-}}}"
@@ -33,6 +36,8 @@ node - \
   "${WORKSPACE_WORKFLOW_PATH}" \
   "${WORKSPACE_HEARTBEAT_PATH}" \
   "${WORKSPACE_TOOLS_PATH}" \
+  "${CODEX_HOOK_SOURCE_PATH}" \
+  "${CODEX_RUN_TARGET_PATH}" \
   "${ORGANIZATIONS_SOURCE_PATH}" \
   "${WORKSPACE_ORGANIZATIONS_PATH}" \
   "${ROLE_SLUG}" \
@@ -56,6 +61,8 @@ const [
   workspaceWorkflowPath,
   workspaceHeartbeatPath,
   workspaceToolsPath,
+  codexHookSourcePath,
+  codexRunTargetPath,
   organizationsSourcePath,
   workspaceOrganizationsPath,
   roleSlugRaw,
@@ -154,6 +161,8 @@ const report = {
     workspace_workflow: workspaceWorkflowPath,
     workspace_heartbeat: workspaceHeartbeatPath,
     workspace_tools: workspaceToolsPath,
+    codex_run_source: codexHookSourcePath,
+    codex_run_target: codexRunTargetPath,
     organizations_source: organizationsSourcePath,
     workspace_organizations: workspaceOrganizationsPath,
   },
@@ -169,6 +178,13 @@ const report = {
   workspace_organizations: {
     status: 'not_checked',
     guidance_only: true,
+  },
+  codex_hooks: {
+    codex_run: {
+      status: 'not_checked',
+      source_path: codexHookSourcePath,
+      target_path: codexRunTargetPath,
+    },
   },
 };
 
@@ -369,6 +385,31 @@ if (resolvedRole) {
   }
 }
 
+if (!exists(codexHookSourcePath)) {
+  add('missing', {
+    kind: 'codex_hook_wrapper',
+    name: 'codex_run',
+    source_path: codexHookSourcePath,
+    target_path: codexRunTargetPath,
+  });
+  block('missing codex hook wrapper: codex-run', {
+    kind: 'codex_hook_wrapper',
+    source_path: codexHookSourcePath,
+  });
+} else if (!isReadableFile(codexHookSourcePath)) {
+  add('missing', {
+    kind: 'codex_hook_wrapper',
+    name: 'codex_run',
+    status: 'unreadable',
+    source_path: codexHookSourcePath,
+    target_path: codexRunTargetPath,
+  });
+  block('unreadable codex hook wrapper: codex-run', {
+    kind: 'codex_hook_wrapper',
+    source_path: codexHookSourcePath,
+  });
+}
+
 if (report.status === 'blocked') {
   fail();
   process.exit(1);
@@ -378,8 +419,10 @@ const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'openclaw-pod-skills-sync.
 try {
   const stagedSkills = path.join(tmpRoot, 'skills');
   const stagedWorkspace = path.join(tmpRoot, 'workspace');
+  const stagedHooks = path.join(tmpRoot, 'codex-hooks');
   fs.mkdirSync(stagedSkills, { recursive: true });
   fs.mkdirSync(stagedWorkspace, { recursive: true });
+  fs.mkdirSync(stagedHooks, { recursive: true });
 
   for (const slug of sourceDirs) {
     const sourceDir = path.join(sourceRoot, slug);
@@ -401,6 +444,20 @@ try {
     report.skills[slug] = entry;
     add('applied', { kind: 'skill', slug, ...entry });
   }
+
+  const stagedCodexRun = path.join(stagedHooks, 'codex-run');
+  fs.cpSync(codexHookSourcePath, stagedCodexRun);
+  fs.mkdirSync(path.dirname(codexRunTargetPath), { recursive: true });
+  fs.cpSync(stagedCodexRun, codexRunTargetPath);
+  fs.chmodSync(codexRunTargetPath, 0o755);
+  report.codex_hooks.codex_run = {
+    status: 'applied',
+    source_path: codexHookSourcePath,
+    target_path: codexRunTargetPath,
+    sha256: sha256(codexHookSourcePath),
+    cmp: cmpFiles(codexHookSourcePath, codexRunTargetPath),
+  };
+  add('applied', { kind: 'codex_hook_wrapper', name: 'codex_run', ...report.codex_hooks.codex_run });
 
   if (isReadableFile(organizationsSourcePath)) {
     const stagedPath = path.join(stagedWorkspace, 'ORGANIZATIONS.md');

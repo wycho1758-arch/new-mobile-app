@@ -18,6 +18,7 @@ This file is the root source for the current project environment and runtime set
   - `pnpm run validate:work-unit-next` is composed into `test:runtime` for the work-unit next-action resolver.
   - `pnpm run validate:project-environment` is composed into `test:runtime` for offline SoT drift detection.
   - `pnpm run validate:evidence-hygiene` is composed into `test:runtime` for durable evidence path and secret hygiene.
+  - `pnpm run validate:codex-run` is composed into `test:runtime` for the minimal Codex PTY launch-gate wrapper smoke fixtures.
 
 ## Mobile Runtime
 
@@ -358,6 +359,10 @@ Do not hardcode customer app names, bundle IDs, API URLs, tokens, or credentials
     - the reviewer JSON envelope contains `verdict`, `reviewer`, `mode`, `scope`, `findings`, `checks_reviewed`, `residual_risks`, and `next_action`; `GO` requires no Critical/High/Medium findings and required checks `PASS` or source-backed `NOT_APPLICABLE`, failed required checks map to `NO_GO`, missing required checks map to `BLOCKED`, and human-gate blockers map to `NEEDS_HUMAN`.
     - researcher/advisor agents are advisory and are not valid `--json-envelope` targets.
   - `scripts/test-hooks.mjs`
+  - `evals/skills/codex-run-smoke.sh`
+    - self-test fixture suite for the repo-tracked source of the `/workspace/codex-hooks/codex-run` compatible launch-gate wrapper:
+      `mobile-app-dev-team/runtime-sources/skills/codex-interactive-repo-work/scripts/codex-run`.
+    - validates dry-run launch evidence, blocked preflight evidence, missing input handling, active human-gate blocker handling, required `$wm` prompt wording, reviewer wording, numeric room id checking, missing Codex CLI handling, and secret-safe output.
   - `scripts/validate-team-doc.mjs`
     - active managed runtime composition wrapper; runs only runtime-source docs
       and focused `codex-role-workflow` routing-support docs. It intentionally

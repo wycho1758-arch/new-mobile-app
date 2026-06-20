@@ -20,6 +20,17 @@ Primary sync script:
 /workspace/skills/openclaw-pod-skills-sync/scripts/sync-pod-skills.sh
 ```
 
+## Codex run materialization
+
+This skill also materializes the `codex-interactive-repo-work` runtime launch
+wrapper from repo SoT to `/workspace/codex-hooks/codex-run`. See:
+
+```text
+mobile-app-dev-team/runtime-sources/skills/openclaw-pod-skills-sync/references/codex-run-materialization.md
+```
+
+The live hook is runtime proof only. Repo source remains authoritative.
+
 ## Responsibility
 
 This skill has one responsibility: copy sync the repo SoT

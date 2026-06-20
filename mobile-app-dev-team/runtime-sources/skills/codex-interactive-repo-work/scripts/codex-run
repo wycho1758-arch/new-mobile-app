@@ -1,0 +1,331 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+node - "$0" "$@" <<'NODE'
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { spawnSync } = require('node:child_process');
+
+const EXPECTED_CONTRACT = '/workspace/skills/codex-interactive-repo-work/SKILL.md';
+const REQUIRED_SKILL = 'mobile-app-dev-workflow';
+const STATUSES = new Set([
+  'launched',
+  'blocked_preflight',
+  'codex_not_found',
+  'codex_exit_nonzero',
+  'operator_interrupted',
+  'wrapper_error',
+]);
+
+function parseArgs(argv) {
+  const options = {
+    codexArgs: [],
+  };
+  let passthrough = false;
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (passthrough) {
+      options.codexArgs.push(arg);
+      continue;
+    }
+    if (arg === '--') {
+      passthrough = true;
+      continue;
+    }
+    const next = () => {
+      i += 1;
+      if (i >= argv.length) throw new Error(`missing value for ${arg}`);
+      return argv[i];
+    };
+    switch (arg) {
+      case '--workdir':
+        options.workdir = next();
+        break;
+      case '--routing-artifact':
+        options.routingArtifact = next();
+        break;
+      case '--prompt-file':
+        options.promptFile = next();
+        break;
+      case '--evidence-dir':
+        options.evidenceDir = next();
+        break;
+      case '--report-room-id':
+        options.reportRoomId = next();
+        break;
+      case '--codex-bin':
+        options.codexBin = next();
+        break;
+      case '--launch-mode':
+        options.launchMode = next();
+        break;
+      case '--transcript-log':
+        options.transcriptLog = next();
+        break;
+      case '--dry-run':
+        options.launchMode = 'dry-run';
+        break;
+      case '--self-test':
+        options.selfTest = true;
+        break;
+      default:
+        throw new Error(`unknown argument: ${arg}`);
+    }
+  }
+  return options;
+}
+
+function redactValue(value) {
+  const text = String(value);
+  if (/(token|key|secret|password|credential|bearer|authorization)/i.test(text)) return '***REDACTED***';
+  return text.replace(/(https?:\/\/[^/\s:]+):([^@\s]+)@/g, '$1:***REDACTED***@');
+}
+
+function redactArgv(argv) {
+  const redacted = [];
+  let redactNext = false;
+  for (const arg of argv) {
+    if (redactNext) {
+      redacted.push('***REDACTED***');
+      redactNext = false;
+      continue;
+    }
+    redacted.push(redactValue(arg));
+    if (/^--?(?:.*)?(?:token|key|secret|password|credential|bearer|authorization)(?:[-_].*)?$/i.test(String(arg))) {
+      redactNext = true;
+    }
+  }
+  return redacted;
+}
+
+function now() {
+  return new Date().toISOString();
+}
+
+function check(ok, detail = null) {
+  return { ok: Boolean(ok), detail };
+}
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function readText(filePath) {
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function sha256(text) {
+  return crypto.createHash('sha256').update(text).digest('hex');
+}
+
+function gitInfo(workdir) {
+  const run = (args) => spawnSync('git', args, { cwd: workdir, encoding: 'utf8' });
+  const branch = run(['rev-parse', '--abbrev-ref', 'HEAD']);
+  const sha = run(['rev-parse', 'HEAD']);
+  const status = run(['status', '--short']);
+  return {
+    branch: branch.status === 0 ? branch.stdout.trim() : null,
+    sha: sha.status === 0 ? sha.stdout.trim() : null,
+    status_short: status.status === 0 ? status.stdout.split('\n').filter(Boolean) : [],
+  };
+}
+
+function baseReport(options, status, checks, startedAt) {
+  const promptText = options.promptText || '';
+  const transcriptLog = options.transcriptLog || path.join(options.evidenceDir || os.tmpdir(), 'codex-run-transcript.log');
+  return {
+    schema: 'codex-run-launch-gate/v1',
+    status,
+    task: 'TASK-11.1',
+    started_at: startedAt,
+    ended_at: now(),
+    workdir: options.workdir || null,
+    routing_artifact_path: options.routingArtifact || null,
+    prompt_file: options.promptFile || null,
+    prompt_sha256: promptText ? sha256(promptText) : null,
+    report_room_id: options.reportRoomId || null,
+    wrapper_path: options.wrapperPath,
+    codex_path: options.codexBin || null,
+    argv_redacted: redactArgv(process.argv.slice(2)),
+    codex_argv_redacted: redactArgv(options.codexArgs || []),
+    checks,
+    launch: {
+      decision: status === 'launched' ? 'allowed' : 'refused',
+      mode: options.launchMode || null,
+      dry_run: options.launchMode === 'dry-run',
+      transcript_log_path: transcriptLog,
+    },
+    git: options.workdir && fs.existsSync(options.workdir) ? gitInfo(options.workdir) : null,
+    exit_status: null,
+    safety: {
+      raw_codex_fallback_allowed: false,
+      secret_values_redacted: true,
+      external_actions_performed: false,
+    },
+  };
+}
+
+function writeReport(options, fileName, report) {
+  if (!STATUSES.has(report.status)) report.status = 'wrapper_error';
+  fs.mkdirSync(options.evidenceDir, { recursive: true });
+  const outPath = path.join(options.evidenceDir, fileName);
+  fs.writeFileSync(outPath, `${JSON.stringify(report, null, 2)}\n`);
+  return outPath;
+}
+
+function writeFallbackBlocked(options, report) {
+  const fallbackDir = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-run-blocked-'));
+  const outPath = path.join(fallbackDir, 'blocked.json');
+  report.fallback_evidence_dir = fallbackDir;
+  fs.writeFileSync(outPath, `${JSON.stringify(report, null, 2)}\n`);
+  console.error(`codex-run ${report.status}: evidence=${outPath}`);
+}
+
+function validate(options) {
+  const checks = {};
+  checks.workdir = check(options.workdir && fs.existsSync(options.workdir) && fs.statSync(options.workdir).isDirectory() && fs.existsSync(path.join(options.workdir, '.git')));
+  checks.routing_artifact_file = check(options.routingArtifact && fs.existsSync(options.routingArtifact) && fs.statSync(options.routingArtifact).isFile());
+  checks.prompt_file = check(options.promptFile && fs.existsSync(options.promptFile) && fs.statSync(options.promptFile).isFile());
+  checks.evidence_dir_parent = check(options.evidenceDir && (!fs.existsSync(options.evidenceDir) || fs.statSync(options.evidenceDir).isDirectory()));
+  checks.report_room_id_numeric = check(/^[0-9]+$/.test(options.reportRoomId || ''));
+  checks.codex_cli = check(options.codexBin && fs.existsSync(options.codexBin) && fs.statSync(options.codexBin).mode & 0o111);
+  checks.launch_mode = check(['dry-run', 'pty'].includes(options.launchMode || ''), options.launchMode || null);
+
+  let routing = null;
+  let prompt = '';
+  if (checks.routing_artifact_file.ok) {
+    try {
+      routing = readJson(options.routingArtifact);
+    } catch (error) {
+      checks.routing_json = check(false, error.message);
+    }
+  }
+  if (checks.prompt_file.ok) {
+    prompt = readText(options.promptFile);
+    options.promptText = prompt;
+  }
+
+  if (routing) {
+    const reviewers = Array.isArray(routing.required_reviewers) ? routing.required_reviewers : [];
+    checks.routing_status_ready = check(routing.status === 'ready', routing.status);
+    checks.routing_codex_interactive_required = check(routing.codex_interactive_required === true, routing.codex_interactive_required);
+    checks.routing_execution_contract = check(routing.codex_execution_contract === EXPECTED_CONTRACT, routing.codex_execution_contract);
+    checks.routing_allowed_skill = check(Array.isArray(routing.allowed_repo_local_codex_skills) && routing.allowed_repo_local_codex_skills.includes(REQUIRED_SKILL));
+    checks.routing_required_reviewers = check(reviewers.length > 0, reviewers);
+    checks.routing_human_gate_blocker = check(routing.human_gate?.active_blocker !== true, routing.human_gate || null);
+    options.requiredReviewers = reviewers;
+  }
+
+  if (prompt) {
+    const reviewers = options.requiredReviewers || [];
+    checks.prompt_wm_invocation = check(/(^|\s)(\$wm|\/wm)(\s|$)/.test(prompt));
+    checks.prompt_routing_artifact_path = check(Boolean(options.routingArtifact && prompt.includes(options.routingArtifact)));
+    checks.prompt_required_reviewers = check(reviewers.length > 0 && reviewers.every((reviewer) => prompt.includes(reviewer)), reviewers);
+    checks.prompt_forbidden_boundaries = check(
+      /human gates?/i.test(prompt)
+        && /external proof boundaries/i.test(prompt)
+        && /secret safety/i.test(prompt)
+        && /Do not self-approve/i.test(prompt)
+        && /bypass failed gates/i.test(prompt)
+        && /external platform state/i.test(prompt),
+    );
+  }
+
+  const failed = Object.entries(checks).filter(([, value]) => !value.ok).map(([name]) => name);
+  return { checks, failed };
+}
+
+function runSelfTest() {
+  console.log('codex-run self-test: use evals/skills/codex-run-smoke.sh for fixture coverage');
+}
+
+function main() {
+  const startedAt = now();
+  let options;
+  try {
+    const [wrapperPath, ...argv] = process.argv.slice(2);
+    options = parseArgs(argv);
+    options.wrapperPath = fs.realpathSync(wrapperPath);
+    if (options.selfTest) {
+      runSelfTest();
+      return 0;
+    }
+    const { checks, failed } = validate(options);
+    let reportStatus = failed.includes('codex_cli') ? 'codex_not_found' : 'blocked_preflight';
+    let report = baseReport(options, failed.length ? reportStatus : 'launched', checks, startedAt);
+    if (failed.length) {
+      report.blocked_reasons = failed;
+      try {
+        const out = writeReport(options, 'blocked.json', report);
+        console.error(`codex-run ${report.status}: evidence=${out}`);
+      } catch (error) {
+        report.status = 'wrapper_error';
+        report.wrapper_error = error.message;
+        writeFallbackBlocked(options, report);
+      }
+      return reportStatus === 'codex_not_found' ? 127 : 1;
+    }
+
+    if (options.launchMode === 'dry-run') {
+      report.exit_status = 0;
+      const out = writeReport(options, 'launch.json', report);
+      console.log(`codex-run launched: evidence=${out}`);
+      return 0;
+    }
+
+    const smokeAssumesTty = process.env.CODEX_RUN_SMOKE_ASSUME_TTY === '1'
+      && String(options.workdir || '').startsWith(os.tmpdir())
+      && String(options.codexBin || '').startsWith(os.tmpdir());
+    if (!smokeAssumesTty && (process.stdin.isTTY !== true || process.stdout.isTTY !== true)) {
+      report.status = 'blocked_preflight';
+      report.blocked_reasons = ['pty_capable_terminal_required'];
+      const out = writeReport(options, 'blocked.json', report);
+      console.error(`codex-run ${report.status}: evidence=${out}`);
+      return 1;
+    }
+
+    const scriptBin = spawnSync('command', ['-v', 'script'], { shell: true, encoding: 'utf8' }).stdout.trim();
+    if (!scriptBin) {
+      report.status = 'blocked_preflight';
+      report.blocked_reasons = ['script_command_required_for_pty'];
+      const out = writeReport(options, 'blocked.json', report);
+      console.error(`codex-run ${report.status}: evidence=${out}`);
+      return 1;
+    }
+
+    const transcript = options.transcriptLog || path.join(options.evidenceDir, 'codex-run-transcript.log');
+    const promptArgv = [...options.codexArgs, options.promptText];
+    const quoted = [options.codexBin, ...promptArgv].map((part) => `'${String(part).replaceAll("'", "'\\''")}'`).join(' ');
+    const launched = spawnSync('script', ['-q', '-e', '-c', quoted, transcript], {
+      cwd: options.workdir,
+      stdio: 'inherit',
+    });
+    report.exit_status = launched.status;
+    report.ended_at = now();
+    report.launch.transcript_log_path = transcript;
+    if (launched.signal === 'SIGINT' || launched.status === 130) {
+      report.status = 'operator_interrupted';
+    } else if (launched.status !== 0) {
+      report.status = 'codex_exit_nonzero';
+    }
+    const out = writeReport(options, report.status === 'launched' ? 'launch.json' : 'blocked.json', report);
+    console.log(`codex-run ${report.status}: evidence=${out}`);
+    return launched.status || 0;
+  } catch (error) {
+    const fallbackOptions = options || { evidenceDir: path.join(os.tmpdir(), 'codex-run-error') };
+    const report = baseReport(fallbackOptions, 'wrapper_error', {}, startedAt);
+    report.wrapper_error = error.message;
+    try {
+      const out = writeReport(fallbackOptions, 'blocked.json', report);
+      console.error(`codex-run wrapper_error: evidence=${out}`);
+    } catch {
+      writeFallbackBlocked(fallbackOptions, report);
+    }
+    return 1;
+  }
+}
+
+process.exitCode = main();
+NODE

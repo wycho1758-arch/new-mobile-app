@@ -33,6 +33,7 @@
     "validate:eas-evidence": "node scripts/ingest-eas-evidence.mjs --self-test",
     "validate:project-environment": "node scripts/validate-project-environment.mjs --self-test && node scripts/validate-project-environment.mjs",
     "validate:evidence-hygiene": "node scripts/validate-evidence-hygiene.mjs --self-test && node scripts/validate-evidence-hygiene.mjs",
+    "validate:codex-run": "bash evals/skills/codex-run-smoke.sh",
     "test:hooks": "node scripts/test-hooks.mjs"
   }
 }

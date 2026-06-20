@@ -108,6 +108,13 @@ make_source_tree() {
     make_source_skill "${source_root}" "${slug}"
   done
 
+  cat > "${source_root}/codex-interactive-repo-work/scripts/codex-run" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'codex-run fixture\n'
+EOF
+  chmod +x "${source_root}/codex-interactive-repo-work/scripts/codex-run"
+
   mkdir -p "${repo_path}/mobile-app-dev-team/runtime-sources/organizations"
   cat > "${repo_path}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md" <<'EOF'
 # ORGANIZATIONS.md - Organizations and Reporting
@@ -142,6 +149,7 @@ run_sync() {
   OPENCLAW_WORKSPACE_WORKFLOW_PATH="${workspace_root}/WORKFLOW.md" \
   OPENCLAW_WORKSPACE_HEARTBEAT_PATH="${workspace_root}/HEARTBEAT.md" \
   OPENCLAW_WORKSPACE_TOOLS_PATH="${workspace_root}/TOOLS.md" \
+  OPENCLAW_CODEX_HOOKS_ROOT="${workspace_root}/codex-hooks" \
   OPENCLAW_ORGANIZATIONS_SOURCE_PATH="${repo_path}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md" \
   OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH="${workspace_root}/ORGANIZATIONS.md" \
   OPENCLAW_ROLE_SLUG="${role_slug}" \
@@ -175,6 +183,11 @@ assert_common_success_report() {
   assert_json_field "${report_path}" "r.workspace_operating_files.workspace_tools.cmp === true"
   assert_json_field "${report_path}" "r.workspace_operating_files.workspace_agents.positive_role_identifier_scan === true"
   assert_json_field "${report_path}" "r.workspace_operating_files.workspace_agents.negative_known_other_role_residue_scan === true"
+  assert_json_field "${report_path}" "r.codex_hooks.codex_run.status === 'applied'"
+  assert_json_field "${report_path}" "r.codex_hooks.codex_run.target_path.endsWith('/codex-hooks/codex-run')"
+  assert_json_field "${report_path}" "r.codex_hooks.codex_run.cmp === true"
+  assert_json_field "${report_path}" "/^[a-f0-9]{64}$/.test(r.codex_hooks.codex_run.sha256)"
+  assert_json_field "${report_path}" "r.categories.applied.some((entry) => entry.kind === 'codex_hook_wrapper' && entry.name === 'codex_run')"
   assert_json_field "${report_path}" "r.categories.applied.some((entry) => entry.kind === 'workspace_agents')"
   assert_json_field "${report_path}" "Array.isArray(r.categories.skipped)"
   assert_json_field "${report_path}" "Array.isArray(r.categories.missing)"
@@ -195,6 +208,8 @@ case_copy_sync_product_planning_role() {
   run_sync "${repo_path}" "${source_root}" "${target_root}" "${workspace_root}" "${report_path}" "product-planning"
 
   [[ -f "${target_root}/project-bootstrap/SKILL.md" ]]
+  [[ -x "${workspace_root}/codex-hooks/codex-run" ]]
+  assert_file_contains "${workspace_root}/codex-hooks/codex-run" "codex-run fixture"
   [[ -f "${workspace_root}/ORGANIZATIONS.md" ]]
   assert_file_contains "${workspace_root}/AGENTS.md" "Product Planning AGENTS.md Addendum"
   assert_file_contains "${workspace_root}/WORKFLOW.md" "Product Planning Workflow"
