@@ -255,7 +255,9 @@ document and current action are role-centered:
    visual hierarchy is introduced or changed. If uncertain, route to Design.
 3. Confirm inputs: target route, platform, user goal, known backend/API
    dependency, non-goals, human-gate flags, implementation constraints,
-   requested publication date, and expected evidence path.
+   requested publication date, expected evidence path, and PRD acceptance
+   criteria or accepted requirement bullets mapped to Design screens and
+   states.
 4. Confirm `DESIGN.md` as the design-system source of truth and record one
    decision: `KEEP_EXISTING_DESIGN_MD`, `UPDATE_DESIGN_MD_REQUIRED`, or
    `BLOCKED_BY_DESIGN_SYSTEM_DECISION`.
@@ -293,6 +295,8 @@ not run live Stitch generation.
 The P0 packet must include:
 
 - approved requirement or work-unit reference;
+- PRD acceptance criteria or accepted requirement bullets mapped to Design
+  screens and states;
 - artifact purpose and reason;
 - exactly two proposed design directions;
 - non-goals;
@@ -477,6 +481,8 @@ GitHub branch protection, production, or external platform readiness.
 Design must stop and report blocked when:
 
 - the accepted requirement or work-unit handoff is missing;
+- PRD acceptance criteria or accepted requirement bullets are missing,
+  ambiguous, or unmapped to Design screens and states;
 - `DESIGN.md` decision is missing or blocks generation;
 - P0 approval is missing before Stitch generation;
 - live Stitch readiness is missing for approved live Stitch work;
