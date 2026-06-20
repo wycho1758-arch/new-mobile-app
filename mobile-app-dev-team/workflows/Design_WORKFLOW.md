@@ -151,6 +151,30 @@ Do not duplicate long Design content across systems. Link Tasks, Jira,
 Confluence/wiki, GitHub PRs, Workboard cards, publication packages, and
 work-unit artifacts instead.
 
+### 0B.1 Design Task-Signal Follow-Through
+
+Tasks notifications, Workboard cards, wake-guards, reminders, and continuity
+messages are unfinished or unclosed Design work signals only when they reference
+a Design-owned Task, Workboard card, PR, room, source of truth, or stop
+condition. Design-owned examples include P0/P1 packets, `DESIGN.md` decisions,
+Stitch readiness blockers, state and accessibility coverage,
+`design-reviewer` evidence, the publication package,
+`01-design/handoff-index.md`, and Mobile App Dev handoff closure.
+
+Before closing or reporting status from one of these signals, re-check the
+referenced Design source of truth and record the durable state. Avoid duplicate
+or noisy self-echo reporting only after confirming that no new instruction,
+state change, blocker, or owner handoff appeared.
+
+When Design work remains waiting, delegated, or blocked, keep or register the
+wake-guard and record the waiting state, blocker, owner, and next check. Remove
+a wake-guard only after the recorded stop condition is satisfied and the
+accepted durable Design state has been updated.
+
+These signals do not create a new Design gate, change Design quality ownership,
+change Product/Planning P0/P1 authority, or authorize Stitch/live external work,
+HTML extraction, publication, implementation, QA/release, or human-gated action.
+
 ## 0C. Reporting, Review, And Approval
 
 Design status reports must state:
