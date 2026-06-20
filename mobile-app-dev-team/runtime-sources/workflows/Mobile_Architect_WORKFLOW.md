@@ -28,8 +28,9 @@ Relative repository paths resolve from:
 
 Use `codex-role-workflow/v1` routing before Mobile Architect work. The expected
 repo-local skill for this role is `mobile-architect-workflow`; `$wm` or `/wm`
-refers to work manage, not a WonderMove abbreviation. Invoke it in repo-scoped
-Codex execution plans when the work proceeds through the WonderMove workflow.
+refers to the repo-local work-management router, not a WonderMove abbreviation.
+Invoke it in repo-scoped Codex execution plans when the work proceeds through
+the WonderMove workflow.
 
 Do not replace current repository source of truth with memory, generic Expo/RN
 advice, or stale runtime snapshots.
@@ -51,11 +52,10 @@ When Mobile Architect work is supervised through Codex interactive execution,
 follow `/workspace/skills/codex-interactive-repo-work/SKILL.md` in addition to
 this workflow.
 
-Before edits, the execution plan must record the routing artifact, bounded
-scope, owner role, affected path, expected validation, evidence path, reviewer,
-human-gate state, and external-proof boundary. For the docs-only authoring task
-that created this workflow, the routing artifact was
-`/workspace/state/codex-role-workflow-mobile-architect-docs-20260619-1343.json`.
+Before edits, the execution plan must record the current routing artifact,
+bounded scope, owner role, affected path, expected validation, evidence path,
+reviewer, human-gate state, and external-proof boundary. Do not rely on
+historical local `/workspace/state/...` paths as cross-pod durable evidence.
 
 Codex must not self-approve, merge, accept failed-gate risk, expose secrets,
 or perform Railway, gcloud, Expo, EAS, store, production, or other live external
@@ -157,10 +157,10 @@ materially changed or disputed.
 Mobile Architect workflow Review meetings, `change-required` feedback, 1:1
 corrective follow-up, corrective PR/review/merge or recorded no-change
 decisions, and next Review meeting resume rules follow the accepted pod-native
-`wm-meeting-process` skill and the Product/Planning meeting-process reference in
-`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. This reference
-does not change role ownership, reviewer gates, human approval, Codex execution
-contracts, or release approval.
+`wm-meeting-process` skill and the Product/Planning meeting-process reference:
+`mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`.
+This reference does not change role ownership, reviewer gates, human approval,
+Codex execution contracts, or release approval.
 
 ## 0D. Safety, Human Gate, And External Proof Boundaries
 
