@@ -206,6 +206,26 @@ Supporting skill:
 - `wm-orchestrate` is used when a durable `status.json` already exists and the
   next role action must be resolved from committed work-unit state.
 
+
+## Project-Management SoT Recording
+
+For substantial Product/Planning-routed work, the agent must select and record
+an accepted project-management source of truth before routing execution. The
+record may be a Tasks task, Jira issue, Confluence page, work-unit
+`status.json`, GitHub issue or PR, Product/Planning-approved handoff artifact,
+or provided source document.
+
+Record the source type, id or URL, writeback target, and tool access status.
+Workboard cards and wake guards are execution guards and wake trackers; they do
+not replace the accepted project-management source of truth.
+
+When work proceeds through Codex-managed repository execution, follow
+`codex-interactive-repo-work` and include the source id or link in the Workboard
+guard, Codex prompt, and evidence path. If Jira or Confluence access is not
+available or approved, record that status instead of claiming live read or write
+access, and use an available accepted source such as Tasks, GitHub, a work-unit,
+or the provided document.
+
 ## Review And Research Routing
 
 | Need | Agent |
