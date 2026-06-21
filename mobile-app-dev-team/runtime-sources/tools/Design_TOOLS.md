@@ -5,6 +5,21 @@ checks.
 
 ## Room Delivery Checklist
 
+Before writing a final response for any message that includes a Room marker,
+run this routing preflight mentally or with the approved helper when available:
+
+1. Bind the visible report destination before composing the report. Use the
+   latest explicit `visible_report_destination` when one exists; otherwise use
+   the inbound instruction Room.
+2. If the required destination is a Room, send the user-visible text through the
+   approved Room transport path first. The final webchat output is then
+   `NO_REPLY` only.
+3. Never satisfy a required Room report with a webchat-final-only answer,
+   heartbeat-only answer, Task comment, Workboard comment, PR comment, local
+   note, or final `NO_REPLY`.
+4. If a specific 1:1 Room is named as the only destination, send only to that
+   Room unless Product/Planning gives a newer explicit destination.
+
 - Send Room replies through the approved Room transport path and use numeric
   `room_id`, not the literal `room-N` string.
 - Treat delivery as successful only when the command succeeds and the response

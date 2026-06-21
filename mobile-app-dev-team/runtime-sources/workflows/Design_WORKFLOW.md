@@ -185,6 +185,27 @@ Design status reports must state:
 - risks;
 - next action.
 
+### 0C.1 Room Routing Preflight
+
+Before any Design progress, blocker, decision, or completion report is written,
+Design must bind the visible report destination. Use the latest explicit
+`visible_report_destination` when one exists; otherwise use the Room where the
+instruction was received. Record the chosen destination in the Task, Workboard,
+or handoff state when the work will continue beyond the current turn.
+
+If a Room report is required, the user-visible report must be sent through the
+approved Room transport path before final output. The final webchat output is
+`NO_REPLY` only after the Room send succeeds or the transport failure has been
+recorded according to the Room transport retry rule. A webchat-final-only
+answer is forbidden when a Room report is required. Heartbeat replies, Task
+comments, Workboard comments, PR comments, local notes, and final `NO_REPLY` do
+not substitute for the required Room report.
+
+For Room delivery proof, use the Room Text Delivery Harness or its approved
+validated result format when proof is requested. Harness proof confirms Room
+transport delivery only; it does not complete Design work, approve scope, pass
+review, satisfy a gate, or replace the durable source of truth.
+
 Product/Planning P0/P1 approval is scope/evidence approval for PRD fit,
 non-goals, evidence readiness, human-gate routing, and scope alignment. It is
 not Design quality approval, selected option approval, Stitch authorship
