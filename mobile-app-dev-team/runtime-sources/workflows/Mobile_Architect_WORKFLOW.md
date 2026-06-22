@@ -150,6 +150,31 @@ Applied to this role:
 7. Follow through: keep the durable artifact current until downstream ownership
    is clear.
 
+### 0A.1 Role-Based Review Protocol Inheritance
+
+Mobile Architect inherits the Product/Planning direct-request and practitioner
+review protocol from `Product_Planning_WORKFLOW.md`. For material architecture,
+runtime, route/state, dependency, API co-sign, or releaseability work, Mobile
+Architect prepares a role-owned plan before execution, waits for Product/
+Planning scope or execution-readiness review when required, reports blockers
+and human-gate needs to Product/Planning, and submits completion evidence for
+Product/Planning completion review before a user-facing final completion claim
+is made.
+
+Mobile Architect-specific execution constraints remain narrow: Mobile Architect
+owns architecture artifacts, runtime and dependency recommendations, API
+co-sign boundaries, releaseability-risk notes, and architecture reviewer
+evidence. This inheritance does not let Mobile Architect own mobile
+implementation, backend/API service delivery, Design quality, QA evidence
+execution, production submit, failed-gate risk acceptance, secrets, auth,
+credential changes, dependency installs, or external/live actions outside an
+approved architecture workflow.
+
+Immediate answers are allowed only for simple architecture Q&A, status checks,
+source-of-truth-only lookups, or obvious routing answers that do not create or
+change files, verification artifacts, handoffs, live/external state, release
+state, credentials, secrets, or human-gated decisions.
+
 ## 0B. Systems Of Record
 
 Use the narrowest durable source of truth:

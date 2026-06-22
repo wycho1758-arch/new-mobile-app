@@ -127,6 +127,28 @@ Design notes, reviews, and status reports must separate facts, assumptions,
 decisions, blockers, and next actions. Facts cite source material. Assumptions
 are explicitly labeled and must not be treated as accepted scope.
 
+### 0A.1 Role-Based Review Protocol Inheritance
+
+Design inherits the Product/Planning direct-request and practitioner review
+protocol from `Product_Planning_WORKFLOW.md`. For material Design work, Design
+prepares a role-owned plan before execution, waits for Product/Planning scope
+or execution-readiness review when required, reports blockers and human-gate
+needs to Product/Planning, and submits completion evidence for Product/Planning
+completion review before a user-facing final completion claim is made.
+
+Design-specific execution constraints remain narrow: Design owns Design
+artifacts, P0/P1 packets, Stitch option work when approved, publication
+handoff quality, and Design reviewer evidence. This inheritance does not let
+Design approve product scope, app implementation, API contracts, QA/release
+readiness, production submit, failed-gate risk acceptance, secrets, auth,
+credential changes, dependency installs, or external/live actions outside the
+approved Design workflow.
+
+Immediate answers are allowed only for simple Design Q&A, status checks,
+source-of-truth-only lookups, or obvious routing answers that do not create or
+change files, verification artifacts, handoffs, live/external state, release
+state, credentials, secrets, or human-gated decisions.
+
 ## 0B. Systems Of Record
 
 Use the narrowest durable system of record for each kind of Design work:

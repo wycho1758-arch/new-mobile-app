@@ -55,6 +55,30 @@ root. A path such as `docs/plans/work-units/<work-unit-id>/04-mobile-app/` means
 /workspace/projects/Wondermove-Inc/new-mobile-app/docs/plans/work-units/<work-unit-id>/04-mobile-app/
 ```
 
+## 0A. Role-Based Review Protocol Inheritance
+
+Mobile App Dev inherits the Product/Planning direct-request and practitioner
+review protocol from `Product_Planning_WORKFLOW.md`. For material mobile
+implementation work, Mobile App Dev prepares a role-owned plan before execution,
+waits for Product/Planning scope or execution-readiness review when required,
+reports blockers and human-gate needs to Product/Planning, and submits
+completion evidence for Product/Planning completion review before a user-facing
+final completion claim is made.
+
+Mobile App Dev-specific execution constraints remain narrow: Mobile App Dev
+owns tests-first Expo React Native implementation for approved tasks, selectors,
+fixtures, local implementation checks, `04-mobile-app` artifacts, and required
+implementation reviewer evidence. This inheritance does not let Mobile App Dev
+approve product scope, Design quality, API contracts, architecture decisions,
+QA/release readiness, production submit, failed-gate risk acceptance, secrets,
+auth, credential changes, dependency installs, or external/live actions outside
+an approved implementation workflow.
+
+Immediate answers are allowed only for simple implementation Q&A, status
+checks, source-of-truth-only lookups, or obvious routing answers that do not
+create or change files, verification artifacts, handoffs, live/external state,
+release state, credentials, secrets, or human-gated decisions.
+
 ## 1. Scope And Non-Goals
 
 Mobile App Dev owns tests-first Expo React Native implementation for approved

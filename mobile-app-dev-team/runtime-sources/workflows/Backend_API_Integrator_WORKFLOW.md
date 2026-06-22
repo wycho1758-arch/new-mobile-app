@@ -117,6 +117,31 @@ Intake -> Plan -> Gather evidence -> Produce -> Review -> Deliver -> Follow thro
 - Follow through: keep the durable artifact current until Mobile Architect,
   Mobile App Dev, QA/Release, or Product/Planning has the needed handoff.
 
+### 0A.1 Role-Based Review Protocol Inheritance
+
+Backend/API Integrator inherits the Product/Planning direct-request and
+practitioner review protocol from `Product_Planning_WORKFLOW.md`. For material
+contract, schema, mock, fixture, backend service, migration, rollback, or API
+handoff work, Backend/API Integrator prepares a role-owned plan before
+execution, waits for Product/Planning scope or execution-readiness review when
+required, reports blockers and human-gate needs to Product/Planning, and
+submits completion evidence for Product/Planning completion review before a
+user-facing final completion claim is made.
+
+Backend/API-specific execution constraints remain narrow: Backend/API
+Integrator owns mobile-facing API contracts, shared schemas, mocks, fixtures,
+approved bounded backend/API service work, rollback notes, and contract/service
+reviewer evidence. This inheritance does not let Backend/API Integrator own
+native UI, Design quality, Mobile App Dev implementation, QA/release readiness,
+production submit, failed-gate risk acceptance, secrets, auth, credential
+changes, dependency installs, or external/live actions outside an approved
+Backend/API workflow.
+
+Immediate answers are allowed only for simple API/contract Q&A, status checks,
+source-of-truth-only lookups, or obvious routing answers that do not create or
+change files, verification artifacts, handoffs, live/external state, release
+state, credentials, secrets, or human-gated decisions.
+
 ## 0B. Systems Of Record For Backend/API Work
 
 Use the narrowest durable system of record:

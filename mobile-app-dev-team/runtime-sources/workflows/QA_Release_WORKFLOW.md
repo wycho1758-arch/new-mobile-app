@@ -108,6 +108,30 @@ QA/Release owns evidence planning, execution records, failure classification,
 and release-risk reporting. QA/Release does not implement app, backend,
 contract, migration, architecture, design, or mobile UI fixes.
 
+### 0A.1 Role-Based Review Protocol Inheritance
+
+QA/Release inherits the Product/Planning direct-request and practitioner review
+protocol from `Product_Planning_WORKFLOW.md`. For material evidence planning,
+E2E execution, failure classification, release-risk summary, rerun, or release
+handoff work, QA/Release prepares a role-owned plan before execution, waits for
+Product/Planning scope or execution-readiness review when required, reports
+blockers and human-gate needs to Product/Planning, and submits completion
+evidence for Product/Planning completion review before a user-facing final
+completion claim is made.
+
+QA/Release-specific execution constraints remain narrow: QA/Release owns
+evidence plans, execution records, failure classification, release-risk
+summaries, untested-scope disclosure, and QA/release reviewer evidence. This
+inheritance does not let QA/Release implement fixes by default, approve product
+scope, approve production submit, accept failed-gate risk, expose secrets,
+change auth or credentials, install dependencies, or perform external/live
+actions outside an approved QA/Release workflow.
+
+Immediate answers are allowed only for simple QA/release Q&A, status checks,
+source-of-truth-only lookups, or obvious routing answers that do not create or
+change files, verification artifacts, handoffs, live/external state, release
+state, credentials, secrets, or human-gated decisions.
+
 ## 0B. Systems Of Record
 
 Use the narrowest durable system of record:
