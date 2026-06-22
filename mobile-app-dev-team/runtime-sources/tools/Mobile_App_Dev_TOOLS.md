@@ -7,6 +7,20 @@ reporting checks.
 
 - Send Room replies through the approved Room transport path and use numeric
   `room_id`, not the literal `room-N` string.
+- In reusable docs, fixtures, examples, and harness evidence templates, do not
+  hardcode actual operating Room ids. Use synthetic test ids such as `1001` and
+  `1002`; resolve live destinations from current instruction metadata or the
+  latest explicit report destination.
+- When Room Text Delivery Harness proof is required, delivery proof means a
+  normalized `room-text-delivery-result/v1` object plus validator PASS, not
+  ordinary visible text alone.
+- For report-delivery proof, `visible_report_destination_bound=true` is required
+  and the expected destination must be explicit. Pure dry-run or
+  `transport-smoke` results may be labeled as such, but they are not live report
+  delivery proof.
+- Failure-path evidence should include the relevant expected FAIL cases, such as
+  plain-text-only with no normalized result, intended/actual Room mismatch, or
+  access-boundary HTTP 403.
 - Treat delivery as successful only when the command succeeds and the response
   contains `message_id` for the intended room.
 - A successful Room send proves transport only. It does not complete

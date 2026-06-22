@@ -15,6 +15,8 @@ CODEX_HOOKS_ROOT="${OPENCLAW_CODEX_HOOKS_ROOT:-/workspace/codex-hooks}"
 CODEX_RUN_TARGET_PATH="${OPENCLAW_CODEX_RUN_TARGET_PATH:-${CODEX_HOOKS_ROOT%/}/codex-run}"
 ORGANIZATIONS_SOURCE_PATH="${OPENCLAW_ORGANIZATIONS_SOURCE_PATH:-${REPO_PATH%/}/mobile-app-dev-team/runtime-sources/organizations/ORGANIZATIONS.md}"
 WORKSPACE_ORGANIZATIONS_PATH="${OPENCLAW_WORKSPACE_ORGANIZATIONS_PATH:-/workspace/ORGANIZATIONS.md}"
+ROOM_TEXT_HARNESS_SOURCE_PATH="${OPENCLAW_ROOM_TEXT_HARNESS_SOURCE_PATH:-${REPO_PATH%/}/mobile-app-dev-team/runtime-sources/harnesses/room-text-delivery}"
+ROOM_TEXT_HARNESS_TARGET_PATH="${OPENCLAW_ROOM_TEXT_HARNESS_TARGET_PATH:-/workspace/harness/room-text-delivery}"
 ROLE_SLUG="${OPENCLAW_ROLE_SLUG:-${PROJECT_BOOTSTRAP_ROLE_SLUG:-${WM_ROLE:-}}}"
 EXPECTED_ROLE_SLUG="${OPENCLAW_EXPECTED_ROLE_SLUG:-${EXPECTED_WM_ROLE:-${WM_EXPECTED_ROLE:-}}}"
 REPORT_PATH="${OPENCLAW_POD_SKILLS_SYNC_REPORT_PATH:-${REPORT_PATH:-/workspace/state/openclaw-pod-skills-sync-report.json}}"
@@ -40,6 +42,8 @@ node - \
   "${CODEX_RUN_TARGET_PATH}" \
   "${ORGANIZATIONS_SOURCE_PATH}" \
   "${WORKSPACE_ORGANIZATIONS_PATH}" \
+  "${ROOM_TEXT_HARNESS_SOURCE_PATH}" \
+  "${ROOM_TEXT_HARNESS_TARGET_PATH}" \
   "${ROLE_SLUG}" \
   "${EXPECTED_ROLE_SLUG}" \
   "${REPORT_PATH}" \
@@ -65,6 +69,8 @@ const [
   codexRunTargetPath,
   organizationsSourcePath,
   workspaceOrganizationsPath,
+  roomTextHarnessSourcePath,
+  roomTextHarnessTargetPath,
   roleSlugRaw,
   expectedRoleSlugRaw,
   reportPath,
@@ -165,6 +171,8 @@ const report = {
     codex_run_target: codexRunTargetPath,
     organizations_source: organizationsSourcePath,
     workspace_organizations: workspaceOrganizationsPath,
+    room_text_delivery_harness_source: roomTextHarnessSourcePath,
+    room_text_delivery_harness_target: roomTextHarnessTargetPath,
   },
   categories: {
     applied: [],
@@ -184,6 +192,13 @@ const report = {
       status: 'not_checked',
       source_path: codexHookSourcePath,
       target_path: codexRunTargetPath,
+    },
+  },
+  harnesses: {
+    room_text_delivery: {
+      status: 'not_checked',
+      source_path: roomTextHarnessSourcePath,
+      target_path: roomTextHarnessTargetPath,
     },
   },
 };
@@ -241,6 +256,63 @@ function firstLine(value) {
 function cmpFiles(left, right) {
   if (!isReadableFile(left) || !isReadableFile(right)) return false;
   return fs.readFileSync(left).equals(fs.readFileSync(right));
+}
+
+function listFilesRecursive(rootDir) {
+  const files = [];
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.isFile()) files.push(full);
+    }
+  }
+  walk(rootDir);
+  return files;
+}
+
+function hashDirectory(rootDir) {
+  const hash = crypto.createHash('sha256');
+  for (const file of listFilesRecursive(rootDir)) {
+    const rel = path.relative(rootDir, file).replace(/\\/g, '/');
+    hash.update(rel);
+    hash.update('\0');
+    hash.update(fs.readFileSync(file));
+    hash.update('\0');
+  }
+  return hash.digest('hex');
+}
+
+function directoryCmp(sourceDir, targetDir, ignoreNames = new Set()) {
+  if (!isReadableDir(sourceDir) || !isReadableDir(targetDir)) return false;
+  const sourceFiles = listFilesRecursive(sourceDir).map((file) => path.relative(sourceDir, file).replace(/\\/g, '/')).filter((rel) => !ignoreNames.has(rel)).sort();
+  const targetFiles = listFilesRecursive(targetDir).map((file) => path.relative(targetDir, file).replace(/\\/g, '/')).filter((rel) => !ignoreNames.has(rel)).sort();
+  if (JSON.stringify(sourceFiles) !== JSON.stringify(targetFiles)) return false;
+  return sourceFiles.every((rel) => cmpFiles(path.join(sourceDir, rel), path.join(targetDir, rel)));
+}
+
+function writeHarnessManifest(sourceDir, targetDir) {
+  const files = listFilesRecursive(sourceDir).map((file) => {
+    const rel = path.relative(sourceDir, file).replace(/\\/g, '/');
+    return {
+      path: rel,
+      sha256: sha256(file),
+      bytes: fs.statSync(file).size,
+    };
+  });
+  const manifest = {
+    schema: 'room-text-delivery-harness-manifest/v1',
+    generator: 'openclaw-pod-skills-sync',
+    generated_at: new Date().toISOString(),
+    source_path: sourceDir,
+    target_path: targetDir,
+    do_not_edit: true,
+    files,
+    aggregate_sha256: hashDirectory(sourceDir),
+  };
+  fs.writeFileSync(path.join(targetDir, 'MANIFEST.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.writeFileSync(path.join(targetDir, 'DO_NOT_EDIT.md'), '# Do Not Edit\n\nThis directory is generated from repo source of truth:\n\n```text\nmobile-app-dev-team/runtime-sources/harnesses/room-text-delivery/\n```\n\nRun `openclaw-pod-skills-sync` to refresh it. Manual edits here are drift.\n');
+  return manifest;
 }
 
 function scanRoleFile(value, resolvedRole) {
@@ -385,6 +457,19 @@ if (resolvedRole) {
   }
 }
 
+if (exists(roomTextHarnessSourcePath) && !isReadableDir(roomTextHarnessSourcePath)) {
+  add('missing', {
+    kind: 'room_text_delivery_harness',
+    status: 'unreadable',
+    source_path: roomTextHarnessSourcePath,
+    target_path: roomTextHarnessTargetPath,
+  });
+  block('unreadable room text delivery harness source', {
+    kind: 'room_text_delivery_harness',
+    source_path: roomTextHarnessSourcePath,
+  });
+}
+
 if (!exists(codexHookSourcePath)) {
   add('missing', {
     kind: 'codex_hook_wrapper',
@@ -458,6 +543,31 @@ try {
     cmp: cmpFiles(codexHookSourcePath, codexRunTargetPath),
   };
   add('applied', { kind: 'codex_hook_wrapper', name: 'codex_run', ...report.codex_hooks.codex_run });
+
+  if (isReadableDir(roomTextHarnessSourcePath)) {
+    fs.rmSync(roomTextHarnessTargetPath, { recursive: true, force: true });
+    fs.mkdirSync(path.dirname(roomTextHarnessTargetPath), { recursive: true });
+    fs.cpSync(roomTextHarnessSourcePath, roomTextHarnessTargetPath, { recursive: true, dereference: false });
+    const manifest = writeHarnessManifest(roomTextHarnessSourcePath, roomTextHarnessTargetPath);
+    report.harnesses.room_text_delivery = {
+      status: 'applied',
+      source_path: roomTextHarnessSourcePath,
+      target_path: roomTextHarnessTargetPath,
+      sha256: manifest.aggregate_sha256,
+      cmp: directoryCmp(roomTextHarnessSourcePath, roomTextHarnessTargetPath, new Set(['MANIFEST.json', 'DO_NOT_EDIT.md'])),
+      manifest_path: path.join(roomTextHarnessTargetPath, 'MANIFEST.json'),
+      do_not_edit_path: path.join(roomTextHarnessTargetPath, 'DO_NOT_EDIT.md'),
+      files: manifest.files.length,
+    };
+    add('applied', { kind: 'room_text_delivery_harness', ...report.harnesses.room_text_delivery });
+  } else if (!exists(roomTextHarnessSourcePath)) {
+    report.harnesses.room_text_delivery = {
+      status: 'missing',
+      source_path: roomTextHarnessSourcePath,
+      target_path: roomTextHarnessTargetPath,
+    };
+    add('skipped', { kind: 'room_text_delivery_harness', status: 'missing', source_path: roomTextHarnessSourcePath });
+  }
 
   if (isReadableFile(organizationsSourcePath)) {
     const stagedPath = path.join(stagedWorkspace, 'ORGANIZATIONS.md');

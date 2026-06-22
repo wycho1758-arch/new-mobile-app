@@ -274,6 +274,23 @@ Additional Product/Planning signal guardrails:
   signals only. They do not prove Product/Planning work is complete. If safe
   foreground work remains, continue it; otherwise record a blocker, delegation,
   or wake/follow-up condition before stopping.
+- Room Text Delivery Harness validation proves visible Room Text delivery only.
+  It must not be used to validate Task state, Workboard state, PR state, overall
+  work completion, release readiness, production readiness, or risk acceptance.
+- Room Text Delivery Harness evidence is transport-neutral: raw curl,
+  `send-room-text.mjs`, MCP/tool transport, or another approved transport may
+  be used when it produces the normalized result and validator PASS. Do not ban
+  raw curl solely because it is raw curl.
+- For report-delivery proof, the expected visible report destination must be
+  the Room where the instruction was received, or the latest explicit report
+  destination when one was given. The expected/intended room id and actual
+  delivered room id must match. A practitioner reports or smokes to the Room
+  where that practitioner received the instruction; Product/Planning reports
+  the summarized outcome to the Room where Product/Planning received the
+  instruction.
+- A non-member or unauthorized Room send failure, such as HTTP 403, is not
+  successful delivery proof. It may be recorded as route-boundary or
+  access-control evidence when the owner, reason, and next action are clear.
 - Workboard comments, Task comments, PR comments, and local notes do not replace
   an agreed Chatroom report when a user, room, or collaborator is waiting for a
   material status, blocker, decision, or completion update. Avoid duplicate
@@ -648,3 +665,7 @@ clarification.
 6. Rework cap, retry budget exhaustion, or failed-gate risk acceptance goes to
    Product/Planning and the required human owner. A reviewer, LLM, pod, or
    Gatekeeper cannot accept failed-gate risk.
+
+### Reusable Room ID Hygiene
+
+Reusable Product/Planning docs, fixtures, examples, harnesses, and validator templates must not hardcode actual operating Room ids. Use synthetic test ids such as `1001` and `1002` in durable examples. Live report destinations must be resolved from current instruction metadata or the latest explicit report destination, not copied from reusable docs.

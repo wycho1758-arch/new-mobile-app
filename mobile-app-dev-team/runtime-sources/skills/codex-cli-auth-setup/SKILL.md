@@ -66,6 +66,59 @@ secrets. The policy setup is not complete until `/workspace/projects/Wondermove-
 is present in the managed-paths registry and repository work is routed through
 the configured Codex hook wrapper.
 
+## Codex Stop-Hook Completion DM Setup
+
+Use this section when the user explicitly asks to enable or verify Codex Stop
+hook direct-message delivery for a role pod. This is a local pod setting, not a
+tracked secret or shared runtime default.
+
+1. Confirm the repo hook is registered without printing secrets:
+
+```bash
+python3 -c "import json; obj=json.load(open('.codex/hooks.json')); print(json.dumps(obj.get('hooks', {}).get('Stop'), indent=2))"
+```
+
+2. Create the local untracked env file only after explicit instruction. Keep it
+mode `0600`, keep it git-ignored, and never write `GATEWAY_TOKEN`, OAuth
+tokens, refresh tokens, API keys, passwords, or private config values into it.
+The hook reads the gateway token from the inherited hook environment at runtime.
+
+```sh
+# .codex/hooks/stop-completion-dm.env
+export WM_STOP_COMPLETION_DM_ENABLE=1
+export WM_STOP_COMPLETION_DM_ROLE=<spring|sohee|jihoon|seulgi|hyunwoo|sarah>
+export WM_STOP_COMPLETION_DM_ROOM_ID=<numeric-direct-room-id>
+export WM_STOP_COMPLETION_DM_TASK_ID=<task-or-work-unit-id>
+export WM_STOP_COMPLETION_DM_RUN_ID=<run-or-session-id>
+export WM_STOP_COMPLETION_DM_ENDPOINT=http://admin-api:3000/internal/messages
+export WM_STOP_COMPLETION_DM_FROM_AGENT_ID=<agent-id>
+export WM_STOP_COMPLETION_DM_RUNBOOK_JSON='["Confirm the Room message_id for delivery.","Record evidence before closing.","Do not store tokens or secret values in this file."]'
+```
+
+3. Verify with dry-run first, then perform one live Stop-hook check only when
+message delivery is explicitly requested. Do not print the inherited gateway
+token or dump the full environment.
+
+```bash
+WM_STOP_COMPLETION_DM_DRY_RUN=1 \
+node .codex/hooks/mobile-stop-call-check.mjs <<'JSON'
+{"hook_event_name":"Stop","last_assistant_message":"Dry-run completion DM check."}
+JSON
+
+node .codex/hooks/mobile-stop-call-check.mjs <<'JSON'
+{"hook_event_name":"Stop","last_assistant_message":"Live Stop-hook completion DM check."}
+JSON
+```
+
+Expected live result: the hook returns `continue: true` and the configured Room
+receives a message from the role pod. Record the returned Room `message_id` or
+visible Room delivery evidence in the Task/Workboard/report.
+
+If the live check fails, report the blocker without exposing secrets. Common
+blockers are missing numeric room id, missing inherited `GATEWAY_TOKEN`, missing
+agent id, unreachable `admin-api`, or the local env file not being present in
+the hook working directory.
+
 ## Workflow
 
 1. Check prerequisites and any existing install:

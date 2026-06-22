@@ -724,6 +724,23 @@ function exactJsonEqual(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+const defaultCompletionDmEnvFile = `/tmp/wm-stop-completion-dm-env-missing-${process.pid}.env`;
+fs.rmSync(defaultCompletionDmEnvFile, { force: true });
+
+function hookTestEnv(testCase, completionDmEnvFile) {
+  const baseEnv = Object.fromEntries(
+    ['PATH', 'HOME', 'USER', 'TMPDIR', 'TEMP', 'TMP', 'SystemRoot', 'ComSpec']
+      .map((name) => [name, process.env[name]])
+      .filter(([, value]) => typeof value === 'string'),
+  );
+
+  return {
+    ...baseEnv,
+    WM_STOP_COMPLETION_DM_CONFIG_PATH: completionDmEnvFile ?? defaultCompletionDmEnvFile,
+    ...(testCase.env ?? {}),
+  };
+}
+
 for (const testCase of cases) {
   const testCompletionDmEnvFile = `/tmp/wm-stop-completion-dm-env-${process.pid}.env`;
   if (testCase.setupCompletionDmEnvFile) fs.writeFileSync(testCompletionDmEnvFile, testCase.setupCompletionDmEnvFile);
@@ -731,11 +748,7 @@ for (const testCase of cases) {
   const result = spawnSync('node', [testCase.script], {
     input,
     encoding: 'utf8',
-    env: {
-      ...process.env,
-      ...(testCase.setupCompletionDmEnvFile ? { WM_STOP_COMPLETION_DM_CONFIG_PATH: testCompletionDmEnvFile } : {}),
-      ...(testCase.env ?? {}),
-    },
+    env: hookTestEnv(testCase, testCase.setupCompletionDmEnvFile ? testCompletionDmEnvFile : undefined),
   });
   if (testCase.setupCompletionDmEnvFile) fs.rmSync(testCompletionDmEnvFile, { force: true });
   if (result.status !== testCase.exitCode) {

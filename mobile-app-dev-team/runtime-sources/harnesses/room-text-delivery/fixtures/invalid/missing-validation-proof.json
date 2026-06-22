@@ -1,0 +1,15 @@
+{
+  "schema": "room-text-delivery-result/v1",
+  "request_id": "fixture-request",
+  "intended_room_id": 1001,
+  "actual_room_id": 1001,
+  "message_id": "fixture-message-id",
+  "content_nonempty": true,
+  "transport": "raw-curl",
+  "timestamp": "2026-06-21T09:00:00.000Z",
+  "http_status": 200,
+  "transport_ok": true,
+  "raw_response_parse_ok": true,
+  "visible_report_destination_bound": true,
+  "validation_proof_missing": true
+}

@@ -13,6 +13,67 @@ Common intake, planning, reporting, review, and approval mechanics are defined
 in `mobile-app-dev-team/runtime-sources/workflows/Product_Planning_WORKFLOW.md`. This workflow
 only restates the Mobile Architect-specific application of those mechanics.
 
+
+## 0. Standard Workspace Work Baseline
+
+This concise baseline restores the role-neutral workspace operating rules that
+Mobile Architect work inherits. The role-specific sections below remain the
+source for architecture mechanics, artifact contracts, and ownership boundaries.
+
+### Core Principles
+
+- Clarify the goal, owner, scope, expected output, and approval boundary.
+- Verify important claims against source material before acting or reporting.
+- Separate facts, assumptions, decisions, blockers, and next actions.
+- Prefer concise, evidence-backed updates over unsourced narratives.
+- Escalate risk, ambiguity, blocked work, or policy conflict early.
+
+### Standard Work Lifecycle
+
+Use the smallest safe lifecycle that fits the task:
+
+```text
+Intake -> Plan -> Gather evidence -> Produce -> Review -> Deliver -> Follow through
+```
+
+### Work Systems
+
+- Use the appropriate system of record: Tasks/Jira for trackable work,
+  Confluence/wiki/docs for procedures and decisions, GitHub/repository for code
+  and repo-owned docs, and workspace files for local operating context.
+- Link related artifacts such as tickets, pages, commits, PRs, logs, reports,
+  and decisions when useful.
+- Keep volatile status out of durable rules; keep durable rules short and
+  reusable.
+
+### Reviews And Approvals
+
+- Separate design approval, execution approval, merge/publish approval,
+  release/production approval, and human-gate or risk acceptance.
+- Do not treat a document, Room message, Task comment, or local validation as
+  release approval. Tests, checks, live probes, or explicit owner approval may
+  still be required.
+
+### Reporting
+
+- Status reports should state done, in progress, blocked, risks, and next
+  action.
+- Review reports should state verdict, evidence, blockers, required amendments,
+  and approval scope.
+- Use the agreed report destination. Do not invent a new location when a Room,
+  Task, PR, or artifact destination is already assigned.
+- Wake-guards that ask to check, update, or report must lead to a user-visible
+  status update while hiding internal reminder text.
+
+### Safety And Boundaries
+
+- Never expose secrets in prompts, logs, transcripts, reports, files, or normal
+  memory.
+- Do not perform destructive, production, financial, legal, security-sensitive,
+  or externally visible actions without the required approval.
+- Prefer reversible changes and clear audit trails.
+- If instructions conflict, pause, state the conflict, and escalate.
+
 ## 0. Codex Skill And Path Resolution
 
 Unless explicitly marked as pod-native, named workflow skills in this document
@@ -179,6 +240,50 @@ live OpenClaw pod readiness. For docs-only workflow PRs, project-bootstrap
 external platform readiness may remain blocked by Railway/gcloud/Expo auth and
 is not relevant unless the approved scope explicitly includes live platform
 work.
+
+## 0E. Room Text Delivery Harness And Role-Pod Sync
+
+Room Text Delivery Harness proof is for visible Room text delivery only. It does
+not validate architecture completion, Task/Workboard/PR state, reviewer approval,
+semantic sufficiency, release readiness, external platform readiness, or
+human-gate acceptance.
+
+Canonical source lives under:
+
+```text
+mobile-app-dev-team/runtime-sources/harnesses/room-text-delivery/
+```
+
+The generated operational copy lives under:
+
+```text
+/workspace/harness/room-text-delivery/
+```
+
+Do not edit the generated runtime copy directly. When harness deployment is in
+scope, materialize it through `openclaw-pod-skills-sync` from the repository
+source and record sync evidence: sync report path, overall status, blockers,
+`room_text_delivery.status`, `cmp=true`, `MANIFEST.json`, `DO_NOT_EDIT.md`, file
+count, and checksum or manifest evidence.
+
+For live report delivery, resolve the destination from current instruction
+metadata or the latest explicit report destination. Do not copy actual operating
+Room ids from reusable docs, fixtures, examples, or templates; durable examples
+should use synthetic ids such as `1001` and `1002`.
+
+For non-dry-run `report-delivery`, expected destination and request Room id must
+remain separate. The send wrapper must receive `--expected-room-id` or
+`--visible-report-destination`, and the normalized result should record the
+expected destination as `intended_room_id` and the transport response Room as
+`actual_room_id`. Success requires a normalized `room-text-delivery-result/v1`
+plus validator PASS.
+
+Failure proof should preserve expected failures instead of reclassifying them as
+success. Missing expected destination, intended/actual Room mismatch, plain text
+without a normalized result, non-2xx transport responses, and 403 unauthorized
+Room sends should fail delivery proof. A 403 may be valid route or access-boundary
+evidence, but it is not successful delivery proof and is not implementation
+success by itself.
 
 ## 1. Role Scope And Entry Criteria
 
@@ -384,6 +489,18 @@ node scripts/validate-runtime-sources.mjs
 Additional validators are applicable only when discovered and relevant to the
 changed scope, such as broader runtime, team-doc, work-unit, or local-harness
 validators for runtime-affecting changes.
+
+When Mobile Architect docs change Room Text Delivery Harness instructions or
+proof examples, add the relevant harness validation from the repository root
+when available:
+
+```text
+node mobile-app-dev-team/runtime-sources/harnesses/room-text-delivery/validators/validate-room-text-result.mjs --self-test
+```
+
+For explicit operational proof files, validate the file path directly with the
+same validator. Do not mutate the generated `/workspace/harness` runtime copy to
+make documentation validation pass.
 
 Handoff must include changed paths, validation commands and exit status,
 reviewer evidence, residual risks, and external proof limits. For this
