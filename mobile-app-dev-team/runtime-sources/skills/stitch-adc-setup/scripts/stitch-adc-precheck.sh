@@ -9,6 +9,7 @@ HUMAN_PRESENT="${STITCH_ADC_HUMAN_PRESENT:-false}"
 GOOGLE_CLOUD_PROJECT_ID="${STITCH_ADC_GOOGLE_CLOUD_PROJECT:-}"
 ENABLE_STITCH_API="${STITCH_ADC_ENABLE_STITCH_API:-false}"
 STITCH_API_SERVICE_NAME="stitch.googleapis.com"
+REPO_ROOT="${STITCH_ADC_REPO_ROOT:-/workspace/projects/Wondermove-Inc/new-mobile-app}"
 
 redact() {
   sed -E 's/(token|key|secret|password|credential)([=: ][^ ]+)/\1=***REDACTED***/Ig'
@@ -48,6 +49,42 @@ gcloud_adc_status_check() {
   else
     printf '%s\n' "missing"
   fi
+}
+
+safe_project_id_or_empty() {
+  local candidate="$1"
+  candidate="$(printf '%s' "${candidate}" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+  if printf '%s\n' "${candidate}" | grep -Eq '^[a-z][a-z0-9-]{4,28}[a-z0-9]$'; then
+    printf '%s\n' "${candidate}"
+  fi
+}
+
+gcloud_adc_quota_project_check() {
+  local output safe_output
+  if [[ "${gcloud_adc_status}" != "available" ]]; then
+    gcloud_adc_quota_project_status="skipped"
+    gcloud_adc_quota_project_id=""
+    gcloud_adc_quota_project_safe="false"
+    return
+  fi
+
+  output="$(gcloud auth application-default get-quota-project --format='value(quota_project_id)' 2> >(redact >&2) || true)"
+  safe_output="$(safe_project_id_or_empty "${output}")"
+  if [[ -n "${safe_output}" ]]; then
+    gcloud_adc_quota_project_status="configured"
+    gcloud_adc_quota_project_id="${safe_output}"
+    gcloud_adc_quota_project_safe="true"
+  else
+    gcloud_adc_quota_project_status="missing"
+    gcloud_adc_quota_project_id=""
+    gcloud_adc_quota_project_safe="false"
+  fi
+}
+
+gcloud_project_id_check() {
+  local output
+  output="$(gcloud config get-value project 2> >(redact >&2) || true)"
+  safe_project_id_or_empty "${output}"
 }
 
 gcloud_project_status_check() {
@@ -133,11 +170,11 @@ configure_gcloud_auth() {
     gcloud_login_flow="needs_human_present"
     return
   fi
-  if gcloud auth login >/dev/null 2> >(redact >&2); then
-    gcloud_login_flow="gcloud_auth_login_started"
+  if gcloud auth login --no-launch-browser >/dev/null 2> >(redact >&2); then
+    gcloud_login_flow="gcloud_auth_no_launch_browser_started"
     gcloud_auth_status="$(gcloud_auth_status_check)"
   else
-    gcloud_login_flow="gcloud_auth_login_failed"
+    gcloud_login_flow="gcloud_auth_no_launch_browser_failed"
   fi
 }
 
@@ -151,16 +188,17 @@ configure_gcloud_adc() {
     gcloud_adc_login_flow="needs_human_present"
     return
   fi
-  if gcloud auth application-default login >/dev/null 2> >(redact >&2); then
-    gcloud_adc_login_flow="gcloud_adc_login_started"
+  if gcloud auth application-default login --no-launch-browser >/dev/null 2> >(redact >&2); then
+    gcloud_adc_login_flow="gcloud_adc_no_launch_browser_started"
     gcloud_adc_status="$(gcloud_adc_status_check)"
   else
-    gcloud_adc_login_flow="gcloud_adc_login_failed"
+    gcloud_adc_login_flow="gcloud_adc_no_launch_browser_failed"
   fi
 }
 
 configure_gcloud_project() {
   gcloud_project_status="$(gcloud_project_status_check)"
+  gcloud_project_id="$(gcloud_project_id_check)"
   if [[ "${gcloud_project_status}" == "configured" ]]; then
     gcloud_project_set_flow="not_needed"
     return
@@ -172,6 +210,7 @@ configure_gcloud_project() {
   if gcloud config set project "${GOOGLE_CLOUD_PROJECT_ID}" >/dev/null 2> >(redact >&2); then
     gcloud_project_set_flow="attempted"
     gcloud_project_status="$(gcloud_project_status_check)"
+    gcloud_project_id="$(gcloud_project_id_check)"
   else
     gcloud_project_set_flow="failed"
   fi
@@ -221,7 +260,11 @@ gcloud_auth_status="skipped"
 gcloud_login_flow="skipped"
 gcloud_adc_status="skipped"
 gcloud_adc_login_flow="skipped"
+gcloud_adc_quota_project_status="skipped"
+gcloud_adc_quota_project_id=""
+gcloud_adc_quota_project_safe="false"
 gcloud_project_status="missing"
+gcloud_project_id=""
 gcloud_project_command="gcloud config get-value project"
 gcloud_project_set_flow="skipped"
 stitch_api_service_status="skipped"
@@ -232,6 +275,7 @@ ensure_gcloud_cli
 if [[ "${gcloud_command_status}" == "available" ]]; then
   configure_gcloud_auth
   configure_gcloud_adc
+  gcloud_adc_quota_project_check
   configure_gcloud_project
   configure_stitch_api_service
 fi
@@ -256,7 +300,11 @@ node - \
   "$gcloud_login_flow" \
   "$gcloud_adc_status" \
   "$gcloud_adc_login_flow" \
+  "$gcloud_adc_quota_project_status" \
+  "$gcloud_adc_quota_project_id" \
+  "$gcloud_adc_quota_project_safe" \
   "$gcloud_project_status" \
+  "$gcloud_project_id" \
   "$gcloud_project_command" \
   "$gcloud_project_set_flow" \
   "$stitch_api_service_status" \
@@ -264,7 +312,8 @@ node - \
   "$codex_cli" \
   "$stitch_mcp_status" \
   "$AGENT_TOOL_BIN_DIR" \
-  "$STITCH_API_SERVICE_NAME" <<'NODE'
+  "$STITCH_API_SERVICE_NAME" \
+  "$REPO_ROOT" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const [
@@ -277,7 +326,11 @@ const [
   gcloudLoginFlow,
   gcloudAdcStatus,
   gcloudAdcLoginFlow,
+  gcloudAdcQuotaProjectStatus,
+  gcloudAdcQuotaProjectId,
+  gcloudAdcQuotaProjectSafe,
   gcloudProjectStatus,
+  gcloudProjectId,
   gcloudProjectCommand,
   gcloudProjectSetFlow,
   stitchApiServiceStatus,
@@ -286,15 +339,58 @@ const [
   stitchMcpStatus,
   agentToolBinDir,
   stitchApiServiceName,
+  repoRoot,
 ] = process.argv.slice(2);
 
 const ready =
   gcloudCommandStatus === 'available' &&
   gcloudAuthStatus === 'available' &&
   gcloudAdcStatus === 'available' &&
+  gcloudAdcQuotaProjectStatus === 'configured' &&
+  gcloudAdcQuotaProjectSafe === 'true' &&
   gcloudProjectStatus === 'configured' &&
   stitchApiServiceStatus === 'enabled' &&
   stitchMcpStatus === 'configured';
+
+const safeString = (value) => (typeof value === 'string' && value.length > 0 ? value : undefined);
+
+function readStitchMcpConfig() {
+  const configPath = path.join(repoRoot, '.codex', 'config.toml');
+  const fallback = {
+    status: stitchMcpStatus,
+    mcp_source: '.codex/config.toml',
+    check_command: 'codex',
+    check_args: ['mcp', 'list'],
+  };
+  let text = '';
+  try {
+    text = fs.readFileSync(configPath, 'utf8');
+  } catch {
+    return fallback;
+  }
+  const sectionMatch = text.match(/\[mcp_servers\.stitch\]([\s\S]*?)(?=\n\[|$)/);
+  if (!sectionMatch) {
+    return fallback;
+  }
+  const section = sectionMatch[1];
+  const commandMatch = section.match(/^\s*command\s*=\s*"([^"]+)"\s*$/m);
+  const argsMatch = section.match(/^\s*args\s*=\s*\[([^\]]*)\]\s*$/m);
+  const args = [];
+  if (argsMatch) {
+    const argPattern = /"([^"]+)"/g;
+    let match;
+    while ((match = argPattern.exec(argsMatch[1])) !== null) {
+      args.push(match[1]);
+    }
+  }
+  return {
+    ...fallback,
+    command: commandMatch ? commandMatch[1] : undefined,
+    args,
+  };
+}
+
+const stitchMcp = readStitchMcpConfig();
 
 const installPlan = [];
 if (gcloudInstallDecision === 'install_blocked_needs_approval') {
@@ -330,6 +426,9 @@ if (gcloudAuthStatus === 'missing') {
 if (gcloudAdcStatus === 'missing') {
   minimumUserAction.push('Be present for gcloud auth application-default login; do not send ADC JSON, service account JSON, or tokens in chat.');
 }
+if (gcloudAdcStatus === 'available' && gcloudAdcQuotaProjectStatus !== 'configured') {
+  minimumUserAction.push('Configure a non-secret ADC quota project with a human/platform owner present; do not send verification codes, ADC JSON, or tokens in chat.');
+}
 if (gcloudProjectStatus === 'missing') {
   minimumUserAction.push('Provide the non-secret Google Cloud project id via STITCH_ADC_GOOGLE_CLOUD_PROJECT.');
 }
@@ -340,9 +439,35 @@ if (stitchApiServiceEnableFlow === 'needs_explicit_enable_approval') {
 const report = {
   schema: 'stitch-adc-setup/v1',
   status: ready ? 'ready_for_design_gate' : 'blocked',
+  summary: {
+    google_cloud_project: {
+      status: gcloudProjectStatus,
+      project_id: safeString(gcloudProjectId),
+    },
+    google_adc: {
+      status: gcloudAdcStatus,
+    },
+    adc_quota_project: {
+      status: gcloudAdcQuotaProjectStatus,
+      project_id: gcloudAdcQuotaProjectSafe === 'true' ? safeString(gcloudAdcQuotaProjectId) : undefined,
+    },
+    stitch_api_service: {
+      status: stitchApiServiceStatus,
+      service_name: stitchApiServiceName,
+    },
+    stitch_mcp: {
+      source: stitchMcp.mcp_source,
+      status: stitchMcp.status,
+      command: stitchMcp.command,
+      args: stitchMcp.args,
+      check_command: stitchMcp.check_command,
+      check_args: stitchMcp.check_args,
+    },
+  },
   checks: {
     gcloud_cli: gcloudCommandStatus,
     google_adc: gcloudAdcStatus,
+    google_adc_quota_project: gcloudAdcQuotaProjectStatus,
     google_cloud_project: gcloudProjectStatus,
     codex_cli: codexCli,
     stitch_mcp: stitchMcpStatus,
@@ -359,7 +484,13 @@ const report = {
       login_flow: gcloudLoginFlow,
       adc_status: gcloudAdcStatus,
       adc_login_flow: gcloudAdcLoginFlow,
+      adc_quota_project: {
+        status: gcloudAdcQuotaProjectStatus,
+        project_id: gcloudAdcQuotaProjectSafe === 'true' ? safeString(gcloudAdcQuotaProjectId) : undefined,
+        command: 'gcloud auth application-default get-quota-project',
+      },
       project_status: gcloudProjectStatus,
+      project_id: safeString(gcloudProjectId),
       project_command: gcloudProjectCommand,
       project_set_flow: gcloudProjectSetFlow,
       tool_bin_dir: agentToolBinDir,
@@ -374,8 +505,7 @@ const report = {
       command_status: codexCli,
     },
     stitch_mcp: {
-      status: stitchMcpStatus,
-      mcp_source: '.codex/config.toml',
+      ...stitchMcp,
     },
   },
   install_plan: installPlan,

@@ -30,7 +30,8 @@ make_fake_gcloud_stateful() {
   local auth_state_path="$3"
   local adc_state_path="$4"
   local project_state_path="$5"
-  local service_state_path="$6"
+  local quota_project_state_path="$6"
+  local service_state_path="$7"
   mkdir -p "${bin_dir}"
   cat > "${bin_dir}/gcloud" <<SH
 #!/usr/bin/env bash
@@ -47,7 +48,7 @@ case "\${1:-} \${2:-} \${3:-}" in
       printf 'No credentialed accounts.\n'
     fi
     ;;
-  "auth login ")
+  "auth login "|"auth login --no-launch-browser")
     : > "${auth_state_path}"
     ;;
   "auth application-default print-access-token")
@@ -55,6 +56,13 @@ case "\${1:-} \${2:-} \${3:-}" in
     ;;
   "auth application-default login")
     : > "${adc_state_path}"
+    ;;
+  "auth application-default get-quota-project")
+    if [[ -s "${quota_project_state_path}" ]]; then
+      cat "${quota_project_state_path}"
+    else
+      exit 1
+    fi
     ;;
   "config get-value project")
     if [[ -s "${project_state_path}" ]]; then
@@ -108,6 +116,9 @@ case "\${1:-} \${2:-} \${3:-}" in
     printf 'No credentialed accounts.\n'
     ;;
   "auth application-default print-access-token")
+    exit 1
+    ;;
+  "auth application-default get-quota-project")
     exit 1
     ;;
   "config get-value project")
@@ -250,7 +261,7 @@ case_auth_and_adc_login_require_human_present() {
   mkdir -p "${tmpdir}/bin"
   make_isolated_bin "${tmpdir}/bin"
   make_fake_codex "${tmpdir}/bin"
-  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/service-state"
+  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/quota-project-state" "${tmpdir}/service-state"
   printf 'wm-test-project\n' > "${tmpdir}/project-state"
 
   run_precheck "${tmpdir}" env
@@ -272,7 +283,7 @@ case_human_present_starts_browser_auth_flows() {
   mkdir -p "${tmpdir}/bin"
   make_isolated_bin "${tmpdir}/bin"
   make_fake_codex "${tmpdir}/bin"
-  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/service-state"
+  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/quota-project-state" "${tmpdir}/service-state"
   printf 'wm-test-project\n' > "${tmpdir}/project-state"
   : > "${tmpdir}/service-state"
 
@@ -282,6 +293,7 @@ case_human_present_starts_browser_auth_flows() {
   assert_file_contains "${tmpdir}/gcloud-command-log" "auth application-default login"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.auth_status === 'available'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.adc_status === 'available'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.adc_quota_project.status === 'missing'"
   assert_json_no_secret_like "${report_path}"
 }
 
@@ -292,10 +304,11 @@ case_service_enable_requires_explicit_opt_in() {
   mkdir -p "${tmpdir}/bin"
   make_isolated_bin "${tmpdir}/bin"
   make_fake_codex "${tmpdir}/bin"
-  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/service-state"
+  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/quota-project-state" "${tmpdir}/service-state"
   : > "${tmpdir}/auth-state"
   : > "${tmpdir}/adc-state"
   printf 'wm-test-project\n' > "${tmpdir}/project-state"
+  printf 'wm-test-project\n' > "${tmpdir}/quota-project-state"
 
   run_precheck "${tmpdir}" env
 
@@ -313,9 +326,10 @@ case_project_set_and_service_enable_recheck_ready() {
   mkdir -p "${tmpdir}/bin"
   make_isolated_bin "${tmpdir}/bin"
   make_fake_codex "${tmpdir}/bin"
-  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/service-state"
+  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/quota-project-state" "${tmpdir}/service-state"
   : > "${tmpdir}/auth-state"
   : > "${tmpdir}/adc-state"
+  printf 'wm-test-project\n' > "${tmpdir}/quota-project-state"
 
   run_precheck "${tmpdir}" env STITCH_ADC_GOOGLE_CLOUD_PROJECT=wm-test-project STITCH_ADC_ENABLE_STITCH_API=true
 
@@ -323,8 +337,33 @@ case_project_set_and_service_enable_recheck_ready() {
   assert_file_contains "${tmpdir}/gcloud-command-log" "services enable stitch.googleapis.com"
   assert_json_field "${report_path}" "r.status === 'ready_for_design_gate'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.project_status === 'configured'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.adc_quota_project.status === 'configured'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.adc_quota_project.project_id === 'wm-test-project'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.stitch_api.service_status === 'enabled'"
   assert_json_field "${report_path}" "r.tool_readiness.gcloud.stitch_api.service_enable_flow === 'stitch_api_enable_started'"
+  assert_json_no_secret_like "${report_path}"
+}
+
+case_adc_quota_project_required_for_ready() {
+  local tmpdir report_path
+  tmpdir="$(mktemp -d)"
+  report_path="${tmpdir}/state/stitch-adc-setup-report.json"
+  mkdir -p "${tmpdir}/bin"
+  make_isolated_bin "${tmpdir}/bin"
+  make_fake_codex "${tmpdir}/bin"
+  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/quota-project-state" "${tmpdir}/service-state"
+  : > "${tmpdir}/auth-state"
+  : > "${tmpdir}/adc-state"
+  printf 'wm-test-project\n' > "${tmpdir}/project-state"
+  : > "${tmpdir}/service-state"
+
+  run_precheck "${tmpdir}" env
+
+  assert_file_contains "${tmpdir}/gcloud-command-log" "auth application-default get-quota-project"
+  assert_json_field "${report_path}" "r.status === 'blocked'"
+  assert_json_field "${report_path}" "r.checks.google_adc_quota_project === 'missing'"
+  assert_json_field "${report_path}" "r.tool_readiness.gcloud.adc_quota_project.status === 'missing'"
+  assert_json_field "${report_path}" "r.summary.adc_quota_project.status === 'missing'"
   assert_json_no_secret_like "${report_path}"
 }
 
@@ -335,10 +374,11 @@ case_service_enable_failure_does_not_overclaim_ready() {
   mkdir -p "${tmpdir}/bin"
   make_isolated_bin "${tmpdir}/bin"
   make_fake_codex "${tmpdir}/bin"
-  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/service-state"
+  make_fake_gcloud_stateful "${tmpdir}/bin" "${tmpdir}/gcloud-command-log" "${tmpdir}/auth-state" "${tmpdir}/adc-state" "${tmpdir}/project-state" "${tmpdir}/quota-project-state" "${tmpdir}/service-state"
   : > "${tmpdir}/auth-state"
   : > "${tmpdir}/adc-state"
   printf 'wm-test-project\n' > "${tmpdir}/project-state"
+  printf 'wm-test-project\n' > "${tmpdir}/quota-project-state"
 
   run_precheck "${tmpdir}" env STITCH_ADC_ENABLE_STITCH_API=true FAKE_GCLOUD_SERVICE_ENABLE_FAIL=true
 
@@ -356,6 +396,7 @@ case_auth_and_adc_login_require_human_present
 case_human_present_starts_browser_auth_flows
 case_service_enable_requires_explicit_opt_in
 case_project_set_and_service_enable_recheck_ready
+case_adc_quota_project_required_for_ready
 case_service_enable_failure_does_not_overclaim_ready
 
 printf '%s\n' "stitch-adc-setup smoke passed"
