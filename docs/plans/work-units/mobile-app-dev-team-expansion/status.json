@@ -1,0 +1,39 @@
+{
+  "schema": "wu-status/v1",
+  "work_unit_id": "mobile-app-dev-team-expansion",
+  "stage": "00-product-planning",
+  "state": "done",
+  "owner_role": "Product/Planning",
+  "attempt": 1,
+  "reviewer": {
+    "required": true,
+    "status": "passed",
+    "agent": "po-planning-reviewer",
+    "evidence": "Reviewer GO recorded in docs/plans/work-units/mobile-app-dev-team-expansion/00-product-planning/task-packet.md"
+  },
+  "human_gates": [],
+  "evidence": [
+    {
+      "path": "docs/plans/work-units/mobile-app-dev-team-expansion/00-product-planning/task-packet.md",
+      "kind": "planning-artifact"
+    }
+  ],
+  "handoff": {
+    "next_role": "Product/Planning",
+    "next_artifact": "docs/plans/work-units/mobile-app-dev-team-expansion/00-product-planning/task-packet.md"
+  },
+  "events": [
+    {
+      "seq": 1,
+      "at": "2026-06-19T00:00:00.000Z",
+      "actor": "Product/Planning",
+      "action": "created planning guidance"
+    },
+    {
+      "seq": 2,
+      "at": "2026-06-19T00:00:00.000Z",
+      "actor": "po-planning-reviewer",
+      "action": "reviewed plan as GO for planning guidance only"
+    }
+  ]
+}
