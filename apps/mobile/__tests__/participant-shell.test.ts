@@ -60,8 +60,23 @@ describe('participant shell sandbox contract', () => {
     });
   });
 
+  it('starts on the Korean social-login screen before showing participant application gates', () => {
+    render(React.createElement(Home));
+
+    expect(screen.getByTestId('login-artboard')).toBeTruthy();
+    expect(screen.getByTestId('login-logo')).toHaveTextContent('Hagpickle');
+    expect(screen.getByTestId('login-subtitle')).toHaveTextContent('대회일정을 편리하게 모아 보는 플랫폼');
+    expect(screen.getByTestId('kakao-login-button')).toHaveTextContent('카카오로 계속하기');
+    expect(screen.getByTestId('apple-login-button')).toHaveTextContent('Apple로 계속하기');
+    expect(screen.getByTestId('login-consent-copy')).toHaveTextContent('계속하시면 자동으로 회원가입이 진행돼요');
+    expect(screen.queryByTestId('application-cta')).toBeNull();
+    expect(screen.queryByTestId('mock-tournament-card')).toBeNull();
+  });
+
   it('lets a sandbox participant start session, save DUPR, and submit a mock application', () => {
     render(React.createElement(Home));
+
+    fireEvent.press(screen.getByTestId('kakao-login-button'));
 
     expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: true });
     expect(screen.getByTestId('application-cta')).toHaveTextContent(/DUPR ID required/);
@@ -69,7 +84,6 @@ describe('participant shell sandbox contract', () => {
     expect(screen.getByTestId('application-blocker')).toHaveTextContent(/Add your DUPR ID to apply/);
     expect(screen.getByTestId('mock-tournament-card')).toBeTruthy();
 
-    fireEvent.press(screen.getByTestId('social-login-button'));
     fireEvent.changeText(screen.getByTestId('dupr-input'), 'dupr-777');
     fireEvent.press(screen.getByTestId('save-dupr-button'));
 

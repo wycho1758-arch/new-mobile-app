@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Env } from '../../env';
 import {
   type MockTournamentApplication,
   REQUIRED_DUPR_ERROR,
@@ -46,46 +45,60 @@ export default function Home() {
     );
   };
 
+  if (!socialSessionStarted) {
+    return (
+      <View style={styles.loginSurround}>
+        <Text style={styles.peekLabel}>MCA 로그인</Text>
+        <View testID="login-artboard" style={styles.loginArtboard}>
+          <View style={styles.loginCenterStack}>
+            <View testID="login-logo" accessibilityLabel="Hagpickle logo" style={styles.logoRow}>
+              <Text style={[styles.logoText, styles.logoGreen]}>H</Text>
+              <Text style={[styles.logoText, styles.logoGreen]}>a</Text>
+              <Text style={[styles.logoText, styles.logoOrange]}>g</Text>
+              <Text style={[styles.logoText, styles.logoGreen]}>p</Text>
+              <Text style={[styles.logoText, styles.logoRed]}>i</Text>
+              <Text style={[styles.logoText, styles.logoGreen]}>c</Text>
+              <Text style={[styles.logoText, styles.logoGreen]}>k</Text>
+              <Text style={[styles.logoText, styles.logoGreen]}>l</Text>
+              <Text style={[styles.logoText, styles.logoGreen]}>e</Text>
+            </View>
+            <Text testID="login-subtitle" style={styles.loginSubtitle}>대회일정을 편리하게 모아 보는 플랫폼</Text>
+            <View style={styles.loginIconCircle}>
+              <Text style={styles.loginIcon}>⌕</Text>
+            </View>
+          </View>
+
+          <View style={styles.loginButtonStack}>
+            <Pressable
+              testID="kakao-login-button"
+              accessibilityRole="button"
+              onPress={() => setSocialSessionStarted(true)}
+              style={styles.kakaoButton}
+            >
+              <Text style={styles.kakaoButtonText}>카카오로 계속하기</Text>
+            </Pressable>
+            <Pressable
+              testID="apple-login-button"
+              accessibilityRole="button"
+              onPress={() => setSocialSessionStarted(true)}
+              style={styles.appleButton}
+            >
+              <Text style={styles.appleButtonText}>Apple로 계속하기</Text>
+            </Pressable>
+            <Text testID="login-consent-copy" style={styles.loginConsent}>계속하시면 자동으로 회원가입이 진행돼요</Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
       <View style={styles.nav}>
         <Text style={styles.navLogo}>PickleHub</Text>
-        <Text style={styles.navLink}>Participant MVP</Text>
-        <Pressable
-          testID="social-login-button"
-          accessibilityRole="button"
-          onPress={() => setSocialSessionStarted(true)}
-          style={styles.navButton}
-        >
-          <Text style={styles.navButtonText}>Social login</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.hero}>
-        <Text style={styles.eyebrow}>SANDBOX PARTICIPANT FLOW</Text>
-        <Text testID="home-title" style={styles.display}>
-          PickleHub tournament days, composed like a clean court.
+        <Text testID="session-actor" style={styles.sessionText}>
+          Sandbox participant session: {sandboxParticipantSession.sessionActor.actorId}
         </Text>
-        <Text style={styles.lede}>
-          {Env.APP_DISPLAY_NAME} keeps this MVP deliberately narrow: social-login-only entry, DUPR-required tournament application, and 1:1 inquiry support without participant self-cancel or refund flows.
-        </Text>
-        <View style={styles.heroActions}>
-          <Pressable accessibilityRole="button" onPress={() => setSocialSessionStarted(true)} style={styles.primaryPill}>
-            <Text style={styles.primaryPillText}>Continue with social login</Text>
-          </Pressable>
-          <View style={styles.secondaryPill}>
-            <Text style={styles.secondaryPillText}>No Admin Web in this slice</Text>
-          </View>
-        </View>
-        {socialSessionStarted ? (
-          <Text testID="session-actor" style={styles.sessionText}>
-            Sandbox participant session: {sandboxParticipantSession.sessionActor.actorId}
-          </Text>
-        ) : null}
-      </View>
-
-      <View style={styles.marquee}>
-        <Text style={styles.marqueeText}>SOCIAL LOGIN ONLY · DUPR REQUIRED · 1:1 INQUIRY · LOCAL SANDBOX APPLICATION</Text>
       </View>
 
       <View style={[styles.colorBlock, styles.limeBlock]}>
@@ -97,20 +110,17 @@ export default function Home() {
         <TextInput
           testID="dupr-input"
           accessibilityLabel="DUPR ID"
-          editable={socialSessionStarted}
           onChangeText={setDuprInput}
           placeholder="Enter DUPR ID"
           placeholderTextColor="#6b6b6b"
           value={duprInput}
-          style={[styles.input, !socialSessionStarted && styles.disabledInput]}
+          style={styles.input}
         />
         <Pressable
           testID="save-dupr-button"
           accessibilityRole="button"
-          accessibilityState={{ disabled: !socialSessionStarted }}
-          disabled={!socialSessionStarted}
           onPress={saveDupr}
-          style={[styles.secondaryAction, !socialSessionStarted && styles.disabledAction]}
+          style={styles.secondaryAction}
         >
           <Text style={styles.secondaryActionText}>Save DUPR ID</Text>
         </Pressable>
@@ -168,10 +178,6 @@ export default function Home() {
           </Text>
         ) : null}
       </View>
-
-      <View style={styles.footer}>
-        <Text style={styles.caption}>PICKLEHUB MVP · FIGMA-FIRST VISUAL REALIGNMENT · NO PRODUCTION ACTIONS</Text>
-      </View>
     </ScrollView>
   );
 }
@@ -180,6 +186,119 @@ const fontSans = 'Inter, SF Pro Display, system-ui, sans-serif';
 const fontMono = 'JetBrains Mono, SF Mono, Menlo, monospace';
 
 const styles = StyleSheet.create({
+
+  loginSurround: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#202020',
+    minHeight: 640,
+    overflow: 'hidden',
+    paddingTop: 60,
+  },
+  peekLabel: {
+    color: '#5faa72',
+    fontFamily: fontSans,
+    fontSize: 20,
+    fontWeight: '400',
+    left: '24%',
+    position: 'absolute',
+    top: 36,
+  },
+  loginArtboard: {
+    alignItems: 'center',
+    backgroundColor: '#f8faf9',
+    height: 627,
+    justifyContent: 'center',
+    maxWidth: 382,
+    paddingHorizontal: 40,
+    width: '64%',
+  },
+  loginCenterStack: {
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 54,
+  },
+  logoRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  logoText: {
+    fontFamily: fontSans,
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.8,
+    lineHeight: 24,
+  },
+  logoGreen: {
+    color: '#68b568',
+  },
+  logoOrange: {
+    color: '#f2b449',
+  },
+  logoRed: {
+    color: '#ed6f5e',
+  },
+  loginSubtitle: {
+    color: '#5f6760',
+    fontFamily: fontSans,
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  loginIconCircle: {
+    alignItems: 'center',
+    backgroundColor: '#e8f3ec',
+    borderRadius: 40,
+    height: 80,
+    justifyContent: 'center',
+    marginTop: 28,
+    width: 80,
+  },
+  loginIcon: {
+    color: '#4a9b64',
+    fontFamily: fontSans,
+    fontSize: 30,
+    lineHeight: 34,
+  },
+  loginButtonStack: {
+    gap: 12,
+    marginTop: 88,
+    maxWidth: 304,
+    width: '100%',
+  },
+  kakaoButton: {
+    alignItems: 'center',
+    backgroundColor: '#ffdf00',
+    borderRadius: 12,
+    justifyContent: 'center',
+    minHeight: 49,
+  },
+  kakaoButtonText: {
+    color: '#262100',
+    fontFamily: fontSans,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  appleButton: {
+    alignItems: 'center',
+    backgroundColor: '#172233',
+    borderRadius: 8,
+    justifyContent: 'center',
+    minHeight: 47,
+  },
+  appleButtonText: {
+    color: palette.inverse,
+    fontFamily: fontSans,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  loginConsent: {
+    color: '#8b918c',
+    fontFamily: fontSans,
+    fontSize: 10,
+    fontWeight: '500',
+    marginTop: 10,
+    textAlign: 'center',
+  },
   page: {
     flex: 1,
     backgroundColor: palette.canvas,
