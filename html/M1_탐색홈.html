@@ -23,34 +23,27 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     font-family:'Noto Sans KR',sans-serif;
-    background:#e9ecef;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:32px 0;
+    margin:0;
+    background:var(--bg);
   }
   .phone{
-    width:390px;
-    height:844px;
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    min-height:100dvh;
     background:var(--bg);
-    box-shadow:0 12px 40px rgba(15,27,45,.14);
-    border-radius:8px;
-    overflow:hidden;
     display:flex;
     flex-direction:column;
   }
-  .scroll{flex:1;overflow-y:auto;scrollbar-width:none}
-  .scroll::-webkit-scrollbar{display:none}
+  .scroll{flex:1}
 
   /* 헤더 */
   header{
     background:var(--header);
     padding:16px 24px 0;
-    height:206px;
+    height:188px;
     position:relative;
   }
-  .status{font-size:13px;font-weight:700;color:var(--ink)}
   .logo{
     margin-top:12px;
     display:flex;
@@ -85,7 +78,7 @@
   }
   .bell-btn{
     position:absolute;
-    top:50px;
+    top:32px;
     right:24px;
     width:40px;
     height:40px;
@@ -267,7 +260,10 @@
 
   /* 하단 탭바 */
   .tabbar{
-    height:80px;
+    position:sticky;
+    bottom:0;
+    min-height:80px;
+    padding-bottom:env(safe-area-inset-bottom);
     background:var(--surface);
     border-top:1px solid var(--line);
     box-shadow:0 -3px 14px rgba(18,48,58,.06);
@@ -297,7 +293,6 @@
 <div class="phone">
   <div class="scroll">
     <header>
-      <div class="status">9:41</div>
       <!-- happickle_logo -->
       <div class="logo" aria-label="Happickle">
         <span class="word">Ha</span><!--

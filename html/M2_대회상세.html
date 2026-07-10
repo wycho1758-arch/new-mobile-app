@@ -22,14 +22,13 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:'Noto Sans KR',sans-serif;
-  background:#E3E7EA;
-  display:flex;justify-content:center;align-items:flex-start;
-  padding:40px 0;
+  margin:0;
+  background:var(--bg);
 }
 .phone{
-  width:390px;background:var(--bg);
-  box-shadow:0 12px 40px rgba(15,27,45,.18);
-  border-radius:8px;overflow:hidden;
+  width:100%;max-width:480px;margin:0 auto;
+  min-height:100dvh;background:var(--bg);
+  display:flex;flex-direction:column;
   position:relative;
 }
 /* ── Hero ─────────────────────────── */
@@ -93,8 +92,10 @@ body{
 .refund-sec p{margin-top:9px;font-size:12.5px;line-height:1.5;color:var(--muted)}
 /* ── CTA bar ──────────────────────── */
 .cta-bar{
+  margin-top:auto;
+  position:sticky;bottom:0;
   display:flex;align-items:center;background:var(--surface);
-  padding:16px 20px;border-top:1px solid var(--border);
+  padding:16px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--border);
 }
 .cta-bar .price{font-size:18px;font-weight:700;color:var(--ink)}
 .cta-bar .cta{
@@ -108,7 +109,7 @@ body{
 <div class="phone">
   <!-- Hero: 피클볼 코트 일러스트 -->
   <header class="hero">
-    <svg class="court" viewBox="0 0 390 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg class="court" viewBox="0 0 390 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <rect width="390" height="220" fill="#E9F1EA"/>
       <!-- court trapezoid -->
       <path d="M63 30 L327 30 L365 190 L25 190 Z" fill="#558D60" fill-opacity="0.14"/>

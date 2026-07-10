@@ -24,30 +24,23 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
     font-family:'Noto Sans KR',sans-serif;
-    background:#e9ecef;
-    min-height:100vh;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:32px 0;
+    background:var(--bg);
+    margin:0;
   }
   .screen{
-    width:390px;
-    height:844px;
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    min-height:100dvh;
     background:var(--bg);
-    box-shadow:0 12px 40px rgba(15,27,45,.14);
-    border-radius:8px;
-    overflow:hidden;
-    position:relative;
   }
   /* ---------- background home screen (M1) ---------- */
   .home-header{
     background:var(--header-bg);
-    height:206px;
+    height:187px;
     padding:16px 24px 0;
     position:relative;
   }
-  .status-time{font-size:13px;font-weight:700;color:var(--ink);}
   .logo{
     margin-top:12px;
     font-size:34px;
@@ -72,7 +65,7 @@
   }
   .bell-bg{
     position:absolute;
-    top:50px;right:24px;
+    top:31px;right:24px;
     width:40px;height:40px;
     border-radius:50%;
     background:rgba(85,141,96,.16);
@@ -137,14 +130,16 @@
   }
   /* ---------- scrim ---------- */
   .scrim{
-    position:absolute;
+    position:fixed;
     inset:0;
     background:var(--scrim);
   }
   /* ---------- bottom sheet ---------- */
   .sheet{
-    position:absolute;
-    left:0;right:0;bottom:0;
+    position:fixed;
+    bottom:0;left:50%;
+    transform:translateX(-50%);
+    width:100%;max-width:480px;
     height:480px;
     background:var(--surface);
     border-radius:24px 24px 0 0;
@@ -222,7 +217,6 @@
     <!-- 배경: 탐색 홈 상단 -->
     <div class="home-bg" aria-hidden="true">
       <header class="home-header">
-        <p class="status-time">9:41</p>
         <p class="logo"><span class="g">Ha</span><span class="o">p</span><span class="y">p</span><span class="g">ickle</span></p>
         <span class="assoc-pill">대한피클볼협회 공식</span>
         <p class="home-headline">어떤 대회에 나가볼까요?</p>

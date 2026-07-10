@@ -22,20 +22,16 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
     font-family:'Noto Sans KR',sans-serif;
-    background:#e9ecef;
-    min-height:100vh;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:32px 0;
+    margin:0;
+    background:var(--bg);
   }
   .screen{
-    width:390px;
-    min-height:900px;
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    min-height:100dvh;
     background:var(--bg);
-    box-shadow:0 12px 40px rgba(15,27,45,.14);
-    border-radius:8px;
-    overflow:hidden;
     display:flex;
     flex-direction:column;
   }

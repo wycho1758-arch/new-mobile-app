@@ -21,20 +21,15 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     font-family:'Noto Sans KR',sans-serif;
-    background:#e9ecef;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:32px 0;
+    margin:0;
+    background:var(--bg);
   }
   .phone{
-    width:390px;
-    min-height:640px;
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    min-height:100dvh;
     background:var(--bg);
-    box-shadow:0 12px 40px rgba(15,27,45,.14);
-    border-radius:8px;
-    overflow:hidden;
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -74,7 +69,8 @@
   }
   /* 소셜 로그인 버튼 */
   .btn{
-    width:310px;
+    width:calc(100% - 80px);
+    max-width:400px;
     height:52px;
     border:none;
     border-radius:14px;

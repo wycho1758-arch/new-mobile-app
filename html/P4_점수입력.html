@@ -19,22 +19,17 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:#e9edef;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  padding:40px 16px;
+  margin:0;
+  background:var(--bg);
   font-family:'Noto Sans KR',sans-serif;
   color:var(--ink);
 }
 .phone{
-  width:390px;
-  min-height:760px;
+  width:100%;
+  max-width:480px;
+  margin:0 auto;
+  min-height:100dvh;
   background:var(--bg);
-  border-radius:12px;
-  box-shadow:0 16px 48px rgba(15,27,45,.16);
-  overflow:hidden;
   display:flex;
   flex-direction:column;
 }
@@ -105,6 +100,9 @@ main{flex:1;padding:16px 20px 0}
 .note-box p{font-size:12px;font-weight:500;color:var(--green-deep);line-height:14px}
 /* cta */
 footer{
+  position:sticky;
+  bottom:0;
+  margin-top:auto;
   background:var(--surface);
   height:84px;
   padding:16px 20px;

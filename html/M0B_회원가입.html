@@ -20,19 +20,15 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     font-family:'Noto Sans KR',sans-serif;
-    background:#e9ecef;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:32px 0;
+    margin:0;
+    background:var(--bg);
   }
   .phone{
-    width:390px;
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    min-height:100dvh;
     background:var(--bg);
-    box-shadow:0 12px 40px rgba(15,27,45,.14);
-    border-radius:8px;
-    overflow:hidden;
     display:flex;
     flex-direction:column;
   }
@@ -63,7 +59,7 @@
     font-weight:700;
     color:var(--ink);
   }
-  main{padding:0 20px}
+  main{padding:0 20px 32px}
   .section-title{
     font-size:15px;
     font-weight:900;
@@ -146,9 +142,11 @@
   .agree-label.optional{color:var(--faint)}
   /* 하단 CTA */
   .cta-bar{
-    margin-top:92px;
+    margin-top:auto;
+    position:sticky;
+    bottom:0;
     background:var(--surface);
-    padding:16px 20px;
+    padding:16px 20px calc(16px + env(safe-area-inset-bottom));
     flex-shrink:0;
   }
   .cta-btn{
