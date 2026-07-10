@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N4 예약내역</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --ink:#1f2937;
+  --gray:#6b7280;
+  --gray-light:#9ca3af;
+  --border:#e4e7e5;
+  --danger:#d14343;
+  --cancel:#ed7040;
+  --muted-brown:#8a6f62;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#eceff1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 0;
+  min-height:100vh;
+}
+.phone{
+  width:390px;
+  background:var(--bg);
+  box-shadow:0 8px 32px rgba(15,27,45,.14);
+  display:flex;
+  flex-direction:column;
+  min-height:900px;
+  overflow:hidden;
+}
+
+/* 상단바 */
+header.topbar{
+  height:56px;
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  position:relative;
+  padding:0 12px;
+  flex-shrink:0;
+}
+.back-btn{
+  width:40px;height:40px;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+header.topbar h1{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:17px;font-weight:700;color:var(--ink);
+}
+
+main{flex:1;padding:16px 20px 24px;}
+
+/* 필터 칩 */
+.chips{display:flex;gap:8px;margin-bottom:22px;}
+.chip{
+  height:34px;
+  padding:0 15px;
+  border-radius:17px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  font-family:inherit;
+  font-size:13px;font-weight:700;color:var(--gray);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.chip.active{
+  background:var(--brand);
+  border-color:var(--brand);
+  color:#fff;
+}
+
+/* 예약 카드 */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  position:relative;
+  margin-bottom:12px;
+}
+.card .title{font-size:15px;font-weight:700;color:var(--ink);line-height:1.2;}
+.card .meta{font-size:12px;font-weight:400;color:var(--gray);line-height:1.2;margin-top:6px;}
+.card .price{font-size:16px;font-weight:900;color:var(--ink);line-height:1.2;margin-top:10px;}
+.badge{
+  position:absolute;top:16px;right:16px;
+  height:24px;
+  padding:0 15px;
+  border-radius:12px;
+  background:var(--brand);
+  color:#fff;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;
+}
+.badge.gray{background:var(--gray-light);padding:0 8px;}
+.badge.red{background:var(--danger);padding:0 13px;}
+.cancel-link{
+  position:absolute;right:16px;bottom:13px;
+  background:none;border:none;cursor:pointer;
+  font-family:inherit;
+  font-size:13px;font-weight:700;color:var(--cancel);
+  text-decoration:underline;
+}
+/* 지난/취소 카드 변형 */
+.card.done .title{color:var(--gray);}
+.card.done .meta{color:var(--gray-light);}
+.card.done .price{color:var(--gray);}
+.card.cancelled .title{color:var(--muted-brown);}
+.card.cancelled .meta{color:var(--gray-light);}
+.card.cancelled .price{color:var(--danger);}
+
+/* 하단 탭바 (텍스트) */
+nav.tabbar{
+  background:var(--surface);
+  height:80px;
+  display:flex;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.tab{
+  flex:1;
+  background:none;border:none;cursor:pointer;font-family:inherit;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:18px;
+  font-size:11px;font-weight:500;color:var(--gray-light);
+}
+.tab.active{color:var(--brand);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="topbar">
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 6l-6 6 6 6"/>
+      </svg>
+    </button>
+    <h1>예약 내역</h1>
+  </header>
+
+  <main>
+    <!-- 필터 칩 -->
+    <div class="chips">
+      <button class="chip active" type="button">전체</button>
+      <button class="chip" type="button">예정</button>
+      <button class="chip" type="button">완료</button>
+      <button class="chip" type="button">취소/환불</button>
+    </div>
+
+    <!-- 카드 1 -->
+    <section class="card">
+      <h2 class="title">2026 협회장배 전국오픈</h2>
+      <p class="meta">남자복식 · 8월 9일 (토)</p>
+      <p class="price">60,000원</p>
+      <span class="badge">완료</span>
+      <button class="cancel-link" type="button">참가 취소</button>
+    </section>
+
+    <!-- 카드 2 -->
+    <section class="card">
+      <h2 class="title">제2회 한강 오픈 챌린지</h2>
+      <p class="meta">혼합복식 · 8월 2일 (토)</p>
+      <p class="price">25,000원</p>
+      <span class="badge">완료</span>
+      <button class="cancel-link" type="button">참가 취소</button>
+    </section>
+
+    <!-- 카드 3 (종료) -->
+    <section class="card done">
+      <h2 class="title">8월 여성부 초청전</h2>
+      <p class="meta">여자복식 · 7월 12일 (일) · 종료</p>
+      <p class="price">30,000원</p>
+      <span class="badge gray">참가완료</span>
+    </section>
+
+    <!-- 카드 4 (취소/환불) -->
+    <section class="card cancelled">
+      <h2 class="title">데일리 챔린지 컵</h2>
+      <p class="meta">남자복식 · 7월 5일 (일)</p>
+      <p class="price">20,000원 환불</p>
+      <span class="badge red">경기취소</span>
+    </section>
+  </main>
+
+  <!-- 하단 탭바 -->
+  <nav class="tabbar">
+    <button class="tab" type="button">탐색</button>
+    <button class="tab" type="button">내 경기</button>
+    <button class="tab" type="button">알림</button>
+    <button class="tab active" type="button">마이</button>
+  </nav>
+</div>
+</body>
+</html>

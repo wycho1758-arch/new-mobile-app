@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P4 점수 입력</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --ink:#1f2937;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+  --border:#e4e7e5;
+  --gray:#9ca3af;
+  --gray-d:#6b7280;
+  --green-lt:#e9f1ea;
+  --green-deep:#3f6b48;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#e9edef;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 16px;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink);
+}
+.phone{
+  width:390px;
+  min-height:760px;
+  background:var(--bg);
+  border-radius:12px;
+  box-shadow:0 16px 48px rgba(15,27,45,.16);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+/* topbar */
+header{
+  position:relative;
+  background:var(--surface);
+  height:56px;
+  display:flex;align-items:center;justify-content:center;
+}
+header h1{font-size:17px;font-weight:700;line-height:20px}
+.back-btn{
+  position:absolute;left:12px;top:8px;
+  width:40px;height:40px;border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.back-btn svg{width:24px;height:24px;stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+main{flex:1;padding:16px 20px 0}
+/* match card */
+.match-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px 20px;
+  min-height:80px;
+}
+.match-card .date{font-size:12px;color:var(--gray-d);line-height:14px}
+.match-card .teams{font-size:14px;font-weight:700;color:var(--ink);margin-top:10px;line-height:17px}
+/* sets */
+.section-title{font-size:15px;font-weight:900;margin-top:20px;line-height:18px}
+.set-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.set-row{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  height:64px;
+  display:flex;align-items:center;
+  padding:0 60px 0 20px;
+}
+.set-row .name{font-size:14px;font-weight:700;line-height:17px}
+.score-group{margin-left:auto;display:flex;align-items:center}
+.score-box{
+  width:64px;height:36px;border-radius:10px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  font-family:inherit;font-size:16px;font-weight:900;color:var(--ink);
+  text-align:center;
+}
+.score-box:focus{outline:2px solid var(--brand);outline-offset:-1px}
+.colon{width:22px;text-align:center;font-size:18px;font-weight:900;color:var(--gray);line-height:22px}
+.col-label{
+  position:absolute;top:6px;
+  width:64px;text-align:center;
+  font-size:10px;color:var(--gray);line-height:12px;
+}
+.col-label--my{right:146px}
+.col-label--opp{right:60px}
+/* note */
+.note-box{
+  margin-top:24px;
+  background:var(--green-lt);
+  border-radius:12px;
+  min-height:56px;
+  display:flex;align-items:center;
+  padding:0 16px;
+}
+.note-box p{font-size:12px;font-weight:500;color:var(--green-deep);line-height:14px}
+/* cta */
+footer{
+  background:var(--surface);
+  height:84px;
+  padding:16px 20px;
+}
+.cta{
+  width:100%;height:52px;border:none;border-radius:14px;
+  background:var(--brand);color:#fff;
+  font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <h1>점수 입력</h1>
+  </header>
+
+  <main>
+    <section class="match-card">
+      <p class="date">8월 9일 (토) · 코트 3</p>
+      <p class="teams">김민준/이서연 vs 박지훈/정수빈</p>
+    </section>
+
+    <h2 class="section-title">세트별 점수</h2>
+    <section class="set-list">
+      <div class="set-row">
+        <span class="col-label col-label--my">우리 팀</span>
+        <span class="col-label col-label--opp">상대 팀</span>
+        <span class="name">1세트</span>
+        <div class="score-group">
+          <input class="score-box" type="text" inputmode="numeric" value="11" aria-label="1세트 우리 팀 점수">
+          <span class="colon">:</span>
+          <input class="score-box" type="text" inputmode="numeric" value="7" aria-label="1세트 상대 팀 점수">
+        </div>
+      </div>
+
+      <div class="set-row">
+        <span class="name">2세트</span>
+        <div class="score-group">
+          <input class="score-box" type="text" inputmode="numeric" value="9" aria-label="2세트 우리 팀 점수">
+          <span class="colon">:</span>
+          <input class="score-box" type="text" inputmode="numeric" value="11" aria-label="2세트 상대 팀 점수">
+        </div>
+      </div>
+
+      <div class="set-row">
+        <span class="name">3세트</span>
+        <div class="score-group">
+          <input class="score-box" type="text" inputmode="numeric" value="11" aria-label="3세트 우리 팀 점수">
+          <span class="colon">:</span>
+          <input class="score-box" type="text" inputmode="numeric" value="8" aria-label="3세트 상대 팀 점수">
+        </div>
+      </div>
+    </section>
+
+    <aside class="note-box">
+      <p>입력한 결과는 상대팀 확인 후 확정됩니다</p>
+    </aside>
+  </main>
+
+  <footer>
+    <button class="cta" type="button">결과 제출하기</button>
+  </footer>
+</div>
+</body>
+</html>

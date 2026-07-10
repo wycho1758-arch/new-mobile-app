@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N6 DUPR관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --brand-dark:#3f6b48;
+  --brand-tint:#e9f1ea;
+  --brand-tint-border:#c9e0cc;
+  --brand-soft:#a8c7ae;
+  --ink:#1f2937;
+  --gray:#6b7280;
+  --border:#e4e7e5;
+  --pending:#f4bf35;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#eceff1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 0;
+  min-height:100vh;
+}
+.phone{
+  width:390px;
+  background:var(--bg);
+  box-shadow:0 8px 32px rgba(15,27,45,.14);
+  display:flex;
+  flex-direction:column;
+  min-height:760px;
+  overflow:hidden;
+}
+
+/* 상단바 */
+header.topbar{
+  height:56px;
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  position:relative;
+  padding:0 12px;
+  flex-shrink:0;
+}
+.back-btn{
+  width:40px;height:40px;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+header.topbar h1{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:17px;font-weight:700;color:var(--ink);
+  white-space:nowrap;
+}
+
+main{flex:1;padding:16px 20px 24px;}
+
+/* 현재 DUPR 카드 */
+.dupr-card{
+  background:var(--ink);
+  border-radius:16px;
+  height:100px;
+  padding:20px;
+  position:relative;
+  margin-bottom:24px;
+}
+.dupr-card .label{font-size:12px;font-weight:500;color:var(--brand-soft);line-height:1.2;display:block;}
+.dupr-card .value{font-size:32px;font-weight:900;color:#fff;line-height:1.2;display:block;margin-top:4px;}
+.status-badge{
+  position:absolute;top:18px;right:20px;
+  height:26px;
+  padding:0 23px;
+  border-radius:13px;
+  background:var(--pending);
+  color:#fff;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* DUPR ID 입력 */
+.field{
+  height:52px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:0 18px;
+  font-family:inherit;
+  font-size:15px;font-weight:500;color:var(--ink);
+  width:100%;
+  display:block;
+  margin-bottom:16px;
+}
+.field:focus{outline:2px solid var(--brand);outline-offset:-1px;}
+
+/* 스크린샷 업로드 */
+.upload-box{
+  width:100%;
+  height:100px;
+  background:var(--brand-tint);
+  border:1px solid var(--brand-tint-border);
+  border-radius:14px;
+  cursor:pointer;
+  font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;
+  margin-bottom:16px;
+}
+.upload-box .upload-title{font-size:13px;font-weight:700;color:var(--brand-dark);line-height:1.25;}
+.upload-box .upload-sub{font-size:11px;font-weight:400;color:var(--brand-dark);line-height:1.2;}
+
+/* 안내 박스 */
+.note-box{
+  background:var(--border);
+  border-radius:12px;
+  padding:18px 16px;
+  font-size:11.5px;font-weight:400;color:var(--gray);
+  line-height:1.25;
+}
+
+/* 하단 CTA */
+footer.cta-bar{
+  background:var(--surface);
+  padding:16px 20px;
+  flex-shrink:0;
+}
+.cta-btn{
+  width:100%;height:52px;
+  background:var(--brand);
+  border:none;border-radius:14px;
+  font-family:inherit;
+  font-size:16px;font-weight:700;color:#fff;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="topbar">
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 6l-6 6 6 6"/>
+      </svg>
+    </button>
+    <h1>DUPR 정보 관리</h1>
+  </header>
+
+  <main>
+    <!-- 현재 DUPR 카드 -->
+    <section class="dupr-card">
+      <span class="label">현재 DUPR</span>
+      <span class="value">4.2</span>
+      <span class="status-badge">관리자 확인중</span>
+    </section>
+
+    <!-- DUPR ID 수정 -->
+    <input class="field" type="text" value="DUPR ID 수정" aria-label="DUPR ID 수정">
+
+    <!-- 스크린샷 업로드 -->
+    <button class="upload-box" type="button">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#558d60" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21.3V5.3M9.33 12l6.67-6.7 6.67 6.7"/>
+        <path d="M5.33 21.3V26a2 2 0 0 0 2 2h17.34a2 2 0 0 0 2-2v-4.7"/>
+      </svg>
+      <span class="upload-title">DUPR 프로필 스크린샷 첨부</span>
+      <span class="upload-sub">확인이 빨라져요 (JPG, PNG)</span>
+    </button>
+
+    <!-- 안내 -->
+    <p class="note-box">DUPR 값은 자기신고 기준이며 대회 참가 시 참고용으로만 표시됩니다</p>
+  </main>
+
+  <!-- 하단 CTA -->
+  <footer class="cta-bar">
+    <button class="cta-btn" type="button">저장하기</button>
+  </footer>
+</div>
+</body>
+</html>

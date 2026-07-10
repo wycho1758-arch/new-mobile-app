@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N15 회원탈퇴</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --ink:#1f2937;
+  --gray:#6b7280;
+  --border:#e4e7e5;
+  --danger:#d14343;
+  --warn:#ed7040;
+  --warn-deep:#c85a2e;
+  --warn-tint:#fceae0;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#eceff1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 0;
+  min-height:100vh;
+}
+.phone{
+  width:390px;
+  background:var(--bg);
+  box-shadow:0 8px 32px rgba(15,27,45,.14);
+  display:flex;
+  flex-direction:column;
+  min-height:940px;
+  overflow:hidden;
+}
+
+/* 상단바 */
+header.topbar{
+  height:56px;
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  position:relative;
+  padding:0 12px;
+  flex-shrink:0;
+}
+.back-btn{
+  width:40px;height:40px;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+header.topbar h1{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:17px;font-weight:700;color:var(--ink);
+}
+
+main{flex:1;padding:16px 20px 0;display:flex;flex-direction:column;}
+
+/* 경고 아이콘 */
+.warn-circle{
+  align-self:center;
+  width:60px;height:60px;border-radius:50%;
+  background:var(--warn-tint);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+.warn-circle .mark{font-size:30px;font-weight:900;color:var(--warn);line-height:1;}
+
+/* 헤드라인 */
+.headline{
+  text-align:center;
+  font-size:21px;font-weight:900;color:var(--ink);
+  line-height:1.2;
+}
+.subtext{
+  text-align:center;
+  font-size:14px;font-weight:500;color:var(--gray);
+  line-height:1.2;
+  margin-top:9px;
+  margin-bottom:29px;
+}
+
+/* 안내 카드 */
+.info-card{
+  background:var(--warn-tint);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.info-card p{
+  font-size:12.5px;font-weight:500;color:var(--warn-deep);
+  line-height:24px;
+}
+
+/* 탈퇴 사유 */
+.reason-title{
+  font-size:16px;font-weight:900;color:var(--ink);
+  line-height:1.2;
+  margin-bottom:9px;
+}
+.reason-grid{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-bottom:24px;
+}
+.rchip{
+  flex:1 1 40%;
+  height:40px;
+  border-radius:18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  font-family:inherit;
+  font-size:13px;font-weight:700;color:var(--gray);
+  cursor:pointer;
+}
+
+/* 동의 체크 */
+.agree-row{
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;
+}
+.checkbox{
+  width:20px;height:20px;border-radius:5px;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.agree-row .agree-text{
+  font-size:13px;font-weight:400;color:var(--ink);
+  line-height:1.2;
+}
+
+/* 하단 버튼 */
+footer.bottom-bar{
+  padding:16px 20px 36px;
+  margin-top:auto;
+}
+.withdraw-btn{
+  width:100%;height:52px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  font-family:inherit;
+  font-size:16px;font-weight:700;color:var(--danger);
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="topbar">
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 6l-6 6 6 6"/>
+      </svg>
+    </button>
+    <h1>회원 탈퇴</h1>
+  </header>
+
+  <main>
+    <!-- 경고 -->
+    <div class="warn-circle" aria-hidden="true">
+      <span class="mark">!</span>
+    </div>
+    <h2 class="headline">정말 탈퇴하시겠어요?</h2>
+    <p class="subtext">탈퇴 시 아래 내용이 영구적으로 처리돼요</p>
+
+    <!-- 안내 카드 -->
+    <section class="info-card">
+      <p>· 모든 계정 정보가 영구적으로 삭제돼요<br>
+      · 참가 신청 및 경기 기록이 삭제돼요<br>
+      · 진행 중인 환불 건은 처리 완료 후 탈퇴할 수 있어요<br>
+      · 삭제된 데이터는 복구할 수 없어요</p>
+    </section>
+
+    <!-- 탈퇴 사유 -->
+    <h3 class="reason-title">탈퇴 사유 (선택)</h3>
+    <div class="reason-grid">
+      <button class="rchip" type="button">자주 사용 안함</button>
+      <button class="rchip" type="button">다른 서비스 이용</button>
+      <button class="rchip" type="button">불편한 점 있음</button>
+      <button class="rchip" type="button">기타</button>
+    </div>
+
+    <!-- 동의 -->
+    <label class="agree-row">
+      <span class="checkbox">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.92 7.2l2.6 2.7 5.55-5.8"/>
+        </svg>
+      </span>
+      <span class="agree-text">위 내용을 확인했으며 탈퇴에 동의합니다</span>
+    </label>
+  </main>
+
+  <!-- 하단 버튼 -->
+  <footer class="bottom-bar">
+    <button class="withdraw-btn" type="button">탈퇴하기</button>
+  </footer>
+</div>
+</body>
+</html>

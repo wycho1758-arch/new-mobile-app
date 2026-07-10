@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3 참가신청서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558D60;
+  --brand-soft:#E9F1EA;
+  --ink:#1F2937;
+  --bg:#F7FAF8;
+  --surface:#FFFFFF;
+  --border:#E4E7E5;
+  --muted:#6B7280;
+  --faint:#9CA3AF;
+  --pending:#F4BF35;
+  --disabled:#DDE3DE;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#E3E7EA;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:40px 0;
+}
+.phone{
+  width:390px;min-height:900px;background:var(--bg);
+  box-shadow:0 12px 40px rgba(15,27,45,.18);
+  border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+/* ── Topbar ───────────────────────── */
+.topbar{
+  position:relative;height:56px;background:var(--surface);
+  display:flex;align-items:center;justify-content:center;flex:none;
+}
+.topbar h1{font-size:17px;font-weight:700;color:var(--ink)}
+.topbar .back{
+  position:absolute;left:12px;top:8px;width:40px;height:40px;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+main{flex:1;padding:16px 20px 0}
+/* ── Cards ────────────────────────── */
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+}
+.summary-card{padding:18px 20px}
+.summary-card .t{font-size:15px;font-weight:700;color:var(--ink)}
+.summary-card .s{margin-top:8px;font-size:12px;color:var(--muted)}
+.summary-card .p{margin-top:4px;font-size:17px;font-weight:700;color:var(--brand)}
+.sec-h{font-size:16px;font-weight:900;color:var(--ink);margin:24px 0 14px}
+/* ── 참가자 정보 ──────────────────── */
+.me-card{display:flex;align-items:center;padding:24px 16px;min-height:84px}
+.avatar{
+  width:36px;height:36px;border-radius:18px;background:var(--brand-soft);
+  flex:none;display:flex;align-items:center;justify-content:center;
+}
+.me-card .body{margin-left:16px;display:flex;flex-direction:column;gap:5px}
+.me-card .name{font-size:14px;font-weight:700;color:var(--ink)}
+.me-card .meta{font-size:12px;color:var(--muted)}
+.me-card .role{margin-left:auto;font-size:11px;font-weight:500;color:var(--brand)}
+/* ── 파트너 초대 ──────────────────── */
+.partner-card{padding:16px}
+.partner-card .guide{font-size:14px;font-weight:700;color:var(--ink)}
+.invite-row{display:flex;gap:8px;margin-top:16px}
+.invite-row input{
+  flex:1;height:44px;border:1px solid var(--border);border-radius:10px;
+  background:var(--bg);padding:0 16px;font-size:13px;color:var(--ink);
+  font-family:inherit;outline:none;
+}
+.invite-row input::placeholder{color:var(--faint)}
+.invite-row button{
+  width:90px;height:44px;border:none;border-radius:10px;
+  background:var(--brand);color:#fff;font-size:13px;font-weight:700;
+  font-family:inherit;cursor:pointer;flex:none;
+}
+.pending-row{display:flex;align-items:center;margin-top:16px}
+.pending-badge{
+  height:24px;border-radius:12px;background:var(--pending);color:#fff;
+  font-size:11px;font-weight:700;display:flex;align-items:center;padding:0 10px;
+}
+.pending-row .ttl{margin-left:10px;font-size:12px;color:var(--muted)}
+.resend{
+  margin-top:10px;font-size:12px;font-weight:700;color:var(--brand);
+  background:none;border:none;padding:0;font-family:inherit;cursor:pointer;
+  display:block;
+}
+.divider{height:1px;background:var(--border);margin:24px 0 0}
+/* ── 약관 동의 ────────────────────── */
+.terms{display:flex;flex-direction:column;gap:12px}
+.term{display:flex;align-items:center;gap:8px;cursor:pointer}
+.checkbox{
+  width:20px;height:20px;border-radius:5px;background:var(--brand);flex:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.term span{font-size:13px;color:var(--ink)}
+/* ── CTA ──────────────────────────── */
+.cta-bar{background:var(--surface);padding:16px 20px;margin-top:40px;flex:none}
+.cta-bar .cta{
+  width:100%;height:52px;border:none;border-radius:14px;
+  background:var(--disabled);color:var(--faint);
+  font-size:15px;font-weight:700;font-family:inherit;cursor:not-allowed;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="topbar">
+    <button class="back" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#1F2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <h1>참가 신청</h1>
+  </header>
+
+  <main>
+    <!-- 신청 요약 -->
+    <section class="card summary-card">
+      <p class="t">2026 협회장배 전국오픈</p>
+      <p class="s">남자복식 · 2인 대표결제</p>
+      <p class="p">60,000원</p>
+    </section>
+
+    <!-- 참가자 정보 -->
+    <h2 class="sec-h">참가자 정보</h2>
+    <section class="card me-card">
+      <span class="avatar">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="6.7" r="3.3" stroke="#558D60" stroke-width="1.5"/>
+          <path d="M3.75 16.7C3.75 13.9 6.5 11.7 10 11.7C13.5 11.7 16.25 13.9 16.25 16.7" stroke="#558D60" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="body">
+        <span class="name">김민준</span>
+        <span class="meta">DUPR 4.2 · 010-••••-5678</span>
+      </div>
+      <span class="role">대표자</span>
+    </section>
+
+    <!-- 복식 파트너 초대 -->
+    <h2 class="sec-h">복식 파트너 초대</h2>
+    <section class="card partner-card">
+      <p class="guide">파트너 전화번호를 입력해 초대하세요</p>
+      <div class="invite-row">
+        <input type="tel" placeholder="010-0000-0000" aria-label="파트너 전화번호">
+        <button>초대하기</button>
+      </div>
+      <div class="pending-row">
+        <span class="pending-badge">대기중</span>
+        <span class="ttl">유효기간 72시간 · 42:18:05 남음</span>
+      </div>
+      <button class="resend">링크 재발송</button>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 약관 동의 -->
+    <h2 class="sec-h">약관 동의</h2>
+    <section class="terms">
+      <label class="term">
+        <span class="checkbox">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7L9.5 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>[필수] 개인정보 수집·이용에 동의합니다</span>
+      </label>
+      <label class="term">
+        <span class="checkbox">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7L9.5 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>[필수] 환불 규정을 확인하였습니다</span>
+      </label>
+    </section>
+  </main>
+
+  <!-- CTA -->
+  <footer class="cta-bar">
+    <button class="cta" disabled>파트너 수락 후 결제가능</button>
+  </footer>
+</div>
+</body>
+</html>

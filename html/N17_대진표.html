@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>N17 대진표</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --ink:#1f2937;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+  --border:#e4e7e5;
+  --gray:#9ca3af;
+  --gold:#f4bf35;
+  --gold-deep:#c9962f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#e9edef;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 16px;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink);
+}
+.phone{
+  width:390px;
+  min-height:1200px;
+  background:var(--bg);
+  border-radius:12px;
+  box-shadow:0 16px 48px rgba(15,27,45,.16);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+/* topbar */
+header{
+  position:relative;
+  background:var(--surface);
+  height:56px;
+  display:flex;align-items:center;justify-content:center;
+}
+header h1{font-size:17px;font-weight:700;line-height:20px}
+.back-btn{
+  position:absolute;left:12px;top:8px;
+  width:40px;height:40px;border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.back-btn svg{width:24px;height:24px;stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+main{flex:1;padding:20px 20px 0}
+/* bracket */
+.round-title{font-size:16px;font-weight:900;line-height:19px}
+section + .round-title, .round + .round-title{margin-top:24px}
+.round{margin-top:9px;display:flex;flex-direction:column;gap:12px}
+.match-card{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  min-height:92px;
+}
+.match-card .date{font-size:12px;color:var(--gray);line-height:14px}
+.match-card .teams{font-size:13px;font-weight:700;color:var(--ink);margin-top:8px;line-height:16px}
+.match-card .result{font-size:11px;color:var(--gray);margin-top:6px;line-height:13px}
+.match-card--final{border:2px solid var(--gold);padding:15px}
+.match-card--final .result{color:var(--gold-deep)}
+.trophy-badge{
+  position:absolute;top:12px;right:16px;
+  width:56px;height:24px;border-radius:12px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <h1>대진표</h1>
+  </header>
+
+  <main>
+    <h2 class="round-title">8강</h2>
+    <section class="round">
+      <article class="match-card">
+        <p class="date">8월 9일 · 코트 1</p>
+        <p class="teams">김민준/이서연 vs 박지훈/정수빈</p>
+        <p class="result">11:7, 9:11, 11:8 · 승리</p>
+      </article>
+      <article class="match-card">
+        <p class="date">8월 9일 · 코트 2</p>
+        <p class="teams">최현우/송지민 vs 윤태옥/조성민</p>
+        <p class="result">11:5, 11:9 · 승리</p>
+      </article>
+      <article class="match-card">
+        <p class="date">8월 9일 · 코트 3</p>
+        <p class="teams">강태양/이하늘 vs 정우진/한소미</p>
+        <p class="result">9:11, 11:6, 8:11 · 승리</p>
+      </article>
+      <article class="match-card">
+        <p class="date">8월 9일 · 코트 4</p>
+        <p class="teams">배수현/오지훈 vs 신동엽/유아름</p>
+        <p class="result">11:4, 11:9 · 승리</p>
+      </article>
+    </section>
+
+    <h2 class="round-title">4강</h2>
+    <section class="round">
+      <article class="match-card">
+        <p class="date">8월 9일 · 코트 1</p>
+        <p class="teams">김민준/이서연 vs 최현우/송지민</p>
+        <p class="result">11:6, 11:8 · 승리</p>
+      </article>
+      <article class="match-card">
+        <p class="date">8월 9일 · 코트 2</p>
+        <p class="teams">강태양/이하늘 vs 배수현/오지훈</p>
+        <p class="result">11:9, 9:11, 11:7 · 승리</p>
+      </article>
+    </section>
+
+    <h2 class="round-title">결승</h2>
+    <section class="round">
+      <article class="match-card match-card--final">
+        <p class="date">8월 9일 · 센터코트</p>
+        <p class="teams">김민준/이서연 vs 강태양/이하늘</p>
+        <p class="result">11:8, 9:11, 11:6 · 우승</p>
+        <span class="trophy-badge">우승</span>
+      </article>
+    </section>
+  </main>
+</div>
+</body>
+</html>

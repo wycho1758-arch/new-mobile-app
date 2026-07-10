@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N8 고객센터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60;
+    --ink:#1f2937;
+    --bg:#f7faf8;
+    --surface:#ffffff;
+    --line:#e4e7e5;
+    --muted:#6b7280;
+    --faint:#9ca3af;
+    --tint:#e9f1ea;
+    --deep:#3f6b48;
+    --kakao:#fee500;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Noto Sans KR',sans-serif;
+    background:#e9ecef;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:32px 0;
+  }
+  .screen{
+    width:390px;
+    min-height:900px;
+    background:var(--bg);
+    box-shadow:0 12px 40px rgba(15,27,45,.14);
+    border-radius:8px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  /* top bar */
+  .topbar{
+    background:var(--surface);
+    height:56px;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    position:relative;
+    flex:0 0 auto;
+  }
+  .back-btn{
+    width:40px;height:40px;
+    background:none;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .topbar h1{
+    position:absolute;
+    left:50%;transform:translateX(-50%);
+    font-size:17px;font-weight:700;color:var(--ink);
+  }
+  main{
+    flex:1 1 auto;
+    padding:16px 20px 40px;
+    display:flex;
+    flex-direction:column;
+  }
+  /* search */
+  .search-bar{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    height:48px;
+    display:flex;align-items:center;
+    padding:0 18px;
+  }
+  .search-bar input{
+    border:none;background:transparent;outline:none;
+    width:100%;
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:14px;color:var(--ink);
+  }
+  .search-bar input::placeholder{color:var(--faint);}
+  /* faq */
+  .faq-card{
+    margin-top:16px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px 16px 8px;
+  }
+  .faq-card h2{
+    font-size:13px;font-weight:900;color:var(--faint);
+    padding-bottom:9px;
+  }
+  .faq-card ul{list-style:none;}
+  .faq-card li{border-bottom:1px solid var(--line);}
+  .faq-card li:last-child{border-bottom:none;}
+  .faq-card button{
+    display:block;width:100%;
+    background:none;border:none;cursor:pointer;
+    text-align:left;
+    padding:17px 0;
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:14px;font-weight:500;color:var(--ink);
+  }
+  /* contact buttons */
+  .kakao-btn{
+    margin-top:64px;
+    width:100%;height:60px;
+    background:var(--kakao);
+    border:none;border-radius:14px;
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:15px;font-weight:700;color:var(--ink);
+    cursor:pointer;
+  }
+  .email-btn{
+    margin-top:12px;
+    width:100%;height:60px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:15px;font-weight:700;color:var(--ink);
+    cursor:pointer;
+  }
+  /* info */
+  .info-box{
+    margin-top:24px;
+    background:var(--tint);
+    border-radius:14px;
+    padding:18px 16px;
+  }
+  .info-box .hours{
+    font-size:13px;font-weight:500;color:var(--deep);
+    margin-bottom:10px;
+  }
+  .info-box .sub{
+    font-size:13px;font-weight:400;color:var(--muted);
+    line-height:1.4;
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <header class="topbar">
+      <button class="back-btn" aria-label="뒤로 가기">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 6L9 12L15 18" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1>고객센터</h1>
+    </header>
+
+    <main>
+      <div class="search-bar">
+        <input type="text" placeholder="무엇을 도와드릴까요?">
+      </div>
+
+      <section class="faq-card">
+        <h2>자주 묻는 질문</h2>
+        <ul>
+          <li><button>참가비 환불은 언제까지 가능한가요?</button></li>
+          <li><button>복식 파트너가 초대를 수락하지 않으면 어떻게 되나요?</button></li>
+          <li><button>경기 결과에 이의가 있으면 어떻게 하나요?</button></li>
+          <li><button>DUPR 정보는 어디서 확인하나요?</button></li>
+          <li><button>대회 신청을 취소하고 싶어요</button></li>
+        </ul>
+      </section>
+
+      <button class="kakao-btn">카카오톡으로 문의하기</button>
+      <button class="email-btn">이메일로 문의하기</button>
+
+      <section class="info-box">
+        <p class="hours">운영시간: 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</p>
+        <p class="sub">support@happickle.kr<br>대한피클볼협회 운영</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

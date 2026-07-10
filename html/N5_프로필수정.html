@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N5 프로필수정</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --brand-tint:#e9f1ea;
+  --ink:#1f2937;
+  --gray:#6b7280;
+  --border:#e4e7e5;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#eceff1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 0;
+  min-height:100vh;
+}
+.phone{
+  width:390px;
+  background:var(--bg);
+  box-shadow:0 8px 32px rgba(15,27,45,.14);
+  display:flex;
+  flex-direction:column;
+  min-height:900px;
+  overflow:hidden;
+}
+
+/* 상단바 */
+header.topbar{
+  height:56px;
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  position:relative;
+  padding:0 12px;
+  flex-shrink:0;
+}
+.back-btn{
+  width:40px;height:40px;
+  background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+header.topbar h1{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:17px;font-weight:700;color:var(--ink);
+}
+
+main{flex:1;padding:28px 20px 24px;display:flex;flex-direction:column;}
+
+/* 아바타 */
+.avatar-wrap{
+  align-self:center;
+  position:relative;
+  width:80px;height:80px;
+  margin-bottom:36px;
+}
+.avatar-big{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--brand-tint);
+  display:flex;align-items:center;justify-content:center;
+}
+.camera-badge{
+  position:absolute;right:-12px;bottom:-12px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--brand);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* 입력 필드 */
+.field{
+  height:52px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:0 18px;
+  font-family:inherit;
+  font-size:15px;font-weight:500;color:var(--ink);
+  width:100%;
+  margin-bottom:8px;
+  display:block;
+}
+.field:focus{outline:2px solid var(--brand);outline-offset:-1px;}
+
+/* 성별 선택 */
+.gender-row{display:flex;gap:8px;margin-bottom:8px;}
+.gender-btn{
+  flex:1;height:44px;
+  border-radius:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  font-family:inherit;
+  font-size:14px;font-weight:700;color:var(--gray);
+  cursor:pointer;
+}
+.gender-btn.active{
+  background:var(--brand);
+  border-color:var(--brand);
+  color:#fff;
+}
+
+/* 하단 CTA */
+footer.cta-bar{
+  background:var(--surface);
+  padding:16px 20px;
+  flex-shrink:0;
+}
+.cta-btn{
+  width:100%;height:52px;
+  background:var(--brand);
+  border:none;border-radius:14px;
+  font-family:inherit;
+  font-size:16px;font-weight:700;color:#fff;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="topbar">
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 6l-6 6 6 6"/>
+      </svg>
+    </button>
+    <h1>프로필 수정</h1>
+  </header>
+
+  <main>
+    <!-- 프로필 사진 -->
+    <div class="avatar-wrap">
+      <div class="avatar-big">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#558d60" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="20" cy="13.3" r="6.7"/>
+          <path d="M7.5 33.3c0-6.9 5.6-10 12.5-10s12.5 3.1 12.5 10"/>
+        </svg>
+      </div>
+      <button class="camera-badge" type="button" aria-label="프로필 사진 변경">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.25 6.3a1.5 1.5 0 0 1 1.5-1.5h1.5l1.2-1.8h5.1l1.2 1.8h1.5a1.5 1.5 0 0 1 1.5 1.5v7.2a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5V6.3z"/>
+          <circle cx="9" cy="10.5" r="2.4"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- 입력 폼 -->
+    <form>
+      <input class="field" type="text" value="김민준" aria-label="이름">
+      <input class="field" type="tel" value="010-1234-5678" aria-label="전화번호">
+      <div class="gender-row" role="radiogroup" aria-label="성별">
+        <button class="gender-btn active" type="button">남성</button>
+        <button class="gender-btn" type="button">여성</button>
+      </div>
+      <input class="field" type="text" value="1992년 (30대)" aria-label="출생연도">
+      <input class="field" type="text" value="DUPR 4.2" aria-label="DUPR">
+      <input class="field" type="text" value="송파피클볼클럽" aria-label="클럽">
+    </form>
+  </main>
+
+  <!-- 하단 CTA -->
+  <footer class="cta-bar">
+    <button class="cta-btn" type="button">저장하기</button>
+  </footer>
+</div>
+</body>
+</html>

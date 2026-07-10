@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M2 대회상세</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558D60;
+  --brand-soft:#E9F1EA;
+  --ink:#1F2937;
+  --bg:#F7FAF8;
+  --surface:#FFFFFF;
+  --border:#E4E7E5;
+  --muted:#6B7280;
+  --faint:#9CA3AF;
+  --taupe:#A79186;
+  --radio-off:#DDE3DE;
+  --ball:#F4BF35;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#E3E7EA;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:40px 0;
+}
+.phone{
+  width:390px;background:var(--bg);
+  box-shadow:0 12px 40px rgba(15,27,45,.18);
+  border-radius:8px;overflow:hidden;
+  position:relative;
+}
+/* ── Hero ─────────────────────────── */
+.hero{position:relative;height:220px;background:var(--brand-soft);overflow:hidden}
+.hero svg.court{display:block;width:100%;height:100%}
+.hero-btn{
+  position:absolute;top:16px;width:40px;height:40px;border-radius:20px;
+  background:rgba(255,255,255,.92);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-btn.back{left:16px}
+.hero-btn.share{right:16px}
+.badge{
+  position:absolute;bottom:26px;height:28px;border-radius:14px;
+  display:flex;align-items:center;padding:0 12px;
+  font-size:12px;font-weight:700;color:#fff;
+}
+.badge.status{left:16px;background:var(--brand)}
+.badge.dday{right:22px;background:rgba(31,41,55,.6)}
+/* ── Title ────────────────────────── */
+.title-sec{padding:20px 20px 0}
+.title-sec h1{font-size:21px;font-weight:700;letter-spacing:-.3px;color:var(--ink)}
+.title-sec .host{margin-top:5px;font-size:12px;font-weight:500;color:var(--faint)}
+.divider{height:1px;background:var(--border);margin:0 20px}
+.title-sec{padding-bottom:20px}
+/* ── Info rows ────────────────────── */
+.info-sec{padding:16px 20px 18px;display:flex;flex-direction:column;gap:20px}
+.info-row{display:flex;align-items:center}
+.info-row .label{width:50px;flex:none;font-size:11px;color:var(--faint)}
+.info-row .ic{width:14px;height:14px;flex:none;margin-right:8px;display:flex}
+.info-row .val{font-size:13px;font-weight:500;color:var(--ink)}
+.info-row .map-link{margin-left:auto;font-size:12px;font-weight:700;color:var(--brand);background:none;border:none;cursor:pointer;font-family:inherit}
+/* ── Section heading ──────────────── */
+.sec-h{font-size:16px;font-weight:900;color:var(--ink)}
+/* ── Events ───────────────────────── */
+.events{padding:16px 20px 24px;display:flex;flex-direction:column;gap:8px}
+.event{
+  position:relative;display:flex;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:14px 16px;min-height:80px;cursor:pointer;
+}
+.event.closed{opacity:.55}
+.radio{width:20px;height:20px;border-radius:10px;flex:none;margin-right:12px;background:var(--radio-off)}
+.radio.on{background:var(--brand)}
+.event .body{display:flex;flex-direction:column;gap:4px}
+.event .name{font-size:15px;font-weight:700;color:var(--ink)}
+.event .meta{font-size:11px;color:var(--faint)}
+.event .count{font-size:12px;font-weight:500;color:var(--muted)}
+.event.closed .count{color:var(--faint)}
+.event .price{margin-left:auto;font-size:15px;font-weight:700;color:var(--brand)}
+.event.closed .price{color:var(--taupe)}
+/* ── Guide ────────────────────────── */
+.guide-sec{padding:16px 20px 28px}
+.guide-card{
+  margin-top:16px;background:var(--brand-soft);border-radius:14px;
+  padding:14px 16px;
+}
+.guide-card p{font-size:12.5px;line-height:20px;color:var(--muted);white-space:pre-line}
+/* ── Refund ───────────────────────── */
+.refund-sec{padding:16px 20px 32px}
+.refund-sec p{margin-top:9px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+/* ── CTA bar ──────────────────────── */
+.cta-bar{
+  display:flex;align-items:center;background:var(--surface);
+  padding:16px 20px;border-top:1px solid var(--border);
+}
+.cta-bar .price{font-size:18px;font-weight:700;color:var(--ink)}
+.cta-bar .cta{
+  margin-left:auto;width:220px;height:52px;border:none;border-radius:14px;
+  background:var(--brand);color:#fff;font-size:16px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Hero: 피클볼 코트 일러스트 -->
+  <header class="hero">
+    <svg class="court" viewBox="0 0 390 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="390" height="220" fill="#E9F1EA"/>
+      <!-- court trapezoid -->
+      <path d="M63 30 L327 30 L365 190 L25 190 Z" fill="#558D60" fill-opacity="0.14"/>
+      <path d="M63 30 L327 30 L365 190 L25 190 Z" fill="none" stroke="#558D60" stroke-width="3"/>
+      <!-- center vertical -->
+      <line x1="195" y1="30" x2="195" y2="190" stroke="#558D60" stroke-width="2" opacity="0.6"/>
+      <!-- kitchen lines -->
+      <line x1="52" y1="78" x2="338" y2="78" stroke="#558D60" stroke-width="2" opacity="0.5"/>
+      <line x1="40" y1="140" x2="350" y2="140" stroke="#558D60" stroke-width="2" opacity="0.5"/>
+      <!-- net -->
+      <line x1="25" y1="110" x2="365" y2="110" stroke="#1F2937" stroke-width="2.5"/>
+      <circle cx="25" cy="110" r="4" fill="#1F2937"/>
+      <circle cx="365" cy="110" r="4" fill="#1F2937"/>
+      <!-- players -->
+      <circle cx="135" cy="55" r="9" fill="#1F2937" opacity="0.65"/>
+      <circle cx="250" cy="55" r="9" fill="#1F2937" opacity="0.65"/>
+      <circle cx="125" cy="165" r="11" fill="#558D60"/>
+      <circle cx="260" cy="165" r="11" fill="#558D60"/>
+      <!-- ball -->
+      <circle cx="195" cy="102" r="6" fill="#F4BF35" stroke="#1F2937" stroke-width="1.2"/>
+    </svg>
+    <button class="hero-btn back" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#2B1C15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="hero-btn share" aria-label="공유하기">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="15" cy="4.2" r="2.1" stroke="#2B1C15" stroke-width="1.5"/>
+        <circle cx="5" cy="10" r="2.1" stroke="#2B1C15" stroke-width="1.5"/>
+        <circle cx="15" cy="15.8" r="2.1" stroke="#2B1C15" stroke-width="1.5"/>
+        <path d="M6.9 9L13.1 5.4M6.9 11L13.1 14.6" stroke="#2B1C15" stroke-width="1.5"/>
+      </svg>
+    </button>
+    <span class="badge status">접수중</span>
+    <span class="badge dday">D-5</span>
+  </header>
+
+  <main>
+    <!-- 타이틀 -->
+    <section class="title-sec">
+      <h1>2026 협회장배 전국오픈</h1>
+      <p class="host">주최 · 대한피클볼협회</p>
+    </section>
+    <div class="divider"></div>
+
+    <!-- 기본 정보 -->
+    <section class="info-sec">
+      <div class="info-row">
+        <span class="label">일정</span>
+        <span class="ic">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="2" y="2.9" width="10" height="9.4" rx="1.5" stroke="#A79186" stroke-width="1.05" fill="#fff"/>
+            <path d="M2 5.5H12" stroke="#A79186" stroke-width="1.05"/>
+            <path d="M4.5 1.7V3.6M9.5 1.7V3.6" stroke="#A79186" stroke-width="1.05" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="val">8월 9일 (토) · 오전 9:00</span>
+      </div>
+      <div class="info-row">
+        <span class="label">장소</span>
+        <span class="val" style="margin-left:22px">올림픽공원 SK핸드볼경기장</span>
+        <button class="map-link">지도보기</button>
+      </div>
+      <div class="info-row">
+        <span class="label">참가비</span>
+        <span class="val" style="margin-left:22px">단식 30,000원 · 복식(대표결제) 60,000원</span>
+      </div>
+    </section>
+    <div class="divider"></div>
+
+    <!-- 종목 선택 -->
+    <section class="events-sec">
+      <div class="events">
+        <h2 class="sec-h" style="margin-bottom:8px">종목 선택</h2>
+        <div class="event" role="radio" aria-checked="true">
+          <span class="radio on"></span>
+          <div class="body">
+            <span class="name">남자복식</span>
+            <span class="meta">DUPR 3.5~4.5 · 마감 8/5</span>
+            <span class="count">48/64명</span>
+          </div>
+          <span class="price">30,000원</span>
+        </div>
+        <div class="event closed" role="radio" aria-checked="false">
+          <span class="radio"></span>
+          <div class="body">
+            <span class="name">여자복식 · 마감</span>
+            <span class="meta">DUPR 3.0~4.0 · 접수가 마감되었습니다</span>
+            <span class="count">32/32명</span>
+          </div>
+          <span class="price">25,000원</span>
+        </div>
+        <div class="event" role="radio" aria-checked="false">
+          <span class="radio"></span>
+          <div class="body">
+            <span class="name">혼합복식</span>
+            <span class="meta">DUPR 제한없음 · 마감 8/7</span>
+            <span class="count">20/40명</span>
+          </div>
+          <span class="price">25,000원</span>
+        </div>
+      </div>
+    </section>
+    <div class="divider"></div>
+
+    <!-- 대회요강 -->
+    <section class="guide-sec">
+      <h2 class="sec-h">대회요강</h2>
+      <div class="guide-card">
+        <p>· 경기방식: 예선 라운드로빈 후 본선 토너먼트
+· 공인구: OPTIC 피클볼 공인구 사용
+· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수
+· 우천/불가항력 시 일정은 주최측 공지에 따름
+· 기타 문의는 대회 공지사항을 확인해주세요</p>
+      </div>
+    </section>
+    <div class="divider"></div>
+
+    <!-- 환불 규정 -->
+    <section class="refund-sec">
+      <h2 class="sec-h">환불 규정</h2>
+      <p>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다.</p>
+    </section>
+  </main>
+
+  <!-- CTA -->
+  <footer class="cta-bar">
+    <span class="price">30,000원</span>
+    <button class="cta">참가 신청하기</button>
+  </footer>
+</div>
+</body>
+</html>

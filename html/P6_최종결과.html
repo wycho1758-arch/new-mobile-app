@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P6 최종 결과</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --ink:#1f2937;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+  --border:#e4e7e5;
+  --gray:#9ca3af;
+  --gray-d:#6b7280;
+  --green-lt:#e9f1ea;
+  --green-deep:#3f6b48;
+  --green-soft:#a8c7ae;
+  --gold:#f4bf35;
+  --silver:#b9c1c9;
+  --bronze:#c88a4e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#e9edef;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 16px;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink);
+}
+.phone{
+  width:390px;
+  min-height:900px;
+  background:var(--bg);
+  border-radius:12px;
+  box-shadow:0 16px 48px rgba(15,27,45,.16);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+/* header */
+header{
+  background:var(--ink);
+  height:180px;
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:24px;
+}
+.trophy-bg{
+  width:60px;height:60px;border-radius:30px;
+  background:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+}
+.trophy-bg svg{width:36px;height:36px;stroke:#fff;stroke-width:2.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+header .sub{font-size:13px;font-weight:500;color:var(--green-soft);margin-top:16px;line-height:16px}
+header .title{font-size:20px;font-weight:900;color:#fff;margin-top:6px;line-height:24px}
+header .sub2{font-size:13px;color:var(--green-soft);margin-top:6px;line-height:16px}
+main{flex:1;padding:24px 20px 36px;display:flex;flex-direction:column}
+/* rank card */
+.rank-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 16px 0;
+}
+.rank-card h2{font-size:15px;font-weight:900;line-height:18px}
+.rank-row{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 0;
+}
+.rank-row + .rank-row{border-top:1px solid var(--border)}
+.rank-card .rank-row:first-of-type{margin-top:8px;padding-top:8px}
+.medal{
+  flex:none;width:40px;height:40px;border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;color:#fff;
+}
+.medal--1{background:var(--gold)}
+.medal--2{background:var(--silver)}
+.medal--3{background:var(--bronze)}
+.rank-row .team{font-size:15px;font-weight:700;color:var(--ink);line-height:18px}
+.rank-row .record{font-size:12px;color:var(--gray-d);margin-top:4px;line-height:14px}
+/* my rank */
+.my-rank{
+  margin-top:20px;
+  background:var(--green-lt);
+  border:1px solid #c9e0cc;
+  border-radius:16px;
+  min-height:96px;
+  padding:18px 20px;
+}
+.my-rank .label{font-size:13px;font-weight:700;color:var(--green-deep);line-height:16px}
+.my-rank .row{display:flex;align-items:center;gap:25px;margin-top:6px}
+.my-rank .rank{font-size:28px;font-weight:900;color:var(--ink);line-height:34px}
+.my-rank .detail{font-size:13px;font-weight:500;color:var(--ink);line-height:16px}
+/* buttons */
+.btns{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:24px}
+.btn{
+  width:100%;height:52px;border-radius:14px;
+  font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;
+}
+.btn--bracket{
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:#2b1c15;
+}
+.btn--home{
+  border:none;background:var(--brand);color:#fff;
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <span class="trophy-bg" aria-hidden="true">
+      <svg viewBox="0 0 36 36">
+        <path d="M12 7.5h12v6a6 6 0 0 1-12 0v-6z"/>
+        <path d="M12 9.5H7.5a4.5 4.5 0 0 0 4.5 4.5M24 9.5h4.5a4.5 4.5 0 0 1-4.5 4.5"/>
+        <path d="M18 19.5v5M13.5 28.5h9M15 24.5h6"/>
+      </svg>
+    </span>
+    <p class="sub">대회가 종료되었습니다</p>
+    <h1 class="title">2026 협회장배 전국오픈</h1>
+    <p class="sub2">남자복식 최종 결과</p>
+  </header>
+
+  <main>
+    <section class="rank-card">
+      <h2>최종 순위</h2>
+      <div class="rank-row">
+        <span class="medal medal--1">1</span>
+        <div>
+          <p class="team">박지훈 · 정수빈</p>
+          <p class="record">9승 1패</p>
+        </div>
+      </div>
+      <div class="rank-row">
+        <span class="medal medal--2">2</span>
+        <div>
+          <p class="team">최현우 · 송지민</p>
+          <p class="record">8승 2패</p>
+        </div>
+      </div>
+      <div class="rank-row">
+        <span class="medal medal--3">3</span>
+        <div>
+          <p class="team">윤태욱 · 조성민</p>
+          <p class="record">7승 3패</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="my-rank">
+      <p class="label">내 최종 순위</p>
+      <div class="row">
+        <span class="rank">5위</span>
+        <span class="detail">김민준 · 이서연 · 8승 3패</span>
+      </div>
+    </section>
+
+    <div class="btns">
+      <button class="btn btn--bracket" type="button">전체 대진표 보기</button>
+      <button class="btn btn--home" type="button">홈으로</button>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N13 초대 만료</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60;
+    --brand-light:#e9f1ea;
+    --warn:#ed7040;
+    --warn-light:#fceae0;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --border:#e4e7e5;
+    --bg:#f7faf8;
+    --surface:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Noto Sans KR",sans-serif;
+    background:#e8ecef;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:40px 0;
+  }
+  .phone{
+    width:390px;
+    min-height:700px;
+    background:var(--bg);
+    border-radius:20px;
+    box-shadow:0 16px 40px rgba(15,27,45,.14);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  header.topbar{
+    position:relative;
+    height:56px;
+    background:var(--surface);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .back-btn{
+    position:absolute;
+    left:12px;
+    top:8px;
+    width:40px;
+    height:40px;
+    border:none;
+    background:transparent;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .topbar-title{
+    font-size:17px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:8px 20px 40px;
+  }
+  .icon-circle{
+    width:80px;
+    height:80px;
+    border-radius:40px;
+    background:var(--warn-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--warn);
+  }
+  h2.headline{
+    margin-top:26px;
+    font-size:21px;
+    font-weight:900;
+    color:var(--ink);
+    text-align:center;
+  }
+  p.subtext{
+    margin-top:12px;
+    font-size:14px;
+    font-weight:500;
+    color:var(--muted);
+    text-align:center;
+  }
+  .tour-card{
+    width:100%;
+    margin-top:31px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 20px 20px;
+  }
+  .tour-card .title{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .tour-card .division{
+    margin-top:9px;
+    font-size:12px;
+    font-weight:400;
+    color:var(--muted);
+  }
+  .tour-card .datetime{
+    margin-top:14px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .tour-card .place{
+    margin-top:8px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .btn-group{
+    width:100%;
+    margin-top:24px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  button.btn{
+    width:100%;
+    height:52px;
+    border-radius:14px;
+    border:none;
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--brand);
+    color:var(--surface);
+  }
+  .btn-secondary{
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <header class="topbar">
+      <button type="button" class="back-btn" aria-label="뒤로 가기">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1 class="topbar-title">초대 만료</h1>
+    </header>
+
+    <main>
+      <div class="icon-circle">
+        <svg width="44" height="36" viewBox="0 0 44 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="13.5" r="4.8" stroke="currentColor" stroke-width="2.7"/>
+          <circle cx="29.5" cy="13.5" r="4.8" stroke="currentColor" stroke-width="2.7"/>
+          <path d="M8.5 30c1.5-5.2 6.4-7.8 14.2-7.8S35.4 24.8 36.9 30" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="headline">초대 링크가 만료됐어요</h2>
+      <p class="subtext">72시간 내 응답이 없었어요. 다시 초대하거나 취소해주세요</p>
+
+      <section class="tour-card">
+        <p class="title">2026 협회장배 전국오픈</p>
+        <p class="division">남자복식</p>
+        <p class="datetime">8월 9일 (토) · 오전 9:00</p>
+        <p class="place">올림픽공원 SK핸드볼경기장</p>
+      </section>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary">다른 파트너 초대하기</button>
+        <button type="button" class="btn btn-secondary">참가 취소하기</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

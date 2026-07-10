@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N11 취소 완료</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --label:#9ca3af;
+    --border:#e4e7e5;
+    --bg:#f7faf8;
+    --surface:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Noto Sans KR",sans-serif;
+    background:#e8ecef;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:40px 0;
+  }
+  .phone{
+    width:390px;
+    min-height:760px;
+    background:var(--bg);
+    border-radius:20px;
+    box-shadow:0 16px 40px rgba(15,27,45,.14);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:96px 20px 60px;
+  }
+  .check-circle{
+    width:80px;
+    height:80px;
+    border-radius:40px;
+    background:var(--brand);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--surface);
+  }
+  h1.headline{
+    margin-top:24px;
+    font-size:22px;
+    font-weight:900;
+    color:var(--ink);
+    text-align:center;
+  }
+  p.subtext{
+    margin-top:10px;
+    font-size:14px;
+    font-weight:500;
+    color:var(--muted);
+    text-align:center;
+  }
+  .summary-card{
+    width:100%;
+    margin-top:47px;
+    background:var(--surface);
+    border-radius:16px;
+    padding:18px 20px 16px;
+  }
+  .summary-card .title{
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .summary-card .team{
+    margin-top:8px;
+    font-size:12px;
+    font-weight:400;
+    color:var(--muted);
+  }
+  .summary-grid{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    row-gap:16px;
+  }
+  .field .label{
+    font-size:11px;
+    font-weight:400;
+    color:var(--label);
+  }
+  .field .value{
+    margin-top:4px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .field .value.amount{
+    margin-top:3px;
+    font-size:20px;
+    font-weight:900;
+    color:var(--brand);
+  }
+  .btn-group{
+    width:100%;
+    margin-top:32px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  button.btn{
+    width:100%;
+    height:52px;
+    border-radius:14px;
+    border:none;
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--brand);
+    color:var(--surface);
+  }
+  .btn-secondary{
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--ink);
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <main>
+      <div class="check-circle">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.5 21l8.2 7.7L31.5 12" stroke="currentColor" stroke-width="4.33" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="headline">취소가 완료됐어요</h1>
+      <p class="subtext">환불은 영업일 기준 3~5일 이내 처리돼요</p>
+
+      <section class="summary-card">
+        <p class="title">2026 협회장배 전국오픈</p>
+        <p class="team">남자복식 · 김민준 / 이서연</p>
+        <div class="summary-grid">
+          <div class="field">
+            <p class="label">환불 금액</p>
+            <p class="value amount">60,000원</p>
+          </div>
+          <div class="field">
+            <p class="label">환불 예정일</p>
+            <p class="value">2026.08.04 (예상)</p>
+          </div>
+          <div class="field">
+            <p class="label">환불 수단</p>
+            <p class="value">카드결제 (PG)</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary">예약내역 보기</button>
+        <button type="button" class="btn btn-secondary">홈으로</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

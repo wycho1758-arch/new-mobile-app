@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P3 파트너 수락</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60;
+    --brand-dark:#3f6b48;
+    --brand-light:#e9f1ea;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --border:#e4e7e5;
+    --bg:#f7faf8;
+    --surface:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Noto Sans KR",sans-serif;
+    background:#e8ecef;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:40px 0;
+  }
+  .phone{
+    width:390px;
+    min-height:760px;
+    background:var(--bg);
+    border-radius:20px;
+    box-shadow:0 16px 40px rgba(15,27,45,.14);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:60px 20px 74px;
+  }
+  .icon-circle{
+    width:80px;
+    height:80px;
+    border-radius:40px;
+    background:var(--brand-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--brand);
+  }
+  h1{
+    margin-top:20px;
+    font-size:21px;
+    font-weight:900;
+    color:var(--ink);
+    text-align:center;
+    line-height:30px;
+  }
+  .tour-card{
+    width:100%;
+    margin-top:25px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 20px 20px;
+  }
+  .tour-card .title{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .tour-card .division{
+    margin-top:9px;
+    font-size:12px;
+    font-weight:400;
+    color:var(--muted);
+  }
+  .tour-card .datetime{
+    margin-top:14px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .tour-card .place{
+    margin-top:8px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .invite-card{
+    width:100%;
+    margin-top:16px;
+    background:var(--brand-light);
+    border-radius:16px;
+    padding:16px;
+  }
+  .invite-top{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .inviter-avatar{
+    width:40px;
+    height:40px;
+    border-radius:20px;
+    background:var(--surface);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--brand);
+  }
+  .invite-info .inviter{
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .invite-info .desc{
+    margin-top:4px;
+    font-size:12px;
+    font-weight:400;
+    color:var(--muted);
+  }
+  .invite-expiry{
+    margin-top:18px;
+    padding-left:4px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--brand-dark);
+  }
+  .btn-group{
+    width:100%;
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding-top:78px;
+  }
+  button{
+    width:100%;
+    height:52px;
+    border-radius:14px;
+    border:none;
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn-accept{
+    background:var(--brand);
+    color:var(--surface);
+  }
+  .btn-decline{
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <main>
+      <div class="icon-circle">
+        <svg width="44" height="36" viewBox="0 0 44 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="13.5" r="4.8" stroke="currentColor" stroke-width="2.7"/>
+          <circle cx="29.5" cy="13.5" r="4.8" stroke="currentColor" stroke-width="2.7"/>
+          <path d="M8.5 30c1.5-5.2 6.4-7.8 14.2-7.8S35.4 24.8 36.9 30" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>김민준님이 파트너로<br>초대했어요</h1>
+
+      <section class="tour-card">
+        <p class="title">2026 협회장배 전국오픈</p>
+        <p class="division">남자복식</p>
+        <p class="datetime">8월 9일 (토) · 오전 9:00</p>
+        <p class="place">올림픽공원 SK핸드볼경기장</p>
+      </section>
+
+      <section class="invite-card">
+        <div class="invite-top">
+          <div class="inviter-avatar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="6.7" r="3.3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M3.75 16.67c.9-3.1 3.2-5 6.25-5s5.35 1.9 6.25 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="invite-info">
+            <p class="inviter">초대자 김민준 · DUPR 4.2</p>
+            <p class="desc">수락하면 대표자가 신청 및 결제를 진행합니다</p>
+          </div>
+        </div>
+        <p class="invite-expiry">유효기간 72시간 · 42:18:05 남음</p>
+      </section>
+
+      <div class="btn-group">
+        <button type="button" class="btn-accept">초대 수락하기</button>
+        <button type="button" class="btn-decline">거절하기</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

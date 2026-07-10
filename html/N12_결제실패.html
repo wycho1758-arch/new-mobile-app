@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N12 결제실패</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558D60;
+  --error:#D14343;
+  --error-soft:#FCEAE0;
+  --error-text:#C85A2E;
+  --ink:#1F2937;
+  --bg:#F7FAF8;
+  --surface:#FFFFFF;
+  --border:#E4E7E5;
+  --muted:#6B7280;
+  --faint:#9CA3AF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#E3E7EA;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:40px 0;
+}
+.phone{
+  width:390px;min-height:760px;background:var(--bg);
+  box-shadow:0 12px 40px rgba(15,27,45,.18);
+  border-radius:8px;overflow:hidden;
+  padding:96px 20px 76px;
+}
+/* ── 상태 아이콘 ──────────────────── */
+.state-circle{
+  width:80px;height:80px;border-radius:40px;background:var(--error);
+  margin:0 auto;display:flex;align-items:center;justify-content:center;
+}
+h1{margin-top:78px;text-align:center;font-size:22px;font-weight:900;color:var(--ink)}
+.subtext{margin-top:10px;text-align:center;font-size:14px;font-weight:500;color:var(--muted)}
+/* ── 요약 카드 ────────────────────── */
+.summary-card{
+  margin-top:47px;background:var(--surface);border-radius:16px;
+  padding:18px 20px 19px;
+}
+.summary-card .t{font-size:15px;font-weight:700;color:var(--ink)}
+.summary-card .s{margin-top:8px;font-size:12px;color:var(--muted)}
+.grid{display:flex;margin-top:19px}
+.grid .cell{width:180px}
+.grid .l{font-size:11px;color:var(--faint)}
+.grid .amount{margin-top:3px;font-size:20px;font-weight:900;color:var(--error)}
+.grid .v{margin-top:5px;font-size:13px;font-weight:500;color:var(--ink)}
+.method{margin-top:24px}
+.method .l{font-size:11px;color:var(--faint)}
+.method .v{margin-top:5px;font-size:13px;font-weight:500;color:var(--ink)}
+/* ── 실패 사유 ────────────────────── */
+.reason-box{
+  margin-top:16px;background:var(--error-soft);border-radius:12px;
+  min-height:48px;display:flex;align-items:center;padding:14px 16px;
+}
+.reason-box p{font-size:12.5px;font-weight:500;color:var(--error-text)}
+/* ── 버튼 ─────────────────────────── */
+.btns{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.btn{
+  width:100%;height:52px;border-radius:14px;font-size:16px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+}
+.btn.primary{background:var(--brand);border:none;color:#fff}
+.btn.secondary{background:var(--surface);border:1px solid var(--border);color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <main>
+    <div class="state-circle" role="img" aria-label="결제 실패">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M12 12L28 28M28 12L12 28" stroke="#fff" stroke-width="4.3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>결제에 실패했어요</h1>
+    <p class="subtext">카드 승인이 거절됐어요. 다시 시도해주세요</p>
+
+    <!-- 결제 요약 -->
+    <section class="summary-card">
+      <p class="t">2026 협회장배 전국오픈</p>
+      <p class="s">남자복식 · 김민준 / 이서연</p>
+      <div class="grid">
+        <div class="cell">
+          <p class="l">결제금액</p>
+          <p class="amount">60,000원</p>
+        </div>
+        <div class="cell">
+          <p class="l">실패 일시</p>
+          <p class="v">2026.07.30 14:22</p>
+        </div>
+      </div>
+      <div class="method">
+        <p class="l">결제수단</p>
+        <p class="v">카드결제 (PG)</p>
+      </div>
+    </section>
+
+    <!-- 실패 사유 -->
+    <aside class="reason-box">
+      <p>실패 사유: 카드 한도 초과 (카드사 승인 거절)</p>
+    </aside>
+
+    <!-- 액션 -->
+    <nav class="btns">
+      <button class="btn primary">다시 결제하기</button>
+      <button class="btn secondary">홈으로</button>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

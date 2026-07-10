@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PickleHub — 화면 퍼블리싱 갤러리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60; --brand-deep:#3f6b48; --ink:#1f2937; --bg:#f7faf8;
+    --border:#e4e7e5; --muted:#9ca3af; --tint:#e9f1ea;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);padding:40px 32px 80px}
+  header.page{max-width:1280px;margin:0 auto 8px}
+  header.page h1{font-size:28px;font-weight:900}
+  header.page h1 span{color:var(--brand)}
+  header.page p{color:var(--muted);margin-top:6px;font-size:14px}
+  section{max-width:1280px;margin:36px auto 0}
+  section>h2{font-size:18px;font-weight:700;color:var(--brand-deep);padding-bottom:10px;border-bottom:2px solid var(--tint);margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+  a.card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:box-shadow .15s, transform .15s}
+  a.card:hover{box-shadow:0 8px 24px rgba(31,41,55,.12);transform:translateY(-2px)}
+  .thumb{height:300px;overflow:hidden;position:relative;background:#eef2ef}
+  .thumb iframe{width:390px;height:844px;border:0;transform:scale(.5385);transform-origin:top left;pointer-events:none}
+  .label{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .label .code{font-size:11px;font-weight:700;color:#fff;background:var(--brand);border-radius:6px;padding:2px 7px;flex:none}
+  .label .name{font-size:14px;font-weight:500}
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>Pickle<span>Hub</span> 화면 퍼블리싱</h1>
+  <p>Figma pickleball-design 파일 기준 31개 화면 · HTML/CSS (Noto Sans KR) · 카드를 클릭하면 해당 화면이 열립니다</p>
+</header>
+
+<section>
+  <h2>메인 플로우 (M)</h2>
+  <div class="grid" id="g-m"></div>
+</section>
+<section>
+  <h2>프로세스 (P)</h2>
+  <div class="grid" id="g-p"></div>
+</section>
+<section>
+  <h2>보조 · 예외 화면 (N)</h2>
+  <div class="grid" id="g-n"></div>
+</section>
+
+<script>
+const screens = {
+  "g-m": [
+    ["M0A","로그인"],["M0B","회원가입"],["M1","탐색홈"],["M2","대회상세"],
+    ["M3","참가신청서"],["M4","결제"],["M5","내경기"],["M6","알림"]
+  ],
+  "g-p": [
+    ["P1","결제완료"],["P2","마이페이지"],["P3","파트너수락"],
+    ["P4","점수입력"],["P5","결과확인"],["P6","최종결과"]
+  ],
+  "g-n": [
+    ["N1","가입완료"],["N2","초대장"],["N3","이의제기"],["N4","예약내역"],
+    ["N5","프로필수정"],["N6","DUPR관리"],["N7","알림설정"],["N8","고객센터"],
+    ["N9","파트너거절"],["N10","참가취소확인"],["N11","취소완료"],["N12","결제실패"],
+    ["N13","초대만료"],["N14","이의제기완료"],["N15","회원탈퇴"],["N16","지역선택모달"],["N17","대진표"]
+  ]
+};
+for (const [gridId, items] of Object.entries(screens)) {
+  const grid = document.getElementById(gridId);
+  for (const [code, name] of items) {
+    const file = `${code}_${name}.html`;
+    const a = document.createElement("a");
+    a.className = "card"; a.href = file;
+    a.innerHTML = `
+      <div class="thumb"><iframe src="${file}" loading="lazy" tabindex="-1" scrolling="no"></iframe></div>
+      <div class="label"><span class="code">${code}</span><span class="name">${name}</span></div>`;
+    grid.appendChild(a);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P1 결제완료</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558D60;
+  --brand-deep:#3F6B48;
+  --brand-soft:#E9F1EA;
+  --ink:#1F2937;
+  --bg:#F7FAF8;
+  --surface:#FFFFFF;
+  --border:#E4E7E5;
+  --muted:#6B7280;
+  --faint:#9CA3AF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#E3E7EA;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:40px 0;
+}
+.phone{
+  width:390px;min-height:844px;background:var(--bg);
+  box-shadow:0 12px 40px rgba(15,27,45,.18);
+  border-radius:8px;overflow:hidden;
+  padding:96px 20px 150px;
+}
+/* ── 상태 아이콘 ──────────────────── */
+.state-circle{
+  width:80px;height:80px;border-radius:40px;background:var(--brand);
+  margin:0 auto;display:flex;align-items:center;justify-content:center;
+}
+h1{margin-top:78px;text-align:center;font-size:22px;font-weight:900;color:var(--ink)}
+.subtext{margin-top:10px;text-align:center;font-size:14px;font-weight:500;color:var(--muted)}
+/* ── 요약 카드 ────────────────────── */
+.summary-card{
+  margin-top:47px;background:var(--surface);border-radius:16px;
+  padding:18px 20px 19px;
+}
+.summary-card .t{font-size:15px;font-weight:700;color:var(--ink)}
+.summary-card .s{margin-top:8px;font-size:12px;color:var(--muted)}
+.summary-card .rule{height:1px;background:var(--border);margin:14px -4px 0}
+.grid{display:flex;margin-top:19px}
+.grid .cell{width:180px}
+.grid .l{font-size:11px;color:var(--faint)}
+.grid .amount{margin-top:3px;font-size:20px;font-weight:900;color:var(--brand)}
+.grid .v{margin-top:5px;font-size:13px;font-weight:500;color:var(--ink)}
+.method{margin-top:24px}
+.method .l{font-size:11px;color:var(--faint)}
+.method .v{margin-top:5px;font-size:13px;font-weight:500;color:var(--ink)}
+/* ── D-day 칩 ─────────────────────── */
+.dday-wrap{margin-top:22px;display:flex;justify-content:center}
+.dday-chip{
+  height:34px;border-radius:17px;background:var(--brand-soft);
+  display:flex;align-items:center;padding:0 29px;
+  font-size:13px;font-weight:700;color:var(--brand-deep);
+}
+/* ── 버튼 ─────────────────────────── */
+.btns{margin-top:34px;display:flex;flex-direction:column;gap:12px}
+.btn{
+  width:100%;height:52px;border-radius:14px;font-size:16px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+}
+.btn.primary{background:var(--brand);border:none;color:#fff}
+.btn.secondary{background:var(--surface);border:1px solid var(--border);color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <main>
+    <div class="state-circle" role="img" aria-label="결제 완료">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M9 21L16.5 28L31 12.5" stroke="#fff" stroke-width="4.33" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>결제가 완료되었어요</h1>
+    <p class="subtext">참가 신청이 확정됐습니다</p>
+
+    <!-- 결제 요약 -->
+    <section class="summary-card">
+      <p class="t">2026 협회장배 전국오픈</p>
+      <p class="s">남자복식 · 김민준 / 이서연</p>
+      <div class="rule"></div>
+      <div class="grid">
+        <div class="cell">
+          <p class="l">결제금액</p>
+          <p class="amount">60,000원</p>
+        </div>
+        <div class="cell">
+          <p class="l">결제일시</p>
+          <p class="v">2026.07.30 14:22</p>
+        </div>
+      </div>
+      <div class="method">
+        <p class="l">결제수단</p>
+        <p class="v">카드결제 (PG)</p>
+      </div>
+    </section>
+
+    <!-- D-day -->
+    <div class="dday-wrap">
+      <span class="dday-chip">대회까지 D-5</span>
+    </div>
+
+    <!-- 액션 -->
+    <nav class="btns">
+      <button class="btn primary">내 경기 보기</button>
+      <button class="btn secondary">홈으로</button>
+    </nav>
+  </main>
+</div>
+</body>
+</html>

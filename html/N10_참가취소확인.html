@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N10 참가 취소 확인</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60;
+    --brand-dark:#3f6b48;
+    --brand-light:#e9f1ea;
+    --warn-light:#fceae0;
+    --warn-text:#c85a2e;
+    --danger:#d14343;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --label:#9ca3af;
+    --border:#e4e7e5;
+    --bg:#f7faf8;
+    --surface:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Noto Sans KR",sans-serif;
+    background:#e8ecef;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:40px 0;
+  }
+  .phone{
+    width:390px;
+    min-height:820px;
+    background:var(--bg);
+    border-radius:20px;
+    box-shadow:0 16px 40px rgba(15,27,45,.14);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  header.topbar{
+    position:relative;
+    height:56px;
+    background:var(--surface);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .back-btn{
+    position:absolute;
+    left:12px;
+    top:8px;
+    width:40px;
+    height:40px;
+    border:none;
+    background:transparent;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .topbar-title{
+    font-size:17px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:16px 20px 32px;
+  }
+  .summary-card{
+    background:var(--surface);
+    border-radius:16px;
+    padding:18px 20px 16px;
+  }
+  .summary-card .title{
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .summary-card .team{
+    margin-top:8px;
+    font-size:12px;
+    font-weight:400;
+    color:var(--muted);
+  }
+  .summary-grid{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    row-gap:16px;
+  }
+  .field .label{
+    font-size:11px;
+    font-weight:400;
+    color:var(--label);
+  }
+  .field .value{
+    margin-top:4px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .field .value.amount{
+    margin-top:3px;
+    font-size:20px;
+    font-weight:900;
+    color:var(--brand);
+  }
+  .dday-chip{
+    margin:16px auto 0;
+    height:34px;
+    padding:0 20px;
+    border-radius:17px;
+    background:var(--brand-light);
+    display:flex;
+    align-items:center;
+  }
+  .dday-chip span{
+    font-size:13px;
+    font-weight:700;
+    color:var(--brand-dark);
+  }
+  .refund-box{
+    margin-top:18px;
+    height:100px;
+    border-radius:12px;
+    background:var(--brand-light);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .refund-box .refund-label{
+    font-size:13px;
+    font-weight:700;
+    color:var(--brand-dark);
+  }
+  .refund-box .refund-value{
+    font-size:28px;
+    font-weight:900;
+    color:var(--brand);
+  }
+  h2.section-title{
+    margin-top:22px;
+    font-size:16px;
+    font-weight:900;
+    color:var(--ink);
+  }
+  .guide-card{
+    margin-top:5px;
+    border-radius:14px;
+    background:var(--brand-light);
+    padding:14px 16px;
+  }
+  .guide-card ul{
+    list-style:none;
+  }
+  .guide-card li{
+    font-size:12.5px;
+    font-weight:400;
+    line-height:20px;
+    color:var(--muted);
+  }
+  .guide-card li::before{
+    content:"· ";
+  }
+  .chip-row{
+    margin-top:9px;
+    display:flex;
+    gap:4px;
+  }
+  .chip{
+    height:36px;
+    padding:0 20px;
+    border-radius:18px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .chip.selected{
+    background:var(--brand);
+    border-color:var(--brand);
+    color:var(--surface);
+  }
+  .warning-box{
+    margin-top:20px;
+    min-height:56px;
+    border-radius:12px;
+    background:var(--warn-light);
+    display:flex;
+    align-items:center;
+    padding:12px 16px;
+  }
+  .warning-box p{
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--warn-text);
+  }
+  .btn-confirm{
+    margin-top:auto;
+    width:100%;
+    height:52px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    color:var(--danger);
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <header class="topbar">
+      <button type="button" class="back-btn" aria-label="뒤로 가기">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1 class="topbar-title">참가 취소</h1>
+    </header>
+
+    <main>
+      <section class="summary-card">
+        <p class="title">2026 협회장배 전국오픈</p>
+        <p class="team">남자복식 · 김민준 / 이서연</p>
+        <div class="summary-grid">
+          <div class="field">
+            <p class="label">결제금액</p>
+            <p class="value amount">60,000원</p>
+          </div>
+          <div class="field">
+            <p class="label">결제일시</p>
+            <p class="value">2026.07.30 14:22</p>
+          </div>
+          <div class="field">
+            <p class="label">결제수단</p>
+            <p class="value">카드결제 (PG)</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="dday-chip"><span>3일 전 취소 · 100% 환불 대상</span></div>
+
+      <section class="refund-box">
+        <p class="refund-label">환불 예정 금액</p>
+        <p class="refund-value">60,000원</p>
+      </section>
+
+      <h2 class="section-title">환불 규정</h2>
+      <section class="guide-card">
+        <ul>
+          <li>대회 3일 전까지 취소: 100% 환불</li>
+          <li>대회 3일 이내 취소: 환불 불가</li>
+          <li>주최 측 사정으로 취소 시: 전액 환불</li>
+          <li>환불은 결제수단으로 영업일 기준 3~5일 소요돼요</li>
+        </ul>
+      </section>
+
+      <h2 class="section-title">취소 사유 (선택)</h2>
+      <div class="chip-row">
+        <button type="button" class="chip selected">실수 신청</button>
+        <button type="button" class="chip">일정 변경</button>
+        <button type="button" class="chip">개인 사정</button>
+        <button type="button" class="chip">기타</button>
+      </div>
+
+      <div class="warning-box">
+        <p>취소 확정 후에는 되돌릴 수 없으며, 위 환불 정책에 따라 처리돼요</p>
+      </div>
+
+      <button type="button" class="btn-confirm">취소 확정하기</button>
+    </main>
+  </div>
+</body>
+</html>

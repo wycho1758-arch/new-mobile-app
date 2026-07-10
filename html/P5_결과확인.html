@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P5 결과 확인</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#558d60;
+  --ink:#1f2937;
+  --bg:#f7faf8;
+  --surface:#ffffff;
+  --border:#e4e7e5;
+  --gray:#9ca3af;
+  --gray-d:#6b7280;
+  --danger:#d14343;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#e9edef;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:40px 16px;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink);
+}
+.phone{
+  width:390px;
+  min-height:760px;
+  background:var(--bg);
+  border-radius:12px;
+  box-shadow:0 16px 48px rgba(15,27,45,.16);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+/* topbar */
+header{
+  position:relative;
+  background:var(--surface);
+  height:56px;
+  display:flex;align-items:center;justify-content:center;
+}
+header h1{font-size:17px;font-weight:700;line-height:20px}
+.back-btn{
+  position:absolute;left:12px;top:8px;
+  width:40px;height:40px;border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.back-btn svg{width:24px;height:24px;stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+main{flex:1;padding:16px 20px 0;display:flex;flex-direction:column}
+/* match card */
+.match-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px 20px;
+  min-height:80px;
+}
+.match-card .date{font-size:12px;color:var(--gray-d);line-height:14px}
+.match-card .teams{font-size:14px;font-weight:700;color:var(--ink);margin-top:10px;line-height:17px}
+/* score card */
+.score-card{
+  margin-top:52px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 16px 15px;
+}
+.score-card .head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:0 4px;
+}
+.score-card .head h2{font-size:15px;font-weight:900;line-height:18px}
+.score-card .head .winner{font-size:12px;font-weight:700;color:var(--brand);line-height:14px}
+.set-line{
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid var(--border);
+  padding:9px 4px;
+  height:40px;
+}
+.set-line:first-of-type{margin-top:20px}
+.set-line .label{font-size:13px;font-weight:500;color:var(--gray-d);line-height:16px}
+.set-line .score{font-size:18px;font-weight:900;color:var(--ink);line-height:22px}
+.score-card .meta{font-size:11px;color:var(--gray);line-height:13px;margin-top:14px;padding:0 4px}
+/* bottom */
+.helper{
+  margin-top:auto;
+  text-align:center;
+  font-size:12px;color:var(--gray-d);line-height:14px;
+}
+.btn{
+  width:100%;height:52px;border-radius:14px;
+  font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;
+}
+.btn--confirm{
+  margin-top:36px;
+  border:none;background:var(--brand);color:#fff;
+}
+.btn--dispute{
+  margin:12px 0 22px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--danger);
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <button class="back-btn" type="button" aria-label="뒤로가기">
+      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <h1>결과 확인</h1>
+  </header>
+
+  <main>
+    <section class="match-card">
+      <p class="date">8월 9일 (토) · 코트 3</p>
+      <p class="teams">김민준/이서연 vs 박지훈/정수빈</p>
+    </section>
+
+    <section class="score-card">
+      <div class="head">
+        <h2>제출된 결과</h2>
+        <span class="winner">승리: 김민준/이서연 (2:1)</span>
+      </div>
+      <div class="set-line">
+        <span class="label">1세트</span>
+        <span class="score">11 : 7</span>
+      </div>
+      <div class="set-line">
+        <span class="label">2세트</span>
+        <span class="score">9 : 11</span>
+      </div>
+      <div class="set-line">
+        <span class="label">3세트</span>
+        <span class="score">11 : 8</span>
+      </div>
+      <p class="meta">김민준님이 8월 9일 14:32에 입력</p>
+    </section>
+
+    <p class="helper">내용이 맞으면 확인하고, 다르면 이의를 제기해주세요</p>
+    <button class="btn btn--confirm" type="button">내용이 맞아요, 확인하기</button>
+    <button class="btn btn--dispute" type="button">이의 제기하기</button>
+  </main>
+</div>
+</body>
+</html>

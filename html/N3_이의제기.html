@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N3 이의 제기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#558d60;
+    --ink:#1f2937;
+    --bg:#f7faf8;
+    --surface:#ffffff;
+    --line:#e4e7e5;
+    --muted:#6b7280;
+    --faint:#9ca3af;
+    --tint:#e9f1ea;
+    --deep:#3f6b48;
+    --danger:#d14343;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Noto Sans KR',sans-serif;
+    background:#e9ecef;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:32px 0;
+  }
+  .screen{
+    width:390px;
+    min-height:760px;
+    background:var(--bg);
+    box-shadow:0 12px 40px rgba(15,27,45,.14);
+    border-radius:8px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  /* top bar */
+  .topbar{
+    background:var(--surface);
+    height:56px;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    position:relative;
+    flex:0 0 auto;
+  }
+  .back-btn{
+    width:40px;height:40px;
+    background:none;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .topbar h1{
+    position:absolute;
+    left:50%;transform:translateX(-50%);
+    font-size:17px;font-weight:700;color:var(--ink);
+  }
+  /* main */
+  main{
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    padding:16px 20px 0;
+  }
+  .match-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .match-card .meta{font-size:12px;color:var(--muted);}
+  .match-card .teams{font-size:14px;font-weight:700;color:var(--ink);}
+  .score-ref{
+    margin-top:16px;
+    background:var(--tint);
+    border-radius:12px;
+    padding:20px 16px;
+    font-size:13px;font-weight:700;color:var(--deep);
+  }
+  .section-label{
+    margin-top:20px;
+    font-size:15px;font-weight:900;color:var(--ink);
+  }
+  .textarea-wrap{
+    margin-top:6px;
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    height:160px;
+  }
+  .textarea-wrap textarea{
+    width:100%;height:100%;
+    border:none;background:transparent;resize:none;outline:none;
+    padding:16px 16px 32px;
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:14px;color:var(--ink);
+    border-radius:14px;
+  }
+  .textarea-wrap textarea::placeholder{color:var(--faint);}
+  .textarea-wrap .counter{
+    position:absolute;
+    right:15px;bottom:11px;
+    font-size:11px;color:var(--faint);
+  }
+  .note-box{
+    margin-top:32px;
+    background:var(--tint);
+    border-radius:12px;
+    padding:20px 16px;
+    font-size:12px;font-weight:500;color:var(--deep);
+  }
+  /* cta */
+  .cta-bar{
+    flex:0 0 auto;
+    margin-top:auto;
+    background:var(--surface);
+    padding:16px 20px;
+  }
+  .cta-btn{
+    width:100%;height:52px;
+    background:var(--danger);
+    border:none;border-radius:14px;
+    color:var(--surface);
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:16px;font-weight:700;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <header class="topbar">
+      <button class="back-btn" aria-label="뒤로 가기">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 6L9 12L15 18" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1>이의 제기</h1>
+    </header>
+
+    <main>
+      <section class="match-card">
+        <p class="meta">8월 9일 (토) · 코트 3</p>
+        <p class="teams">김민준/이서연 vs 박지훈/정수빈</p>
+      </section>
+
+      <section class="score-ref">제출된 결과: 11:7, 9:11, 11:8 (2:1 승)</section>
+
+      <h2 class="section-label">이의 제기 사유</h2>
+      <div class="textarea-wrap">
+        <textarea maxlength="200" placeholder="어떤 부분이 다른지 구체적으로 적어주세요&#10;예: 2세트 점수가 9:11이 아니라 11:9입니다"></textarea>
+        <span class="counter">0/200</span>
+      </div>
+
+      <section class="note-box">제출하시면 주최자가 확인 후 결과를 수정·확정합니다</section>
+    </main>
+
+    <div class="cta-bar">
+      <button class="cta-btn">이의 제기 제출하기</button>
+    </div>
+  </div>
+</body>
+</html>
