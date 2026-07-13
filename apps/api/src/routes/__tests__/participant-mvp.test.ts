@@ -20,8 +20,8 @@ async function requestJson(path: string, init?: RequestInit) {
 }
 
 describe('participant MVP dev-preview endpoints', () => {
-  beforeEach(() => {
-    resetParticipantMvpState();
+  beforeEach(async () => {
+    await resetParticipantMvpState();
   });
 
   it('lists and returns the sandbox tournament API shape', async () => {

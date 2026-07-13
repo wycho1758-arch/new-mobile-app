@@ -36,31 +36,31 @@ export const tournamentsRoute = new Hono()
   });
 
 export const participantProfileRoute = new Hono()
-  .get('/', (c) => c.json(getParticipantProfile()))
-  .patch('/', zValidator('json', updateParticipantProfileRequestSchema), (c) =>
-    c.json(updateParticipantDupr(c.req.valid('json').duprId)),
+  .get('/', async (c) => c.json(await getParticipantProfile()))
+  .patch('/', zValidator('json', updateParticipantProfileRequestSchema), async (c) =>
+    c.json(await updateParticipantDupr(c.req.valid('json').duprId)),
   );
 
 export const tournamentApplicationsRoute = new Hono()
-  .post('/', zValidator('json', createTournamentApplicationRequestSchema), (c) => {
+  .post('/', zValidator('json', createTournamentApplicationRequestSchema), async (c) => {
     try {
-      return c.json(createTournamentApplication(c.req.valid('json')), 201);
+      return c.json(await createTournamentApplication(c.req.valid('json')), 201);
     } catch (error) {
       const mapped = mapParticipantMvpError(error);
       return c.json(mapped.body, mapped.status);
     }
   })
-  .get('/:applicationId', (c) => {
+  .get('/:applicationId', async (c) => {
     try {
-      return c.json(getTournamentApplication(c.req.param('applicationId')));
+      return c.json(await getTournamentApplication(c.req.param('applicationId')));
     } catch (error) {
       const mapped = mapParticipantMvpError(error);
       return c.json(mapped.body, mapped.status);
     }
   })
-  .delete('/:applicationId', (c) => {
+  .delete('/:applicationId', async (c) => {
     try {
-      requestParticipantSelfCancel(c.req.param('applicationId'));
+      await requestParticipantSelfCancel(c.req.param('applicationId'));
       return c.json(participantApiErrorResponseSchema.parse({
         error: participantApiErrorCodeSchema.enum.PARTICIPANT_SELF_CANCEL_DISABLED,
       }), 400);
