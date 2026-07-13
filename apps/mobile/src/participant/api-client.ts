@@ -1,13 +1,16 @@
 import {
+  type CreateSupportInquiryRequest,
   type CreateTournamentApplicationRequest,
   type ParticipantProfile,
   type SupportCenterResponse,
+  type SupportInquiry,
   type Tournament,
   type TournamentDetail,
   type TournamentApplication,
   type UpdateParticipantProfileRequest,
   type NotificationListResponse,
   type MyPageResponse,
+  createSupportInquiryRequestSchema,
   createTournamentApplicationRequestSchema,
   myPageResponseSchema,
   notificationListResponseSchema,
@@ -15,6 +18,7 @@ import {
   participantApiHttpErrorCodeSchema,
   participantProfileSchema,
   supportCenterResponseSchema,
+  supportInquirySchema,
   tournamentApplicationSchema,
   tournamentListResponseSchema,
   tournamentDetailSchema,
@@ -33,6 +37,7 @@ export type ParticipantApiClient = {
   getTournament: (tournamentId: string) => Promise<TournamentDetail>;
   getParticipantProfile: () => Promise<ParticipantProfile>;
   getSupportCenter: () => Promise<SupportCenterResponse>;
+  createSupportInquiry: (input: CreateSupportInquiryRequest) => Promise<SupportInquiry>;
   getNotifications: () => Promise<NotificationListResponse>;
   getMyPage: () => Promise<MyPageResponse>;
   updateParticipantProfile: (input: UpdateParticipantProfileRequest) => Promise<ParticipantProfile>;
@@ -83,6 +88,7 @@ export function createParticipantApiClient(config: ParticipantApiConfig): Partic
     getTournament: (tournamentId) => request(`/tournaments/${encodeURIComponent(tournamentId)}`, { method: 'GET' }, (body) => tournamentDetailSchema.parse(body)),
     getParticipantProfile: () => request('/participant/profile', { method: 'GET' }, (body) => participantProfileSchema.parse(body)),
     getSupportCenter: () => request('/participant/support', { method: 'GET' }, (body) => supportCenterResponseSchema.parse(body)),
+    createSupportInquiry: (input) => request('/participant/support/inquiries', { method: 'POST', body: JSON.stringify(createSupportInquiryRequestSchema.parse(input)) }, (body) => supportInquirySchema.parse(body)),
     getNotifications: () => request('/participant/notifications', { method: 'GET' }, (body) => notificationListResponseSchema.parse(body)),
     getMyPage: () => request('/participant/mypage', { method: 'GET' }, (body) => myPageResponseSchema.parse(body)),
     updateParticipantProfile: (input) => request('/participant/profile', { method: 'PATCH', body: JSON.stringify(updateParticipantProfileRequestSchema.parse(input)) }, (body) => participantProfileSchema.parse(body)),

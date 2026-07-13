@@ -79,7 +79,8 @@ describe('participant API client', () => {
       if (url.endsWith('/api/tournaments')) return jsonResponse({ tournaments: [tournament] });
       if (url.endsWith('/api/tournaments/tournament_api_001')) return jsonResponse(tournamentDetail);
       if (url.endsWith('/api/participant/profile') && init?.method === 'GET') return jsonResponse(profile);
-      if (url.endsWith('/api/participant/support')) return jsonResponse({ policyCopy: '참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] });
+      if (url.endsWith('/api/participant/support') && init?.method === 'GET') return jsonResponse({ policyCopy: '참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] });
+      if (url.endsWith('/api/participant/support/inquiries') && init?.method === 'POST') return jsonResponse({ inquiryId: 'inquiry_api_002', participantId: profile.participantId, channel: 'oneToOneInquiry', category: body.category, subject: body.subject, status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' });
       if (url.endsWith('/api/participant/notifications')) return jsonResponse({ notifications: [{ notificationId: 'notification_api_001', participantId: profile.participantId, type: 'support', title: 'API 알림', body: 'API 본문', createdAt: '2026-07-13T00:00:00.000Z' }] });
       if (url.endsWith('/api/participant/mypage')) return jsonResponse({ profile, applications: [application], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: application.applicationId, participantId: profile.participantId, amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '대기', recordedAt: '2026-07-13T00:00:00.000Z' }] });
       if (url.endsWith('/api/participant/profile') && init?.method === 'PATCH') return jsonResponse({ ...profile, duprId: body.duprId });
@@ -95,6 +96,7 @@ describe('participant API client', () => {
     await expect(client.getTournament(tournament.tournamentId)).resolves.toEqual(tournamentDetail);
     await expect(client.getParticipantProfile()).resolves.toEqual(profile);
     await expect(client.getSupportCenter()).resolves.toMatchObject({ contactEmail: 'support@happickle.kr' });
+    await expect(client.createSupportInquiry({ category: 'refund', subject: 'MVP 환불/취소 1:1 문의' })).resolves.toMatchObject({ inquiryId: 'inquiry_api_002', channel: 'oneToOneInquiry', status: 'operatorReview' });
     await expect(client.getNotifications()).resolves.toMatchObject({ notifications: [expect.objectContaining({ title: 'API 알림' })] });
     await expect(client.getMyPage()).resolves.toMatchObject({ paymentRecords: [expect.objectContaining({ amountKrw: 60000 })] });
     await expect(client.updateParticipantProfile({ duprId: 'DUPR-777' })).resolves.toMatchObject({ duprId: 'DUPR-777' });

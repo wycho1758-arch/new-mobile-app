@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { ParticipantNotification, PaymentRecord, SupportCenterResponse, TournamentDivision } from '@template/contracts';
+import type { ParticipantNotification, PaymentRecord, SupportCenterResponse, SupportInquiry, TournamentDivision } from '@template/contracts';
 import {
   type MockTournamentApplication,
   type MockTournament,
@@ -50,6 +50,7 @@ type ParticipantStoreState = {
   paymentRecords: PaymentRecord[];
   apiMode: 'mock' | 'api' | 'fallback';
   routeStatus: Partial<Record<'support' | 'notifications' | 'mypage' | 'tournamentDetail', 'loading' | 'ready' | 'fallback'>>;
+  supportInquirySubmission: 'idle' | 'submitting' | 'submitted' | 'fallback';
 };
 
 const fallbackSupportCenter: SupportCenterResponse = {
@@ -75,6 +76,7 @@ const initialParticipantState = (participantApi: ParticipantApiClient): Particip
   paymentRecords: [],
   apiMode: participantApi.enabled ? 'api' : 'mock',
   routeStatus: {},
+  supportInquirySubmission: 'idle',
 });
 
 let participantApi = defaultParticipantApi;
@@ -231,6 +233,53 @@ function submitApplication() {
     .then((createdApplication) => participantApi.getTournamentApplication(createdApplication.applicationId))
     .then((apiApplication) => patchParticipantState({ application: apiApplication, apiMode: 'api' }))
     .catch(() => patchParticipantState({ apiMode: 'fallback' }));
+}
+
+
+const SUPPORT_INQUIRY_MVP_PAYLOAD = {
+  category: 'refund',
+  subject: 'MVP 환불/취소 1:1 문의',
+} as const;
+
+function createFallbackSupportInquiry(): SupportInquiry {
+  return {
+    inquiryId: `inquiry_local_${Date.now()}`,
+    participantId: participantState.profile.participantId,
+    applicationId: participantState.application?.applicationId,
+    channel: 'oneToOneInquiry',
+    category: SUPPORT_INQUIRY_MVP_PAYLOAD.category,
+    subject: SUPPORT_INQUIRY_MVP_PAYLOAD.subject,
+    status: 'operatorReview',
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function submitSupportInquiry() {
+  patchParticipantState({ supportInquirySubmission: 'submitting' });
+
+  if (!participantApi.enabled) {
+    patchParticipantState({
+      supportInquirySubmission: 'submitted',
+      supportCenter: { ...participantState.supportCenter, inquiries: [createFallbackSupportInquiry(), ...participantState.supportCenter.inquiries] },
+    });
+    return;
+  }
+
+  participantApi.createSupportInquiry({
+    ...SUPPORT_INQUIRY_MVP_PAYLOAD,
+    applicationId: participantState.application?.applicationId,
+  })
+    .then((inquiry) => patchParticipantState({
+      supportInquirySubmission: 'submitted',
+      supportCenter: { ...participantState.supportCenter, inquiries: [inquiry, ...participantState.supportCenter.inquiries] },
+      apiMode: 'api',
+      routeStatus: { ...participantState.routeStatus, support: 'ready' },
+    }))
+    .catch(() => patchParticipantState({
+      supportInquirySubmission: 'fallback',
+      apiMode: 'fallback',
+      routeStatus: { ...participantState.routeStatus, support: 'fallback' },
+    }));
 }
 
 function setDuprInput(duprInput: string) {
@@ -408,11 +457,11 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 }
 
 export function SupportScreen() {
-  const { supportRefundPolicyCopy, supportCenter, routeStatus } = useParticipantFlow();
+  const { supportRefundPolicyCopy, supportCenter, routeStatus, supportInquirySubmission } = useParticipantFlow();
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text>{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
+      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><Text style={styles.caption}>참가자 직접 취소/환불은 MVP에서 비활성화되어 있으며, 환불·취소 요청은 1:1 문의로 운영자가 확인합니다.</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>API 문의 접수에 실패했습니다. 폴백 모드입니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
     </ParticipantRouteScaffold>
   );
 }
