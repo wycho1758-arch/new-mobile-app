@@ -185,6 +185,12 @@ function Row({ left, right }: { left: string; right?: string }) {
   return <View style={styles.infoRow}><Text style={styles.bodyCopy}>{left}</Text>{right ? <Text style={styles.rowRight}>{right}</Text> : null}</View>;
 }
 
+function participantApiModeLabel(apiMode: ParticipantStoreState['apiMode']) {
+  if (apiMode === 'api') return 'API 연결됨';
+  if (apiMode === 'fallback') return 'API 폴백 모드';
+  return '샌드박스 모드';
+}
+
 const bottomTabs = [
   { label: '탐색', route: '/tournaments', testID: 'bottom-tab-explore', active: 'tournaments' },
   { label: '내 경기', route: '/games', testID: 'bottom-tab-games', active: 'games' },
@@ -257,7 +263,7 @@ export function TournamentsScreen() {
       <View testID="explore-home" style={styles.heroCard}>
         <Text style={styles.heroTitle}>어떤 대회에 나가볼까요?</Text><View style={styles.searchBox}><Text style={styles.searchText}>대회명으로 검색</Text></View>
         <View style={styles.filterRow}>{['서울특별시', '최신순', '접수중', '접수마감', '종료'].map((chip) => <Text key={chip} style={[styles.filterChip, chip === '접수중' && styles.activeChip]}>{chip}</Text>)}</View>
-        <View style={styles.cardTopRow}><Text style={styles.sectionTitleSmall}>접수 중인 대회</Text><Text testID="participant-api-mode" style={styles.countText}>{apiMode === 'api' ? 'API 연결됨' : 'Mock fallback'}</Text></View>
+        <View style={styles.cardTopRow}><Text style={styles.sectionTitleSmall}>접수 중인 대회</Text><Text testID="participant-api-mode" style={styles.countText}>{participantApiModeLabel(apiMode)}</Text></View>
       </View>
       <Pressable testID="mock-tournament-card" accessibilityRole="button" onPress={() => router.push(tournamentPath)} style={styles.tournamentCard}>
         <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>D-5</Text></View><Text style={styles.countText}>신청 48 / 64</Text></View>

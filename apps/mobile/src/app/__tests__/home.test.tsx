@@ -55,6 +55,7 @@ describe('Home screen', () => {
 
     expect(screen.getByTestId('header-logo')).toHaveStyle({ marginTop: 0 });
     expect(screen.getByTestId('explore-home')).toHaveTextContent(/어떤 대회에 나가볼까요/);
+    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('샌드박스 모드');
     expect(screen.queryByTestId('participant-route-state')).toBeNull();
 
     fireEvent.press(screen.getByTestId('mock-tournament-card'));
@@ -164,5 +165,20 @@ describe('Home screen', () => {
 
     await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('API 연결됨'));
     expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/API Open/);
+  });
+
+  it('shows a Korean API fallback label when participant API calls fail', async () => {
+    const apiClient = createParticipantApiClient({
+      baseUrl: 'https://api.example.invalid',
+      bearerToken: 'test-token',
+      fetchImpl: jest.fn(async () => { throw new Error('network unavailable'); }) as unknown as typeof fetch,
+    });
+
+    resetParticipantFlow(apiClient);
+    startParticipantSession();
+    render(<TournamentsScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('API 폴백 모드'));
+    expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/PickleHub Sandbox Open/);
   });
 });
