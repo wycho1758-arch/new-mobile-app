@@ -99,7 +99,7 @@ describe('Home screen', () => {
 
     expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
     fireEvent.press(screen.getByTestId('application-cta'));
-    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/Mock application submitted: application_tournament_sandbox_001_participant_sandbox_001/);
+    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/샌드박스 신청 접수됨: application_tournament_sandbox_001_participant_sandbox_001/);
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
   });
 

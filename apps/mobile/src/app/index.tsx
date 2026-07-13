@@ -191,6 +191,12 @@ function participantApiModeLabel(apiMode: ParticipantStoreState['apiMode']) {
   return '샌드박스 모드';
 }
 
+function applicationSubmittedLabel(apiMode: ParticipantStoreState['apiMode']) {
+  if (apiMode === 'api') return 'API 신청 접수됨';
+  if (apiMode === 'fallback') return '폴백 신청 접수됨';
+  return '샌드박스 신청 접수됨';
+}
+
 const bottomTabs = [
   { label: '탐색', route: '/tournaments', testID: 'bottom-tab-explore', active: 'tournaments' },
   { label: '내 경기', route: '/games', testID: 'bottom-tab-games', active: 'games' },
@@ -312,7 +318,7 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 
   return (
     <ParticipantRouteScaffold active="tournaments">
-      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.priceText}>남자복식 · 2인 대표결제{`\n`}60,000원</Text><Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : '파트너 수락 후 결제가능 · DUPR 필요'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{apiMode === 'api' ? 'API application submitted' : 'Mock application submitted'}: {application.applicationId} · {describeApplicationPolicy(application)}</Text> : null}</View>
+      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.priceText}>남자복식 · 2인 대표결제{`\n`}60,000원</Text><Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : '파트너 수락 후 결제가능 · DUPR 필요'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)}: {application.applicationId} · {describeApplicationPolicy(application)}</Text> : null}</View>
     </ParticipantRouteScaffold>
   );
 }

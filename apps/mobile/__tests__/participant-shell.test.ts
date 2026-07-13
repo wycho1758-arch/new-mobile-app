@@ -156,7 +156,7 @@ describe('participant shell sandbox contract', () => {
     expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
     fireEvent.press(screen.getByTestId('application-cta'));
 
-    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/Mock application submitted/);
+    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/샌드박스 신청 접수됨/);
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
   });
 

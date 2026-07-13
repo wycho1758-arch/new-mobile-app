@@ -20,7 +20,7 @@ test('login-first screen exposes social login before DUPR gated participant flow
   await expect(page).toHaveURL(/\/tournaments$/);
   await expect(page.getByTestId('session-actor')).toContainText('actor_sandbox_social_001');
   await expect(page.getByTestId('mock-tournament-card')).toContainText('PickleHub Sandbox Open');
-  await expect(page.getByTestId('participant-api-mode')).toContainText('Mock fallback');
+  await expect(page.getByTestId('participant-api-mode')).toContainText('샌드박스 모드');
 
   await page.getByTestId('mock-tournament-card').click();
   await expect(page).toHaveURL(/\/tournaments\/tournament_sandbox_001$/);
@@ -44,7 +44,7 @@ test('login-first screen exposes social login before DUPR gated participant flow
   await expect(page.getByTestId('application-blocker')).toHaveCount(0);
   await expect(page.getByTestId('application-cta')).toContainText('참가 신청하기');
   await page.getByTestId('application-cta').click();
-  await expect(page.getByTestId('application-submitted')).toContainText('Mock application submitted');
+  await expect(page.getByTestId('application-submitted')).toContainText('샌드박스 신청 접수됨');
   await expect(page.getByTestId('application-submitted')).toContainText('참가자 직접 취소 불가');
 
   await page.getByRole('button', { name: '탐색' }).click();
