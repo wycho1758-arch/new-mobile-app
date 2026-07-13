@@ -49,6 +49,7 @@ type ParticipantStoreState = {
   notifications: ParticipantNotification[];
   paymentRecords: PaymentRecord[];
   apiMode: 'mock' | 'api' | 'fallback';
+  routeStatus: Partial<Record<'support' | 'notifications' | 'mypage' | 'tournamentDetail', 'loading' | 'ready' | 'fallback'>>;
 };
 
 const fallbackSupportCenter: SupportCenterResponse = {
@@ -73,6 +74,7 @@ const initialParticipantState = (participantApi: ParticipantApiClient): Particip
   notifications: fallbackNotifications,
   paymentRecords: [],
   apiMode: participantApi.enabled ? 'api' : 'mock',
+  routeStatus: {},
 });
 
 let participantApi = defaultParticipantApi;
@@ -90,6 +92,10 @@ function setParticipantState(nextState: ParticipantStoreState) {
 
 function patchParticipantState(patch: Partial<ParticipantStoreState>) {
   setParticipantState({ ...participantState, ...patch });
+}
+
+function patchRouteStatus(route: keyof ParticipantStoreState['routeStatus'], status: NonNullable<ParticipantStoreState['routeStatus'][keyof ParticipantStoreState['routeStatus']]>) {
+  patchParticipantState({ routeStatus: { ...participantState.routeStatus, [route]: status } });
 }
 
 function subscribeParticipantState(listener: () => void) {
@@ -139,22 +145,57 @@ export function startParticipantSession() {
     })
     .catch(() => patchParticipantState({ apiMode: 'fallback' }));
 
-  Promise.all([participantApi.getSupportCenter(), participantApi.getNotifications(), participantApi.getMyPage()])
-    .then(([supportCenter, notificationResponse, myPage]) => patchParticipantState({
-      supportCenter,
-      notifications: notificationResponse.notifications,
-      application: myPage.applications[0] ?? null,
-      paymentRecords: myPage.paymentRecords,
-      apiMode: 'api',
-    }))
-    .catch(() => undefined);
+  hydrateParticipantUtilityPages();
+}
+
+function hydrateParticipantUtilityPages() {
+  if (!participantApi.enabled) return;
+  patchParticipantState({
+    routeStatus: {
+      ...participantState.routeStatus,
+      support: 'loading',
+      notifications: 'loading',
+      mypage: 'loading',
+    },
+  });
+
+  Promise.allSettled([participantApi.getSupportCenter(), participantApi.getNotifications(), participantApi.getMyPage()])
+    .then(([supportResult, notificationResult, myPageResult]) => {
+      const patch: Partial<ParticipantStoreState> = { routeStatus: { ...participantState.routeStatus } };
+
+      if (supportResult.status === 'fulfilled') {
+        patch.supportCenter = supportResult.value;
+        patch.routeStatus = { ...patch.routeStatus, support: 'ready' };
+      } else {
+        patch.routeStatus = { ...patch.routeStatus, support: 'fallback' };
+      }
+
+      if (notificationResult.status === 'fulfilled') {
+        patch.notifications = notificationResult.value.notifications;
+        patch.routeStatus = { ...patch.routeStatus, notifications: 'ready' };
+      } else {
+        patch.routeStatus = { ...patch.routeStatus, notifications: 'fallback' };
+      }
+
+      if (myPageResult.status === 'fulfilled') {
+        patch.application = myPageResult.value.applications[0] ?? null;
+        patch.paymentRecords = myPageResult.value.paymentRecords;
+        patch.routeStatus = { ...patch.routeStatus, mypage: 'ready' };
+      } else {
+        patch.routeStatus = { ...patch.routeStatus, mypage: 'fallback' };
+      }
+
+      patch.apiMode = [supportResult, notificationResult, myPageResult].every((result) => result.status === 'fulfilled') ? 'api' : 'fallback';
+      patchParticipantState(patch);
+    });
 }
 
 function loadTournament(tournamentId: string) {
   if (!participantApi.enabled || !tournamentId) return;
+  patchRouteStatus('tournamentDetail', 'loading');
   participantApi.getTournament(tournamentId)
-    .then((tournament) => patchParticipantState({ featuredTournament: tournament, tournamentDivisions: tournament.divisions, apiMode: 'api' }))
-    .catch(() => patchParticipantState({ apiMode: 'fallback' }));
+    .then((tournament) => patchParticipantState({ featuredTournament: tournament, tournamentDivisions: tournament.divisions, apiMode: 'api', routeStatus: { ...participantState.routeStatus, tournamentDetail: 'ready' } }))
+    .catch(() => patchParticipantState({ apiMode: 'fallback', routeStatus: { ...participantState.routeStatus, tournamentDetail: 'fallback' } }));
 }
 
 function saveDupr() {
@@ -219,6 +260,19 @@ function participantApiModeLabel(apiMode: ParticipantStoreState['apiMode']) {
   if (apiMode === 'api') return 'API 연결됨';
   if (apiMode === 'fallback') return 'API 폴백 모드';
   return '샌드박스 모드';
+}
+
+function routeStatusCopy(status?: NonNullable<ParticipantStoreState['routeStatus'][keyof ParticipantStoreState['routeStatus']]>) {
+  if (status === 'loading') return 'API 데이터를 불러오는 중입니다.';
+  if (status === 'fallback') return 'API 응답을 받지 못해 안전한 샌드박스 데이터를 표시합니다.';
+  if (status === 'ready') return 'API 데이터로 최신화되었습니다.';
+  return undefined;
+}
+
+function RouteStatusNotice({ status }: { status?: NonNullable<ParticipantStoreState['routeStatus'][keyof ParticipantStoreState['routeStatus']]> }) {
+  const copy = routeStatusCopy(status);
+  if (!copy) return null;
+  return <Text testID="participant-route-state" style={status === 'fallback' ? styles.blockerText : styles.caption}>{copy}</Text>;
 }
 
 function applicationSubmittedLabel(apiMode: ParticipantStoreState['apiMode']) {
@@ -313,13 +367,14 @@ export function TournamentsScreen() {
 }
 
 export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: { tournamentId?: string }) {
-  const { featuredTournament, tournamentDivisions, profileReady, policyCopy } = useParticipantFlow();
+  const { featuredTournament, tournamentDivisions, profileReady, policyCopy, routeStatus } = useParticipantFlow();
   useEffect(() => loadTournament(tournamentId), [tournamentId]);
   const applyRoute = `/tournaments/${featuredTournament.tournamentId}/apply`;
 
   return (
     <ParticipantRouteScaffold active="tournaments">
       <View testID="tournament-detail" style={styles.sectionCard}>
+        <RouteStatusNotice status={routeStatus.tournamentDetail} />
         <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>D-5</Text></View><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>주최 · 대한피클볼협회</Text>
         <Row left="일정" right="8월 9일 (토) · 오전 9:00" /><Row left="장소" right="올림픽공원 SK핸드볼경기장" /><Text style={styles.linkText}>지도보기</Text><Row left="참가비" right="단식 30,000원 · 복식(대표결제) 60,000원" />
         <Text style={styles.sectionLabel}>종목 선택</Text>{(tournamentDivisions.length ? tournamentDivisions : [{ divisionId: 'local-mens', name: '남자복식', skillLevel: 'DUPR 3.5~4.5', entryFeeKrw: 60000, capacityTeams: 64 }]).map((division) => <View key={division.divisionId} style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name}</Text><Text style={styles.bodyCopy}>{division.skillLevel ?? 'DUPR 제한없음'} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀</Text><Text style={styles.priceText}>{division.entryFeeKrw.toLocaleString('ko-KR')}원</Text></View>)}
@@ -353,11 +408,11 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 }
 
 export function SupportScreen() {
-  const { supportRefundPolicyCopy, supportCenter } = useParticipantFlow();
+  const { supportRefundPolicyCopy, supportCenter, routeStatus } = useParticipantFlow();
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text>{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
+      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text>{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
     </ParticipantRouteScaffold>
   );
 }
@@ -367,14 +422,14 @@ export function GamesScreen() {
 }
 
 export function NotificationsScreen() {
-  const { notifications } = useParticipantFlow();
-  return <ParticipantRouteScaffold active="notifications"><View testID="notifications-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>알림</Text>{notifications.map((notification) => <View key={notification.notificationId}><Text style={styles.sectionTitle}>{notification.title}</Text><Text style={styles.bodyCopy}>{notification.body}</Text></View>)}</View></ParticipantRouteScaffold>;
+  const { notifications, routeStatus } = useParticipantFlow();
+  return <ParticipantRouteScaffold active="notifications"><View testID="notifications-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>알림</Text><RouteStatusNotice status={routeStatus.notifications} />{notifications.length ? notifications.map((notification) => <View key={notification.notificationId}><Text style={styles.sectionTitle}>{notification.title}</Text><Text style={styles.bodyCopy}>{notification.body}</Text></View>) : <Text testID="notifications-empty" style={styles.caption}>아직 표시할 알림이 없습니다. 대회 신청, 1:1 문의 답변, 운영자 공지가 생기면 여기에 표시됩니다.</Text>}</View></ParticipantRouteScaffold>;
 }
 
 export function MyPageScreen() {
-  const { profile, application, paymentRecords } = useParticipantFlow();
+  const { profile, application, paymentRecords, routeStatus } = useParticipantFlow();
   const paymentCopy = paymentRecords[0] ? `${paymentRecords[0].status} · ${paymentRecords[0].amountKrw.toLocaleString('ko-KR')}원 · 오프라인 운영자 확인` : '결제 내역 없음 · 오프라인 결제는 운영자 확인 대기';
-  return <ParticipantRouteScaffold active="mypage"><View testID="mypage-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>마이</Text><Text style={styles.sectionTitle}>{profile.displayName} · DUPR {hasRequiredDupr(profile) ? profile.duprId : '미등록'}</Text><Text style={styles.bodyCopy}>송파피클볼클럽</Text><Text testID="mypage-payment-status" style={styles.bodyCopy}>{paymentCopy}</Text>{application ? <Text style={styles.caption}>최근 신청: {application.applicationId}</Text> : null}<Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></View></ParticipantRouteScaffold>;
+  return <ParticipantRouteScaffold active="mypage"><View testID="mypage-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>마이</Text><RouteStatusNotice status={routeStatus.mypage} /><Text style={styles.sectionTitle}>{profile.displayName} · DUPR {hasRequiredDupr(profile) ? profile.duprId : '미등록'}</Text><Text style={styles.bodyCopy}>송파피클볼클럽</Text><Text testID="mypage-payment-status" style={styles.bodyCopy}>{paymentCopy}</Text>{application ? <Text style={styles.caption}>최근 신청: {application.applicationId}</Text> : null}<Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></View></ParticipantRouteScaffold>;
 }
 
 const fontSans = 'Noto Sans KR, Inter, SF Pro Display, system-ui, sans-serif';

@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import Home, {
   DuprProfileScreen,
   MyPageScreen,
+  NotificationsScreen,
   SupportScreen,
   TournamentApplicationScreen,
   TournamentDetailScreen,
@@ -180,5 +181,48 @@ describe('Home screen', () => {
 
     await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('API 폴백 모드'));
     expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/PickleHub Sandbox Open/);
+  });
+
+  it('marks utility routes independently when my page hydration degrades', async () => {
+    const apiClient = createParticipantApiClient({
+      baseUrl: 'https://api.example.invalid',
+      bearerToken: 'test-token',
+      fetchImpl: jest.fn(async (url: string) => {
+        if (url.endsWith('/api/tournaments')) return { ok: true, status: 200, json: async () => ({ tournaments: [sandboxParticipantSession.featuredTournament] }) } as Response;
+        if (url.endsWith('/api/participant/profile')) return { ok: true, status: 200, json: async () => sandboxParticipantSession.profile } as Response;
+        if (url.endsWith('/api/participant/support')) return { ok: true, status: 200, json: async () => ({ policyCopy: 'API 고객센터 응답', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] }) } as Response;
+        if (url.endsWith('/api/participant/notifications')) return { ok: true, status: 200, json: async () => ({ notifications: [] }) } as Response;
+        throw new Error('mypage unavailable');
+      }) as unknown as typeof fetch,
+    });
+
+    resetParticipantFlow(apiClient);
+    startParticipantSession();
+    render(<MyPageScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('participant-route-state')).toHaveTextContent('API 응답을 받지 못해 안전한 샌드박스 데이터를 표시합니다.'));
+    expect(screen.getByTestId('mypage-payment-status')).toHaveTextContent('결제 내역 없음 · 오프라인 결제는 운영자 확인 대기');
+  });
+
+  it('shows an empty notifications state after API hydration returns no notifications', async () => {
+    const apiClient = createParticipantApiClient({
+      baseUrl: 'https://api.example.invalid',
+      bearerToken: 'test-token',
+      fetchImpl: jest.fn(async (url: string) => {
+        if (url.endsWith('/api/tournaments')) return { ok: true, status: 200, json: async () => ({ tournaments: [sandboxParticipantSession.featuredTournament] }) } as Response;
+        if (url.endsWith('/api/participant/profile')) return { ok: true, status: 200, json: async () => sandboxParticipantSession.profile } as Response;
+        if (url.endsWith('/api/participant/support')) return { ok: true, status: 200, json: async () => ({ policyCopy: 'API 고객센터 응답', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] }) } as Response;
+        if (url.endsWith('/api/participant/notifications')) return { ok: true, status: 200, json: async () => ({ notifications: [] }) } as Response;
+        if (url.endsWith('/api/participant/mypage')) return { ok: true, status: 200, json: async () => ({ profile: sandboxParticipantSession.profile, applications: [], paymentRecords: [] }) } as Response;
+        throw new Error('unexpected endpoint');
+      }) as unknown as typeof fetch,
+    });
+
+    resetParticipantFlow(apiClient);
+    startParticipantSession();
+    render(<NotificationsScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('participant-route-state')).toHaveTextContent('API 데이터로 최신화되었습니다.'));
+    expect(screen.getByTestId('notifications-empty')).toHaveTextContent(/아직 표시할 알림이 없습니다/);
   });
 });
