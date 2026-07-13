@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import {
+  createSupportInquiryRequestSchema,
   createTournamentApplicationRequestSchema,
   participantApiErrorCodeSchema,
   participantApiErrorResponseSchema,
@@ -8,9 +9,13 @@ import {
 } from '@template/contracts';
 import {
   createTournamentApplication,
+  createSupportInquiry,
+  getMyPage,
   getParticipantProfile,
+  getSupportCenter,
   getTournament,
   getTournamentApplication,
+  listNotifications,
   listTournaments,
   ParticipantMvpError,
   requestParticipantSelfCancel,
@@ -69,3 +74,13 @@ export const tournamentApplicationsRoute = new Hono()
       return c.json(mapped.body, mapped.status);
     }
   });
+
+export const supportRoute = new Hono()
+  .get('/', async (c) => c.json(await getSupportCenter()))
+  .post('/inquiries', zValidator('json', createSupportInquiryRequestSchema), async (c) => c.json(await createSupportInquiry(c.req.valid('json')), 201));
+
+export const notificationsRoute = new Hono()
+  .get('/', async (c) => c.json(await listNotifications()));
+
+export const myPageRoute = new Hono()
+  .get('/', async (c) => c.json(await getMyPage()));

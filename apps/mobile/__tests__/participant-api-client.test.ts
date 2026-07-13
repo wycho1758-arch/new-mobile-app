@@ -14,6 +14,11 @@ const tournament = {
   cancellationPolicy: 'operatorSupportOnly' as const,
 };
 
+const tournamentDetail = {
+  ...tournament,
+  divisions: [{ divisionId: 'division_api_001', tournamentId: tournament.tournamentId, name: '혼합복식', skillLevel: 'DUPR 3.5+', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 32 }],
+};
+
 const profile = {
   participantId: 'participant_api_001',
   displayName: 'API Player',
@@ -72,8 +77,11 @@ describe('participant API client', () => {
     const fetchImpl = jest.fn(async (url: string, init?: RequestInit) => {
       const body = JSON.parse(String(init?.body ?? '{}'));
       if (url.endsWith('/api/tournaments')) return jsonResponse({ tournaments: [tournament] });
-      if (url.endsWith('/api/tournaments/tournament_api_001')) return jsonResponse(tournament);
+      if (url.endsWith('/api/tournaments/tournament_api_001')) return jsonResponse(tournamentDetail);
       if (url.endsWith('/api/participant/profile') && init?.method === 'GET') return jsonResponse(profile);
+      if (url.endsWith('/api/participant/support')) return jsonResponse({ policyCopy: '참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] });
+      if (url.endsWith('/api/participant/notifications')) return jsonResponse({ notifications: [{ notificationId: 'notification_api_001', participantId: profile.participantId, type: 'support', title: 'API 알림', body: 'API 본문', createdAt: '2026-07-13T00:00:00.000Z' }] });
+      if (url.endsWith('/api/participant/mypage')) return jsonResponse({ profile, applications: [application], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: application.applicationId, participantId: profile.participantId, amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '대기', recordedAt: '2026-07-13T00:00:00.000Z' }] });
       if (url.endsWith('/api/participant/profile') && init?.method === 'PATCH') return jsonResponse({ ...profile, duprId: body.duprId });
       if (url.endsWith('/api/tournament-applications') && init?.method === 'POST') return jsonResponse({ ...application, ...body });
       if (url.endsWith('/api/tournament-applications/application_api_001') && init?.method === 'GET') return jsonResponse(application);
@@ -84,8 +92,11 @@ describe('participant API client', () => {
     const client = createParticipantApiClient({ baseUrl: 'https://api.example.invalid/', bearerToken: 'test-token', fetchImpl });
 
     await expect(client.getTournaments()).resolves.toEqual([tournament]);
-    await expect(client.getTournament(tournament.tournamentId)).resolves.toEqual(tournament);
+    await expect(client.getTournament(tournament.tournamentId)).resolves.toEqual(tournamentDetail);
     await expect(client.getParticipantProfile()).resolves.toEqual(profile);
+    await expect(client.getSupportCenter()).resolves.toMatchObject({ contactEmail: 'support@happickle.kr' });
+    await expect(client.getNotifications()).resolves.toMatchObject({ notifications: [expect.objectContaining({ title: 'API 알림' })] });
+    await expect(client.getMyPage()).resolves.toMatchObject({ paymentRecords: [expect.objectContaining({ amountKrw: 60000 })] });
     await expect(client.updateParticipantProfile({ duprId: 'DUPR-777' })).resolves.toMatchObject({ duprId: 'DUPR-777' });
     await expect(client.createTournamentApplication({ tournamentId: tournament.tournamentId, participantId: profile.participantId, duprId: profile.duprId })).resolves.toMatchObject({ tournamentId: tournament.tournamentId });
     await expect(client.getTournamentApplication(application.applicationId)).resolves.toEqual(application);

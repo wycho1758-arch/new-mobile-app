@@ -1,16 +1,23 @@
 import {
   type CreateTournamentApplicationRequest,
   type ParticipantProfile,
+  type SupportCenterResponse,
   type Tournament,
+  type TournamentDetail,
   type TournamentApplication,
   type UpdateParticipantProfileRequest,
+  type NotificationListResponse,
+  type MyPageResponse,
   createTournamentApplicationRequestSchema,
+  myPageResponseSchema,
+  notificationListResponseSchema,
   participantApiErrorResponseSchema,
   participantApiHttpErrorCodeSchema,
   participantProfileSchema,
+  supportCenterResponseSchema,
   tournamentApplicationSchema,
   tournamentListResponseSchema,
-  tournamentSchema,
+  tournamentDetailSchema,
   updateParticipantProfileRequestSchema,
 } from '@template/contracts';
 
@@ -23,8 +30,11 @@ export type ParticipantApiConfig = {
 export type ParticipantApiClient = {
   enabled: boolean;
   getTournaments: () => Promise<Tournament[]>;
-  getTournament: (tournamentId: string) => Promise<Tournament>;
+  getTournament: (tournamentId: string) => Promise<TournamentDetail>;
   getParticipantProfile: () => Promise<ParticipantProfile>;
+  getSupportCenter: () => Promise<SupportCenterResponse>;
+  getNotifications: () => Promise<NotificationListResponse>;
+  getMyPage: () => Promise<MyPageResponse>;
   updateParticipantProfile: (input: UpdateParticipantProfileRequest) => Promise<ParticipantProfile>;
   createTournamentApplication: (input: CreateTournamentApplicationRequest) => Promise<TournamentApplication>;
   getTournamentApplication: (applicationId: string) => Promise<TournamentApplication>;
@@ -70,8 +80,11 @@ export function createParticipantApiClient(config: ParticipantApiConfig): Partic
   return {
     enabled,
     getTournaments: () => request('/tournaments', { method: 'GET' }, (body) => tournamentListResponseSchema.parse(body).tournaments),
-    getTournament: (tournamentId) => request(`/tournaments/${encodeURIComponent(tournamentId)}`, { method: 'GET' }, (body) => tournamentSchema.parse(body)),
+    getTournament: (tournamentId) => request(`/tournaments/${encodeURIComponent(tournamentId)}`, { method: 'GET' }, (body) => tournamentDetailSchema.parse(body)),
     getParticipantProfile: () => request('/participant/profile', { method: 'GET' }, (body) => participantProfileSchema.parse(body)),
+    getSupportCenter: () => request('/participant/support', { method: 'GET' }, (body) => supportCenterResponseSchema.parse(body)),
+    getNotifications: () => request('/participant/notifications', { method: 'GET' }, (body) => notificationListResponseSchema.parse(body)),
+    getMyPage: () => request('/participant/mypage', { method: 'GET' }, (body) => myPageResponseSchema.parse(body)),
     updateParticipantProfile: (input) => request('/participant/profile', { method: 'PATCH', body: JSON.stringify(updateParticipantProfileRequestSchema.parse(input)) }, (body) => participantProfileSchema.parse(body)),
     createTournamentApplication: (input) => request('/tournament-applications', { method: 'POST', body: JSON.stringify(createTournamentApplicationRequestSchema.parse(input)) }, (body) => tournamentApplicationSchema.parse(body)),
     getTournamentApplication: (applicationId) => request(`/tournament-applications/${encodeURIComponent(applicationId)}`, { method: 'GET' }, (body) => tournamentApplicationSchema.parse(body)),

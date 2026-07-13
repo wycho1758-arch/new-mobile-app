@@ -2,9 +2,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   participantApiErrorResponseSchema,
   participantProfileSchema,
+  supportCenterResponseSchema,
+  notificationListResponseSchema,
+  myPageResponseSchema,
   tournamentApplicationSchema,
   tournamentListResponseSchema,
-  tournamentSchema,
+  tournamentDetailSchema,
 } from '@template/contracts';
 import { app } from '../../app.js';
 import { resetParticipantMvpState } from '../../services/participant-mvp.service.js';
@@ -32,7 +35,30 @@ describe('participant MVP dev-preview endpoints', () => {
 
     const detail = await requestJson('/api/tournaments/tournament_sandbox_001');
     expect(detail.res.status).toBe(200);
-    expect(() => tournamentSchema.parse(detail.body)).not.toThrow();
+    const parsedDetail = tournamentDetailSchema.parse(detail.body);
+    expect(parsedDetail.divisions[0]?.tournamentId).toBe('tournament_sandbox_001');
+  });
+
+  it('exposes DB-backed participant support, notifications, and mypage payloads with memory fallback', async () => {
+    const support = await requestJson('/api/participant/support');
+    expect(support.res.status).toBe(200);
+    expect(supportCenterResponseSchema.parse(support.body)).toMatchObject({
+      contactEmail: 'support@happickle.kr',
+    });
+
+    const createdInquiry = await requestJson('/api/participant/support/inquiries', {
+      method: 'POST',
+      body: JSON.stringify({ category: 'dupr', subject: 'DUPR 확인 문의' }),
+    });
+    expect(createdInquiry.res.status).toBe(201);
+
+    const notifications = await requestJson('/api/participant/notifications');
+    expect(notifications.res.status).toBe(200);
+    expect(notificationListResponseSchema.parse(notifications.body).notifications[0]?.title).toContain('대회');
+
+    const myPage = await requestJson('/api/participant/mypage');
+    expect(myPage.res.status).toBe(200);
+    expect(myPageResponseSchema.parse(myPage.body).profile.participantId).toBe('participant_sandbox_001');
   });
 
   it('exposes participant profile and updates self-reported DUPR state', async () => {

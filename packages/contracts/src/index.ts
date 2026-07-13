@@ -44,6 +44,22 @@ export const tournamentSchema = z.object({
 });
 export type Tournament = z.infer<typeof tournamentSchema>;
 
+export const tournamentDivisionSchema = z.object({
+  divisionId: z.string().min(1),
+  tournamentId: z.string().min(1),
+  name: z.string().min(1),
+  skillLevel: z.string().min(1).optional(),
+  teamType: z.string().min(1),
+  entryFeeKrw: z.number().int().nonnegative(),
+  capacityTeams: z.number().int().positive().optional(),
+});
+export type TournamentDivision = z.infer<typeof tournamentDivisionSchema>;
+
+export const tournamentDetailSchema = tournamentSchema.extend({
+  divisions: z.array(tournamentDivisionSchema),
+});
+export type TournamentDetail = z.infer<typeof tournamentDetailSchema>;
+
 export const tournamentListResponseSchema = z.object({
   tournaments: z.array(tournamentSchema),
 });
@@ -89,3 +105,67 @@ export const createTournamentApplicationRequestSchema = z.object({
   duprId: z.string().trim().min(1).optional(),
 });
 export type CreateTournamentApplicationRequest = z.infer<typeof createTournamentApplicationRequestSchema>;
+
+
+export const supportInquirySchema = z.object({
+  inquiryId: z.string().min(1),
+  participantId: z.string().min(1).optional(),
+  applicationId: z.string().min(1).optional(),
+  channel: supportChannelSchema,
+  category: z.string().min(1),
+  subject: z.string().min(1),
+  status: z.enum(['open', 'operatorReview', 'closed']),
+  createdAt: z.string(),
+});
+export type SupportInquiry = z.infer<typeof supportInquirySchema>;
+
+export const supportCenterResponseSchema = z.object({
+  policyCopy: z.string().min(1),
+  contactEmail: z.string().email(),
+  operatingHours: z.string().min(1),
+  inquiries: z.array(supportInquirySchema),
+});
+export type SupportCenterResponse = z.infer<typeof supportCenterResponseSchema>;
+
+export const createSupportInquiryRequestSchema = z.object({
+  category: z.string().trim().min(1),
+  subject: z.string().trim().min(1),
+  applicationId: z.string().trim().min(1).optional(),
+});
+export type CreateSupportInquiryRequest = z.infer<typeof createSupportInquiryRequestSchema>;
+
+export const participantNotificationSchema = z.object({
+  notificationId: z.string().min(1),
+  participantId: z.string().min(1),
+  type: z.string().min(1),
+  title: z.string().min(1),
+  body: z.string().min(1),
+  relatedApplicationId: z.string().min(1).optional(),
+  readAt: z.string().optional(),
+  createdAt: z.string(),
+});
+export type ParticipantNotification = z.infer<typeof participantNotificationSchema>;
+
+export const notificationListResponseSchema = z.object({
+  notifications: z.array(participantNotificationSchema),
+});
+export type NotificationListResponse = z.infer<typeof notificationListResponseSchema>;
+
+export const paymentRecordSchema = z.object({
+  paymentRecordId: z.string().min(1),
+  applicationId: z.string().min(1),
+  participantId: z.string().min(1),
+  amountKrw: z.number().int().nonnegative(),
+  paymentMode: z.literal('operatorManagedOffline'),
+  status: z.enum(['notStartedSandbox', 'operatorReview', 'confirmedOffline']),
+  operatorNote: z.string().min(1).optional(),
+  recordedAt: z.string(),
+});
+export type PaymentRecord = z.infer<typeof paymentRecordSchema>;
+
+export const myPageResponseSchema = z.object({
+  profile: participantProfileSchema,
+  applications: z.array(tournamentApplicationSchema),
+  paymentRecords: z.array(paymentRecordSchema),
+});
+export type MyPageResponse = z.infer<typeof myPageResponseSchema>;

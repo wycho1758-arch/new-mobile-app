@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ParticipantNotification, PaymentRecord, SupportCenterResponse, TournamentDivision } from '@template/contracts';
 import {
   type MockTournamentApplication,
   type MockTournament,
@@ -43,8 +44,23 @@ type ParticipantStoreState = {
   duprInput: string;
   application: MockTournamentApplication | null;
   featuredTournament: MockTournament;
+  tournamentDivisions: TournamentDivision[];
+  supportCenter: SupportCenterResponse;
+  notifications: ParticipantNotification[];
+  paymentRecords: PaymentRecord[];
   apiMode: 'mock' | 'api' | 'fallback';
 };
+
+const fallbackSupportCenter: SupportCenterResponse = {
+  policyCopy: describeSupportRefundPolicyCopy({ refundPolicy: 'participantSelfCancelDisabled', supportChannel: 'oneToOneInquiry' }),
+  contactEmail: 'support@happickle.kr',
+  operatingHours: '평일 10:00 ~ 18:00 (주말·공휴일 휴무)',
+  inquiries: [{ inquiryId: 'inquiry_local_refund', participantId: sandboxParticipantSession.profile.participantId, channel: 'oneToOneInquiry', category: 'refund', subject: '환불/취소는 1:1 문의로 접수', status: 'operatorReview', createdAt: '2026-07-13T09:00:00.000Z' }],
+};
+
+const fallbackNotifications: ParticipantNotification[] = [
+  { notificationId: 'notification_local_deadline', participantId: sandboxParticipantSession.profile.participantId, type: 'tournamentDeadline', title: '대회 마감 임박!', body: '오늘까지 신청하세요', createdAt: '2026-07-13T09:00:00.000Z' },
+];
 
 const initialParticipantState = (participantApi: ParticipantApiClient): ParticipantStoreState => ({
   socialSessionStarted: false,
@@ -52,6 +68,10 @@ const initialParticipantState = (participantApi: ParticipantApiClient): Particip
   duprInput: sandboxParticipantSession.profile.duprId ?? '',
   application: null,
   featuredTournament: sandboxParticipantSession.featuredTournament,
+  tournamentDivisions: [],
+  supportCenter: fallbackSupportCenter,
+  notifications: fallbackNotifications,
+  paymentRecords: [],
   apiMode: participantApi.enabled ? 'api' : 'mock',
 });
 
@@ -100,7 +120,7 @@ function useParticipantFlow() {
     profileReady,
     applicationPolicy,
     policyCopy: describeApplicationPolicy(applicationPolicy),
-    supportRefundPolicyCopy: describeSupportRefundPolicyCopy(applicationPolicy),
+    supportRefundPolicyCopy: state.supportCenter.policyCopy || describeSupportRefundPolicyCopy(applicationPolicy),
   }), [applicationPolicy, profileReady, state]);
 }
 
@@ -118,12 +138,22 @@ export function startParticipantSession() {
       });
     })
     .catch(() => patchParticipantState({ apiMode: 'fallback' }));
+
+  Promise.all([participantApi.getSupportCenter(), participantApi.getNotifications(), participantApi.getMyPage()])
+    .then(([supportCenter, notificationResponse, myPage]) => patchParticipantState({
+      supportCenter,
+      notifications: notificationResponse.notifications,
+      application: myPage.applications[0] ?? null,
+      paymentRecords: myPage.paymentRecords,
+      apiMode: 'api',
+    }))
+    .catch(() => undefined);
 }
 
 function loadTournament(tournamentId: string) {
   if (!participantApi.enabled || !tournamentId) return;
   participantApi.getTournament(tournamentId)
-    .then((tournament) => patchParticipantState({ featuredTournament: tournament, apiMode: 'api' }))
+    .then((tournament) => patchParticipantState({ featuredTournament: tournament, tournamentDivisions: tournament.divisions, apiMode: 'api' }))
     .catch(() => patchParticipantState({ apiMode: 'fallback' }));
 }
 
@@ -283,7 +313,7 @@ export function TournamentsScreen() {
 }
 
 export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: { tournamentId?: string }) {
-  const { featuredTournament, profileReady, policyCopy } = useParticipantFlow();
+  const { featuredTournament, tournamentDivisions, profileReady, policyCopy } = useParticipantFlow();
   useEffect(() => loadTournament(tournamentId), [tournamentId]);
   const applyRoute = `/tournaments/${featuredTournament.tournamentId}/apply`;
 
@@ -292,8 +322,7 @@ export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: {
       <View testID="tournament-detail" style={styles.sectionCard}>
         <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>D-5</Text></View><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>주최 · 대한피클볼협회</Text>
         <Row left="일정" right="8월 9일 (토) · 오전 9:00" /><Row left="장소" right="올림픽공원 SK핸드볼경기장" /><Text style={styles.linkText}>지도보기</Text><Row left="참가비" right="단식 30,000원 · 복식(대표결제) 60,000원" />
-        <Text style={styles.sectionLabel}>종목 선택</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>남자복식</Text><Text style={styles.bodyCopy}>DUPR 3.5~4.5 · 마감 8/5</Text><Text style={styles.caption}>48/64명</Text><Text style={styles.priceText}>30,000원</Text></View>
-        <View style={styles.choiceCardMuted}><Text style={styles.choiceTitle}>여자복식 · 마감</Text><Text style={styles.caption}>DUPR 3.0~4.0 · 접수가 마감되었습니다 · 32/32명 · 25,000원</Text></View><View style={styles.choiceCard}><Text style={styles.choiceTitle}>혼합복식</Text><Text style={styles.bodyCopy}>DUPR 제한없음 · 마감 8/7</Text><Text style={styles.caption}>20/40명 · 25,000원</Text></View>
+        <Text style={styles.sectionLabel}>종목 선택</Text>{(tournamentDivisions.length ? tournamentDivisions : [{ divisionId: 'local-mens', name: '남자복식', skillLevel: 'DUPR 3.5~4.5', entryFeeKrw: 60000, capacityTeams: 64 }]).map((division) => <View key={division.divisionId} style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name}</Text><Text style={styles.bodyCopy}>{division.skillLevel ?? 'DUPR 제한없음'} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀</Text><Text style={styles.priceText}>{division.entryFeeKrw.toLocaleString('ko-KR')}원</Text></View>)}
         <Text style={styles.sectionLabel}>대회요강</Text><Text style={styles.caption}>· 경기방식: 예선 라운드로빈 후 본선 토너먼트{`\n`}· 공인구: OPTIC 피클볼 공인구 사용{`\n`}· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수{`\n`}· 우천/불가항력 시 일정은 주최측 공지에 따름</Text>
         <Text style={styles.sectionLabel}>환불 규정</Text><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. MVP에서는 실제 환불/취소 처리 없이 참고만 표시합니다. {policyCopy}</Text>
         <ActionButton testID="detail-apply-button" label="참가 신청으로 이동" onPress={() => router.push(profileReady ? applyRoute : '/dupr-profile')} />
@@ -324,11 +353,11 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 }
 
 export function SupportScreen() {
-  const { supportRefundPolicyCopy } = useParticipantFlow();
+  const { supportRefundPolicyCopy, supportCenter } = useParticipantFlow();
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: 평일 10:00 ~ 18:00 (주말·공휴일 휴무){`\n`}support@happickle.kr (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
+      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text>{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
     </ParticipantRouteScaffold>
   );
 }
@@ -338,12 +367,14 @@ export function GamesScreen() {
 }
 
 export function NotificationsScreen() {
-  return <ParticipantRouteScaffold active="notifications"><View testID="notifications-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>알림</Text><Text style={styles.sectionTitle}>대회 마감 임박!</Text><Text style={styles.bodyCopy}>오늘까지 신청하세요</Text><Text style={styles.bodyCopy}>파트너 초대가 도착했어요 · 결제가 완료되었어요</Text></View></ParticipantRouteScaffold>;
+  const { notifications } = useParticipantFlow();
+  return <ParticipantRouteScaffold active="notifications"><View testID="notifications-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>알림</Text>{notifications.map((notification) => <View key={notification.notificationId}><Text style={styles.sectionTitle}>{notification.title}</Text><Text style={styles.bodyCopy}>{notification.body}</Text></View>)}</View></ParticipantRouteScaffold>;
 }
 
 export function MyPageScreen() {
-  const { profile } = useParticipantFlow();
-  return <ParticipantRouteScaffold active="mypage"><View testID="mypage-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>마이</Text><Text style={styles.sectionTitle}>김민준 · DUPR {hasRequiredDupr(profile) ? profile.duprId : '미등록'}</Text><Text style={styles.bodyCopy}>송파피클볼클럽</Text><Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></View></ParticipantRouteScaffold>;
+  const { profile, application, paymentRecords } = useParticipantFlow();
+  const paymentCopy = paymentRecords[0] ? `${paymentRecords[0].status} · ${paymentRecords[0].amountKrw.toLocaleString('ko-KR')}원 · 오프라인 운영자 확인` : '결제 내역 없음 · 오프라인 결제는 운영자 확인 대기';
+  return <ParticipantRouteScaffold active="mypage"><View testID="mypage-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>마이</Text><Text style={styles.sectionTitle}>{profile.displayName} · DUPR {hasRequiredDupr(profile) ? profile.duprId : '미등록'}</Text><Text style={styles.bodyCopy}>송파피클볼클럽</Text><Text testID="mypage-payment-status" style={styles.bodyCopy}>{paymentCopy}</Text>{application ? <Text style={styles.caption}>최근 신청: {application.applicationId}</Text> : null}<Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></View></ParticipantRouteScaffold>;
 }
 
 const fontSans = 'Noto Sans KR, Inter, SF Pro Display, system-ui, sans-serif';

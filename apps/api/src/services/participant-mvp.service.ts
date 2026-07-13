@@ -1,17 +1,25 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
+  createSupportInquiryRequestSchema,
+  myPageResponseSchema,
+  notificationListResponseSchema,
   participantApiErrorCodeSchema,
   type ParticipantApiErrorCode,
   participantApplicationErrorCodeSchema,
   participantProfileSchema,
+  paymentRecordSchema,
   type ParticipantProfile,
+  supportCenterResponseSchema,
+  supportInquirySchema,
   type Tournament,
+  tournamentDetailSchema,
+  tournamentDivisionSchema,
   tournamentApplicationSchema,
   tournamentSchema,
   type TournamentApplication,
 } from '@template/contracts';
 import { db } from '../db/client.js';
-import { participantProfiles, tournamentApplications, tournaments } from '../db/schema.js';
+import { notifications, participantProfiles, paymentRecords, supportInquiries, tournamentApplications, tournamentDivisions, tournaments } from '../db/schema.js';
 
 const SANDBOX_PARTICIPANT_ID = 'participant_sandbox_001';
 const REQUIRED_DUPR_ERROR = participantApplicationErrorCodeSchema.enum.DUPR_PROFILE_REQUIRED;
@@ -53,12 +61,14 @@ function createInitialProfile(): ParticipantProfile {
 
 let memoryProfile: ParticipantProfile = createInitialProfile();
 const memoryApplications = new Map<string, TournamentApplication>();
+const memorySupportInquiries = new Map<string, ReturnType<typeof supportInquirySchema.parse>>();
 
 const useMemoryStore = process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
 
 export async function resetParticipantMvpState() {
   memoryProfile = createInitialProfile();
   memoryApplications.clear();
+  memorySupportInquiries.clear();
 
   if (useMemoryStore) return;
 
@@ -83,7 +93,16 @@ export async function getTournament(tournamentId: string) {
   if (!tournament) {
     throw new ParticipantMvpError(TOURNAMENT_NOT_FOUND_ERROR, 404);
   }
-  return tournament;
+  const divisions = await listTournamentDivisions(tournament.tournamentId);
+  return tournamentDetailSchema.parse({ ...tournament, divisions });
+}
+
+export async function listTournamentDivisions(tournamentId: string) {
+  if (useMemoryStore) return sandboxDivisions.filter((division) => division.tournamentId === tournamentId);
+
+  await seedSandboxTournaments();
+  const rows = await db.select().from(tournamentDivisions).where(eq(tournamentDivisions.tournamentId, tournamentId));
+  return rows.map(parseDivisionRow);
 }
 
 export async function getParticipantProfile() {
@@ -207,6 +226,80 @@ export async function createTournamentApplication(input: {
   return parseApplicationRow(storedApplication);
 }
 
+export async function getSupportCenter() {
+  const profile = await getParticipantProfile();
+  const inquiries = await listSupportInquiries(profile.participantId);
+  return supportCenterResponseSchema.parse({
+    policyCopy: '참가자 직접 취소 불가 · 1:1 문의로 접수됩니다. Participant self-cancel/refund is not available in MVP. DUPR 정보는 어디서 확인하나요? DUPR 앱 또는 공식 프로필에서 확인해 주세요.',
+    contactEmail: 'support@happickle.kr',
+    operatingHours: '평일 10:00 ~ 18:00 (주말·공휴일 휴무)',
+    inquiries,
+  });
+}
+
+export async function listSupportInquiries(participantId = SANDBOX_PARTICIPANT_ID) {
+  if (useMemoryStore) {
+    if (memorySupportInquiries.size === 0) seedMemorySupportInquiries();
+    return [...memorySupportInquiries.values()].filter((inquiry) => inquiry.participantId === participantId);
+  }
+  await seedSandboxSupportInquiries();
+  const rows = await db.select().from(supportInquiries).where(eq(supportInquiries.participantId, participantId)).orderBy(desc(supportInquiries.createdAt));
+  return rows.map(parseSupportInquiryRow);
+}
+
+export async function createSupportInquiry(input: unknown) {
+  const parsed = createSupportInquiryRequestSchema.parse(input);
+  const profile = await getParticipantProfile();
+  const now = new Date();
+  const inquiry = supportInquirySchema.parse({
+    inquiryId: `inquiry_${now.getTime()}`,
+    participantId: profile.participantId,
+    applicationId: parsed.applicationId,
+    channel: 'oneToOneInquiry',
+    category: parsed.category,
+    subject: parsed.subject,
+    status: 'open',
+    createdAt: now.toISOString(),
+  });
+  if (useMemoryStore) {
+    memorySupportInquiries.set(inquiry.inquiryId, inquiry);
+    return inquiry;
+  }
+  const [stored] = await db.insert(supportInquiries).values({
+    inquiryId: inquiry.inquiryId,
+    participantId: inquiry.participantId,
+    applicationId: inquiry.applicationId,
+    channel: inquiry.channel,
+    category: inquiry.category,
+    subject: inquiry.subject,
+    status: inquiry.status,
+    createdAt: now,
+    updatedAt: now,
+  }).returning();
+  return parseSupportInquiryRow(stored);
+}
+
+export async function listNotifications() {
+  const profile = await getParticipantProfile();
+  if (useMemoryStore) return notificationListResponseSchema.parse({ notifications: sandboxNotifications(profile.participantId) });
+  await seedSandboxNotifications(profile.participantId);
+  const rows = await db.select().from(notifications).where(eq(notifications.participantId, profile.participantId)).orderBy(desc(notifications.createdAt));
+  return notificationListResponseSchema.parse({ notifications: rows.map(parseNotificationRow) });
+}
+
+export async function getMyPage() {
+  const profile = await getParticipantProfile();
+  if (useMemoryStore) {
+    return myPageResponseSchema.parse({ profile, applications: [...memoryApplications.values()], paymentRecords: sandboxPaymentRecords(profile.participantId, [...memoryApplications.values()]) });
+  }
+  await seedSandboxPaymentRecords(profile.participantId);
+  const [applicationRows, paymentRows] = await Promise.all([
+    db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, profile.participantId)),
+    db.select().from(paymentRecords).where(eq(paymentRecords.participantId, profile.participantId)).orderBy(desc(paymentRecords.recordedAt)),
+  ]);
+  return myPageResponseSchema.parse({ profile, applications: applicationRows.map(parseApplicationRow), paymentRecords: paymentRows.map(parsePaymentRecordRow) });
+}
+
 export async function getTournamentApplication(applicationId: string) {
   if (useMemoryStore) {
     const application = memoryApplications.get(applicationId);
@@ -246,6 +339,51 @@ async function seedSandboxTournaments() {
       cancellationPolicy: tournament.cancellationPolicy,
     })),
   ).onConflictDoNothing();
+  await db.insert(tournamentDivisions).values(sandboxDivisions.map((division) => ({
+    divisionId: division.divisionId,
+    tournamentId: division.tournamentId,
+    name: division.name,
+    skillLevel: division.skillLevel,
+    teamType: division.teamType,
+    entryFeeKrw: division.entryFeeKrw,
+    capacityTeams: division.capacityTeams,
+  }))).onConflictDoNothing();
+}
+
+const sandboxDivisions = [
+  { divisionId: 'division_sandbox_mixed_35', tournamentId: 'tournament_sandbox_001', name: '혼합복식', skillLevel: 'DUPR 3.5+', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 32 },
+  { divisionId: 'division_sandbox_mens_open', tournamentId: 'tournament_sandbox_001', name: '남자복식', skillLevel: 'DUPR 3.5~4.5', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 64 },
+].map((division) => tournamentDivisionSchema.parse(division));
+
+function seedMemorySupportInquiries() {
+  const now = '2026-07-13T09:00:00.000Z';
+  memorySupportInquiries.set('inquiry_sandbox_refund', supportInquirySchema.parse({ inquiryId: 'inquiry_sandbox_refund', participantId: SANDBOX_PARTICIPANT_ID, channel: 'oneToOneInquiry', category: 'refund', subject: '환불/취소는 1:1 문의로 접수', status: 'operatorReview', createdAt: now }));
+}
+
+async function seedSandboxSupportInquiries() {
+  await getParticipantProfile();
+  await db.insert(supportInquiries).values({ inquiryId: 'inquiry_sandbox_refund', participantId: SANDBOX_PARTICIPANT_ID, channel: 'oneToOneInquiry', category: 'refund', subject: '환불/취소는 1:1 문의로 접수', status: 'operatorReview', createdAt: new Date('2026-07-13T09:00:00.000Z'), updatedAt: new Date('2026-07-13T09:00:00.000Z') }).onConflictDoNothing();
+}
+
+function sandboxNotifications(participantId: string) {
+  return [
+    { notificationId: 'notification_sandbox_deadline', participantId, type: 'tournamentDeadline', title: '대회 마감 임박!', body: '오늘까지 신청하세요', createdAt: '2026-07-13T09:00:00.000Z' },
+    { notificationId: 'notification_sandbox_support', participantId, type: 'support', title: '1:1 문의 접수 안내', body: '취소/환불은 운영자 확인 후 안내됩니다.', createdAt: '2026-07-13T08:30:00.000Z' },
+  ];
+}
+
+async function seedSandboxNotifications(participantId: string) {
+  await db.insert(notifications).values(sandboxNotifications(participantId).map((item) => ({ ...item, createdAt: new Date(item.createdAt) }))).onConflictDoNothing();
+}
+
+function sandboxPaymentRecords(participantId: string, applications: TournamentApplication[]) {
+  return applications.map((application) => paymentRecordSchema.parse({ paymentRecordId: `payment_${application.applicationId}`, applicationId: application.applicationId, participantId, amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 오프라인 입금 확인 대기', recordedAt: application.submittedAt }));
+}
+
+async function seedSandboxPaymentRecords(participantId: string) {
+  const applicationRows = await db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, participantId));
+  if (applicationRows.length === 0) return;
+  await db.insert(paymentRecords).values(applicationRows.map((application) => ({ paymentRecordId: `payment_${application.applicationId}`, applicationId: application.applicationId, participantId, amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 오프라인 입금 확인 대기', recordedAt: application.submittedAt, updatedAt: new Date() }))).onConflictDoNothing();
 }
 
 function parseTournamentRow(row: typeof tournaments.$inferSelect) {
@@ -259,6 +397,18 @@ function parseTournamentRow(row: typeof tournaments.$inferSelect) {
     requiresDupr: row.requiresDupr,
     paymentMode: row.paymentMode,
     cancellationPolicy: row.cancellationPolicy,
+  });
+}
+
+function parseDivisionRow(row: typeof tournamentDivisions.$inferSelect) {
+  return tournamentDivisionSchema.parse({
+    divisionId: row.divisionId,
+    tournamentId: row.tournamentId,
+    name: row.name,
+    skillLevel: row.skillLevel ?? undefined,
+    teamType: row.teamType,
+    entryFeeKrw: row.entryFeeKrw,
+    capacityTeams: row.capacityTeams ?? undefined,
   });
 }
 
@@ -283,5 +433,44 @@ function parseApplicationRow(row: typeof tournamentApplications.$inferSelect) {
     supportChannel: row.supportChannel,
     paymentStatus: row.paymentStatus,
     refundPolicy: row.refundPolicy,
+  });
+}
+
+function parseSupportInquiryRow(row: typeof supportInquiries.$inferSelect) {
+  return supportInquirySchema.parse({
+    inquiryId: row.inquiryId,
+    participantId: row.participantId ?? undefined,
+    applicationId: row.applicationId ?? undefined,
+    channel: row.channel,
+    category: row.category,
+    subject: row.subject,
+    status: row.status,
+    createdAt: row.createdAt.toISOString(),
+  });
+}
+
+function parseNotificationRow(row: typeof notifications.$inferSelect) {
+  return {
+    notificationId: row.notificationId,
+    participantId: row.participantId,
+    type: row.type,
+    title: row.title,
+    body: row.body,
+    relatedApplicationId: row.relatedApplicationId ?? undefined,
+    readAt: row.readAt?.toISOString(),
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
+function parsePaymentRecordRow(row: typeof paymentRecords.$inferSelect) {
+  return paymentRecordSchema.parse({
+    paymentRecordId: row.paymentRecordId,
+    applicationId: row.applicationId,
+    participantId: row.participantId,
+    amountKrw: row.amountKrw,
+    paymentMode: row.paymentMode,
+    status: row.status,
+    operatorNote: row.operatorNote ?? undefined,
+    recordedAt: row.recordedAt.toISOString(),
   });
 }
