@@ -35,7 +35,7 @@
     "validate:evidence-hygiene": "node scripts/validate-evidence-hygiene.mjs --self-test && node scripts/validate-evidence-hygiene.mjs",
     "validate:codex-run": "bash evals/skills/codex-run-smoke.sh",
     "test:hooks": "node scripts/test-hooks.mjs",
-    "build": "pnpm --filter mobile exec expo export --platform web --output-dir dist",
+    "build": "pnpm --filter @template/contracts build && pnpm --filter mobile exec expo export --platform web --output-dir dist",
     "start": "node scripts/railway-static-server.mjs apps/mobile/dist"
   }
 }

@@ -1,6 +1,6 @@
 # Project Environment
 
-Last updated: 2026-06-19
+Last updated: 2026-07-12
 
 This file is the root source for the current project environment and runtime settings. Keep it in sync when changing package versions, Expo config, NativeWind config, Codex runtime files, CI gates, EAS workflows, required environment variables, or the Codex MCP/CLI setup guide at `docs/CODEX_MCP_ENVIRONMENT.md`.
 
@@ -25,13 +25,13 @@ This file is the root source for the current project environment and runtime set
 - App path: `apps/mobile`.
 - Framework: Expo SDK 56 with Expo Router.
 - Runtime versions:
-  - `expo`: `~56.0.11`
+  - `expo`: `~56.0.15`
   - `react`: `19.2.3`
   - `react-dom`: `19.2.3`
   - `react-native`: `0.85.3`
   - `react-native-web`: `^0.21.2`
-  - `expo-router`: `~56.2.10`
-  - `expo-dev-client`: `~56.0.20`
+  - `expo-router`: `~56.2.14`
+  - `expo-dev-client`: `~56.0.22`
   - `expo-doctor`: `^1.19.9` as the `doctor` script dependency.
   - `@playwright/test`: `^1.60.0` as the browser E2E test runner.
 - Expo config: `apps/mobile/app.config.ts`.

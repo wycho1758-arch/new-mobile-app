@@ -1,15 +1,45 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import Home from '../src/app';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react-native';
+import { participantApplicationErrorCodeSchema } from '@template/contracts';
+import { router } from 'expo-router';
+import Home, {
+  DuprProfileScreen,
+  MyPageScreen,
+  SupportScreen,
+  TournamentApplicationScreen,
+  TournamentsScreen,
+  resetParticipantFlow,
+  saveParticipantDupr,
+  startParticipantSession,
+} from '../src/app';
 import {
   REQUIRED_DUPR_ERROR,
   hasRequiredDupr,
   sandboxParticipantSession,
   saveSandboxDupr,
+  describeApplicationPolicy,
+  describeSupportRefundPolicyCopy,
   submitSandboxTournamentApplication,
 } from '../src/participant/mock-session';
 
+jest.mock('expo-router', () => ({
+  router: {
+    push: jest.fn(),
+  },
+}));
+
+const mockPush = router.push as jest.Mock;
+
 describe('participant shell sandbox contract', () => {
+  beforeEach(() => {
+    mockPush.mockClear();
+    resetParticipantFlow();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('uses a participant social session actor shape', () => {
     expect(sandboxParticipantSession.sessionActor).toMatchObject({
       actorId: expect.any(String),
@@ -27,7 +57,7 @@ describe('participant shell sandbox contract', () => {
 
   it('blocks application readiness when DUPR ID is missing', () => {
     expect(hasRequiredDupr(sandboxParticipantSession.profile)).toBe(false);
-    expect(REQUIRED_DUPR_ERROR).toBe('DUPR_PROFILE_REQUIRED');
+    expect(REQUIRED_DUPR_ERROR).toBe(participantApplicationErrorCodeSchema.enum.DUPR_PROFILE_REQUIRED);
     expect(() =>
       submitSandboxTournamentApplication({
         profile: sandboxParticipantSession.profile,
@@ -60,41 +90,102 @@ describe('participant shell sandbox contract', () => {
     });
   });
 
+
+  it('maps API-returned refund and support policy to shared application and FAQ copy', () => {
+    const policy = {
+      refundPolicy: 'participantSelfCancelDisabled',
+      supportChannel: 'oneToOneInquiry',
+    } as const;
+
+    expect(describeApplicationPolicy(policy)).toBe('참가자 직접 취소 불가 · 1:1 문의');
+    expect(describeSupportRefundPolicyCopy(policy)).toContain(describeApplicationPolicy(policy));
+    expect(describeSupportRefundPolicyCopy(policy)).toContain('Participant self-cancel/refund is not available in MVP.');
+    expect(describeSupportRefundPolicyCopy(policy)).toContain('DUPR 정보는 어디서 확인하나요?');
+  });
+
   it('starts on the Korean social-login screen before showing participant application gates', () => {
     render(React.createElement(Home));
 
     expect(screen.getByTestId('login-artboard')).toBeTruthy();
-    expect(screen.getByTestId('login-logo')).toHaveTextContent('Hagpickle');
-    expect(screen.getByTestId('login-subtitle')).toHaveTextContent('대회일정을 편리하게 모아 보는 플랫폼');
+    expect(screen.getByTestId('login-logo').props.accessibilityLabel).toBe('Happickle');
+    expect(screen.getByTestId('login-logo-text')).toHaveTextContent('Happickle');
+    expect(screen.getByTestId('login-subtitle')).toHaveTextContent('대한피클볼협회 공식 대회 플랫폼');
     expect(screen.getByTestId('kakao-login-button')).toHaveTextContent('카카오로 계속하기');
     expect(screen.getByTestId('apple-login-button')).toHaveTextContent('Apple로 계속하기');
-    expect(screen.getByTestId('login-consent-copy')).toHaveTextContent('계속하시면 자동으로 회원가입이 진행돼요');
+    expect(screen.getByTestId('login-consent-copy')).toHaveTextContent('처음이시면 자동으로 회원가입이 진행돼요');
     expect(screen.queryByTestId('application-cta')).toBeNull();
     expect(screen.queryByTestId('mock-tournament-card')).toBeNull();
-  });
-
-  it('lets a sandbox participant start session, save DUPR, and submit a mock application', () => {
-    render(React.createElement(Home));
 
     fireEvent.press(screen.getByTestId('kakao-login-button'));
+    expect(mockPush).toHaveBeenLastCalledWith('/tournaments');
+  });
 
-    expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: true });
-    expect(screen.getByTestId('application-cta')).toHaveTextContent(/DUPR ID required/);
-    expect(screen.getByTestId('application-blocker')).toHaveTextContent(new RegExp(REQUIRED_DUPR_ERROR));
-    expect(screen.getByTestId('application-blocker')).toHaveTextContent(/Add your DUPR ID to apply/);
-    expect(screen.getByTestId('mock-tournament-card')).toBeTruthy();
+  it('lets a sandbox participant navigate detail, save DUPR, and submit a mock application', () => {
+    startParticipantSession();
+    render(React.createElement(TournamentsScreen));
+    expect(screen.getByTestId('explore-home')).toHaveTextContent(/어떤 대회에 나가볼까요/);
+    expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/PickleHub Sandbox Open/);
+
+    fireEvent.press(screen.getByTestId('mock-tournament-card'));
+    expect(mockPush).toHaveBeenLastCalledWith(`/tournaments/${sandboxParticipantSession.featuredTournament.tournamentId}`);
+  });
+
+  it('lets a sandbox participant save DUPR and route to the application page', () => {
+    startParticipantSession();
+    render(React.createElement(DuprProfileScreen));
+    expect(screen.getByTestId('dupr-management')).toHaveTextContent(/DUPR 프로필 스크린샷 첨부/);
+    expect(screen.getByTestId('dupr-continue-application').props.accessibilityState).toMatchObject({ disabled: true });
 
     fireEvent.changeText(screen.getByTestId('dupr-input'), 'dupr-777');
     fireEvent.press(screen.getByTestId('save-dupr-button'));
 
     expect(screen.getByTestId('saved-dupr')).toHaveTextContent(/DUPR-777/);
-    expect(screen.getByTestId('dupr-gate-status')).toHaveTextContent(/Application readiness unlocked/);
-    expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
+    expect(screen.getByTestId('dupr-gate-status')).toHaveTextContent(/현재 DUPR 저장됨/);
+    expect(screen.getByTestId('dupr-continue-application').props.accessibilityState).toMatchObject({ disabled: false });
 
+    fireEvent.press(screen.getByTestId('dupr-continue-application'));
+    expect(mockPush).toHaveBeenLastCalledWith(`/tournaments/${sandboxParticipantSession.featuredTournament.tournamentId}/apply`);
+  });
+
+  it('lets a sandbox participant submit a mock application after DUPR is present', () => {
+    startParticipantSession();
+    saveParticipantDupr('dupr-777');
+    render(React.createElement(TournamentApplicationScreen));
+    expect(screen.getByTestId('application-form')).toHaveTextContent(/복식 파트너 초대/);
+    expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
     fireEvent.press(screen.getByTestId('application-cta'));
 
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/Mock application submitted/);
-    expect(screen.getByTestId('support-copy')).toHaveTextContent(/1:1 inquiry support/);
+    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
+  });
+
+  it('connects bottom tabs, my page shortcuts, and support copy', () => {
+    startParticipantSession();
+    render(React.createElement(TournamentsScreen));
+
+    fireEvent.press(screen.getByTestId('bottom-tab-games'));
+    expect(mockPush).toHaveBeenLastCalledWith('/games');
+    fireEvent.press(screen.getByTestId('bottom-tab-notifications'));
+    expect(mockPush).toHaveBeenLastCalledWith('/notifications');
+    fireEvent.press(screen.getByTestId('bottom-tab-mypage'));
+    expect(mockPush).toHaveBeenLastCalledWith('/mypage');
+  });
+
+  it('connects my page shortcuts and support copy', () => {
+    startParticipantSession();
+    render(React.createElement(MyPageScreen));
+    expect(screen.getByTestId('mypage-screen')).toHaveTextContent(/DUPR/);
+    fireEvent.press(screen.getByTestId('mypage-support-button'));
+    expect(mockPush).toHaveBeenLastCalledWith('/support');
+  });
+
+  it('renders support policy copy on the support route', () => {
+    startParticipantSession();
+    render(React.createElement(SupportScreen));
+    expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
+    expect(screen.getByTestId('support-copy')).toHaveTextContent(/1:1 문의로 접수/);
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/Participant self-cancel\/refund is not available/);
+    expect(screen.getByTestId('support-center')).toHaveTextContent(/이메일 1:1 문의/);
+    expect(screen.getByTestId('support-copy')).toHaveTextContent(/DUPR 정보는 어디서 확인하나요/);
   });
 });

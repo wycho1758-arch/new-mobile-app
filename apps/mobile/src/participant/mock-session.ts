@@ -1,3 +1,12 @@
+import {
+  participantApplicationErrorCodeSchema,
+  type ParticipantProfile,
+  type Tournament as MockTournament,
+  type TournamentApplication as MockTournamentApplication,
+} from '@template/contracts';
+
+export type { ParticipantProfile, MockTournament, MockTournamentApplication };
+
 export type SessionActor = {
   actorId: string;
   role: 'participant' | 'organizer' | 'operator' | 'apiConsumer';
@@ -8,49 +17,33 @@ export type SessionActor = {
   issuedAt: string;
 };
 
-export type ParticipantProfile = {
-  participantId: string;
-  displayName: string;
-  duprId?: string;
-  supportChannel: 'oneToOneInquiry';
-};
-
-export type MockTournament = {
-  tournamentId: string;
-  title: string;
-  division: string;
-  location: string;
-  applicationStatus: 'available';
-  requiresDupr: true;
-  paymentMode: 'operatorManagedOffline';
-  cancellationPolicy: 'operatorSupportOnly';
-};
-
-export type MockTournamentApplication = {
-  applicationId: string;
-  tournamentId: string;
-  participantId: string;
-  duprId: string;
-  status: 'submitted';
-  submittedAt: string;
-  supportChannel: 'oneToOneInquiry';
-  paymentStatus: 'notStartedSandbox';
-  refundPolicy: 'participantSelfCancelDisabled';
-};
-
 export type ParticipantShellState = {
   sessionActor: SessionActor;
   profile: ParticipantProfile;
   featuredTournament: MockTournament;
 };
 
-export const REQUIRED_DUPR_ERROR = 'DUPR_PROFILE_REQUIRED';
+export const REQUIRED_DUPR_ERROR = participantApplicationErrorCodeSchema.enum.DUPR_PROFILE_REQUIRED;
+
+export const PARTICIPANT_SELF_CANCEL_REFUND_COPY = '참가자 직접 취소 불가';
+export const ONE_TO_ONE_INQUIRY_SUPPORT_COPY = '1:1 문의';
+export const MVP_SELF_CANCEL_REFUND_UNAVAILABLE_COPY = 'Participant self-cancel/refund is not available in MVP.';
+export const ONE_TO_ONE_INQUIRY_SUPPORT_DETAIL_COPY = '취소와 환불 문의는 1:1 문의로 접수하며, 카카오톡 또는 이메일은 1:1 문의 접수 수단입니다.';
+
+export const supportRefundPolicyFaqQuestions = [
+  '참가비 환불은 언제까지 가능한가요?',
+  '복식 파트너가 초대를 수락하지 않으면 어떻게 되나요?',
+  '경기 결과에 이의가 있으면 어떻게 하나요?',
+  'DUPR 정보는 어디서 확인하나요?',
+  '대회 신청을 취소하고 싶어요.',
+];
 
 export const sandboxFeaturedTournament: MockTournament = {
   tournamentId: 'tournament_sandbox_001',
   title: 'PickleHub Sandbox Open',
   division: 'Mixed Doubles 3.5+',
   location: 'Dev/Sandbox Court',
+  startsAt: '2026-08-09T09:00:00.000+09:00',
   applicationStatus: 'available',
   requiresDupr: true,
   paymentMode: 'operatorManagedOffline',
@@ -69,6 +62,7 @@ export const sandboxParticipantSession: ParticipantShellState = {
   profile: {
     participantId: 'participant_sandbox_001',
     displayName: 'Sandbox Player',
+    duprStatus: 'missing',
     supportChannel: 'oneToOneInquiry',
   },
   featuredTournament: sandboxFeaturedTournament,
@@ -86,7 +80,28 @@ export function saveSandboxDupr(profile: ParticipantProfile, duprId: string): Pa
   return {
     ...profile,
     duprId: normalizeDuprId(duprId),
+    duprStatus: 'selfReportedPendingOperatorReview',
   };
+}
+
+export function describeApplicationPolicy(application: Pick<MockTournamentApplication, 'refundPolicy' | 'supportChannel'>) {
+  const refundCopy = application.refundPolicy === 'participantSelfCancelDisabled'
+    ? PARTICIPANT_SELF_CANCEL_REFUND_COPY
+    : '환불 정책 확인 필요';
+  const supportCopy = application.supportChannel === 'oneToOneInquiry'
+    ? ONE_TO_ONE_INQUIRY_SUPPORT_COPY
+    : '고객센터 문의';
+
+  return `${refundCopy} · ${supportCopy}`;
+}
+
+export function describeSupportRefundPolicyCopy(application: Pick<MockTournamentApplication, 'refundPolicy' | 'supportChannel'>) {
+  return [
+    supportRefundPolicyFaqQuestions.join(' '),
+    `${describeApplicationPolicy(application)}.`,
+    MVP_SELF_CANCEL_REFUND_UNAVAILABLE_COPY,
+    ONE_TO_ONE_INQUIRY_SUPPORT_DETAIL_COPY,
+  ].join(' ');
 }
 
 export function submitSandboxTournamentApplication(input: {
