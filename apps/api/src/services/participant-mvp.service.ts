@@ -169,12 +169,14 @@ export async function createTournamentApplication(input: {
   tournamentId: string;
   participantId?: string;
   duprId?: string;
+  divisionId?: string;
   submittedAt?: string;
 }) {
   const tournament = await getTournament(input.tournamentId);
   const currentProfile = await getParticipantProfile();
   const participantId = input.participantId ?? currentProfile.participantId;
   const duprId = normalizeDuprId(input.duprId ?? currentProfile.duprId ?? '');
+  const divisionId = await resolveApplicationDivisionId(tournament.tournamentId, input.divisionId);
 
   if (tournament.requiresDupr && !duprId) {
     throw new ParticipantMvpError(REQUIRED_DUPR_ERROR, 400);
@@ -185,6 +187,7 @@ export async function createTournamentApplication(input: {
     tournamentId: tournament.tournamentId,
     participantId,
     duprId,
+    divisionId,
     status: 'submitted',
     submittedAt: input.submittedAt ?? new Date().toISOString(),
     supportChannel: 'oneToOneInquiry',
@@ -203,6 +206,7 @@ export async function createTournamentApplication(input: {
       applicationId: application.applicationId,
       tournamentId: application.tournamentId,
       participantId: application.participantId,
+      divisionId: application.divisionId,
       duprId: application.duprId,
       status: application.status,
       submittedAt: new Date(application.submittedAt),
@@ -213,6 +217,7 @@ export async function createTournamentApplication(input: {
     .onConflictDoUpdate({
       target: tournamentApplications.applicationId,
       set: {
+        divisionId: application.divisionId,
         duprId: application.duprId,
         status: application.status,
         submittedAt: new Date(application.submittedAt),
@@ -325,6 +330,12 @@ function normalizeDuprId(duprId: string) {
   return duprId.trim().toUpperCase();
 }
 
+async function resolveApplicationDivisionId(tournamentId: string, requestedDivisionId?: string) {
+  if (requestedDivisionId) return requestedDivisionId;
+  const [defaultDivision] = await listTournamentDivisions(tournamentId);
+  return defaultDivision?.divisionId;
+}
+
 async function seedSandboxTournaments() {
   await db.insert(tournaments).values(
     sandboxTournaments.map((tournament) => ({
@@ -428,6 +439,7 @@ function parseApplicationRow(row: typeof tournamentApplications.$inferSelect) {
     tournamentId: row.tournamentId,
     participantId: row.participantId,
     duprId: row.duprId,
+    divisionId: row.divisionId ?? undefined,
     status: row.status,
     submittedAt: row.submittedAt.toISOString(),
     supportChannel: row.supportChannel,

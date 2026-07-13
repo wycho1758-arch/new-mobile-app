@@ -91,6 +91,7 @@ export const tournamentApplicationSchema = z.object({
   tournamentId: z.string().min(1),
   participantId: z.string().min(1),
   duprId: z.string().min(1),
+  divisionId: z.string().min(1).optional(),
   status: tournamentApplicationStatusSchema,
   submittedAt: z.string(),
   supportChannel: supportChannelSchema,
@@ -103,6 +104,7 @@ export const createTournamentApplicationRequestSchema = z.object({
   tournamentId: z.string().min(1),
   participantId: z.string().min(1).optional(),
   duprId: z.string().trim().min(1).optional(),
+  divisionId: z.string().min(1).optional(),
 });
 export type CreateTournamentApplicationRequest = z.infer<typeof createTournamentApplicationRequestSchema>;
 

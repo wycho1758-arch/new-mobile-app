@@ -117,6 +117,7 @@ describe('participant MVP dev-preview endpoints', () => {
       applicationId: 'application_tournament_sandbox_001_participant_sandbox_001',
       status: 'submitted',
       duprId: 'DUPR-12345',
+      divisionId: 'division_sandbox_mixed_35',
       paymentStatus: 'notStartedSandbox',
     });
 
@@ -124,6 +125,7 @@ describe('participant MVP dev-preview endpoints', () => {
     expect(fetched.res.status).toBe(200);
     expect(tournamentApplicationSchema.parse(fetched.body)).toMatchObject({
       applicationId: application.applicationId,
+      divisionId: 'division_sandbox_mixed_35',
     });
   });
 
@@ -151,6 +153,7 @@ describe('participant MVP dev-preview endpoints', () => {
     expect(fetched.res.status).toBe(200);
     expect(tournamentApplicationSchema.parse(fetched.body)).toMatchObject({
       applicationId: application.applicationId,
+      divisionId: 'division_sandbox_mixed_35',
       refundPolicy: 'participantSelfCancelDisabled',
       supportChannel: 'oneToOneInquiry',
     });

@@ -32,6 +32,7 @@ const application = {
   tournamentId: tournament.tournamentId,
   participantId: profile.participantId,
   duprId: profile.duprId,
+  divisionId: 'division_api_001',
   status: 'submitted' as const,
   submittedAt: '2026-07-10T00:00:00.000Z',
   supportChannel: 'oneToOneInquiry' as const,
@@ -100,7 +101,7 @@ describe('participant API client', () => {
     await expect(client.getNotifications()).resolves.toMatchObject({ notifications: [expect.objectContaining({ title: 'API 알림' })] });
     await expect(client.getMyPage()).resolves.toMatchObject({ paymentRecords: [expect.objectContaining({ amountKrw: 60000 })] });
     await expect(client.updateParticipantProfile({ duprId: 'DUPR-777' })).resolves.toMatchObject({ duprId: 'DUPR-777' });
-    await expect(client.createTournamentApplication({ tournamentId: tournament.tournamentId, participantId: profile.participantId, duprId: profile.duprId })).resolves.toMatchObject({ tournamentId: tournament.tournamentId });
+    await expect(client.createTournamentApplication({ tournamentId: tournament.tournamentId, participantId: profile.participantId, duprId: profile.duprId, divisionId: 'division_api_001' })).resolves.toMatchObject({ tournamentId: tournament.tournamentId, divisionId: 'division_api_001' });
     await expect(client.getTournamentApplication(application.applicationId)).resolves.toEqual(application);
     await expect(client.requestParticipantSelfCancel(application.applicationId)).rejects.toThrow(participantApplicationErrorCodeSchema.enum.PARTICIPANT_SELF_CANCEL_DISABLED);
 

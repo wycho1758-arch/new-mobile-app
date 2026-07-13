@@ -3,6 +3,7 @@ import {
   type ParticipantProfile,
   type Tournament as MockTournament,
   type TournamentApplication as MockTournamentApplication,
+  type TournamentDivision,
 } from '@template/contracts';
 
 export type { ParticipantProfile, MockTournament, MockTournamentApplication };
@@ -107,6 +108,7 @@ export function describeSupportRefundPolicyCopy(application: Pick<MockTournament
 export function submitSandboxTournamentApplication(input: {
   profile: ParticipantProfile;
   tournament: MockTournament;
+  division?: TournamentDivision;
   submittedAt?: string;
 }): MockTournamentApplication {
   if (!hasRequiredDupr(input.profile)) {
@@ -118,6 +120,7 @@ export function submitSandboxTournamentApplication(input: {
     tournamentId: input.tournament.tournamentId,
     participantId: input.profile.participantId,
     duprId: normalizeDuprId(input.profile.duprId ?? ''),
+    divisionId: input.division?.divisionId,
     status: 'submitted',
     submittedAt: input.submittedAt ?? '2026-07-08T00:00:00.000Z',
     supportChannel: 'oneToOneInquiry',

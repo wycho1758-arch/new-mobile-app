@@ -217,10 +217,16 @@ export function saveParticipantDupr(duprId: string) {
   saveDupr();
 }
 
+function getSelectedDivision() {
+  return getAvailableDivisions(participantState.tournamentDivisions)[0];
+}
+
 function submitApplication() {
+  const selectedDivision = getSelectedDivision();
   const fallbackApplication = submitSandboxTournamentApplication({
     profile: participantState.profile,
     tournament: participantState.featuredTournament,
+    division: selectedDivision,
   });
   patchParticipantState({ application: fallbackApplication });
 
@@ -229,6 +235,7 @@ function submitApplication() {
     tournamentId: participantState.featuredTournament.tournamentId,
     participantId: participantState.profile.participantId,
     duprId: participantState.profile.duprId,
+    divisionId: selectedDivision?.divisionId,
   })
     .then((createdApplication) => participantApi.getTournamentApplication(createdApplication.applicationId))
     .then((apiApplication) => patchParticipantState({ application: apiApplication, apiMode: 'api' }))
@@ -475,7 +482,7 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 
   return (
     <ParticipantRouteScaffold active="tournaments">
-      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><View testID="application-division-summary" style={styles.choiceCard}><Text style={styles.choiceTitle}>기본 선택 부문 · {selectedDivision.name}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(selectedDivision)}</Text><Text style={styles.priceText}>{divisionTeamCopy(selectedDivision.teamType)} · {divisionFeeCopy(selectedDivision)}</Text><Text style={styles.caption}>현재 MVP는 첫 번째 신청 가능 부문을 기본값으로 보여주며, 운영자가 접수 후 확정 안내합니다.</Text></View><Text style={styles.sectionLabel}>다른 신청 가능 부문</Text>{availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}<Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)}: {application.applicationId} · {describeApplicationPolicy(application)}</Text> : null}</View>
+      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><View testID="application-division-summary" style={styles.choiceCard}><Text style={styles.choiceTitle}>기본 선택 부문 · {selectedDivision.name}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(selectedDivision)}</Text><Text style={styles.priceText}>{divisionTeamCopy(selectedDivision.teamType)} · {divisionFeeCopy(selectedDivision)}</Text><Text style={styles.caption}>현재 MVP는 첫 번째 신청 가능 부문을 기본값으로 보여주며, 운영자가 접수 후 확정 안내합니다.</Text></View><Text style={styles.sectionLabel}>다른 신청 가능 부문</Text>{availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}<Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)}: {application.applicationId} · 선택 부문 {selectedDivision.name} · {describeApplicationPolicy(application)}</Text> : null}</View>
     </ParticipantRouteScaffold>
   );
 }

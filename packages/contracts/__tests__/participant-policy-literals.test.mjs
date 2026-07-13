@@ -45,6 +45,7 @@ test('participant MVP policy literals stay stable for API, contracts, and mobile
     tournamentId: tournament.tournamentId,
     participantId: profile.participantId,
     duprId: profile.duprId,
+    divisionId: 'division_contract_001',
     status: 'submitted',
     submittedAt: '2026-07-11T10:48:00+09:00',
     supportChannel: 'oneToOneInquiry',
@@ -52,6 +53,7 @@ test('participant MVP policy literals stay stable for API, contracts, and mobile
     refundPolicy: 'participantSelfCancelDisabled',
   });
 
+  assert.equal(application.divisionId, 'division_contract_001');
   assert.equal(application.supportChannel, 'oneToOneInquiry');
   assert.equal(application.refundPolicy, 'participantSelfCancelDisabled');
   assert.equal(participantApplicationErrorCodeSchema.parse('DUPR_PROFILE_REQUIRED'), 'DUPR_PROFILE_REQUIRED');
