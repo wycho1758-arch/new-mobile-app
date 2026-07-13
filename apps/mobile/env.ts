@@ -5,7 +5,7 @@ const expoExtra = Constants.expoConfig?.extra ?? {};
 
 const schema = z.object({
   APP_ENV: z.enum(['development', 'preview', 'production']).default('development'),
-  APP_DISPLAY_NAME: z.string().min(1).default('Mobile App Template'),
+  APP_DISPLAY_NAME: z.string().min(1).default('Happickle'),
   API_URL: z.url(),
 });
 

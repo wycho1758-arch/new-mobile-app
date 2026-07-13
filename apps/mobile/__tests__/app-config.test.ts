@@ -37,6 +37,16 @@ describe('Expo app config', () => {
     }
   });
 
+  it('uses PickleHub/Happickle defaults for local development config', () => {
+    process.env.EXPO_PUBLIC_API_URL = 'https://api.example.invalid';
+
+    expect(resolveConfig()).toMatchObject({
+      name: 'Happickle',
+      slug: 'happickle-mobile',
+      scheme: 'happickle',
+    });
+  });
+
   it('requires API URL for production config', () => {
     setRequiredProductionIdentity();
     process.env.EXPO_PUBLIC_API_URL = '';

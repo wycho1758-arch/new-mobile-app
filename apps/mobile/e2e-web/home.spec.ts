@@ -6,6 +6,7 @@ const REQUIRED_DUPR_ERROR = participantApplicationErrorCodeSchema.enum.DUPR_PROF
 test('login-first screen exposes social login before DUPR gated participant flow on RN Web', async ({ page }) => {
   await page.goto('/');
 
+  await expect(page).toHaveTitle('Happickle');
   await expect(page.getByTestId('login-artboard')).toBeVisible();
   await expect(page.getByTestId('login-logo')).toHaveAttribute('aria-label', 'Happickle');
   await expect(page.getByTestId('login-subtitle')).toContainText('대한피클볼협회 공식 대회 플랫폼');

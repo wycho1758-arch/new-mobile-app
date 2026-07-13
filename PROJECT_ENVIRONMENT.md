@@ -75,9 +75,9 @@ This file is the root source for the current project environment and runtime set
 - Playwright launches Expo Web with deterministic public test config plus the caller-provided backend API URL when present:
   - `EAS_BUILD=false`
   - `EXPO_PUBLIC_APP_ENV=development`
-  - `EXPO_PUBLIC_APP_DISPLAY_NAME=Mobile App Template`
-  - `EXPO_PUBLIC_APP_SLUG=mobile-app-template`
-  - `EXPO_PUBLIC_APP_SCHEME=mobileapptemplate`
+  - `EXPO_PUBLIC_APP_DISPLAY_NAME=Happickle`
+  - `EXPO_PUBLIC_APP_SLUG=happickle-mobile`
+  - `EXPO_PUBLIC_APP_SCHEME=happickle`
   - `EXPO_PUBLIC_API_URL` from the command environment, or `http://127.0.0.1:65535` as a local UI-only placeholder when no API URL is supplied
   - `EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER=com.template.mobile`
   - `EXPO_PUBLIC_ANDROID_PACKAGE=com.template.mobile`
@@ -134,7 +134,7 @@ Public JS runtime variables are parsed by `apps/mobile/env.ts`; app config varia
 
 - Public JS runtime variables:
   - `EXPO_PUBLIC_APP_ENV`: `development`, `preview`, or `production`; default `development`.
-  - `EXPO_PUBLIC_APP_DISPLAY_NAME`: optional in the runtime parser, default is `Mobile App Template`; required explicitly by preview, production, and EAS build config.
+  - `EXPO_PUBLIC_APP_DISPLAY_NAME`: optional in the runtime parser, default is `Happickle`; required explicitly by preview, production, and EAS build config.
   - `EXPO_PUBLIC_API_URL`: required URL.
 - Public app config variables:
   - `EXPO_PUBLIC_APP_SLUG`: required by preview, production, and EAS build config.
