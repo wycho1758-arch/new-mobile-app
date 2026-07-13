@@ -7,10 +7,11 @@ import {
   type ParticipantProfile,
   type Tournament,
   tournamentApplicationSchema,
+  tournamentSchema,
   type TournamentApplication,
 } from '@template/contracts';
 import { db } from '../db/client.js';
-import { participantProfiles, tournamentApplications } from '../db/schema.js';
+import { participantProfiles, tournamentApplications, tournaments } from '../db/schema.js';
 
 const SANDBOX_PARTICIPANT_ID = 'participant_sandbox_001';
 const REQUIRED_DUPR_ERROR = participantApplicationErrorCodeSchema.enum.DUPR_PROFILE_REQUIRED;
@@ -27,7 +28,7 @@ export class ParticipantMvpError extends Error {
   }
 }
 
-const tournaments: Tournament[] = [
+const sandboxTournaments: Tournament[] = [
   {
     tournamentId: 'tournament_sandbox_001',
     title: 'PickleHub Sandbox Open',
@@ -65,12 +66,20 @@ export async function resetParticipantMvpState() {
   await db.delete(participantProfiles);
 }
 
-export function listTournaments() {
-  return tournaments;
+export async function listTournaments() {
+  if (useMemoryStore) return sandboxTournaments;
+
+  const rows = await db.select().from(tournaments);
+  if (rows.length > 0) return rows.map(parseTournamentRow);
+
+  await seedSandboxTournaments();
+  const seededRows = await db.select().from(tournaments);
+  return seededRows.map(parseTournamentRow);
 }
 
-export function getTournament(tournamentId: string) {
-  const tournament = tournaments.find((item) => item.tournamentId === tournamentId);
+export async function getTournament(tournamentId: string) {
+  const catalog = await listTournaments();
+  const tournament = catalog.find((item) => item.tournamentId === tournamentId);
   if (!tournament) {
     throw new ParticipantMvpError(TOURNAMENT_NOT_FOUND_ERROR, 404);
   }
@@ -143,7 +152,7 @@ export async function createTournamentApplication(input: {
   duprId?: string;
   submittedAt?: string;
 }) {
-  const tournament = getTournament(input.tournamentId);
+  const tournament = await getTournament(input.tournamentId);
   const currentProfile = await getParticipantProfile();
   const participantId = input.participantId ?? currentProfile.participantId;
   const duprId = normalizeDuprId(input.duprId ?? currentProfile.duprId ?? '');
@@ -221,6 +230,36 @@ export async function requestParticipantSelfCancel(applicationId: string) {
 
 function normalizeDuprId(duprId: string) {
   return duprId.trim().toUpperCase();
+}
+
+async function seedSandboxTournaments() {
+  await db.insert(tournaments).values(
+    sandboxTournaments.map((tournament) => ({
+      tournamentId: tournament.tournamentId,
+      title: tournament.title,
+      division: tournament.division,
+      location: tournament.location,
+      startsAt: new Date(tournament.startsAt),
+      applicationStatus: tournament.applicationStatus,
+      requiresDupr: tournament.requiresDupr,
+      paymentMode: tournament.paymentMode,
+      cancellationPolicy: tournament.cancellationPolicy,
+    })),
+  ).onConflictDoNothing();
+}
+
+function parseTournamentRow(row: typeof tournaments.$inferSelect) {
+  return tournamentSchema.parse({
+    tournamentId: row.tournamentId,
+    title: row.title,
+    division: row.division,
+    location: row.location,
+    startsAt: row.startsAt.toISOString(),
+    applicationStatus: row.applicationStatus,
+    requiresDupr: row.requiresDupr,
+    paymentMode: row.paymentMode,
+    cancellationPolicy: row.cancellationPolicy,
+  });
 }
 
 function parseProfileRow(row: typeof participantProfiles.$inferSelect) {

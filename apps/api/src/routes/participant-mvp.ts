@@ -25,10 +25,10 @@ function mapParticipantMvpError(error: unknown) {
 }
 
 export const tournamentsRoute = new Hono()
-  .get('/', (c) => c.json({ tournaments: listTournaments() }))
-  .get('/:tournamentId', (c) => {
+  .get('/', async (c) => c.json({ tournaments: await listTournaments() }))
+  .get('/:tournamentId', async (c) => {
     try {
-      return c.json(getTournament(c.req.param('tournamentId')));
+      return c.json(await getTournament(c.req.param('tournamentId')));
     } catch (error) {
       const mapped = mapParticipantMvpError(error);
       return c.json(mapped.body, mapped.status);

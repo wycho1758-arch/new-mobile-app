@@ -15,6 +15,13 @@
       "when": 1783927085930,
       "tag": "0001_volatile_adam_destine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783927791059,
+      "tag": "0002_striped_selene",
+      "breakpoints": true
     }
   ]
 }
