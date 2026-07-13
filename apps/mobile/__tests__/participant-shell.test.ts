@@ -159,6 +159,7 @@ describe('participant shell sandbox contract', () => {
     fireEvent.press(screen.getByTestId('application-cta'));
 
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/샌드박스 신청 접수됨/);
+    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/접수 부문 혼합복식/);
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
   });
 
@@ -201,7 +202,7 @@ describe('participant shell sandbox contract', () => {
       getSupportCenter: jest.fn(async () => ({ policyCopy: 'API 고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [{ inquiryId: 'inquiry_api_001', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'API 환불 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' }] })),
       createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'MVP 환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
       getNotifications: jest.fn(async () => ({ notifications: [{ notificationId: 'notification_api_001', participantId: 'participant_sandbox_001', type: 'support', title: 'API 알림 제목', body: 'API 알림 본문', createdAt: '2026-07-13T00:00:00.000Z' }] })),
-      getMyPage: jest.fn(async () => ({ profile: { ...sandboxParticipantSession.profile, displayName: 'API Player', duprId: 'DUPR-API', duprStatus: 'selfReportedPendingOperatorReview' }, applications: [], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: 'application_api_001', participantId: 'participant_sandbox_001', amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 확인 대기', recordedAt: '2026-07-13T00:00:00.000Z' }] })),
+      getMyPage: jest.fn(async () => ({ profile: { ...sandboxParticipantSession.profile, displayName: 'API Player', duprId: 'DUPR-API', duprStatus: 'selfReportedPendingOperatorReview' }, applications: [{ applicationId: 'application_api_001', tournamentId: sandboxParticipantSession.featuredTournament.tournamentId, participantId: 'participant_sandbox_001', duprId: 'DUPR-API', divisionId: 'local-mens', status: 'submitted', submittedAt: '2026-07-13T00:00:00.000Z', supportChannel: 'oneToOneInquiry', paymentStatus: 'notStartedSandbox', refundPolicy: 'participantSelfCancelDisabled' }], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: 'application_api_001', participantId: 'participant_sandbox_001', amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 확인 대기', recordedAt: '2026-07-13T00:00:00.000Z' }] })),
       updateParticipantProfile: jest.fn(),
       createTournamentApplication: jest.fn(),
       getTournamentApplication: jest.fn(),
@@ -218,6 +219,7 @@ describe('participant shell sandbox contract', () => {
     expect(await screen.findByText(/API 고객센터 정책/)).toBeTruthy();
     expect(await screen.findByText('API 알림 제목')).toBeTruthy();
     expect(await screen.findByTestId('mypage-payment-status')).toHaveTextContent(/60,000원/);
+    expect(await screen.findByTestId('mypage-recent-application')).toHaveTextContent(/접수 부문 남자복식/);
   });
 
   it('submits a DB-backed support inquiry from the support route', async () => {
