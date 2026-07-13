@@ -75,6 +75,9 @@ describe('Home screen', () => {
 
     expect(screen.getByTestId('tournament-detail')).toHaveTextContent(/대회요강/);
     expect(screen.getByTestId('tournament-detail')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
+    expect(screen.getByTestId('tournament-detail')).toHaveTextContent(/신청 가능한 부문/);
+    expect(screen.getAllByTestId('division-option')[0]).toHaveTextContent(/DUPR 등록 후 신청 가능/);
+    expect(screen.getAllByTestId('division-option')[0]).toHaveTextContent(/운영자 확인 후 오프라인 결제 안내/);
     fireEvent.press(screen.getByTestId('detail-apply-button'));
     expect(mockPush).toHaveBeenLastCalledWith('/dupr-profile');
   });
@@ -98,6 +101,9 @@ describe('Home screen', () => {
     saveParticipantDupr('DUPR-12345');
     render(<TournamentApplicationScreen />);
 
+    expect(screen.getByTestId('application-division-summary')).toHaveTextContent(/기본 선택 부문/);
+    expect(screen.getByTestId('application-division-summary')).toHaveTextContent(/DUPR 등록 후 신청 가능/);
+    expect(screen.getByTestId('application-division-summary')).toHaveTextContent(/운영자 확인 후 오프라인 결제 안내/);
     expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
     fireEvent.press(screen.getByTestId('application-cta'));
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/샌드박스 신청 접수됨: application_tournament_sandbox_001_participant_sandbox_001/);

@@ -330,6 +330,27 @@ function applicationSubmittedLabel(apiMode: ParticipantStoreState['apiMode']) {
   return '샌드박스 신청 접수됨';
 }
 
+const fallbackTournamentDivisions: TournamentDivision[] = [
+  { divisionId: 'local-mixed', tournamentId: defaultTournamentId, name: '혼합복식', skillLevel: 'DUPR 3.5+', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 32 },
+  { divisionId: 'local-mens', tournamentId: defaultTournamentId, name: '남자복식', skillLevel: 'DUPR 3.5~4.5', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 64 },
+];
+
+function getAvailableDivisions(tournamentDivisions: TournamentDivision[]) {
+  return tournamentDivisions.length ? tournamentDivisions : fallbackTournamentDivisions;
+}
+
+function divisionTeamCopy(teamType: string) {
+  return teamType === 'singles' ? '단식' : '복식';
+}
+
+function divisionFeeCopy(division: TournamentDivision) {
+  return `${division.entryFeeKrw.toLocaleString('ko-KR')}원 · 운영자 확인 후 오프라인 결제 안내`;
+}
+
+function divisionEligibilityCopy(division: TournamentDivision) {
+  return `${division.skillLevel ?? 'DUPR 제한없음'} · DUPR 등록 후 신청 가능`;
+}
+
 const bottomTabs = [
   { label: '탐색', route: '/tournaments', testID: 'bottom-tab-explore', active: 'tournaments' },
   { label: '내 경기', route: '/games', testID: 'bottom-tab-games', active: 'games' },
@@ -419,14 +440,15 @@ export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: {
   const { featuredTournament, tournamentDivisions, profileReady, policyCopy, routeStatus } = useParticipantFlow();
   useEffect(() => loadTournament(tournamentId), [tournamentId]);
   const applyRoute = `/tournaments/${featuredTournament.tournamentId}/apply`;
+  const availableDivisions = getAvailableDivisions(tournamentDivisions);
 
   return (
     <ParticipantRouteScaffold active="tournaments">
       <View testID="tournament-detail" style={styles.sectionCard}>
         <RouteStatusNotice status={routeStatus.tournamentDetail} />
         <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>D-5</Text></View><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>주최 · 대한피클볼협회</Text>
-        <Row left="일정" right="8월 9일 (토) · 오전 9:00" /><Row left="장소" right="올림픽공원 SK핸드볼경기장" /><Text style={styles.linkText}>지도보기</Text><Row left="참가비" right="단식 30,000원 · 복식(대표결제) 60,000원" />
-        <Text style={styles.sectionLabel}>종목 선택</Text>{(tournamentDivisions.length ? tournamentDivisions : [{ divisionId: 'local-mens', name: '남자복식', skillLevel: 'DUPR 3.5~4.5', entryFeeKrw: 60000, capacityTeams: 64 }]).map((division) => <View key={division.divisionId} style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name}</Text><Text style={styles.bodyCopy}>{division.skillLevel ?? 'DUPR 제한없음'} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀</Text><Text style={styles.priceText}>{division.entryFeeKrw.toLocaleString('ko-KR')}원</Text></View>)}
+        <Row left="일정" right="8월 9일 (토) · 오전 9:00" /><Row left="장소" right="올림픽공원 SK핸드볼경기장" /><Text style={styles.linkText}>지도보기</Text><Row left="신청 방식" right="DUPR 등록 후 부문 확인 · 결제는 운영자 오프라인 안내" />
+        <Text style={styles.sectionLabel}>신청 가능한 부문</Text>{availableDivisions.map((division) => <View key={division.divisionId} testID="division-option" style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name} · {divisionTeamCopy(division.teamType)}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(division)} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀 · 참가자 직접 취소/환불 비활성화</Text><Text style={styles.priceText}>{divisionFeeCopy(division)}</Text></View>)}
         <Text style={styles.sectionLabel}>대회요강</Text><Text style={styles.caption}>· 경기방식: 예선 라운드로빈 후 본선 토너먼트{`\n`}· 공인구: OPTIC 피클볼 공인구 사용{`\n`}· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수{`\n`}· 우천/불가항력 시 일정은 주최측 공지에 따름</Text>
         <Text style={styles.sectionLabel}>환불 규정</Text><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. MVP에서는 실제 환불/취소 처리 없이 참고만 표시합니다. {policyCopy}</Text>
         <ActionButton testID="detail-apply-button" label="참가 신청으로 이동" onPress={() => router.push(profileReady ? applyRoute : '/dupr-profile')} />
@@ -446,12 +468,14 @@ export function DuprProfileScreen() {
 }
 
 export function TournamentApplicationScreen({ tournamentId = defaultTournamentId }: { tournamentId?: string }) {
-  const { profile, profileReady, application, featuredTournament, apiMode } = useParticipantFlow();
+  const { profile, profileReady, application, featuredTournament, tournamentDivisions, apiMode } = useParticipantFlow();
   useEffect(() => loadTournament(tournamentId), [tournamentId]);
+  const availableDivisions = getAvailableDivisions(tournamentDivisions);
+  const selectedDivision = availableDivisions[0];
 
   return (
     <ParticipantRouteScaffold active="tournaments">
-      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.priceText}>남자복식 · 2인 대표결제{`\n`}60,000원</Text><Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : '파트너 수락 후 결제가능 · DUPR 필요'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)}: {application.applicationId} · {describeApplicationPolicy(application)}</Text> : null}</View>
+      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><View testID="application-division-summary" style={styles.choiceCard}><Text style={styles.choiceTitle}>기본 선택 부문 · {selectedDivision.name}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(selectedDivision)}</Text><Text style={styles.priceText}>{divisionTeamCopy(selectedDivision.teamType)} · {divisionFeeCopy(selectedDivision)}</Text><Text style={styles.caption}>현재 MVP는 첫 번째 신청 가능 부문을 기본값으로 보여주며, 운영자가 접수 후 확정 안내합니다.</Text></View><Text style={styles.sectionLabel}>다른 신청 가능 부문</Text>{availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}<Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)}: {application.applicationId} · {describeApplicationPolicy(application)}</Text> : null}</View>
     </ParticipantRouteScaffold>
   );
 }
