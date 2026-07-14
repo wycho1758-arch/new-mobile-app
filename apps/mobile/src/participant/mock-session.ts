@@ -28,7 +28,7 @@ export const REQUIRED_DUPR_ERROR = participantApplicationErrorCodeSchema.enum.DU
 
 export const PARTICIPANT_SELF_CANCEL_REFUND_COPY = '참가자 직접 취소 불가';
 export const ONE_TO_ONE_INQUIRY_SUPPORT_COPY = '1:1 문의';
-export const MVP_SELF_CANCEL_REFUND_UNAVAILABLE_COPY = 'Participant self-cancel/refund is not available in MVP.';
+export const SELF_CANCEL_REFUND_OPERATOR_SUPPORT_COPY = '참가자 직접 취소/환불은 1:1 문의로 운영자가 확인합니다.';
 export const ONE_TO_ONE_INQUIRY_SUPPORT_DETAIL_COPY = '취소와 환불 문의는 1:1 문의로 접수하며, 카카오톡 또는 이메일은 1:1 문의 접수 수단입니다.';
 
 export const supportRefundPolicyFaqQuestions = [
@@ -100,7 +100,7 @@ export function describeSupportRefundPolicyCopy(application: Pick<MockTournament
   return [
     supportRefundPolicyFaqQuestions.join(' '),
     `${describeApplicationPolicy(application)}.`,
-    MVP_SELF_CANCEL_REFUND_UNAVAILABLE_COPY,
+    SELF_CANCEL_REFUND_OPERATOR_SUPPORT_COPY,
     ONE_TO_ONE_INQUIRY_SUPPORT_DETAIL_COPY,
   ].join(' ');
 }

@@ -102,7 +102,7 @@ describe('participant shell sandbox contract', () => {
 
     expect(describeApplicationPolicy(policy)).toBe('참가자 직접 취소 불가 · 1:1 문의');
     expect(describeSupportRefundPolicyCopy(policy)).toContain(describeApplicationPolicy(policy));
-    expect(describeSupportRefundPolicyCopy(policy)).toContain('Participant self-cancel/refund is not available in MVP.');
+    expect(describeSupportRefundPolicyCopy(policy)).toContain('참가자 직접 취소/환불은 1:1 문의로 운영자가 확인합니다.');
     expect(describeSupportRefundPolicyCopy(policy)).toContain('DUPR 정보는 어디서 확인하나요?');
   });
 
@@ -189,7 +189,7 @@ describe('participant shell sandbox contract', () => {
     render(React.createElement(SupportScreen));
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/1:1 문의로 접수/);
-    expect(screen.getByTestId('support-copy')).toHaveTextContent(/Participant self-cancel\/refund is not available/);
+    expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소\/환불은 1:1 문의/);
     expect(screen.getByTestId('support-center')).toHaveTextContent(/이메일 1:1 문의/);
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/DUPR 정보는 어디서 확인하나요/);
   });
@@ -200,8 +200,8 @@ describe('participant shell sandbox contract', () => {
       getTournaments: jest.fn(async () => [sandboxParticipantSession.featuredTournament]),
       getTournament: jest.fn(async () => ({ ...sandboxParticipantSession.featuredTournament, divisions: [] })),
       getParticipantProfile: jest.fn(async () => ({ ...sandboxParticipantSession.profile, displayName: 'API Player', duprId: 'DUPR-API', duprStatus: 'selfReportedPendingOperatorReview' })),
-      getSupportCenter: jest.fn(async () => ({ policyCopy: 'API 고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [{ inquiryId: 'inquiry_api_001', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'API 환불 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' }] })),
-      createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'MVP 환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
+      getSupportCenter: jest.fn(async () => ({ policyCopy: '고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. 참가자 직접 취소/환불은 1:1 문의로 운영자가 확인합니다.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [{ inquiryId: 'inquiry_api_001', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: '환불 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' }] })),
+      createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: '환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
       getNotifications: jest.fn(async () => ({ notifications: [{ notificationId: 'notification_api_001', participantId: 'participant_sandbox_001', type: 'support', title: 'API 알림 제목', body: 'API 알림 본문', createdAt: '2026-07-13T00:00:00.000Z' }] })),
       getMyPage: jest.fn(async () => ({ profile: { ...sandboxParticipantSession.profile, displayName: 'API Player', duprId: 'DUPR-API', duprStatus: 'selfReportedPendingOperatorReview' }, applications: [{ applicationId: 'application_api_001', tournamentId: sandboxParticipantSession.featuredTournament.tournamentId, participantId: 'participant_sandbox_001', duprId: 'DUPR-API', divisionId: 'local-mens', status: 'submitted', submittedAt: '2026-07-13T00:00:00.000Z', supportChannel: 'oneToOneInquiry', paymentStatus: 'notStartedSandbox', refundPolicy: 'participantSelfCancelDisabled' }], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: 'application_api_001', participantId: 'participant_sandbox_001', amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 확인 대기', recordedAt: '2026-07-13T00:00:00.000Z' }] })),
       getGames: jest.fn(async () => [{ gameId: 'game_api_001', applicationId: 'application_api_001', tournamentId: sandboxParticipantSession.featuredTournament.tournamentId, tournamentTitle: 'API Open', divisionName: '남자복식', location: 'API Court', startsAt: '2026-08-09T00:00:00.000Z', applicationStatus: 'submitted', paymentStatus: 'notStartedSandbox', paymentAmountKrw: 60000, supportChannel: 'oneToOneInquiry', dataSource: 'db' }]),
@@ -219,7 +219,7 @@ describe('participant shell sandbox contract', () => {
       React.createElement(MyPageScreen),
       React.createElement(GamesScreen),
     ));
-    expect(await screen.findByText(/API 고객센터 정책/)).toBeTruthy();
+    expect(await screen.findByText(/고객센터 정책/)).toBeTruthy();
     expect(await screen.findByText('API 알림 제목')).toBeTruthy();
     expect(await screen.findByTestId('mypage-payment-status')).toHaveTextContent(/60,000원/);
     expect(await screen.findByTestId('mypage-recent-application')).toHaveTextContent(/접수 부문 남자복식/);
@@ -233,8 +233,8 @@ describe('participant shell sandbox contract', () => {
       getTournaments: jest.fn(async () => [sandboxParticipantSession.featuredTournament]),
       getTournament: jest.fn(),
       getParticipantProfile: jest.fn(async () => sandboxParticipantSession.profile),
-      getSupportCenter: jest.fn(async () => ({ policyCopy: 'API 고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] })),
-      createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'MVP 환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
+      getSupportCenter: jest.fn(async () => ({ policyCopy: '고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. 참가자 직접 취소/환불은 1:1 문의로 운영자가 확인합니다.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] })),
+      createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: '환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
       getNotifications: jest.fn(async () => ({ notifications: [] })),
       getMyPage: jest.fn(async () => ({ profile: sandboxParticipantSession.profile, applications: [], paymentRecords: [] })),
       getGames: jest.fn(async () => []),
@@ -250,8 +250,8 @@ describe('participant shell sandbox contract', () => {
     fireEvent.press(await screen.findByTestId('support-inquiry-submit'));
 
     expect(await screen.findByTestId('support-inquiry-state')).toHaveTextContent(/1:1 문의가 접수되었습니다/);
-    expect(screen.getByTestId('support-center')).toHaveTextContent(/MVP 환불\/취소 1:1 문의/);
-    expect(apiClient.createSupportInquiry).toHaveBeenCalledWith(expect.objectContaining({ category: 'refund', subject: 'MVP 환불/취소 1:1 문의' }));
+    expect(screen.getByTestId('support-center')).toHaveTextContent(/환불\/취소 1:1 문의/);
+    expect(apiClient.createSupportInquiry).toHaveBeenCalledWith(expect.objectContaining({ category: 'refund', subject: '환불/취소 1:1 문의' }));
   });
 
   it('shows support inquiry fallback state when API submission fails', async () => {
@@ -260,7 +260,7 @@ describe('participant shell sandbox contract', () => {
       getTournaments: jest.fn(async () => [sandboxParticipantSession.featuredTournament]),
       getTournament: jest.fn(),
       getParticipantProfile: jest.fn(async () => sandboxParticipantSession.profile),
-      getSupportCenter: jest.fn(async () => ({ policyCopy: 'API 고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. Participant self-cancel/refund is not available in MVP.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] })),
+      getSupportCenter: jest.fn(async () => ({ policyCopy: '고객센터 정책 · 참가자 직접 취소 불가 · 1:1 문의. 참가자 직접 취소/환불은 1:1 문의로 운영자가 확인합니다.', contactEmail: 'support@happickle.kr', operatingHours: '평일 10:00 ~ 18:00', inquiries: [] })),
       createSupportInquiry: jest.fn(async () => { throw new Error('PARTICIPANT_API_HTTP_500'); }),
       getNotifications: jest.fn(async () => ({ notifications: [] })),
       getMyPage: jest.fn(async () => ({ profile: sandboxParticipantSession.profile, applications: [], paymentRecords: [] })),

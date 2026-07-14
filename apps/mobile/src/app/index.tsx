@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from 'react';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ParticipantGame, ParticipantNotification, PaymentRecord, SupportCenterResponse, SupportInquiry, Tournament, TournamentDivision } from '@template/contracts';
 import {
   type MockTournamentApplication,
@@ -36,6 +36,7 @@ const palette = {
 };
 
 const defaultParticipantApi = createParticipantApiClient(getParticipantApiConfigFromPublicEnv());
+const happickleLogo = require('../../assets/happickle_logo.png');
 const defaultTournamentId = sandboxParticipantSession.featuredTournament.tournamentId;
 
 type ParticipantStoreState = {
@@ -259,9 +260,9 @@ function submitApplication() {
 }
 
 
-const SUPPORT_INQUIRY_MVP_PAYLOAD = {
+const SUPPORT_INQUIRY_PAYLOAD = {
   category: 'refund',
-  subject: 'MVP 환불/취소 1:1 문의',
+  subject: '환불/취소 1:1 문의',
 } as const;
 
 function createFallbackSupportInquiry(): SupportInquiry {
@@ -270,8 +271,8 @@ function createFallbackSupportInquiry(): SupportInquiry {
     participantId: participantState.profile.participantId,
     applicationId: participantState.application?.applicationId,
     channel: 'oneToOneInquiry',
-    category: SUPPORT_INQUIRY_MVP_PAYLOAD.category,
-    subject: SUPPORT_INQUIRY_MVP_PAYLOAD.subject,
+    category: SUPPORT_INQUIRY_PAYLOAD.category,
+    subject: SUPPORT_INQUIRY_PAYLOAD.subject,
     status: 'operatorReview',
     createdAt: new Date().toISOString(),
   };
@@ -289,7 +290,7 @@ function submitSupportInquiry() {
   }
 
   participantApi.createSupportInquiry({
-    ...SUPPORT_INQUIRY_MVP_PAYLOAD,
+    ...SUPPORT_INQUIRY_PAYLOAD,
     applicationId: participantState.application?.applicationId,
   })
     .then((inquiry) => patchParticipantState({
@@ -311,12 +312,13 @@ function setDuprInput(duprInput: string) {
 
 function Logo({ small = false }: { small?: boolean }) {
   return (
-    <View accessibilityLabel="Happickle" testID={small ? 'header-logo' : 'login-logo'} style={[styles.logoRow, small && styles.logoRowSmall]}>
-      <Text style={[styles.logoWord, small && styles.logoWordSmall]}>Ha</Text>
-      <View style={[styles.paddle, styles.paddleOrange, small && styles.paddleSmall]} />
-      <View style={[styles.paddle, styles.paddleYellow, small && styles.paddleSmall]} />
-      <Text style={[styles.logoWord, small && styles.logoWordSmall]}>ickle</Text>
-    </View>
+    <Image
+      accessibilityLabel="Happickle"
+      resizeMode="contain"
+      source={happickleLogo}
+      testID={small ? 'header-logo' : 'login-logo'}
+      style={small ? styles.logoImageSmall : styles.logoImage}
+    />
   );
 }
 
@@ -335,7 +337,7 @@ function participantApiModeLabel(apiMode: ParticipantStoreState['apiMode']) {
 }
 
 function routeStatusCopy(status?: NonNullable<ParticipantStoreState['routeStatus'][keyof ParticipantStoreState['routeStatus']]>) {
-  if (status === 'loading') return 'API 데이터를 불러오는 중입니다.';
+  if (status === 'loading') return '최신 정보를 불러오는 중입니다.';
   if (status === 'fallback') return '일부 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.';
   if (status === 'ready') return undefined;
   return undefined;
@@ -440,7 +442,7 @@ function ParticipantRouteScaffold({ active, children }: { active: string; childr
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
       <View style={styles.header}><View><Logo small /><Text style={styles.headerSubtitle}>대한피클볼협회 공식</Text></View><Text testID="session-actor" style={styles.sessionText}>{sandboxParticipantSession.sessionActor.actorId}</Text></View>
       {children}
-      <View testID="deferred-reference-screens" style={styles.sectionCard}><Text style={styles.sectionLabel}>시각 참고 / MVP 지연</Text><Text style={styles.caption}>결제 · 환불 · 대진표 · 점수 입력 · 결과 확정은 운영자 안내에 따라 순차적으로 제공됩니다.</Text></View>
+      <View testID="deferred-reference-screens" style={styles.sectionCard}><Text style={styles.sectionLabel}>운영 예정 기능</Text><Text style={styles.caption}>결제 · 환불 · 대진표 · 점수 입력 · 결과 확정은 운영자 안내에 따라 순차적으로 제공됩니다.</Text></View>
       <BottomNav active={active} />
     </ScrollView>
   );
@@ -495,7 +497,7 @@ export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: {
         <Row left="일정" right={formatTournamentDate(featuredTournament.startsAt)} /><Row left="장소" right={featuredTournament.location} /><Text style={styles.linkText}>지도보기</Text><Row left="신청 방식" right={`${featuredTournament.requiresDupr ? 'DUPR 등록 후 ' : ''}부문 확인 · 결제는 운영자 오프라인 안내`} />
         <Text style={styles.sectionLabel}>신청 가능한 부문</Text>{availableDivisions.map((division) => <View key={division.divisionId} testID="division-option" style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name} · {divisionTeamCopy(division.teamType)}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(division)} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀 · 참가자 직접 취소/환불 비활성화</Text><Text style={styles.priceText}>{divisionFeeCopy(division)}</Text></View>)}
         <Text style={styles.sectionLabel}>대회요강</Text><Text style={styles.caption}>· 경기방식: 예선 라운드로빈 후 본선 토너먼트{`\n`}· 공인구: OPTIC 피클볼 공인구 사용{`\n`}· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수{`\n`}· 우천/불가항력 시 일정은 주최측 공지에 따름</Text>
-        <Text style={styles.sectionLabel}>환불 규정</Text><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. MVP에서는 실제 환불/취소 처리 없이 참고만 표시합니다. {policyCopy}</Text>
+        <Text style={styles.sectionLabel}>환불 규정</Text><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. {policyCopy}</Text>
         <ActionButton testID="detail-apply-button" label="참가 신청으로 이동" onPress={() => router.push(profileReady ? applyRoute : '/dupr-profile')} />
       </View>
     </ParticipantRouteScaffold>
@@ -531,7 +533,7 @@ export function SupportScreen() {
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><Text style={styles.caption}>참가자 직접 취소/환불은 MVP에서 비활성화되어 있으며, 환불·취소 요청은 1:1 문의로 운영자가 확인합니다.</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>문의 접수에 실패했습니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
+      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><Text style={styles.caption}>환불·취소 요청은 1:1 문의로 운영자가 확인합니다.</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>문의 접수에 실패했습니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
     </ParticipantRouteScaffold>
   );
 }
@@ -561,14 +563,8 @@ const styles = StyleSheet.create({
   loginScreen: { flex: 1, alignItems: 'center', backgroundColor: palette.bg, minHeight: 640 },
   phoneFrame: { alignItems: 'center', backgroundColor: palette.bg, maxWidth: 480, minHeight: 640, width: '100%' },
   loginMain: { alignItems: 'center', width: '100%' },
-  logoRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 1, marginTop: 150 },
-  logoRowSmall: { marginTop: 0 },
-  logoWord: { color: palette.word, fontFamily: fontSans, fontSize: 33, fontWeight: '900', letterSpacing: -1.2, lineHeight: 38 },
-  logoWordSmall: { fontSize: 24, lineHeight: 28 },
-  paddle: { borderRadius: 999, height: 30, marginTop: 5, width: 16 },
-  paddleSmall: { height: 22, width: 12, marginTop: 3 },
-  paddleOrange: { backgroundColor: palette.orange },
-  paddleYellow: { backgroundColor: palette.yellowPaddle },
+  logoImage: { height: 46, marginTop: 150, width: 146 },
+  logoImageSmall: { height: 32, width: 102 },
   hiddenParityText: { height: 0, opacity: 0 },
   tagline: { color: palette.muted, fontFamily: fontSans, fontSize: 12, fontWeight: '500', marginTop: 5, textAlign: 'center' },
   illWrap: { alignItems: 'center', backgroundColor: palette.mint, borderRadius: 42, height: 84, justifyContent: 'center', marginTop: 30, width: 84 },

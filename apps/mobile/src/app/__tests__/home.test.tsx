@@ -54,7 +54,7 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<TournamentsScreen />);
 
-    expect(screen.getByTestId('header-logo')).toHaveStyle({ marginTop: 0 });
+    expect(screen.getByTestId('header-logo')).toHaveStyle({ height: 32, width: 102 });
     expect(screen.getByTestId('explore-home')).toHaveTextContent(/어떤 대회에 나가볼까요/);
     expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('대회 미리보기');
     expect(screen.queryByTestId('participant-route-state')).toBeNull();
@@ -143,7 +143,7 @@ describe('Home screen', () => {
     render(<SupportScreen />);
 
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/1:1 문의로 접수/);
-    expect(screen.getByTestId('support-copy')).toHaveTextContent(/Participant self-cancel\/refund is not available/);
+    expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소\/환불은 1:1 문의/);
     expect(screen.getByTestId('support-center')).toHaveTextContent(/support@happickle\.kr \(1:1 문의 접수용\)/);
   });
 
