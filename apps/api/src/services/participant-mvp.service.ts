@@ -13,6 +13,7 @@ import {
   type ParticipantProfile,
   supportCenterResponseSchema,
   supportInquirySchema,
+  type SupportInquiry,
   type Tournament,
   tournamentDetailSchema,
   tournamentDivisionSchema,
@@ -281,8 +282,12 @@ export async function listSupportInquiries(participantId = SANDBOX_PARTICIPANT_I
   }
   await seedSandboxApplications(participantId);
   await seedSandboxSupportInquiries();
-  const rows = await db.select().from(supportInquiries).where(eq(supportInquiries.participantId, participantId)).orderBy(desc(supportInquiries.createdAt));
-  return rows.map(parseSupportInquiryRow);
+  const [rows, applicationRows] = await Promise.all([
+    db.select().from(supportInquiries).where(eq(supportInquiries.participantId, participantId)).orderBy(desc(supportInquiries.createdAt)),
+    db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, participantId)),
+  ]);
+  const applications = applicationRows.map(parseApplicationRow);
+  return rows.map(parseSupportInquiryRow).map((inquiry) => maskSupportInquiryForCustomer(inquiry, applications));
 }
 
 export async function createSupportInquiry(input: unknown) {
@@ -409,6 +414,12 @@ function maskParticipantPaymentForCustomer(payment: PaymentRecord | undefined, a
     paymentRecordId: customerPaymentRecordId(payment),
     applicationId: application ? customerApplicationId(application) : payment.applicationId.replace(/[^a-z0-9]+/gi, '-'),
   };
+}
+
+function maskSupportInquiryForCustomer(inquiry: SupportInquiry, applications: TournamentApplication[]): SupportInquiry {
+  if (!inquiry.applicationId) return inquiry;
+  const application = applications.find((item) => item.applicationId === inquiry.applicationId);
+  return { ...inquiry, applicationId: application ? customerApplicationId(application) : inquiry.applicationId.replace(/[^a-z0-9]+/gi, '-') };
 }
 
 export async function getTournamentApplication(applicationId: string) {
