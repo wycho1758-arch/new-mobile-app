@@ -75,9 +75,10 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<TournamentDetailScreen />);
 
-    expect(screen.getByTestId('tournament-detail')).toHaveTextContent(/대회요강/);
-    expect(screen.getByTestId('tournament-detail')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
-    expect(screen.getByTestId('tournament-detail')).toHaveTextContent(/신청 가능한 부문/);
+    expect(screen.getByTestId('detail-layout-hero')).toHaveTextContent(/대회 상세/);
+    expect(screen.getByText('대회요강')).toBeTruthy();
+    expect(screen.getByText('환불 규정')).toBeTruthy();
+    expect(screen.getByText('신청 가능한 부문')).toBeTruthy();
     expect(screen.getAllByTestId('division-option')[0]).toHaveTextContent(/DUPR 등록 후 신청 가능/);
     expect(screen.getAllByTestId('division-option')[0]).toHaveTextContent(/운영자 확인 후 오프라인 결제 안내/);
     fireEvent.press(screen.getByTestId('detail-apply-button'));
@@ -88,11 +89,11 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<DuprProfileScreen />);
 
-    expect(screen.getByTestId('dupr-gate-status')).toHaveTextContent('참가 신청 전 DUPR 정보가 필요해요');
+    expect(screen.getByTestId('dupr-layout-hero')).toHaveTextContent(/참가 신청 전 DUPR 정보가 필요해요/);
     fireEvent.changeText(screen.getByTestId('dupr-input'), 'DUPR-12345');
     fireEvent.press(screen.getByTestId('save-dupr-button'));
     expect(screen.getByTestId('saved-dupr')).toHaveTextContent('현재 DUPR DUPR-12345 · 관리자 확인중');
-    expect(screen.getByTestId('dupr-gate-status')).toHaveTextContent('현재 DUPR 저장됨');
+    expect(screen.getByTestId('dupr-layout-hero')).toHaveTextContent(/현재 DUPR 저장됨/);
 
     fireEvent.press(screen.getByTestId('dupr-continue-application'));
     expect(mockPush).toHaveBeenLastCalledWith(`/tournaments/${sandboxParticipantSession.featuredTournament.tournamentId}/apply`);
@@ -132,7 +133,7 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<MyPageScreen />);
 
-    expect(screen.getByTestId('mypage-screen')).toHaveTextContent(/프로필 수정/);
+    expect(screen.getByTestId('mypage-layout-hero')).toHaveTextContent(/관리하세요/);
     fireEvent.press(screen.getByTestId('mypage-support-button'));
     expect(mockPush).toHaveBeenLastCalledWith('/support');
 
@@ -146,7 +147,7 @@ describe('Home screen', () => {
 
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/1:1 문의로 접수/);
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소\/환불은 1:1 문의/);
-    expect(screen.getByTestId('support-center')).toHaveTextContent(/support@happickle\.kr \(1:1 문의 접수용\)/);
+    expect(screen.getByText(/support@happickle\.kr \(1:1 문의 접수용\)/)).toBeTruthy();
   });
 
   it('uses the login reference dark surround, white artboard, and social button colors', () => {

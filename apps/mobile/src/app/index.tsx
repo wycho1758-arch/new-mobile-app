@@ -353,6 +353,22 @@ function Row({ left, right }: { left: string; right?: string }) {
   return <View style={styles.infoRow}><Text style={styles.bodyCopy}>{left}</Text>{right ? <Text style={styles.rowRight}>{right}</Text> : null}</View>;
 }
 
+function PageHero({ testID, eyebrow, title, caption, children }: { testID: string; eyebrow: string; title: string; caption?: string; children?: ReactNode }) {
+  return <View testID={testID} style={styles.pageHero}><Text style={styles.sectionLabel}>{eyebrow}</Text><Text style={styles.heroTitle}>{title}</Text>{caption ? <Text style={styles.caption}>{caption}</Text> : null}{children}</View>;
+}
+
+function InfoCard({ testID, title, children }: { testID?: string; title?: string; children: ReactNode }) {
+  return <View testID={testID} style={styles.infoCard}>{title ? <Text style={styles.sectionTitleSmall}>{title}</Text> : null}{children}</View>;
+}
+
+function InfoListItem({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) {
+  return <View style={styles.infoListItem}><Text style={styles.caption}>{label}</Text><Text style={muted ? styles.caption : styles.rowRight}>{value}</Text></View>;
+}
+
+function StatusListCard({ testID, title, meta, caption, badgeText }: { testID?: string; title: string; meta: string; caption?: string; badgeText?: string }) {
+  return <View testID={testID} style={styles.statusListCard}>{badgeText ? <Text style={styles.badge}>{badgeText}</Text> : null}<Text style={styles.choiceTitle}>{title}</Text><Text style={styles.bodyCopy}>{meta}</Text>{caption ? <Text style={styles.caption}>{caption}</Text> : null}</View>;
+}
+
 function participantApiModeLabel(apiMode: ParticipantStoreState['apiMode']) {
   if (apiMode === 'api') return '최신 대회 정보';
   if (apiMode === 'fallback') return '일부 정보를 불러오지 못했습니다';
@@ -518,15 +534,27 @@ export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: {
 
   return (
     <ParticipantRouteScaffold active="tournaments">
-      <View testID="tournament-detail" style={styles.sectionCard}>
+      <PageHero testID="detail-layout-hero" eyebrow="대회 상세" title={featuredTournament.title} caption="대회 일정, 장소, 신청 부문을 확인하세요.">
+        <CourtPreview live />
+      </PageHero>
+      <InfoCard testID="tournament-detail" title="대회 정보">
         <RouteStatusNotice status={routeStatus.tournamentDetail} />
-        <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(featuredTournament.startsAt)}</Text></View><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>주최 · 대한피클볼협회</Text>
-        <Row left="일정" right={formatTournamentDate(featuredTournament.startsAt)} /><Row left="장소" right={featuredTournament.location} /><Text style={styles.linkText}>지도보기</Text><Row left="신청 방식" right={`${featuredTournament.requiresDupr ? 'DUPR 등록 후 ' : ''}부문 확인 · 결제는 운영자 오프라인 안내`} />
-        <Text style={styles.sectionLabel}>신청 가능한 부문</Text>{availableDivisions.map((division) => <View key={division.divisionId} testID="division-option" style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name} · {divisionTeamCopy(division.teamType)}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(division)} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀 · 참가자 직접 취소/환불 비활성화</Text><Text style={styles.priceText}>{divisionFeeCopy(division)}</Text></View>)}
-        <Text style={styles.sectionLabel}>대회요강</Text><Text style={styles.caption}>· 경기방식: 예선 라운드로빈 후 본선 토너먼트{`\n`}· 공인구: OPTIC 피클볼 공인구 사용{`\n`}· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수{`\n`}· 우천/불가항력 시 일정은 주최측 공지에 따름</Text>
-        <Text style={styles.sectionLabel}>환불 규정</Text><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. {policyCopy}</Text>
-        <ActionButton testID="detail-apply-button" label="참가 신청으로 이동" onPress={() => router.push(profileReady ? applyRoute : '/dupr-profile')} />
-      </View>
+        <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(featuredTournament.startsAt)}</Text></View>
+        <InfoListItem label="주최" value="대한피클볼협회" />
+        <InfoListItem label="일정" value={formatTournamentDate(featuredTournament.startsAt)} />
+        <InfoListItem label="장소" value={featuredTournament.location} />
+        <InfoListItem label="신청 방식" value={`${featuredTournament.requiresDupr ? 'DUPR 등록 후 ' : ''}부문 확인 · 운영자 오프라인 결제 안내`} />
+        <Text style={styles.linkText}>지도보기</Text>
+      </InfoCard>
+      <InfoCard title="신청 가능한 부문">
+        {availableDivisions.map((division) => <StatusListCard key={division.divisionId} testID="division-option" title={`${division.name} · ${divisionTeamCopy(division.teamType)}`} meta={`${divisionEligibilityCopy(division)} · 마감 8/7`} caption={`정원 ${division.capacityTeams ?? 32}팀 · ${divisionFeeCopy(division)}`} />)}
+      </InfoCard>
+      <InfoCard title="대회요강"><Text style={styles.caption}>· 경기방식: 예선 라운드로빈 후 본선 토너먼트{`
+`}· 공인구: OPTIC 피클볼 공인구 사용{`
+`}· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수{`
+`}· 우천/불가항력 시 일정은 주최측 공지에 따름</Text></InfoCard>
+      <InfoCard title="환불 규정"><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. {policyCopy}</Text></InfoCard>
+      <ActionButton testID="detail-apply-button" label="참가 신청으로 이동" onPress={() => router.push(profileReady ? applyRoute : '/dupr-profile')} />
     </ParticipantRouteScaffold>
   );
 }
@@ -536,7 +564,10 @@ export function DuprProfileScreen() {
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="dupr-management" style={styles.duprCard}><Text style={styles.sectionLabel}>DUPR 정보 관리</Text><Text testID="dupr-gate-status" style={styles.sectionTitle}>{profileReady ? '현재 DUPR 저장됨' : '참가 신청 전 DUPR 정보가 필요해요'}</Text><Text style={styles.bigDupr}>{hasRequiredDupr(profile) ? profile.duprId : '4.2'}</Text><Text style={styles.statusStrong}>관리자 확인중</Text><Text style={styles.bodyCopy}>DUPR 프로필 스크린샷 첨부 · 확인이 빨라져요 (JPG, PNG)</Text><Text style={styles.caption}>DUPR 값은 자기신고 기준이며 대회 참가 시 참고용으로만 표시됩니다</Text><TextInput testID="dupr-input" accessibilityLabel="DUPR ID" onChangeText={setDuprInput} placeholder="DUPR ID 또는 프로필 링크" placeholderTextColor={palette.muted} value={duprInput} style={styles.input} /><ActionButton testID="save-dupr-button" label="저장하기" secondary onPress={saveDupr} />{hasRequiredDupr(profile) ? <Text testID="saved-dupr" style={styles.statusStrong}>현재 DUPR {profile.duprId} · 관리자 확인중</Text> : null}<ActionButton testID="dupr-continue-application" label="참가 신청 계속" onPress={() => router.push(`/tournaments/${featuredTournament.tournamentId}/apply`)} disabled={!hasRequiredDupr(profile)} /></View>
+      <PageHero testID="dupr-layout-hero" eyebrow="DUPR 정보 관리" title={profileReady ? '현재 DUPR 저장됨' : '참가 신청 전 DUPR 정보가 필요해요'} caption="DUPR ID 또는 프로필 링크를 저장하면 참가 신청을 이어갈 수 있어요." />
+      <View testID="dupr-management" style={styles.duprCard}><Text style={styles.bigDupr}>{hasRequiredDupr(profile) ? profile.duprId : '4.2'}</Text><Text style={styles.statusStrong}>관리자 확인중</Text><Text style={styles.bodyCopy}>DUPR 프로필 스크린샷 첨부 · 확인이 빨라져요 (JPG, PNG)</Text><Text style={styles.caption}>DUPR 값은 자기신고 기준이며 대회 참가 시 참고용으로만 표시됩니다</Text></View>
+      <InfoCard title="DUPR 입력"><TextInput testID="dupr-input" accessibilityLabel="DUPR ID" onChangeText={setDuprInput} placeholder="DUPR ID 또는 프로필 링크" placeholderTextColor={palette.muted} value={duprInput} style={styles.input} /><ActionButton testID="save-dupr-button" label="저장하기" secondary onPress={saveDupr} />{hasRequiredDupr(profile) ? <Text testID="saved-dupr" style={styles.statusStrong}>현재 DUPR {profile.duprId} · 관리자 확인중</Text> : null}</InfoCard>
+      <ActionButton testID="dupr-continue-application" label="참가 신청 계속" onPress={() => router.push(`/tournaments/${featuredTournament.tournamentId}/apply`)} disabled={!hasRequiredDupr(profile)} />
     </ParticipantRouteScaffold>
   );
 }
@@ -550,7 +581,19 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 
   return (
     <ParticipantRouteScaffold active="tournaments">
-      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><View testID="application-division-summary" style={styles.choiceCard}><Text style={styles.choiceTitle}>기본 선택 부문 · {selectedDivision.name}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(selectedDivision)}</Text><Text style={styles.priceText}>{divisionTeamCopy(selectedDivision.teamType)} · {divisionFeeCopy(selectedDivision)}</Text><Text style={styles.caption}>현재 첫 번째 신청 가능 부문을 기본값으로 보여주며, 운영자가 접수 후 확정 안내합니다.</Text></View><Text style={styles.sectionLabel}>다른 신청 가능 부문</Text>{availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}<Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)} · 접수 부문 {submittedDivisionName} · {describeApplicationPolicy(application)}</Text> : null}</View>
+      <PageHero testID="application-layout-hero" eyebrow="참가 신청" title={featuredTournament.title} caption="부문, 참가자 정보, 약관을 확인한 뒤 신청을 접수하세요." />
+      <InfoCard testID="application-form" title="신청 부문">
+        <StatusListCard testID="application-division-summary" title={`기본 선택 부문 · ${selectedDivision.name}`} meta={`${divisionEligibilityCopy(selectedDivision)} · ${divisionTeamCopy(selectedDivision.teamType)}`} caption={divisionFeeCopy(selectedDivision)} badgeText="선택됨" />
+        {availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}
+      </InfoCard>
+      <InfoCard title="참가자 정보"><InfoListItem label="대표자" value={profile.displayName} /><InfoListItem label="DUPR" value={hasRequiredDupr(profile) ? `${profile.duprId}` : '미등록'} /><InfoListItem label="연락처" value="010-••••-5678" /></InfoCard>
+      <InfoCard title="복식 파트너 초대"><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.caption}>유효기간 72시간 · 링크 재발송 가능</Text></InfoCard>
+      <InfoCard title="약관 동의"><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`
+`}[필수] 환불 규정을 확인하였습니다{`
+`}신청 후 참가자 직접 취소와 환불은 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text></InfoCard>
+      {!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}
+      <Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>
+      {application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)} · 접수 부문 {submittedDivisionName} · {describeApplicationPolicy(application)}</Text> : null}
     </ParticipantRouteScaffold>
   );
 }
@@ -560,19 +603,24 @@ export function SupportScreen() {
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><Text style={styles.caption}>환불·취소 요청은 1:1 문의로 운영자가 확인합니다.</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>문의 접수에 실패했습니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
+      <PageHero testID="support-layout-hero" eyebrow="고객센터" title="무엇을 도와드릴까요?" caption="환불·취소 요청과 대회 문의는 1:1 문의로 운영자가 확인합니다." />
+      <InfoCard testID="support-center" title="자주 묻는 질문"><RouteStatusNotice status={routeStatus.support} /><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>문의 접수에 실패했습니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}</InfoCard>
+      <InfoCard title="문의 내역">{supportCenter.inquiries.map((inquiry) => <StatusListCard key={inquiry.inquiryId} title={inquiry.subject} meta={`상태 · ${inquiry.status}`} caption="운영자 확인 후 안내됩니다." />)}</InfoCard>
+      <InfoCard title="문의 채널"><View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`
+`}{supportCenter.contactEmail} (1:1 문의 접수용){`
+`}대한피클볼협회 운영</Text></InfoCard>
     </ParticipantRouteScaffold>
   );
 }
 
 export function GamesScreen() {
   const { participantGames, routeStatus } = useParticipantFlow();
-  return <ParticipantRouteScaffold active="games"><View testID="my-games-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>내 경기</Text><RouteStatusNotice status={routeStatus.games} />{participantGames.length ? participantGames.map((game) => <View key={game.gameId} testID="participant-game-card" style={styles.choiceCard}><Text style={styles.sectionTitle}>{game.tournamentTitle}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(game.startsAt)} · {game.location}</Text><Text style={styles.bodyCopy}>{game.divisionName ?? '부문 확인 중'} · 신청 {game.applicationStatus}</Text><Text style={styles.caption}>결제 상태: {game.paymentStatus}{game.paymentAmountKrw ? ` · ${game.paymentAmountKrw.toLocaleString('ko-KR')}원` : ''}</Text></View>) : <Text testID="games-empty" style={styles.caption}>아직 표시할 경기 일정이 없습니다. 대회 신청이 접수되면 여기에 표시됩니다.</Text>}<Text style={styles.caption}>점수 입력 · 결과 확정 · 대진표 운영은 운영자 안내 후 순차적으로 제공됩니다.</Text></View></ParticipantRouteScaffold>;
+  return <ParticipantRouteScaffold active="games"><PageHero testID="games-layout-hero" eyebrow="내 경기" title="신청한 경기 일정" caption="접수된 대회와 결제 상태를 한눈에 확인하세요." /><InfoCard testID="my-games-screen"><RouteStatusNotice status={routeStatus.games} />{participantGames.length ? participantGames.map((game) => <StatusListCard key={game.gameId} testID="participant-game-card" title={game.tournamentTitle} meta={`${formatTournamentDate(game.startsAt)} · ${game.location}`} caption={`${game.divisionName ?? '부문 확인 중'} · 신청 ${game.applicationStatus} · 결제 ${game.paymentStatus}${game.paymentAmountKrw ? ` · ${game.paymentAmountKrw.toLocaleString('ko-KR')}원` : ''}`} badgeText="예정" />) : <Text testID="games-empty" style={styles.caption}>아직 표시할 경기 일정이 없습니다. 대회 신청이 접수되면 여기에 표시됩니다.</Text>}<Text style={styles.caption}>점수 입력 · 결과 확정 · 대진표 운영은 운영자 안내 후 순차적으로 제공됩니다.</Text></InfoCard></ParticipantRouteScaffold>;
 }
 
 export function NotificationsScreen() {
   const { notifications, routeStatus } = useParticipantFlow();
-  return <ParticipantRouteScaffold active="notifications"><View testID="notifications-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>알림</Text><RouteStatusNotice status={routeStatus.notifications} />{notifications.length ? notifications.map((notification) => <View key={notification.notificationId}><Text style={styles.sectionTitle}>{notification.title}</Text><Text style={styles.bodyCopy}>{notification.body}</Text></View>) : <Text testID="notifications-empty" style={styles.caption}>아직 표시할 알림이 없습니다. 대회 신청, 1:1 문의 답변, 운영자 공지가 생기면 여기에 표시됩니다.</Text>}</View></ParticipantRouteScaffold>;
+  return <ParticipantRouteScaffold active="notifications"><PageHero testID="notifications-layout-hero" eyebrow="알림" title="중요한 안내를 모았어요" caption="대회 신청, 결제, 1:1 문의 답변을 놓치지 마세요." /><InfoCard testID="notifications-screen"><RouteStatusNotice status={routeStatus.notifications} />{notifications.length ? notifications.map((notification) => <StatusListCard key={notification.notificationId} title={notification.title} meta={notification.body} caption={new Date(notification.createdAt).toLocaleDateString('ko-KR')} />) : <Text testID="notifications-empty" style={styles.caption}>아직 표시할 알림이 없습니다. 대회 신청, 1:1 문의 답변, 운영자 공지가 생기면 여기에 표시됩니다.</Text>}</InfoCard></ParticipantRouteScaffold>;
 }
 
 export function MyPageScreen() {
@@ -580,7 +628,7 @@ export function MyPageScreen() {
   const availableDivisions = getAvailableDivisions(tournamentDivisions);
   const paymentCopy = paymentRecords[0] ? `${paymentRecords[0].status} · ${paymentRecords[0].amountKrw.toLocaleString('ko-KR')}원 · 오프라인 운영자 확인` : '결제 내역 없음 · 오프라인 결제는 운영자 확인 대기';
   const recentApplicationCopy = application ? `최근 신청 · 접수 부문 ${getApplicationDivisionName(application, availableDivisions)}` : undefined;
-  return <ParticipantRouteScaffold active="mypage"><View testID="mypage-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>마이</Text><RouteStatusNotice status={routeStatus.mypage} /><Text style={styles.sectionTitle}>{profile.displayName} · DUPR {hasRequiredDupr(profile) ? profile.duprId : '미등록'}</Text><Text style={styles.bodyCopy}>송파피클볼클럽</Text><Text testID="mypage-payment-status" style={styles.bodyCopy}>{paymentCopy}</Text>{recentApplicationCopy ? <Text testID="mypage-recent-application" style={styles.caption}>{recentApplicationCopy}</Text> : null}<Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></View></ParticipantRouteScaffold>;
+  return <ParticipantRouteScaffold active="mypage"><PageHero testID="mypage-layout-hero" eyebrow="마이" title={`${profile.displayName}님`} caption="내 신청, 결제, DUPR, 고객센터를 관리하세요." /><InfoCard testID="mypage-screen" title="프로필"><RouteStatusNotice status={routeStatus.mypage} /><InfoListItem label="DUPR" value={hasRequiredDupr(profile) ? `${profile.duprId}` : '미등록'} /><InfoListItem label="소속" value="송파피클볼클럽" /><Text testID="mypage-payment-status" style={styles.bodyCopy}>{paymentCopy}</Text>{recentApplicationCopy ? <Text testID="mypage-recent-application" style={styles.caption}>{recentApplicationCopy}</Text> : null}</InfoCard><InfoCard title="빠른 메뉴"><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></InfoCard><InfoCard title="계정"><Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text></InfoCard></ParticipantRouteScaffold>;
 }
 
 const fontSans = 'Noto Sans KR, Inter, SF Pro Display, system-ui, sans-serif';
@@ -610,6 +658,7 @@ const styles = StyleSheet.create({
   headerBell: { alignItems: 'center', backgroundColor: '#dfeee2', borderRadius: 999, height: 42, justifyContent: 'center', width: 42 },
   headerBellIcon: { color: palette.ink, fontFamily: fontSans, fontSize: 20, fontWeight: '900' },
   heroCard: { gap: 18, paddingBottom: 2 },
+  pageHero: { backgroundColor: palette.mint, borderRadius: 28, gap: 12, overflow: 'hidden', padding: 18 },
   heroTitle: { color: palette.ink, fontFamily: fontSans, fontSize: 28, fontWeight: '900', lineHeight: 34 },
   searchBox: { backgroundColor: palette.surface, borderRadius: 14, elevation: 2, paddingHorizontal: 16, paddingVertical: 16, shadowColor: '#94a3a1', shadowOffset: { height: 8, width: 0 }, shadowOpacity: 0.12, shadowRadius: 18 },
   searchText: { color: palette.muted, fontFamily: fontSans, fontSize: 15 },
@@ -635,6 +684,9 @@ const styles = StyleSheet.create({
   priceText: { color: palette.ink, fontFamily: fontSans, fontSize: 16, fontWeight: '900', lineHeight: 24 },
   secondaryTournament: { borderTopColor: palette.line, borderTopWidth: 1, gap: 4, marginTop: 8, paddingTop: 12 },
   sectionCard: { backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 24, borderWidth: 1, gap: 12, padding: 18 },
+  infoCard: { backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 22, borderWidth: 1, gap: 12, padding: 16 },
+  infoListItem: { alignItems: 'flex-start', borderBottomColor: '#eef2ee', borderBottomWidth: 1, gap: 3, paddingBottom: 10 },
+  statusListCard: { backgroundColor: '#f9fafb', borderColor: '#eef2ee', borderRadius: 18, borderWidth: 1, gap: 6, padding: 14 },
   sectionLabel: { color: palette.success, fontFamily: fontSans, fontSize: 13, fontWeight: '900' },
   sectionTitle: { color: palette.ink, fontFamily: fontSans, fontSize: 22, fontWeight: '900', lineHeight: 28 },
   infoRow: { gap: 4 },

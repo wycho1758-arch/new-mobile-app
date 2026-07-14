@@ -145,7 +145,7 @@ describe('participant shell sandbox contract', () => {
     fireEvent.press(screen.getByTestId('save-dupr-button'));
 
     expect(screen.getByTestId('saved-dupr')).toHaveTextContent(/DUPR-777/);
-    expect(screen.getByTestId('dupr-gate-status')).toHaveTextContent(/현재 DUPR 저장됨/);
+    expect(screen.getByTestId('dupr-layout-hero')).toHaveTextContent(/현재 DUPR 저장됨/);
     expect(screen.getByTestId('dupr-continue-application').props.accessibilityState).toMatchObject({ disabled: false });
 
     fireEvent.press(screen.getByTestId('dupr-continue-application'));
@@ -156,7 +156,8 @@ describe('participant shell sandbox contract', () => {
     startParticipantSession();
     saveParticipantDupr('dupr-777');
     render(React.createElement(TournamentApplicationScreen));
-    expect(screen.getByTestId('application-form')).toHaveTextContent(/복식 파트너 초대/);
+    expect(screen.getByTestId('application-layout-hero')).toHaveTextContent(/참가 신청/);
+    expect(screen.getByText('복식 파트너 초대')).toBeTruthy();
     expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
     fireEvent.press(screen.getByTestId('application-cta'));
 
@@ -191,7 +192,7 @@ describe('participant shell sandbox contract', () => {
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/1:1 문의로 접수/);
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/참가자 직접 취소\/환불은 1:1 문의/);
-    expect(screen.getByTestId('support-center')).toHaveTextContent(/이메일 1:1 문의/);
+    expect(screen.getByText(/이메일 1:1 문의/)).toBeTruthy();
     expect(screen.getByTestId('support-copy')).toHaveTextContent(/DUPR 정보는 어디서 확인하나요/);
   });
 
