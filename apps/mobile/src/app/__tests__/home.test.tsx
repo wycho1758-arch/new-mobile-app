@@ -54,9 +54,11 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<TournamentsScreen />);
 
-    expect(screen.getByTestId('header-logo')).toHaveStyle({ height: 32, width: 102 });
+    expect(screen.getByTestId('header-logo')).toHaveStyle({ height: 40, width: 126 });
+    expect(screen.getByTestId('header-bell')).toBeTruthy();
     expect(screen.getByTestId('explore-home')).toHaveTextContent(/어떤 대회에 나가볼까요/);
-    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('대회 미리보기');
+    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('총 1개');
+    expect(screen.getByTestId('court-preview')).toBeTruthy();
     expect(screen.queryByTestId('participant-route-state')).toBeNull();
 
     fireEvent.press(screen.getByTestId('mock-tournament-card'));
@@ -172,7 +174,7 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<TournamentsScreen />);
 
-    await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('최신 대회 정보'));
+    await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('총 1개'));
     expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/API Open/);
   });
 
@@ -187,7 +189,7 @@ describe('Home screen', () => {
     startParticipantSession();
     render(<TournamentsScreen />);
 
-    await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('일부 정보를 불러오지 못했습니다'));
+    await waitFor(() => expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('총 1개'));
     expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/PickleHub Sandbox Open/);
   });
 

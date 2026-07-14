@@ -41,10 +41,43 @@ export class ParticipantMvpError extends Error {
 const sandboxTournaments: Tournament[] = [
   {
     tournamentId: 'tournament_sandbox_001',
-    title: 'PickleHub Sandbox Open',
-    division: 'Mixed Doubles 3.5+',
-    location: 'Dev/Sandbox Court',
+    title: '2026 협회장배 전국오픈',
+    division: '남자복식 · 혼합복식',
+    location: '올림픽공원 SK핸드볼경기장',
     startsAt: '2026-08-09T09:00:00.000+09:00',
+    applicationStatus: 'available',
+    requiresDupr: true,
+    paymentMode: 'operatorManagedOffline',
+    cancellationPolicy: 'operatorSupportOnly',
+  },
+  {
+    tournamentId: 'tournament_sandbox_002',
+    title: '서울 오픈 클럽 리그',
+    division: '여자복식 · 초급자부',
+    location: '잠실 실내체육관 보조코트',
+    startsAt: '2026-08-16T10:00:00.000+09:00',
+    applicationStatus: 'available',
+    requiresDupr: true,
+    paymentMode: 'operatorManagedOffline',
+    cancellationPolicy: 'operatorSupportOnly',
+  },
+  {
+    tournamentId: 'tournament_sandbox_003',
+    title: '부산 썸머 피클볼 챌린지',
+    division: '오픈부 · 시니어부',
+    location: '부산 스포원 실내코트',
+    startsAt: '2026-08-23T09:30:00.000+09:00',
+    applicationStatus: 'available',
+    requiresDupr: true,
+    paymentMode: 'operatorManagedOffline',
+    cancellationPolicy: 'operatorSupportOnly',
+  },
+  {
+    tournamentId: 'tournament_sandbox_004',
+    title: '대전 루키스 데이',
+    division: '입문자부 · 혼합복식',
+    location: '대전 한밭체육관',
+    startsAt: '2026-09-05T11:00:00.000+09:00',
     applicationStatus: 'available',
     requiresDupr: true,
     paymentMode: 'operatorManagedOffline',
@@ -81,12 +114,9 @@ export async function resetParticipantMvpState() {
 export async function listTournaments() {
   if (useMemoryStore) return sandboxTournaments;
 
-  const rows = await db.select().from(tournaments);
-  if (rows.length > 0) return rows.map(parseTournamentRow);
-
   await seedSandboxTournaments();
-  const seededRows = await db.select().from(tournaments);
-  return seededRows.map(parseTournamentRow);
+  const rows = await db.select().from(tournaments);
+  return rows.map(parseTournamentRow).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 }
 
 export async function getTournament(tournamentId: string) {
@@ -249,6 +279,7 @@ export async function listSupportInquiries(participantId = SANDBOX_PARTICIPANT_I
     if (memorySupportInquiries.size === 0) seedMemorySupportInquiries();
     return [...memorySupportInquiries.values()].filter((inquiry) => inquiry.participantId === participantId);
   }
+  await seedSandboxApplications(participantId);
   await seedSandboxSupportInquiries();
   const rows = await db.select().from(supportInquiries).where(eq(supportInquiries.participantId, participantId)).orderBy(desc(supportInquiries.createdAt));
   return rows.map(parseSupportInquiryRow);
@@ -289,6 +320,7 @@ export async function createSupportInquiry(input: unknown) {
 export async function listNotifications() {
   const profile = await getParticipantProfile();
   if (useMemoryStore) return notificationListResponseSchema.parse({ notifications: sandboxNotifications(profile.participantId) });
+  await seedSandboxApplications(profile.participantId);
   await seedSandboxNotifications(profile.participantId);
   const rows = await db.select().from(notifications).where(eq(notifications.participantId, profile.participantId)).orderBy(desc(notifications.createdAt));
   return notificationListResponseSchema.parse({ notifications: rows.map(parseNotificationRow) });
@@ -299,6 +331,7 @@ export async function getMyPage() {
   if (useMemoryStore) {
     return myPageResponseSchema.parse({ profile, applications: [...memoryApplications.values()], paymentRecords: sandboxPaymentRecords(profile.participantId, [...memoryApplications.values()]) });
   }
+  await seedSandboxApplications(profile.participantId);
   await seedSandboxPaymentRecords(profile.participantId);
   const [applicationRows, paymentRows] = await Promise.all([
     db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, profile.participantId)),
@@ -325,6 +358,7 @@ export async function listParticipantGames() {
     });
   }
 
+  await seedSandboxApplications(profile.participantId);
   await seedSandboxTournaments();
   await seedSandboxPaymentRecords(profile.participantId);
 
@@ -431,10 +465,39 @@ async function seedSandboxTournaments() {
   }))).onConflictDoNothing();
 }
 
+async function seedSandboxApplications(participantId: string) {
+  await getParticipantProfile();
+  await seedSandboxTournaments();
+  await db.insert(tournamentApplications).values(sandboxApplications.map((application) => ({
+    applicationId: application.applicationId,
+    tournamentId: application.tournamentId,
+    divisionId: application.divisionId,
+    participantId,
+    duprId: application.duprId,
+    status: application.status,
+    submittedAt: new Date(application.submittedAt),
+    supportChannel: 'oneToOneInquiry',
+    paymentStatus: application.paymentStatus,
+    refundPolicy: 'participantSelfCancelDisabled',
+  }))).onConflictDoNothing();
+}
+
 const sandboxDivisions = [
   { divisionId: 'division_sandbox_mixed_35', tournamentId: 'tournament_sandbox_001', name: '혼합복식', skillLevel: 'DUPR 3.5+', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 32 },
   { divisionId: 'division_sandbox_mens_open', tournamentId: 'tournament_sandbox_001', name: '남자복식', skillLevel: 'DUPR 3.5~4.5', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 64 },
+  { divisionId: 'division_sandbox_womens_beginner', tournamentId: 'tournament_sandbox_002', name: '여자복식 초급', skillLevel: 'DUPR 제한없음', teamType: 'doubles', entryFeeKrw: 40000, capacityTeams: 24 },
+  { divisionId: 'division_sandbox_mixed_beginner', tournamentId: 'tournament_sandbox_002', name: '혼합복식 초급', skillLevel: 'DUPR 3.0 이하 권장', teamType: 'doubles', entryFeeKrw: 40000, capacityTeams: 24 },
+  { divisionId: 'division_sandbox_open_busan', tournamentId: 'tournament_sandbox_003', name: '오픈부', skillLevel: 'DUPR 4.0+', teamType: 'doubles', entryFeeKrw: 70000, capacityTeams: 48 },
+  { divisionId: 'division_sandbox_senior_busan', tournamentId: 'tournament_sandbox_003', name: '시니어부', skillLevel: '만 50세 이상', teamType: 'doubles', entryFeeKrw: 50000, capacityTeams: 32 },
+  { divisionId: 'division_sandbox_rookie_daejeon', tournamentId: 'tournament_sandbox_004', name: '입문자부', skillLevel: '대회 첫 참가자 권장', teamType: 'doubles', entryFeeKrw: 30000, capacityTeams: 32 },
+  { divisionId: 'division_sandbox_mixed_daejeon', tournamentId: 'tournament_sandbox_004', name: '혼합복식', skillLevel: 'DUPR 제한없음', teamType: 'doubles', entryFeeKrw: 35000, capacityTeams: 32 },
 ].map((division) => tournamentDivisionSchema.parse(division));
+
+const sandboxApplications = [
+  { applicationId: 'application_sandbox_association_open_mixed', tournamentId: 'tournament_sandbox_001', divisionId: 'division_sandbox_mixed_35', duprId: 'DUPR-12345', status: 'submitted', submittedAt: '2026-07-14T01:20:00.000Z', paymentStatus: 'notStartedSandbox' },
+  { applicationId: 'application_sandbox_seoul_rookie_womens', tournamentId: 'tournament_sandbox_002', divisionId: 'division_sandbox_womens_beginner', duprId: 'DUPR-12345', status: 'operatorReview', submittedAt: '2026-07-14T03:10:00.000Z', paymentStatus: 'operatorReview' },
+  { applicationId: 'application_sandbox_busan_open', tournamentId: 'tournament_sandbox_003', divisionId: 'division_sandbox_open_busan', duprId: 'DUPR-12345', status: 'submitted', submittedAt: '2026-07-14T05:40:00.000Z', paymentStatus: 'confirmedOffline' },
+];
 
 function seedMemorySupportInquiries() {
   const now = '2026-07-13T09:00:00.000Z';
@@ -443,13 +506,19 @@ function seedMemorySupportInquiries() {
 
 async function seedSandboxSupportInquiries() {
   await getParticipantProfile();
-  await db.insert(supportInquiries).values({ inquiryId: 'inquiry_sandbox_refund', participantId: SANDBOX_PARTICIPANT_ID, channel: 'oneToOneInquiry', category: 'refund', subject: '환불/취소는 1:1 문의로 접수', status: 'operatorReview', createdAt: new Date('2026-07-13T09:00:00.000Z'), updatedAt: new Date('2026-07-13T09:00:00.000Z') }).onConflictDoNothing();
+  await db.insert(supportInquiries).values([
+    { inquiryId: 'inquiry_sandbox_refund', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_association_open_mixed', channel: 'oneToOneInquiry', category: 'refund', subject: '환불 가능 시점 문의', status: 'operatorReview', createdAt: new Date('2026-07-13T09:00:00.000Z'), updatedAt: new Date('2026-07-13T09:00:00.000Z') },
+    { inquiryId: 'inquiry_sandbox_partner_change', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_seoul_rookie_womens', channel: 'oneToOneInquiry', category: 'application', subject: '파트너 변경 요청', status: 'answered', createdAt: new Date('2026-07-13T12:30:00.000Z'), updatedAt: new Date('2026-07-13T13:20:00.000Z') },
+    { inquiryId: 'inquiry_sandbox_payment_receipt', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_busan_open', channel: 'oneToOneInquiry', category: 'payment', subject: '입금 확인증 발급 문의', status: 'operatorReview', createdAt: new Date('2026-07-14T02:15:00.000Z'), updatedAt: new Date('2026-07-14T02:15:00.000Z') },
+  ]).onConflictDoNothing();
 }
 
 function sandboxNotifications(participantId: string) {
   return [
-    { notificationId: 'notification_sandbox_deadline', participantId, type: 'tournamentDeadline', title: '대회 마감 임박!', body: '오늘까지 신청하세요', createdAt: '2026-07-13T09:00:00.000Z' },
-    { notificationId: 'notification_sandbox_support', participantId, type: 'support', title: '1:1 문의 접수 안내', body: '취소/환불은 운영자 확인 후 안내됩니다.', createdAt: '2026-07-13T08:30:00.000Z' },
+    { notificationId: 'notification_sandbox_deadline', participantId, type: 'tournamentDeadline', title: '협회장배 접수 마감 임박', body: '혼합복식 부문 신청 마감이 가까워졌습니다.', relatedApplicationId: 'application_sandbox_association_open_mixed', createdAt: '2026-07-13T09:00:00.000Z' },
+    { notificationId: 'notification_sandbox_support', participantId, type: 'support', title: '1:1 문의 답변 안내', body: '파트너 변경 요청에 대한 운영자 답변이 등록되었습니다.', relatedApplicationId: 'application_sandbox_seoul_rookie_womens', createdAt: '2026-07-13T08:30:00.000Z' },
+    { notificationId: 'notification_sandbox_payment_confirmed', participantId, type: 'payment', title: '오프라인 입금 확인 완료', body: '부산 썸머 피클볼 챌린지 참가비 확인이 완료되었습니다.', relatedApplicationId: 'application_sandbox_busan_open', createdAt: '2026-07-14T04:00:00.000Z' },
+    { notificationId: 'notification_sandbox_new_tournament', participantId, type: 'tournament', title: '새 대회가 열렸어요', body: '대전 루키스 데이 참가 접수가 시작되었습니다.', createdAt: '2026-07-14T05:00:00.000Z' },
   ];
 }
 
@@ -464,7 +533,17 @@ function sandboxPaymentRecords(participantId: string, applications: TournamentAp
 async function seedSandboxPaymentRecords(participantId: string) {
   const applicationRows = await db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, participantId));
   if (applicationRows.length === 0) return;
-  await db.insert(paymentRecords).values(applicationRows.map((application) => ({ paymentRecordId: `payment_${application.applicationId}`, applicationId: application.applicationId, participantId, amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 오프라인 입금 확인 대기', recordedAt: application.submittedAt, updatedAt: new Date() }))).onConflictDoNothing();
+  await db.insert(paymentRecords).values(applicationRows.map((application) => ({
+    paymentRecordId: `payment_${application.applicationId}`,
+    applicationId: application.applicationId,
+    participantId,
+    amountKrw: application.divisionId?.includes('womens_beginner') ? 40000 : application.divisionId?.includes('open_busan') ? 70000 : 60000,
+    paymentMode: 'operatorManagedOffline',
+    status: application.paymentStatus,
+    operatorNote: application.paymentStatus === 'confirmedOffline' ? '운영자가 오프라인 입금을 확인했습니다.' : '운영자 오프라인 입금 확인 대기',
+    recordedAt: application.submittedAt,
+    updatedAt: new Date(),
+  }))).onConflictDoNothing();
 }
 
 function parseTournamentRow(row: typeof tournaments.$inferSelect) {

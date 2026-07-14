@@ -127,7 +127,8 @@ describe('participant shell sandbox contract', () => {
     startParticipantSession();
     render(React.createElement(TournamentsScreen));
     expect(screen.getByTestId('explore-home')).toHaveTextContent(/어떤 대회에 나가볼까요/);
-    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('대회 미리보기');
+    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('총 1개');
+    expect(screen.getByTestId('court-preview')).toBeTruthy();
     expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/PickleHub Sandbox Open/);
 
     fireEvent.press(screen.getByTestId('mock-tournament-card'));

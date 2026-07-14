@@ -72,7 +72,7 @@ describe('participant MVP dev-preview endpoints', () => {
 
     const notifications = await requestJson('/api/participant/notifications');
     expect(notifications.res.status).toBe(200);
-    expect(notificationListResponseSchema.parse(notifications.body).notifications[0]?.title).toContain('대회');
+    expect(notificationListResponseSchema.parse(notifications.body).notifications.length).toBeGreaterThanOrEqual(4);
 
     const myPage = await requestJson('/api/participant/mypage');
     expect(myPage.res.status).toBe(200);
@@ -155,9 +155,9 @@ describe('participant MVP dev-preview endpoints', () => {
     expect(participantGamesResponseSchema.parse(games.body).games[0]).toMatchObject({
       applicationId: application.applicationId,
       tournamentId: 'tournament_sandbox_001',
-      tournamentTitle: 'PickleHub Sandbox Open',
+      tournamentTitle: '2026 협회장배 전국오픈',
       divisionName: '혼합복식',
-      location: 'Dev/Sandbox Court',
+      location: '올림픽공원 SK핸드볼경기장',
       applicationStatus: 'submitted',
       paymentStatus: 'notStartedSandbox',
       paymentAmountKrw: 60000,

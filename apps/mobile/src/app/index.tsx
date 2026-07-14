@@ -322,6 +322,29 @@ function Logo({ small = false }: { small?: boolean }) {
   );
 }
 
+function HeaderBell() {
+  return <View testID="header-bell" style={styles.headerBell}><Text style={styles.headerBellIcon}>♧</Text></View>;
+}
+
+function CourtPreview({ live = false }: { live?: boolean }) {
+  return (
+    <View testID="court-preview" style={styles.courtPreview}>
+      <View style={styles.courtLineTop} />
+      <View style={styles.courtLineMid} />
+      <View style={styles.courtLineBottom} />
+      <View style={styles.courtCenterLine} />
+      <View style={[styles.courtDot, styles.courtDotTopLeft, live && styles.courtDotLive]} />
+      <View style={[styles.courtDot, styles.courtDotTopRight, live && styles.courtDotLive]} />
+      <View style={styles.courtDotCenter} />
+      <View style={styles.courtNet} />
+      <View style={styles.courtNetHandleLeft} />
+      <View style={styles.courtNetHandleRight} />
+      <View style={[styles.courtPlayer, styles.courtPlayerLeft]} />
+      <View style={[styles.courtPlayer, styles.courtPlayerRight]} />
+    </View>
+  );
+}
+
 function ActionButton({ testID, label, onPress, secondary = false, disabled = false }: { testID: string; label: string; onPress: () => void; secondary?: boolean; disabled?: boolean }) {
   return <Pressable testID={testID} accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={onPress} style={[secondary ? styles.secondaryAction : styles.primaryAction, disabled && styles.disabledAction]}><Text style={secondary ? styles.secondaryActionText : styles.primaryActionText}>{label}</Text></Pressable>;
 }
@@ -440,7 +463,7 @@ function ParticipantRouteScaffold({ active, children }: { active: string; childr
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
-      <View style={styles.header}><View><Logo small /><Text style={styles.headerSubtitle}>대한피클볼협회 공식</Text></View><Text testID="session-actor" style={styles.sessionText}>{sandboxParticipantSession.sessionActor.actorId}</Text></View>
+      <View style={styles.header}><View><Logo small /><Text style={styles.headerSubtitle}>대한피클볼협회 공식</Text></View><HeaderBell /></View>
       {children}
       <View testID="deferred-reference-screens" style={styles.sectionCard}><Text style={styles.sectionLabel}>운영 예정 기능</Text><Text style={styles.caption}>결제 · 환불 · 대진표 · 점수 입력 · 결과 확정은 운영자 안내에 따라 순차적으로 제공됩니다.</Text></View>
       <BottomNav active={active} />
@@ -463,17 +486,21 @@ export function TournamentsScreen() {
   return (
     <ParticipantRouteScaffold active="tournaments">
       <View testID="explore-home" style={styles.heroCard}>
-        <Text style={styles.heroTitle}>어떤 대회에 나가볼까요?</Text><View style={styles.searchBox}><Text style={styles.searchText}>대회명으로 검색</Text></View>
-        <View style={styles.filterRow}>{['서울특별시', '최신순', '접수중', '접수마감', '종료'].map((chip) => <Text key={chip} style={[styles.filterChip, chip === '접수중' && styles.activeChip]}>{chip}</Text>)}</View>
-        <View style={styles.cardTopRow}><Text style={styles.sectionTitleSmall}>접수 중인 대회</Text><Text testID="participant-api-mode" style={styles.countText}>{participantApiModeLabel(apiMode)}</Text></View>
+        <Text style={styles.heroTitle}>어떤 대회에 나가볼까요?</Text><View style={styles.searchBox}><Text style={styles.searchText}>⌕  대회명으로 검색</Text></View>
+        <View style={styles.filterToolbar}><Text style={[styles.filterChip, styles.locationChip]}>⌖ 서울특별시⌄</Text><Text style={styles.filterChip}>최신순⌄</Text></View>
+        <View style={styles.filterRow}>{['접수중', '접수마감', '종료'].map((chip) => <Text key={chip} style={[styles.statusChip, chip === '접수중' && styles.activeChip]}>{chip}</Text>)}</View>
+        <View style={styles.cardTopRow}><Text style={styles.sectionTitleSmall}>접수 중인 대회</Text><Text testID="participant-api-mode" style={styles.countText}>총 {visibleTournaments.length}개</Text></View>
       </View>
       {visibleTournaments.map((tournament, index) => {
         const tournamentPath = `/tournaments/${tournament.tournamentId}`;
         return (
           <Pressable key={tournament.tournamentId} testID={index === 0 ? 'mock-tournament-card' : 'api-tournament-card'} accessibilityRole="button" onPress={() => router.push(tournamentPath)} style={styles.tournamentCard}>
-            <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(tournament.startsAt)}</Text></View><Text style={styles.countText}>상세 보기</Text></View>
-            <Text style={styles.cardTitle}>{tournament.title}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(tournament.startsAt)}</Text><Text style={styles.bodyCopy}>{tournament.location}</Text>
-            <View style={styles.divisionRow}><Text style={styles.divisionChip}>{tournament.division}</Text><Text style={styles.divisionChip}>{tournament.requiresDupr ? 'DUPR 필수' : 'DUPR 선택'}</Text></View><Text style={styles.caption}>결제 방식</Text><Text style={styles.priceText}>{tournament.paymentMode === 'operatorManagedOffline' ? '운영자 오프라인 확인' : tournament.paymentMode}</Text>
+            <CourtPreview live={index > 0} />
+            <View style={styles.tournamentCardBody}>
+              <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(tournament.startsAt)}</Text></View><Text style={styles.countText}>상세 보기</Text></View>
+              <Text style={styles.cardTitle}>{tournament.title}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(tournament.startsAt)}</Text><Text style={styles.bodyCopy}>{tournament.location}</Text>
+              <View style={styles.divisionRow}><Text style={styles.divisionChip}>{tournament.division}</Text><Text style={styles.divisionChip}>{tournament.requiresDupr ? 'DUPR 필수' : 'DUPR 선택'}</Text></View><Text style={styles.caption}>결제 방식</Text><Text style={styles.priceText}>{tournament.paymentMode === 'operatorManagedOffline' ? '운영자 오프라인 확인' : tournament.paymentMode}</Text>
+            </View>
           </Pressable>
         );
       })}
@@ -564,7 +591,7 @@ const styles = StyleSheet.create({
   phoneFrame: { alignItems: 'center', backgroundColor: palette.bg, maxWidth: 480, minHeight: 640, width: '100%' },
   loginMain: { alignItems: 'center', width: '100%' },
   logoImage: { height: 46, marginTop: 150, width: 146 },
-  logoImageSmall: { height: 32, width: 102 },
+  logoImageSmall: { height: 40, width: 126 },
   hiddenParityText: { height: 0, opacity: 0 },
   tagline: { color: palette.muted, fontFamily: fontSans, fontSize: 12, fontWeight: '500', marginTop: 5, textAlign: 'center' },
   illWrap: { alignItems: 'center', backgroundColor: palette.mint, borderRadius: 42, height: 84, justifyContent: 'center', marginTop: 30, width: 84 },
@@ -577,26 +604,31 @@ const styles = StyleSheet.create({
   appleButtonText: { color: '#ffffff', fontFamily: fontSans, fontSize: 15, fontWeight: '700' },
   hint: { color: palette.muted, fontFamily: fontSans, fontSize: 12, fontWeight: '500', marginBottom: 114, marginTop: 16, textAlign: 'center' },
   page: { flex: 1, backgroundColor: palette.bg },
-  content: { alignSelf: 'center', gap: 16, maxWidth: 760, padding: 18, paddingBottom: 84, width: '100%' },
-  header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
-  headerSubtitle: { color: palette.muted, fontFamily: fontSans, fontSize: 12, fontWeight: '700' },
-  sessionText: { color: palette.muted, fontFamily: fontMono, fontSize: 10, maxWidth: 150 },
-  heroCard: { backgroundColor: palette.surface, borderRadius: 28, gap: 14, padding: 20 },
+  content: { alignSelf: 'center', gap: 16, maxWidth: 480, padding: 20, paddingBottom: 84, width: '100%' },
+  header: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, paddingTop: 16 },
+  headerSubtitle: { alignSelf: 'flex-start', backgroundColor: palette.softGreen, borderRadius: 999, color: palette.success, fontFamily: fontSans, fontSize: 12, fontWeight: '800', marginTop: 6, overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
+  headerBell: { alignItems: 'center', backgroundColor: '#dfeee2', borderRadius: 999, height: 42, justifyContent: 'center', width: 42 },
+  headerBellIcon: { color: palette.ink, fontFamily: fontSans, fontSize: 20, fontWeight: '900' },
+  heroCard: { gap: 18, paddingBottom: 2 },
   heroTitle: { color: palette.ink, fontFamily: fontSans, fontSize: 28, fontWeight: '900', lineHeight: 34 },
-  searchBox: { backgroundColor: '#f1f5f1', borderRadius: 18, paddingHorizontal: 16, paddingVertical: 13 },
+  searchBox: { backgroundColor: palette.surface, borderRadius: 14, elevation: 2, paddingHorizontal: 16, paddingVertical: 16, shadowColor: '#94a3a1', shadowOffset: { height: 8, width: 0 }, shadowOpacity: 0.12, shadowRadius: 18 },
   searchText: { color: palette.muted, fontFamily: fontSans, fontSize: 15 },
+  filterToolbar: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  filterChip: { backgroundColor: '#eef2ee', borderRadius: 999, color: palette.ink, fontFamily: fontSans, fontSize: 13, fontWeight: '700', paddingHorizontal: 12, paddingVertical: 7 },
+  filterChip: { backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 999, borderWidth: 1, color: palette.ink, fontFamily: fontSans, fontSize: 13, fontWeight: '800', overflow: 'hidden', paddingHorizontal: 14, paddingVertical: 10 },
+  locationChip: { backgroundColor: '#e8f3eb', borderColor: '#c7dfcc', color: palette.success },
+  statusChip: { backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 999, borderWidth: 1, color: palette.ink, fontFamily: fontSans, fontSize: 13, fontWeight: '800', overflow: 'hidden', paddingHorizontal: 16, paddingVertical: 10 },
   activeChip: { backgroundColor: palette.softGreen, color: palette.success },
   sectionTitleSmall: { color: palette.ink, fontFamily: fontSans, fontSize: 18, fontWeight: '900' },
-  tournamentCard: { backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 24, borderWidth: 1, gap: 8, padding: 18 },
+  tournamentCard: { backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 20, borderWidth: 1, gap: 9, overflow: 'hidden', paddingBottom: 18 },
+  tournamentCardBody: { gap: 8, paddingHorizontal: 16, paddingTop: 4 },
   cardTopRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   badgeRow: { alignItems: 'center', flexDirection: 'row', gap: 6 },
   badge: { alignSelf: 'flex-start', backgroundColor: palette.softGreen, borderRadius: 999, color: palette.success, fontFamily: fontSans, fontSize: 12, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
   dDay: { color: palette.success, fontFamily: fontSans, fontSize: 12, fontWeight: '900' },
   liveBadge: { alignSelf: 'flex-start', backgroundColor: '#ffe4e6', borderRadius: 999, color: palette.live, fontFamily: fontSans, fontSize: 12, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 10, paddingVertical: 5 },
   countText: { color: palette.muted, fontFamily: fontSans, fontSize: 12, fontWeight: '700' },
-  cardTitle: { color: palette.ink, fontFamily: fontSans, fontSize: 22, fontWeight: '900', lineHeight: 28 },
+  cardTitle: { color: palette.ink, fontFamily: fontSans, fontSize: 18, fontWeight: '900', lineHeight: 24 },
   bodyCopy: { color: palette.ink, fontFamily: fontSans, fontSize: 15, lineHeight: 22 },
   divisionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
   divisionChip: { backgroundColor: '#f3f4f6', borderRadius: 999, color: palette.ink, fontFamily: fontSans, fontSize: 12, fontWeight: '800', paddingHorizontal: 10, paddingVertical: 5 },
@@ -625,7 +657,23 @@ const styles = StyleSheet.create({
   supportCard: { backgroundColor: '#eef2ff', borderRadius: 24, gap: 12, padding: 18 },
   actionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   secondaryPill: { backgroundColor: palette.surface, borderRadius: 999, color: palette.ink, fontFamily: fontSans, fontSize: 13, fontWeight: '800', paddingHorizontal: 12, paddingVertical: 8 },
-  bottomNav: { alignItems: 'center', backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 24, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 14 },
+  courtPreview: { backgroundColor: palette.mint, height: 150, overflow: 'hidden' },
+  courtLineTop: { backgroundColor: 'transparent', borderColor: '#5b9566', borderTopWidth: 3, height: 58, left: 70, position: 'absolute', right: 70, top: 22, transform: [{ skewX: '-22deg' }] },
+  courtLineMid: { backgroundColor: '#91b99b', height: 2, left: 62, position: 'absolute', right: 62, top: 70 },
+  courtLineBottom: { backgroundColor: '#91b99b', height: 2, left: 62, position: 'absolute', right: 62, top: 98 },
+  courtCenterLine: { backgroundColor: '#91b99b', height: 112, left: '50%', position: 'absolute', top: 22, width: 2 },
+  courtDot: { backgroundColor: '#6b7280', borderRadius: 999, height: 18, position: 'absolute', top: 32, width: 18 },
+  courtDotTopLeft: { left: '33%' },
+  courtDotTopRight: { right: '33%' },
+  courtDotLive: { backgroundColor: '#f7c844' },
+  courtDotCenter: { backgroundColor: '#f4bf35', borderColor: palette.ink, borderRadius: 999, borderWidth: 1, height: 14, left: '50%', marginLeft: -7, position: 'absolute', top: 72, width: 14 },
+  courtNet: { backgroundColor: palette.ink, height: 4, left: 24, position: 'absolute', right: 24, top: 78 },
+  courtNetHandleLeft: { backgroundColor: palette.ink, borderRadius: 999, height: 10, left: 20, position: 'absolute', top: 75, width: 10 },
+  courtNetHandleRight: { backgroundColor: palette.ink, borderRadius: 999, height: 10, position: 'absolute', right: 20, top: 75, width: 10 },
+  courtPlayer: { backgroundColor: '#569665', borderRadius: 999, height: 22, position: 'absolute', top: 112, width: 22 },
+  courtPlayerLeft: { left: '31%' },
+  courtPlayerRight: { right: '31%' },
+  bottomNav: { alignItems: 'center', backgroundColor: palette.surface, borderColor: palette.line, borderRadius: 0, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: -20, paddingVertical: 14 },
   navButton: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8 },
   navButtonActive: { backgroundColor: palette.softGreen },
   bottomNavItem: { color: palette.ink, fontFamily: fontSans, fontSize: 13, fontWeight: '800' },
