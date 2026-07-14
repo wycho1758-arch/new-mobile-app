@@ -127,7 +127,7 @@ describe('participant shell sandbox contract', () => {
     startParticipantSession();
     render(React.createElement(TournamentsScreen));
     expect(screen.getByTestId('explore-home')).toHaveTextContent(/어떤 대회에 나가볼까요/);
-    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('샌드박스 모드');
+    expect(screen.getByTestId('participant-api-mode')).toHaveTextContent('대회 미리보기');
     expect(screen.getByTestId('mock-tournament-card')).toHaveTextContent(/PickleHub Sandbox Open/);
 
     fireEvent.press(screen.getByTestId('mock-tournament-card'));
@@ -159,7 +159,7 @@ describe('participant shell sandbox contract', () => {
     expect(screen.getByTestId('application-cta').props.accessibilityState).toMatchObject({ disabled: false });
     fireEvent.press(screen.getByTestId('application-cta'));
 
-    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/샌드박스 신청 접수됨/);
+    expect(screen.getByTestId('application-submitted')).toHaveTextContent(/참가 신청 접수 완료/);
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/접수 부문 혼합복식/);
     expect(screen.getByTestId('application-submitted')).toHaveTextContent(/참가자 직접 취소 불가 · 1:1 문의/);
   });
@@ -224,7 +224,7 @@ describe('participant shell sandbox contract', () => {
     expect(await screen.findByTestId('mypage-payment-status')).toHaveTextContent(/60,000원/);
     expect(await screen.findByTestId('mypage-recent-application')).toHaveTextContent(/접수 부문 남자복식/);
     expect(await screen.findByTestId('participant-game-card')).toHaveTextContent(/API Open/);
-    expect(screen.getByTestId('participant-game-card')).toHaveTextContent(/DB 신청 내역 기반/);
+    expect(screen.getByTestId('participant-game-card')).not.toHaveTextContent(/DB 신청 내역 기반/);
   });
 
   it('submits a DB-backed support inquiry from the support route', async () => {
@@ -276,8 +276,8 @@ describe('participant shell sandbox contract', () => {
     render(React.createElement(SupportScreen));
     fireEvent.press(await screen.findByTestId('support-inquiry-submit'));
 
-    expect(await screen.findByTestId('support-inquiry-state')).toHaveTextContent(/API 문의 접수에 실패했습니다/);
-    expect(screen.getByTestId('support-inquiry-state')).toHaveTextContent(/폴백 모드/);
+    expect(await screen.findByTestId('support-inquiry-state')).toHaveTextContent(/문의 접수에 실패했습니다/);
+    expect(screen.getByTestId('support-inquiry-state')).not.toHaveTextContent(/폴백 모드/);
   });
 
 });

@@ -329,15 +329,15 @@ function Row({ left, right }: { left: string; right?: string }) {
 }
 
 function participantApiModeLabel(apiMode: ParticipantStoreState['apiMode']) {
-  if (apiMode === 'api') return 'API 연결됨';
-  if (apiMode === 'fallback') return 'API 폴백 모드';
-  return '샌드박스 모드';
+  if (apiMode === 'api') return '최신 대회 정보';
+  if (apiMode === 'fallback') return '일부 정보를 불러오지 못했습니다';
+  return '대회 미리보기';
 }
 
 function routeStatusCopy(status?: NonNullable<ParticipantStoreState['routeStatus'][keyof ParticipantStoreState['routeStatus']]>) {
   if (status === 'loading') return 'API 데이터를 불러오는 중입니다.';
-  if (status === 'fallback') return 'API 응답을 받지 못해 안전한 샌드박스 데이터를 표시합니다.';
-  if (status === 'ready') return 'API 데이터로 최신화되었습니다.';
+  if (status === 'fallback') return '일부 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.';
+  if (status === 'ready') return undefined;
   return undefined;
 }
 
@@ -348,9 +348,8 @@ function RouteStatusNotice({ status }: { status?: NonNullable<ParticipantStoreSt
 }
 
 function applicationSubmittedLabel(apiMode: ParticipantStoreState['apiMode']) {
-  if (apiMode === 'api') return 'API 신청 접수됨';
-  if (apiMode === 'fallback') return '폴백 신청 접수됨';
-  return '샌드박스 신청 접수됨';
+  if (apiMode === 'fallback') return '신청 접수 확인 중';
+  return '참가 신청 접수 완료';
 }
 
 function formatTournamentDate(startsAt: string) {
@@ -441,7 +440,7 @@ function ParticipantRouteScaffold({ active, children }: { active: string; childr
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
       <View style={styles.header}><View><Logo small /><Text style={styles.headerSubtitle}>대한피클볼협회 공식</Text></View><Text testID="session-actor" style={styles.sessionText}>{sandboxParticipantSession.sessionActor.actorId}</Text></View>
       {children}
-      <View testID="deferred-reference-screens" style={styles.sectionCard}><Text style={styles.sectionLabel}>시각 참고 / MVP 지연</Text><Text style={styles.caption}>결제 · 환불 · 대진표 · 점수 입력 · 결과 확정 · 회원탈퇴는 이번 로컬 MVP에서 실제 처리하지 않습니다.</Text></View>
+      <View testID="deferred-reference-screens" style={styles.sectionCard}><Text style={styles.sectionLabel}>시각 참고 / MVP 지연</Text><Text style={styles.caption}>결제 · 환불 · 대진표 · 점수 입력 · 결과 확정은 운영자 안내에 따라 순차적으로 제공됩니다.</Text></View>
       <BottomNav active={active} />
     </ScrollView>
   );
@@ -470,7 +469,7 @@ export function TournamentsScreen() {
         const tournamentPath = `/tournaments/${tournament.tournamentId}`;
         return (
           <Pressable key={tournament.tournamentId} testID={index === 0 ? 'mock-tournament-card' : 'api-tournament-card'} accessibilityRole="button" onPress={() => router.push(tournamentPath)} style={styles.tournamentCard}>
-            <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(tournament.startsAt)}</Text></View><Text style={styles.countText}>DB 대회 데이터</Text></View>
+            <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(tournament.startsAt)}</Text></View><Text style={styles.countText}>상세 보기</Text></View>
             <Text style={styles.cardTitle}>{tournament.title}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(tournament.startsAt)}</Text><Text style={styles.bodyCopy}>{tournament.location}</Text>
             <View style={styles.divisionRow}><Text style={styles.divisionChip}>{tournament.division}</Text><Text style={styles.divisionChip}>{tournament.requiresDupr ? 'DUPR 필수' : 'DUPR 선택'}</Text></View><Text style={styles.caption}>결제 방식</Text><Text style={styles.priceText}>{tournament.paymentMode === 'operatorManagedOffline' ? '운영자 오프라인 확인' : tournament.paymentMode}</Text>
           </Pressable>
@@ -522,7 +521,7 @@ export function TournamentApplicationScreen({ tournamentId = defaultTournamentId
 
   return (
     <ParticipantRouteScaffold active="tournaments">
-      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><View testID="application-division-summary" style={styles.choiceCard}><Text style={styles.choiceTitle}>기본 선택 부문 · {selectedDivision.name}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(selectedDivision)}</Text><Text style={styles.priceText}>{divisionTeamCopy(selectedDivision.teamType)} · {divisionFeeCopy(selectedDivision)}</Text><Text style={styles.caption}>현재 MVP는 첫 번째 신청 가능 부문을 기본값으로 보여주며, 운영자가 접수 후 확정 안내합니다.</Text></View><Text style={styles.sectionLabel}>다른 신청 가능 부문</Text>{availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}<Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 MVP에서 제공하지 않으며 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)}: {application.applicationId} · 접수 부문 {submittedDivisionName} · {describeApplicationPolicy(application)}</Text> : null}</View>
+      <View testID="application-form" style={styles.sectionCard}><Text style={styles.sectionLabel}>참가 신청</Text><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><View testID="application-division-summary" style={styles.choiceCard}><Text style={styles.choiceTitle}>기본 선택 부문 · {selectedDivision.name}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(selectedDivision)}</Text><Text style={styles.priceText}>{divisionTeamCopy(selectedDivision.teamType)} · {divisionFeeCopy(selectedDivision)}</Text><Text style={styles.caption}>현재 첫 번째 신청 가능 부문을 기본값으로 보여주며, 운영자가 접수 후 확정 안내합니다.</Text></View><Text style={styles.sectionLabel}>다른 신청 가능 부문</Text>{availableDivisions.map((division) => <Text key={division.divisionId} style={styles.caption}>· {division.name}: {divisionEligibilityCopy(division)} · {divisionFeeCopy(division)}</Text>)}<Text style={styles.sectionLabel}>참가자 정보</Text><View style={styles.choiceCard}><Text style={styles.choiceTitle}>{profile.displayName}</Text><Text style={styles.bodyCopy}>{hasRequiredDupr(profile) ? `DUPR ${profile.duprId}` : 'DUPR 미등록'} · 010-••••-5678</Text><Text style={styles.badge}>대표자</Text></View><Text style={styles.sectionLabel}>복식 파트너 초대</Text><View style={styles.choiceCard}><Text style={styles.bodyCopy}>파트너 전화번호를 입력해 초대하세요</Text><Text style={styles.linkText}>초대하기</Text><Text style={styles.badge}>대기중</Text><Text style={styles.caption}>유효기간 72시간 · 42:18:05 남음 · 링크 재발송</Text></View><Text style={styles.sectionLabel}>약관 동의</Text><Text style={styles.caption}>[필수] 개인정보 수집·이용에 동의합니다{`\n`}[필수] 환불 규정을 확인하였습니다{`\n`}신청 후 참가자 직접 취소와 환불은 1:1 문의로 운영자가 안내합니다. 결제는 실시간 PG 없이 운영자 확인 후 오프라인으로 안내됩니다.</Text>{!profileReady ? <Text testID="application-blocker" style={styles.blockerText}>{REQUIRED_DUPR_ERROR}: DUPR 정보를 저장한 뒤 참가 신청을 진행할 수 있어요.</Text> : null}<Pressable testID="application-cta" accessibilityRole="button" accessibilityState={{ disabled: !profileReady }} disabled={!profileReady} onPress={submitApplication} style={[styles.primaryAction, !profileReady && styles.disabledAction]}><Text style={styles.primaryActionText}>{profileReady ? '참가 신청하기' : 'DUPR 등록 후 신청 가능'}</Text></Pressable>{application ? <Text testID="application-submitted" style={styles.statusStrong}>{applicationSubmittedLabel(apiMode)} · 접수 부문 {submittedDivisionName} · {describeApplicationPolicy(application)}</Text> : null}</View>
     </ParticipantRouteScaffold>
   );
 }
@@ -532,14 +531,14 @@ export function SupportScreen() {
 
   return (
     <ParticipantRouteScaffold active="mypage">
-      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><Text style={styles.caption}>참가자 직접 취소/환불은 MVP에서 비활성화되어 있으며, 환불·취소 요청은 1:1 문의로 운영자가 확인합니다.</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>API 문의 접수에 실패했습니다. 폴백 모드입니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
+      <View testID="support-center" style={styles.supportCard}><Text style={styles.sectionLabel}>고객센터</Text><RouteStatusNotice status={routeStatus.support} /><Text style={styles.sectionTitle}>자주 묻는 질문</Text><Text testID="support-copy" style={styles.bodyCopy}>{supportRefundPolicyCopy}</Text><Text style={styles.caption}>참가자 직접 취소/환불은 MVP에서 비활성화되어 있으며, 환불·취소 요청은 1:1 문의로 운영자가 확인합니다.</Text><ActionButton testID="support-inquiry-submit" label={supportInquirySubmission === 'submitting' ? '1:1 문의 접수 중' : '환불/취소 1:1 문의 접수'} onPress={submitSupportInquiry} disabled={supportInquirySubmission === 'submitting'} />{supportInquirySubmission === 'submitted' ? <Text testID="support-inquiry-state" style={styles.statusStrong}>1:1 문의가 접수되었습니다. 운영자가 확인 후 안내합니다.</Text> : null}{supportInquirySubmission === 'fallback' ? <Text testID="support-inquiry-state" style={styles.blockerText}>문의 접수에 실패했습니다. 카카오톡 또는 이메일 1:1 문의로 접수해 주세요.</Text> : null}{supportCenter.inquiries.map((inquiry) => <Text key={inquiry.inquiryId} style={styles.caption}>문의 상태: {inquiry.subject} · {inquiry.status}</Text>)}<View style={styles.actionRow}><Text style={styles.secondaryPill}>카카오톡 1:1 문의</Text><Text style={styles.secondaryPill}>이메일 1:1 문의</Text></View><Text style={styles.caption}>운영시간: {supportCenter.operatingHours}{`\n`}{supportCenter.contactEmail} (1:1 문의 접수용){`\n`}대한피클볼협회 운영</Text></View>
     </ParticipantRouteScaffold>
   );
 }
 
 export function GamesScreen() {
   const { participantGames, routeStatus } = useParticipantFlow();
-  return <ParticipantRouteScaffold active="games"><View testID="my-games-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>내 경기</Text><RouteStatusNotice status={routeStatus.games} />{participantGames.length ? participantGames.map((game) => <View key={game.gameId} testID="participant-game-card" style={styles.choiceCard}><Text style={styles.sectionTitle}>{game.tournamentTitle}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(game.startsAt)} · {game.location}</Text><Text style={styles.bodyCopy}>{game.divisionName ?? '부문 확인 중'} · 신청 {game.applicationStatus}</Text><Text style={styles.caption}>결제 상태: {game.paymentStatus}{game.paymentAmountKrw ? ` · ${game.paymentAmountKrw.toLocaleString('ko-KR')}원` : ''} · DB 신청 내역 기반</Text></View>) : <Text testID="games-empty" style={styles.caption}>아직 DB 신청 내역에서 불러올 경기 일정이 없습니다. 대회 신청이 접수되면 여기에 표시됩니다.</Text>}<Text style={styles.caption}>점수 입력 · 결과 확정 · 대진표 운영은 관리자/운영 범위로 이번 고객 앱 MVP에서는 조회 상태만 표시합니다.</Text></View></ParticipantRouteScaffold>;
+  return <ParticipantRouteScaffold active="games"><View testID="my-games-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>내 경기</Text><RouteStatusNotice status={routeStatus.games} />{participantGames.length ? participantGames.map((game) => <View key={game.gameId} testID="participant-game-card" style={styles.choiceCard}><Text style={styles.sectionTitle}>{game.tournamentTitle}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(game.startsAt)} · {game.location}</Text><Text style={styles.bodyCopy}>{game.divisionName ?? '부문 확인 중'} · 신청 {game.applicationStatus}</Text><Text style={styles.caption}>결제 상태: {game.paymentStatus}{game.paymentAmountKrw ? ` · ${game.paymentAmountKrw.toLocaleString('ko-KR')}원` : ''}</Text></View>) : <Text testID="games-empty" style={styles.caption}>아직 표시할 경기 일정이 없습니다. 대회 신청이 접수되면 여기에 표시됩니다.</Text>}<Text style={styles.caption}>점수 입력 · 결과 확정 · 대진표 운영은 운영자 안내 후 순차적으로 제공됩니다.</Text></View></ParticipantRouteScaffold>;
 }
 
 export function NotificationsScreen() {
@@ -551,7 +550,7 @@ export function MyPageScreen() {
   const { profile, application, paymentRecords, routeStatus, tournamentDivisions } = useParticipantFlow();
   const availableDivisions = getAvailableDivisions(tournamentDivisions);
   const paymentCopy = paymentRecords[0] ? `${paymentRecords[0].status} · ${paymentRecords[0].amountKrw.toLocaleString('ko-KR')}원 · 오프라인 운영자 확인` : '결제 내역 없음 · 오프라인 결제는 운영자 확인 대기';
-  const recentApplicationCopy = application ? `최근 신청: ${application.applicationId} · 접수 부문 ${getApplicationDivisionName(application, availableDivisions)}` : undefined;
+  const recentApplicationCopy = application ? `최근 신청 · 접수 부문 ${getApplicationDivisionName(application, availableDivisions)}` : undefined;
   return <ParticipantRouteScaffold active="mypage"><View testID="mypage-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>마이</Text><RouteStatusNotice status={routeStatus.mypage} /><Text style={styles.sectionTitle}>{profile.displayName} · DUPR {hasRequiredDupr(profile) ? profile.duprId : '미등록'}</Text><Text style={styles.bodyCopy}>송파피클볼클럽</Text><Text testID="mypage-payment-status" style={styles.bodyCopy}>{paymentCopy}</Text>{recentApplicationCopy ? <Text testID="mypage-recent-application" style={styles.caption}>{recentApplicationCopy}</Text> : null}<Text style={styles.caption}>프로필 수정 · 내 경기 기록 · 결제 내역 · DUPR 정보 관리 · 알림 설정 · 고객센터 · 로그아웃</Text><ActionButton testID="mypage-dupr-button" label="DUPR 정보 관리" secondary onPress={() => router.push('/dupr-profile')} /><ActionButton testID="mypage-support-button" label="고객센터" secondary onPress={() => router.push('/support')} /></View></ParticipantRouteScaffold>;
 }
 
