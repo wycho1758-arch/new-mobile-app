@@ -337,7 +337,12 @@ export async function getMyPage() {
     db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, profile.participantId)),
     db.select().from(paymentRecords).where(eq(paymentRecords.participantId, profile.participantId)).orderBy(desc(paymentRecords.recordedAt)),
   ]);
-  return myPageResponseSchema.parse({ profile, applications: applicationRows.map(parseApplicationRow), paymentRecords: paymentRows.map(parsePaymentRecordRow) });
+  const applications = applicationRows.map(parseApplicationRow);
+  return myPageResponseSchema.parse({
+    profile,
+    applications: applications.map(maskParticipantApplicationForCustomer),
+    paymentRecords: paymentRows.map(parsePaymentRecordRow).map((payment) => maskParticipantPaymentForCustomer(payment, applications)),
+  });
 }
 
 
@@ -375,13 +380,35 @@ export async function listParticipantGames() {
 
   return participantGamesResponseSchema.parse({
     games: applicationRows.map(parseApplicationRow).map((application) => buildParticipantGame({
-      application,
+      application: maskParticipantApplicationForCustomer(application),
       tournament: parsedTournaments.find((item) => item.tournamentId === application.tournamentId),
       divisionName: parsedDivisions.find((division) => division.divisionId === application.divisionId)?.name,
-      payment: parsedPayments.find((payment) => payment.applicationId === application.applicationId),
+      payment: maskParticipantPaymentForCustomer(parsedPayments.find((payment) => payment.applicationId === application.applicationId), [application]),
       dataSource: 'db',
     })),
   });
+}
+
+function customerApplicationId(application: TournamentApplication) {
+  return `entry-${application.tournamentId.replace(/^tournament_/, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '')}`;
+}
+
+function customerPaymentRecordId(payment: PaymentRecord) {
+  return `receipt-${payment.paymentRecordId.replace(/^payment_/, '').replace(/^application_/, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '')}`;
+}
+
+function maskParticipantApplicationForCustomer(application: TournamentApplication): TournamentApplication {
+  return { ...application, applicationId: customerApplicationId(application) };
+}
+
+function maskParticipantPaymentForCustomer(payment: PaymentRecord | undefined, applications: TournamentApplication[]): PaymentRecord | undefined {
+  if (!payment) return undefined;
+  const application = applications.find((item) => item.applicationId === payment.applicationId);
+  return {
+    ...payment,
+    paymentRecordId: customerPaymentRecordId(payment),
+    applicationId: application ? customerApplicationId(application) : payment.applicationId.replace(/[^a-z0-9]+/gi, '-'),
+  };
 }
 
 export async function getTournamentApplication(applicationId: string) {
