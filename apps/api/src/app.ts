@@ -8,6 +8,7 @@ import {
   supportRoute,
   notificationsRoute,
   myPageRoute,
+  gamesRoute,
   tournamentApplicationsRoute,
   tournamentsRoute,
 } from './routes/participant-mvp.js';
@@ -42,4 +43,5 @@ export const app = new Hono()
   .route('/api/participant/support', supportRoute)
   .route('/api/participant/notifications', notificationsRoute)
   .route('/api/participant/mypage', myPageRoute)
+  .route('/api/participant/games', gamesRoute)
   .route('/api/tournament-applications', tournamentApplicationsRoute);

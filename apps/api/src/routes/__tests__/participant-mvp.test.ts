@@ -5,6 +5,7 @@ import {
   supportCenterResponseSchema,
   notificationListResponseSchema,
   myPageResponseSchema,
+  participantGamesResponseSchema,
   tournamentApplicationSchema,
   tournamentListResponseSchema,
   tournamentDetailSchema,
@@ -76,6 +77,10 @@ describe('participant MVP dev-preview endpoints', () => {
     const myPage = await requestJson('/api/participant/mypage');
     expect(myPage.res.status).toBe(200);
     expect(myPageResponseSchema.parse(myPage.body).profile.participantId).toBe('participant_sandbox_001');
+
+    const games = await requestJson('/api/participant/games');
+    expect(games.res.status).toBe(200);
+    expect(participantGamesResponseSchema.parse(games.body).games).toEqual([]);
   });
 
   it('exposes participant profile and updates self-reported DUPR state', async () => {
@@ -143,6 +148,20 @@ describe('participant MVP dev-preview endpoints', () => {
     expect(tournamentApplicationSchema.parse(fetched.body)).toMatchObject({
       applicationId: application.applicationId,
       divisionId: 'division_sandbox_mixed_35',
+    });
+
+    const games = await requestJson('/api/participant/games');
+    expect(games.res.status).toBe(200);
+    expect(participantGamesResponseSchema.parse(games.body).games[0]).toMatchObject({
+      applicationId: application.applicationId,
+      tournamentId: 'tournament_sandbox_001',
+      tournamentTitle: 'PickleHub Sandbox Open',
+      divisionName: '혼합복식',
+      location: 'Dev/Sandbox Court',
+      applicationStatus: 'submitted',
+      paymentStatus: 'notStartedSandbox',
+      paymentAmountKrw: 60000,
+      dataSource: expect.stringMatching(/db|memoryFallback/),
     });
   });
 

@@ -171,3 +171,24 @@ export const myPageResponseSchema = z.object({
   paymentRecords: z.array(paymentRecordSchema),
 });
 export type MyPageResponse = z.infer<typeof myPageResponseSchema>;
+
+export const participantGameSchema = z.object({
+  gameId: z.string().min(1),
+  applicationId: z.string().min(1),
+  tournamentId: z.string().min(1),
+  tournamentTitle: z.string().min(1),
+  divisionName: z.string().min(1).optional(),
+  location: z.string().min(1),
+  startsAt: z.string(),
+  applicationStatus: tournamentApplicationStatusSchema,
+  paymentStatus: paymentRecordSchema.shape.status,
+  paymentAmountKrw: z.number().int().nonnegative().optional(),
+  supportChannel: supportChannelSchema,
+  dataSource: z.enum(['db', 'memoryFallback']),
+});
+export type ParticipantGame = z.infer<typeof participantGameSchema>;
+
+export const participantGamesResponseSchema = z.object({
+  games: z.array(participantGameSchema),
+});
+export type ParticipantGamesResponse = z.infer<typeof participantGamesResponseSchema>;

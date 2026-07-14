@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { ParticipantNotification, PaymentRecord, SupportCenterResponse, SupportInquiry, TournamentDivision } from '@template/contracts';
+import type { ParticipantGame, ParticipantNotification, PaymentRecord, SupportCenterResponse, SupportInquiry, Tournament, TournamentDivision } from '@template/contracts';
 import {
   type MockTournamentApplication,
   type MockTournament,
@@ -44,12 +44,14 @@ type ParticipantStoreState = {
   duprInput: string;
   application: MockTournamentApplication | null;
   featuredTournament: MockTournament;
+  tournaments: Tournament[];
   tournamentDivisions: TournamentDivision[];
   supportCenter: SupportCenterResponse;
   notifications: ParticipantNotification[];
   paymentRecords: PaymentRecord[];
+  participantGames: ParticipantGame[];
   apiMode: 'mock' | 'api' | 'fallback';
-  routeStatus: Partial<Record<'support' | 'notifications' | 'mypage' | 'tournamentDetail', 'loading' | 'ready' | 'fallback'>>;
+  routeStatus: Partial<Record<'support' | 'notifications' | 'mypage' | 'games' | 'tournamentDetail', 'loading' | 'ready' | 'fallback'>>;
   supportInquirySubmission: 'idle' | 'submitting' | 'submitted' | 'fallback';
 };
 
@@ -70,10 +72,12 @@ const initialParticipantState = (participantApi: ParticipantApiClient): Particip
   duprInput: sandboxParticipantSession.profile.duprId ?? '',
   application: null,
   featuredTournament: sandboxParticipantSession.featuredTournament,
+  tournaments: [sandboxParticipantSession.featuredTournament],
   tournamentDivisions: [],
   supportCenter: fallbackSupportCenter,
   notifications: fallbackNotifications,
   paymentRecords: [],
+  participantGames: [],
   apiMode: participantApi.enabled ? 'api' : 'mock',
   routeStatus: {},
   supportInquirySubmission: 'idle',
@@ -140,6 +144,7 @@ export function startParticipantSession() {
     .then(([tournaments, apiProfile]) => {
       patchParticipantState({
         featuredTournament: tournaments[0] ?? sandboxParticipantSession.featuredTournament,
+        tournaments: tournaments.length ? tournaments : [sandboxParticipantSession.featuredTournament],
         profile: apiProfile,
         duprInput: apiProfile.duprId ?? '',
         apiMode: 'api',
@@ -158,11 +163,12 @@ function hydrateParticipantUtilityPages() {
       support: 'loading',
       notifications: 'loading',
       mypage: 'loading',
+      games: 'loading',
     },
   });
 
-  Promise.allSettled([participantApi.getSupportCenter(), participantApi.getNotifications(), participantApi.getMyPage()])
-    .then(([supportResult, notificationResult, myPageResult]) => {
+  Promise.allSettled([participantApi.getSupportCenter(), participantApi.getNotifications(), participantApi.getMyPage(), participantApi.getGames()])
+    .then(([supportResult, notificationResult, myPageResult, gamesResult]) => {
       const patch: Partial<ParticipantStoreState> = { routeStatus: { ...participantState.routeStatus } };
 
       if (supportResult.status === 'fulfilled') {
@@ -187,7 +193,14 @@ function hydrateParticipantUtilityPages() {
         patch.routeStatus = { ...patch.routeStatus, mypage: 'fallback' };
       }
 
-      patch.apiMode = [supportResult, notificationResult, myPageResult].every((result) => result.status === 'fulfilled') ? 'api' : 'fallback';
+      if (gamesResult.status === 'fulfilled') {
+        patch.participantGames = gamesResult.value;
+        patch.routeStatus = { ...patch.routeStatus, games: 'ready' };
+      } else {
+        patch.routeStatus = { ...patch.routeStatus, games: 'fallback' };
+      }
+
+      patch.apiMode = [supportResult, notificationResult, myPageResult, gamesResult].every((result) => result.status === 'fulfilled') ? 'api' : 'fallback';
       patchParticipantState(patch);
     });
 }
@@ -238,7 +251,10 @@ function submitApplication() {
     divisionId: selectedDivision?.divisionId,
   })
     .then((createdApplication) => participantApi.getTournamentApplication(createdApplication.applicationId))
-    .then((apiApplication) => patchParticipantState({ application: apiApplication, apiMode: 'api' }))
+    .then((apiApplication) => {
+      patchParticipantState({ application: apiApplication, apiMode: 'api' });
+      hydrateParticipantUtilityPages();
+    })
     .catch(() => patchParticipantState({ apiMode: 'fallback' }));
 }
 
@@ -337,6 +353,19 @@ function applicationSubmittedLabel(apiMode: ParticipantStoreState['apiMode']) {
   return '샌드박스 신청 접수됨';
 }
 
+function formatTournamentDate(startsAt: string) {
+  const date = new Date(startsAt);
+  if (Number.isNaN(date.getTime())) return startsAt;
+  return new Intl.DateTimeFormat('ko-KR', { month: 'long', day: 'numeric', weekday: 'short', hour: 'numeric', minute: '2-digit' }).format(date);
+}
+
+function tournamentDdayCopy(startsAt: string) {
+  const date = new Date(startsAt);
+  if (Number.isNaN(date.getTime())) return '일정 확인';
+  const days = Math.ceil((date.getTime() - Date.now()) / 86_400_000);
+  return days > 0 ? `D-${days}` : '진행 예정';
+}
+
 const fallbackTournamentDivisions: TournamentDivision[] = [
   { divisionId: 'local-mixed', tournamentId: defaultTournamentId, name: '혼합복식', skillLevel: 'DUPR 3.5+', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 32 },
   { divisionId: 'local-mens', tournamentId: defaultTournamentId, name: '남자복식', skillLevel: 'DUPR 3.5~4.5', teamType: 'doubles', entryFeeKrw: 60000, capacityTeams: 64 },
@@ -427,8 +456,8 @@ export default function Home({ participantApiClient }: HomeProps = {}) {
 }
 
 export function TournamentsScreen() {
-  const { featuredTournament, apiMode } = useParticipantFlow();
-  const tournamentPath = `/tournaments/${featuredTournament.tournamentId}`;
+  const { featuredTournament, tournaments, apiMode } = useParticipantFlow();
+  const visibleTournaments = tournaments.length ? tournaments : [featuredTournament];
 
   return (
     <ParticipantRouteScaffold active="tournaments">
@@ -437,16 +466,21 @@ export function TournamentsScreen() {
         <View style={styles.filterRow}>{['서울특별시', '최신순', '접수중', '접수마감', '종료'].map((chip) => <Text key={chip} style={[styles.filterChip, chip === '접수중' && styles.activeChip]}>{chip}</Text>)}</View>
         <View style={styles.cardTopRow}><Text style={styles.sectionTitleSmall}>접수 중인 대회</Text><Text testID="participant-api-mode" style={styles.countText}>{participantApiModeLabel(apiMode)}</Text></View>
       </View>
-      <Pressable testID="mock-tournament-card" accessibilityRole="button" onPress={() => router.push(tournamentPath)} style={styles.tournamentCard}>
-        <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>D-5</Text></View><Text style={styles.countText}>신청 48 / 64</Text></View>
-        <Text style={styles.cardTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>8월 9일 (토) · 오전 9:00</Text><Text style={styles.bodyCopy}>올림픽공원 SK핸드볼경기장</Text>
-        <View style={styles.divisionRow}>{['남자복식', '혼합복식', '+2'].map((x) => <Text key={x} style={styles.divisionChip}>{x}</Text>)}</View><Text style={styles.caption}>참가비</Text><Text style={styles.priceText}>30,000원</Text>
-        <View style={styles.secondaryTournament}><Text style={styles.liveBadge}>경기중</Text><Text style={styles.bodyCopy}>제2회 한강 오픈 챌린지</Text><Text style={styles.caption}>8월 2일 (토) · 진행 중</Text></View>
-      </Pressable>
+      {visibleTournaments.map((tournament, index) => {
+        const tournamentPath = `/tournaments/${tournament.tournamentId}`;
+        return (
+          <Pressable key={tournament.tournamentId} testID={index === 0 ? 'mock-tournament-card' : 'api-tournament-card'} accessibilityRole="button" onPress={() => router.push(tournamentPath)} style={styles.tournamentCard}>
+            <View style={styles.cardTopRow}><View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(tournament.startsAt)}</Text></View><Text style={styles.countText}>DB 대회 데이터</Text></View>
+            <Text style={styles.cardTitle}>{tournament.title}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(tournament.startsAt)}</Text><Text style={styles.bodyCopy}>{tournament.location}</Text>
+            <View style={styles.divisionRow}><Text style={styles.divisionChip}>{tournament.division}</Text><Text style={styles.divisionChip}>{tournament.requiresDupr ? 'DUPR 필수' : 'DUPR 선택'}</Text></View><Text style={styles.caption}>결제 방식</Text><Text style={styles.priceText}>{tournament.paymentMode === 'operatorManagedOffline' ? '운영자 오프라인 확인' : tournament.paymentMode}</Text>
+          </Pressable>
+        );
+      })}
       <View testID="quick-actions" style={styles.sectionCard}><Text style={styles.sectionTitle}>빠른 이동</Text><ActionButton testID="go-support-button" label="1:1 문의 보기" secondary onPress={() => router.push('/support')} /><ActionButton testID="go-dupr-button" label="DUPR 등록하기" secondary onPress={() => router.push('/dupr-profile')} /></View>
     </ParticipantRouteScaffold>
   );
 }
+
 
 export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: { tournamentId?: string }) {
   const { featuredTournament, tournamentDivisions, profileReady, policyCopy, routeStatus } = useParticipantFlow();
@@ -458,8 +492,8 @@ export function TournamentDetailScreen({ tournamentId = defaultTournamentId }: {
     <ParticipantRouteScaffold active="tournaments">
       <View testID="tournament-detail" style={styles.sectionCard}>
         <RouteStatusNotice status={routeStatus.tournamentDetail} />
-        <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>D-5</Text></View><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>주최 · 대한피클볼협회</Text>
-        <Row left="일정" right="8월 9일 (토) · 오전 9:00" /><Row left="장소" right="올림픽공원 SK핸드볼경기장" /><Text style={styles.linkText}>지도보기</Text><Row left="신청 방식" right="DUPR 등록 후 부문 확인 · 결제는 운영자 오프라인 안내" />
+        <View style={styles.badgeRow}><Text style={styles.badge}>접수중</Text><Text style={styles.dDay}>{tournamentDdayCopy(featuredTournament.startsAt)}</Text></View><Text style={styles.sectionTitle}>{featuredTournament.title}</Text><Text style={styles.bodyCopy}>주최 · 대한피클볼협회</Text>
+        <Row left="일정" right={formatTournamentDate(featuredTournament.startsAt)} /><Row left="장소" right={featuredTournament.location} /><Text style={styles.linkText}>지도보기</Text><Row left="신청 방식" right={`${featuredTournament.requiresDupr ? 'DUPR 등록 후 ' : ''}부문 확인 · 결제는 운영자 오프라인 안내`} />
         <Text style={styles.sectionLabel}>신청 가능한 부문</Text>{availableDivisions.map((division) => <View key={division.divisionId} testID="division-option" style={styles.choiceCard}><Text style={styles.choiceTitle}>{division.name} · {divisionTeamCopy(division.teamType)}</Text><Text style={styles.bodyCopy}>{divisionEligibilityCopy(division)} · 마감 8/7</Text><Text style={styles.caption}>정원 {division.capacityTeams ?? 32}팀 · 참가자 직접 취소/환불 비활성화</Text><Text style={styles.priceText}>{divisionFeeCopy(division)}</Text></View>)}
         <Text style={styles.sectionLabel}>대회요강</Text><Text style={styles.caption}>· 경기방식: 예선 라운드로빈 후 본선 토너먼트{`\n`}· 공인구: OPTIC 피클볼 공인구 사용{`\n`}· 복장: 무지 상의 권장, 실내용 러버솔 착용 필수{`\n`}· 우천/불가항력 시 일정은 주최측 공지에 따름</Text>
         <Text style={styles.sectionLabel}>환불 규정</Text><Text style={styles.caption}>대회 3일 전까지 100% 환불 · 3일 이내 환불 불가 · 주최 측 취소 시 전액 환불됩니다. MVP에서는 실제 환불/취소 처리 없이 참고만 표시합니다. {policyCopy}</Text>
@@ -504,7 +538,8 @@ export function SupportScreen() {
 }
 
 export function GamesScreen() {
-  return <ParticipantRouteScaffold active="games"><View testID="my-games-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>내 경기</Text><Text style={styles.sectionTitle}>다음 경기 · 코트 3</Text><Text style={styles.bodyCopy}>오후 2:30 시작 예정</Text><Text style={styles.bodyCopy}>김민준 · 이서연 VS 박지훈 · 정수빈</Text><Text style={styles.caption}>지난 경기 결과 · 점수 입력 · 확인 대기 · 확정은 MVP 참고 화면입니다.</Text></View></ParticipantRouteScaffold>;
+  const { participantGames, routeStatus } = useParticipantFlow();
+  return <ParticipantRouteScaffold active="games"><View testID="my-games-screen" style={styles.sectionCard}><Text style={styles.sectionLabel}>내 경기</Text><RouteStatusNotice status={routeStatus.games} />{participantGames.length ? participantGames.map((game) => <View key={game.gameId} testID="participant-game-card" style={styles.choiceCard}><Text style={styles.sectionTitle}>{game.tournamentTitle}</Text><Text style={styles.bodyCopy}>{formatTournamentDate(game.startsAt)} · {game.location}</Text><Text style={styles.bodyCopy}>{game.divisionName ?? '부문 확인 중'} · 신청 {game.applicationStatus}</Text><Text style={styles.caption}>결제 상태: {game.paymentStatus}{game.paymentAmountKrw ? ` · ${game.paymentAmountKrw.toLocaleString('ko-KR')}원` : ''} · DB 신청 내역 기반</Text></View>) : <Text testID="games-empty" style={styles.caption}>아직 DB 신청 내역에서 불러올 경기 일정이 없습니다. 대회 신청이 접수되면 여기에 표시됩니다.</Text>}<Text style={styles.caption}>점수 입력 · 결과 확정 · 대진표 운영은 관리자/운영 범위로 이번 고객 앱 MVP에서는 조회 상태만 표시합니다.</Text></View></ParticipantRouteScaffold>;
 }
 
 export function NotificationsScreen() {

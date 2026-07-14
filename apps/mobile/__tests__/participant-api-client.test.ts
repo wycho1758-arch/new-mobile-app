@@ -88,6 +88,7 @@ describe('participant API client', () => {
       if (url.endsWith('/api/participant/support/inquiries') && init?.method === 'POST') return jsonResponse({ inquiryId: 'inquiry_api_002', participantId: profile.participantId, channel: 'oneToOneInquiry', category: body.category, subject: body.subject, status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' });
       if (url.endsWith('/api/participant/notifications')) return jsonResponse({ notifications: [{ notificationId: 'notification_api_001', participantId: profile.participantId, type: 'support', title: 'API 알림', body: 'API 본문', createdAt: '2026-07-13T00:00:00.000Z' }] });
       if (url.endsWith('/api/participant/mypage')) return jsonResponse({ profile, applications: [application], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: application.applicationId, participantId: profile.participantId, amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '대기', recordedAt: '2026-07-13T00:00:00.000Z' }] });
+      if (url.endsWith('/api/participant/games')) return jsonResponse({ games: [{ gameId: 'game_api_001', applicationId: application.applicationId, tournamentId: tournament.tournamentId, tournamentTitle: tournament.title, divisionName: '혼합복식', location: tournament.location, startsAt: tournament.startsAt, applicationStatus: 'submitted', paymentStatus: 'notStartedSandbox', paymentAmountKrw: 60000, supportChannel: 'oneToOneInquiry', dataSource: 'db' }] });
       if (url.endsWith('/api/participant/profile') && init?.method === 'PATCH') return jsonResponse({ ...profile, duprId: body.duprId });
       if (url.endsWith('/api/tournament-applications') && init?.method === 'POST') return jsonResponse({ ...application, ...body });
       if (url.endsWith('/api/tournament-applications/application_api_001') && init?.method === 'GET') return jsonResponse(application);
@@ -104,6 +105,7 @@ describe('participant API client', () => {
     await expect(client.createSupportInquiry({ category: 'refund', subject: 'MVP 환불/취소 1:1 문의' })).resolves.toMatchObject({ inquiryId: 'inquiry_api_002', channel: 'oneToOneInquiry', status: 'operatorReview' });
     await expect(client.getNotifications()).resolves.toMatchObject({ notifications: [expect.objectContaining({ title: 'API 알림' })] });
     await expect(client.getMyPage()).resolves.toMatchObject({ paymentRecords: [expect.objectContaining({ amountKrw: 60000 })] });
+    await expect(client.getGames()).resolves.toEqual([expect.objectContaining({ tournamentTitle: 'API Open', dataSource: 'db' })]);
     await expect(client.updateParticipantProfile({ duprId: 'DUPR-777' })).resolves.toMatchObject({ duprId: 'DUPR-777' });
     await expect(client.createTournamentApplication({ tournamentId: tournament.tournamentId, participantId: profile.participantId, duprId: profile.duprId, divisionId: 'division_api_001' })).resolves.toMatchObject({ tournamentId: tournament.tournamentId, divisionId: 'division_api_001' });
     await expect(client.getTournamentApplication(application.applicationId)).resolves.toEqual(application);

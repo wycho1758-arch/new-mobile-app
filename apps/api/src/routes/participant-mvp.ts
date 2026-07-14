@@ -12,6 +12,7 @@ import {
   createSupportInquiry,
   getMyPage,
   getParticipantProfile,
+  listParticipantGames,
   getSupportCenter,
   getTournament,
   getTournamentApplication,
@@ -84,3 +85,6 @@ export const notificationsRoute = new Hono()
 
 export const myPageRoute = new Hono()
   .get('/', async (c) => c.json(await getMyPage()));
+
+export const gamesRoute = new Hono()
+  .get('/', async (c) => c.json(await listParticipantGames()));

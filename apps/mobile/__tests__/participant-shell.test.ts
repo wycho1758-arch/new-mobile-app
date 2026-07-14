@@ -4,6 +4,7 @@ import { participantApplicationErrorCodeSchema } from '@template/contracts';
 import { router } from 'expo-router';
 import Home, {
   DuprProfileScreen,
+  GamesScreen,
   MyPageScreen,
   NotificationsScreen,
   SupportScreen,
@@ -203,6 +204,7 @@ describe('participant shell sandbox contract', () => {
       createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'MVP 환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
       getNotifications: jest.fn(async () => ({ notifications: [{ notificationId: 'notification_api_001', participantId: 'participant_sandbox_001', type: 'support', title: 'API 알림 제목', body: 'API 알림 본문', createdAt: '2026-07-13T00:00:00.000Z' }] })),
       getMyPage: jest.fn(async () => ({ profile: { ...sandboxParticipantSession.profile, displayName: 'API Player', duprId: 'DUPR-API', duprStatus: 'selfReportedPendingOperatorReview' }, applications: [{ applicationId: 'application_api_001', tournamentId: sandboxParticipantSession.featuredTournament.tournamentId, participantId: 'participant_sandbox_001', duprId: 'DUPR-API', divisionId: 'local-mens', status: 'submitted', submittedAt: '2026-07-13T00:00:00.000Z', supportChannel: 'oneToOneInquiry', paymentStatus: 'notStartedSandbox', refundPolicy: 'participantSelfCancelDisabled' }], paymentRecords: [{ paymentRecordId: 'payment_api_001', applicationId: 'application_api_001', participantId: 'participant_sandbox_001', amountKrw: 60000, paymentMode: 'operatorManagedOffline', status: 'notStartedSandbox', operatorNote: '운영자 확인 대기', recordedAt: '2026-07-13T00:00:00.000Z' }] })),
+      getGames: jest.fn(async () => [{ gameId: 'game_api_001', applicationId: 'application_api_001', tournamentId: sandboxParticipantSession.featuredTournament.tournamentId, tournamentTitle: 'API Open', divisionName: '남자복식', location: 'API Court', startsAt: '2026-08-09T00:00:00.000Z', applicationStatus: 'submitted', paymentStatus: 'notStartedSandbox', paymentAmountKrw: 60000, supportChannel: 'oneToOneInquiry', dataSource: 'db' }]),
       updateParticipantProfile: jest.fn(),
       createTournamentApplication: jest.fn(),
       getTournamentApplication: jest.fn(),
@@ -215,11 +217,14 @@ describe('participant shell sandbox contract', () => {
       React.createElement(SupportScreen),
       React.createElement(NotificationsScreen),
       React.createElement(MyPageScreen),
+      React.createElement(GamesScreen),
     ));
     expect(await screen.findByText(/API 고객센터 정책/)).toBeTruthy();
     expect(await screen.findByText('API 알림 제목')).toBeTruthy();
     expect(await screen.findByTestId('mypage-payment-status')).toHaveTextContent(/60,000원/);
     expect(await screen.findByTestId('mypage-recent-application')).toHaveTextContent(/접수 부문 남자복식/);
+    expect(await screen.findByTestId('participant-game-card')).toHaveTextContent(/API Open/);
+    expect(screen.getByTestId('participant-game-card')).toHaveTextContent(/DB 신청 내역 기반/);
   });
 
   it('submits a DB-backed support inquiry from the support route', async () => {
@@ -232,6 +237,7 @@ describe('participant shell sandbox contract', () => {
       createSupportInquiry: jest.fn(async () => ({ inquiryId: 'inquiry_api_002', participantId: 'participant_sandbox_001', channel: 'oneToOneInquiry', category: 'refund', subject: 'MVP 환불/취소 1:1 문의', status: 'operatorReview', createdAt: '2026-07-13T00:00:00.000Z' })),
       getNotifications: jest.fn(async () => ({ notifications: [] })),
       getMyPage: jest.fn(async () => ({ profile: sandboxParticipantSession.profile, applications: [], paymentRecords: [] })),
+      getGames: jest.fn(async () => []),
       updateParticipantProfile: jest.fn(),
       createTournamentApplication: jest.fn(),
       getTournamentApplication: jest.fn(),
@@ -258,6 +264,7 @@ describe('participant shell sandbox contract', () => {
       createSupportInquiry: jest.fn(async () => { throw new Error('PARTICIPANT_API_HTTP_500'); }),
       getNotifications: jest.fn(async () => ({ notifications: [] })),
       getMyPage: jest.fn(async () => ({ profile: sandboxParticipantSession.profile, applications: [], paymentRecords: [] })),
+      getGames: jest.fn(async () => []),
       updateParticipantProfile: jest.fn(),
       createTournamentApplication: jest.fn(),
       getTournamentApplication: jest.fn(),

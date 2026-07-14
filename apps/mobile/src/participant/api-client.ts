@@ -1,6 +1,7 @@
 import {
   type CreateSupportInquiryRequest,
   type CreateTournamentApplicationRequest,
+  type ParticipantGame,
   type ParticipantProfile,
   type SupportCenterResponse,
   type SupportInquiry,
@@ -16,6 +17,7 @@ import {
   notificationListResponseSchema,
   participantApiErrorResponseSchema,
   participantApiHttpErrorCodeSchema,
+  participantGamesResponseSchema,
   participantProfileSchema,
   supportCenterResponseSchema,
   supportInquirySchema,
@@ -40,6 +42,7 @@ export type ParticipantApiClient = {
   createSupportInquiry: (input: CreateSupportInquiryRequest) => Promise<SupportInquiry>;
   getNotifications: () => Promise<NotificationListResponse>;
   getMyPage: () => Promise<MyPageResponse>;
+  getGames: () => Promise<ParticipantGame[]>;
   updateParticipantProfile: (input: UpdateParticipantProfileRequest) => Promise<ParticipantProfile>;
   createTournamentApplication: (input: CreateTournamentApplicationRequest) => Promise<TournamentApplication>;
   getTournamentApplication: (applicationId: string) => Promise<TournamentApplication>;
@@ -91,6 +94,7 @@ export function createParticipantApiClient(config: ParticipantApiConfig): Partic
     createSupportInquiry: (input) => request('/participant/support/inquiries', { method: 'POST', body: JSON.stringify(createSupportInquiryRequestSchema.parse(input)) }, (body) => supportInquirySchema.parse(body)),
     getNotifications: () => request('/participant/notifications', { method: 'GET' }, (body) => notificationListResponseSchema.parse(body)),
     getMyPage: () => request('/participant/mypage', { method: 'GET' }, (body) => myPageResponseSchema.parse(body)),
+    getGames: () => request('/participant/games', { method: 'GET' }, (body) => participantGamesResponseSchema.parse(body).games),
     updateParticipantProfile: (input) => request('/participant/profile', { method: 'PATCH', body: JSON.stringify(updateParticipantProfileRequestSchema.parse(input)) }, (body) => participantProfileSchema.parse(body)),
     createTournamentApplication: (input) => request('/tournament-applications', { method: 'POST', body: JSON.stringify(createTournamentApplicationRequestSchema.parse(input)) }, (body) => tournamentApplicationSchema.parse(body)),
     getTournamentApplication: (applicationId) => request(`/tournament-applications/${encodeURIComponent(applicationId)}`, { method: 'GET' }, (body) => tournamentApplicationSchema.parse(body)),

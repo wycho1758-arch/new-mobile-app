@@ -3,11 +3,13 @@ import {
   createSupportInquiryRequestSchema,
   myPageResponseSchema,
   notificationListResponseSchema,
+  participantGamesResponseSchema,
   participantApiErrorCodeSchema,
   type ParticipantApiErrorCode,
   participantApplicationErrorCodeSchema,
   participantProfileSchema,
   paymentRecordSchema,
+  type PaymentRecord,
   type ParticipantProfile,
   supportCenterResponseSchema,
   supportInquirySchema,
@@ -305,6 +307,49 @@ export async function getMyPage() {
   return myPageResponseSchema.parse({ profile, applications: applicationRows.map(parseApplicationRow), paymentRecords: paymentRows.map(parsePaymentRecordRow) });
 }
 
+
+export async function listParticipantGames() {
+  const profile = await getParticipantProfile();
+
+  if (useMemoryStore) {
+    const applications = [...memoryApplications.values()];
+    const payments = sandboxPaymentRecords(profile.participantId, applications);
+    return participantGamesResponseSchema.parse({
+      games: applications.map((application) => buildParticipantGame({
+        application,
+        tournament: sandboxTournaments.find((item) => item.tournamentId === application.tournamentId) ?? sandboxTournaments[0],
+        divisionName: sandboxDivisions.find((division) => division.divisionId === application.divisionId)?.name,
+        payment: payments.find((payment) => payment.applicationId === application.applicationId),
+        dataSource: 'memoryFallback',
+      })),
+    });
+  }
+
+  await seedSandboxTournaments();
+  await seedSandboxPaymentRecords(profile.participantId);
+
+  const [applicationRows, tournamentRows, divisionRows, paymentRows] = await Promise.all([
+    db.select().from(tournamentApplications).where(eq(tournamentApplications.participantId, profile.participantId)),
+    db.select().from(tournaments),
+    db.select().from(tournamentDivisions),
+    db.select().from(paymentRecords).where(eq(paymentRecords.participantId, profile.participantId)),
+  ]);
+
+  const parsedTournaments = tournamentRows.map(parseTournamentRow);
+  const parsedDivisions = divisionRows.map(parseDivisionRow);
+  const parsedPayments = paymentRows.map(parsePaymentRecordRow);
+
+  return participantGamesResponseSchema.parse({
+    games: applicationRows.map(parseApplicationRow).map((application) => buildParticipantGame({
+      application,
+      tournament: parsedTournaments.find((item) => item.tournamentId === application.tournamentId),
+      divisionName: parsedDivisions.find((division) => division.divisionId === application.divisionId)?.name,
+      payment: parsedPayments.find((payment) => payment.applicationId === application.applicationId),
+      dataSource: 'db',
+    })),
+  });
+}
+
 export async function getTournamentApplication(applicationId: string) {
   if (useMemoryStore) {
     const application = memoryApplications.get(applicationId);
@@ -324,6 +369,31 @@ export async function getTournamentApplication(applicationId: string) {
 export async function requestParticipantSelfCancel(applicationId: string) {
   await getTournamentApplication(applicationId);
   throw new ParticipantMvpError(SELF_CANCEL_DISABLED_ERROR, 400);
+}
+
+
+function buildParticipantGame(input: {
+  application: TournamentApplication;
+  tournament?: Tournament;
+  divisionName?: string;
+  payment?: PaymentRecord;
+  dataSource: 'db' | 'memoryFallback';
+}) {
+  const tournament = input.tournament ?? sandboxTournaments[0];
+  return {
+    gameId: `game_${input.application.applicationId}`,
+    applicationId: input.application.applicationId,
+    tournamentId: input.application.tournamentId,
+    tournamentTitle: tournament.title,
+    divisionName: input.divisionName,
+    location: tournament.location,
+    startsAt: tournament.startsAt,
+    applicationStatus: input.application.status,
+    paymentStatus: input.payment?.status ?? input.application.paymentStatus,
+    paymentAmountKrw: input.payment?.amountKrw,
+    supportChannel: input.application.supportChannel,
+    dataSource: input.dataSource,
+  };
 }
 
 function normalizeDuprId(duprId: string) {
