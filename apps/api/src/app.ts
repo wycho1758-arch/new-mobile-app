@@ -12,9 +12,13 @@ import {
 } from './routes/participant-mvp.js';
 import { Env } from './env.js';
 
+const apiBearerTokens = [Env.API_BEARER_TOKEN, Env.PARTICIPANT_PREVIEW_BEARER_TOKEN].filter(
+  (token): token is string => Boolean(token),
+);
+
 export const app = new Hono()
   .route('/', healthRoute)                          // /livez, /readyz — 무인증
-  .use('/api/*', bearerAuth({ token: Env.API_BEARER_TOKEN }))  // 자리표시자 경계
+  .use('/api/*', bearerAuth({ token: apiBearerTokens }))  // server bearer + scoped participant preview bearer
   .route('/api/counter-events', counterEventsRoute)
   .route('/api/tournaments', tournamentsRoute)
   .route('/api/participant/profile', participantProfileRoute)

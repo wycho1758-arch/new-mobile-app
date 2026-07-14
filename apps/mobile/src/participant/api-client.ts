@@ -103,5 +103,6 @@ export function createParticipantApiClient(config: ParticipantApiConfig): Partic
 export function getParticipantApiConfigFromPublicEnv(): ParticipantApiConfig {
   return {
     baseUrl: process.env.EXPO_PUBLIC_API_URL,
+    bearerToken: process.env.EXPO_PUBLIC_PARTICIPANT_API_BEARER_TOKEN,
   };
 }

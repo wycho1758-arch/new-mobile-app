@@ -66,12 +66,16 @@ describe('participant API client', () => {
     await expect(client.getTournaments()).rejects.toThrow('PARTICIPANT_API_NOT_CONFIGURED');
   });
 
-  it('does not read public bearer-token-shaped env config for mobile runtime defaults', () => {
+  it('reads public API URL and bearer token env config for deployed mobile hydration', () => {
     process.env.EXPO_PUBLIC_API_URL = 'https://api.example.invalid';
     process.env.EXPO_PUBLIC_PARTICIPANT_API_BEARER_TOKEN = 'public-token-shaped-value';
 
-    expect(getParticipantApiConfigFromPublicEnv()).toMatchObject({ baseUrl: expect.any(String) });
-    expect(getParticipantApiConfigFromPublicEnv()).not.toHaveProperty('bearerToken');
+    const config = getParticipantApiConfigFromPublicEnv();
+    expect(config).toMatchObject({
+      baseUrl: 'https://api.example.invalid',
+      bearerToken: 'public-token-shaped-value',
+    });
+    expect(createParticipantApiClient(config).enabled).toBe(true);
   });
 
   it('calls authenticated participant MVP endpoints and parses responses', async () => {
