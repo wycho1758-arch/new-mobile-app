@@ -267,7 +267,7 @@ export async function getSupportCenter() {
   const profile = await getParticipantProfile();
   const inquiries = await listSupportInquiries(profile.participantId);
   return supportCenterResponseSchema.parse({
-    policyCopy: '참가자 직접 취소 불가 · 1:1 문의로 접수됩니다. Participant self-cancel/refund is not available in MVP. DUPR 정보는 어디서 확인하나요? DUPR 앱 또는 공식 프로필에서 확인해 주세요.',
+    policyCopy: '참가자 직접 취소는 운영자 확인이 필요합니다. 환불·취소 요청은 1:1 문의로 접수해 주세요. DUPR 정보는 DUPR 앱 또는 공식 프로필에서 확인할 수 있습니다.',
     contactEmail: 'support@happickle.kr',
     operatingHours: '평일 10:00 ~ 18:00 (주말·공휴일 휴무)',
     inquiries,
@@ -673,10 +673,14 @@ function parseSupportInquiryRow(row: typeof supportInquiries.$inferSelect) {
     applicationId: row.applicationId ?? undefined,
     channel: row.channel,
     category: row.category,
-    subject: row.subject,
+    subject: customerSafeSupportSubject(row.subject),
     status: row.status,
     createdAt: row.createdAt.toISOString(),
   });
+}
+
+function customerSafeSupportSubject(subject: string) {
+  return subject.replace(/MVP\s*/g, '').trim();
 }
 
 function parseNotificationRow(row: typeof notifications.$inferSelect) {
