@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
   createSupportInquiryRequestSchema,
   myPageResponseSchema,
@@ -453,7 +453,20 @@ async function seedSandboxTournaments() {
       paymentMode: tournament.paymentMode,
       cancellationPolicy: tournament.cancellationPolicy,
     })),
-  ).onConflictDoNothing();
+  ).onConflictDoUpdate({
+    target: tournaments.tournamentId,
+    set: {
+      title: sql`excluded.title`,
+      division: sql`excluded.division`,
+      location: sql`excluded.location`,
+      startsAt: sql`excluded.starts_at`,
+      applicationStatus: sql`excluded.application_status`,
+      requiresDupr: sql`excluded.requires_dupr`,
+      paymentMode: sql`excluded.payment_mode`,
+      cancellationPolicy: sql`excluded.cancellation_policy`,
+      updatedAt: new Date(),
+    },
+  });
   await db.insert(tournamentDivisions).values(sandboxDivisions.map((division) => ({
     divisionId: division.divisionId,
     tournamentId: division.tournamentId,
@@ -462,7 +475,18 @@ async function seedSandboxTournaments() {
     teamType: division.teamType,
     entryFeeKrw: division.entryFeeKrw,
     capacityTeams: division.capacityTeams,
-  }))).onConflictDoNothing();
+  }))).onConflictDoUpdate({
+    target: tournamentDivisions.divisionId,
+    set: {
+      tournamentId: sql`excluded.tournament_id`,
+      name: sql`excluded.name`,
+      skillLevel: sql`excluded.skill_level`,
+      teamType: sql`excluded.team_type`,
+      entryFeeKrw: sql`excluded.entry_fee_krw`,
+      capacityTeams: sql`excluded.capacity_teams`,
+      updatedAt: new Date(),
+    },
+  });
 }
 
 async function seedSandboxApplications(participantId: string) {
@@ -479,7 +503,20 @@ async function seedSandboxApplications(participantId: string) {
     supportChannel: 'oneToOneInquiry',
     paymentStatus: application.paymentStatus,
     refundPolicy: 'participantSelfCancelDisabled',
-  }))).onConflictDoNothing();
+  }))).onConflictDoUpdate({
+    target: tournamentApplications.applicationId,
+    set: {
+      tournamentId: sql`excluded.tournament_id`,
+      divisionId: sql`excluded.division_id`,
+      participantId: sql`excluded.participant_id`,
+      duprId: sql`excluded.dupr_id`,
+      status: sql`excluded.status`,
+      submittedAt: sql`excluded.submitted_at`,
+      supportChannel: sql`excluded.support_channel`,
+      paymentStatus: sql`excluded.payment_status`,
+      refundPolicy: sql`excluded.refund_policy`,
+    },
+  });
 }
 
 const sandboxDivisions = [
@@ -495,8 +532,8 @@ const sandboxDivisions = [
 
 const sandboxApplications = [
   { applicationId: 'application_sandbox_association_open_mixed', tournamentId: 'tournament_sandbox_001', divisionId: 'division_sandbox_mixed_35', duprId: 'DUPR-12345', status: 'submitted', submittedAt: '2026-07-14T01:20:00.000Z', paymentStatus: 'notStartedSandbox' },
-  { applicationId: 'application_sandbox_seoul_rookie_womens', tournamentId: 'tournament_sandbox_002', divisionId: 'division_sandbox_womens_beginner', duprId: 'DUPR-12345', status: 'operatorReview', submittedAt: '2026-07-14T03:10:00.000Z', paymentStatus: 'operatorReview' },
-  { applicationId: 'application_sandbox_busan_open', tournamentId: 'tournament_sandbox_003', divisionId: 'division_sandbox_open_busan', duprId: 'DUPR-12345', status: 'submitted', submittedAt: '2026-07-14T05:40:00.000Z', paymentStatus: 'confirmedOffline' },
+  { applicationId: 'application_sandbox_seoul_rookie_womens', tournamentId: 'tournament_sandbox_002', divisionId: 'division_sandbox_womens_beginner', duprId: 'DUPR-12345', status: 'submitted', submittedAt: '2026-07-14T03:10:00.000Z', paymentStatus: 'notStartedSandbox' },
+  { applicationId: 'application_sandbox_busan_open', tournamentId: 'tournament_sandbox_003', divisionId: 'division_sandbox_open_busan', duprId: 'DUPR-12345', status: 'submitted', submittedAt: '2026-07-14T05:40:00.000Z', paymentStatus: 'notStartedSandbox' },
 ];
 
 function seedMemorySupportInquiries() {
@@ -508,9 +545,20 @@ async function seedSandboxSupportInquiries() {
   await getParticipantProfile();
   await db.insert(supportInquiries).values([
     { inquiryId: 'inquiry_sandbox_refund', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_association_open_mixed', channel: 'oneToOneInquiry', category: 'refund', subject: '환불 가능 시점 문의', status: 'operatorReview', createdAt: new Date('2026-07-13T09:00:00.000Z'), updatedAt: new Date('2026-07-13T09:00:00.000Z') },
-    { inquiryId: 'inquiry_sandbox_partner_change', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_seoul_rookie_womens', channel: 'oneToOneInquiry', category: 'application', subject: '파트너 변경 요청', status: 'answered', createdAt: new Date('2026-07-13T12:30:00.000Z'), updatedAt: new Date('2026-07-13T13:20:00.000Z') },
+    { inquiryId: 'inquiry_sandbox_partner_change', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_seoul_rookie_womens', channel: 'oneToOneInquiry', category: 'application', subject: '파트너 변경 요청', status: 'closed', createdAt: new Date('2026-07-13T12:30:00.000Z'), updatedAt: new Date('2026-07-13T13:20:00.000Z') },
     { inquiryId: 'inquiry_sandbox_payment_receipt', participantId: SANDBOX_PARTICIPANT_ID, applicationId: 'application_sandbox_busan_open', channel: 'oneToOneInquiry', category: 'payment', subject: '입금 확인증 발급 문의', status: 'operatorReview', createdAt: new Date('2026-07-14T02:15:00.000Z'), updatedAt: new Date('2026-07-14T02:15:00.000Z') },
-  ]).onConflictDoNothing();
+  ]).onConflictDoUpdate({
+    target: supportInquiries.inquiryId,
+    set: {
+      participantId: sql`excluded.participant_id`,
+      applicationId: sql`excluded.application_id`,
+      channel: sql`excluded.channel`,
+      category: sql`excluded.category`,
+      subject: sql`excluded.subject`,
+      status: sql`excluded.status`,
+      updatedAt: new Date(),
+    },
+  });
 }
 
 function sandboxNotifications(participantId: string) {
@@ -523,7 +571,16 @@ function sandboxNotifications(participantId: string) {
 }
 
 async function seedSandboxNotifications(participantId: string) {
-  await db.insert(notifications).values(sandboxNotifications(participantId).map((item) => ({ ...item, createdAt: new Date(item.createdAt) }))).onConflictDoNothing();
+  await db.insert(notifications).values(sandboxNotifications(participantId).map((item) => ({ ...item, createdAt: new Date(item.createdAt) }))).onConflictDoUpdate({
+    target: notifications.notificationId,
+    set: {
+      participantId: sql`excluded.participant_id`,
+      type: sql`excluded.type`,
+      title: sql`excluded.title`,
+      body: sql`excluded.body`,
+      relatedApplicationId: sql`excluded.related_application_id`,
+    },
+  });
 }
 
 function sandboxPaymentRecords(participantId: string, applications: TournamentApplication[]) {
@@ -543,7 +600,19 @@ async function seedSandboxPaymentRecords(participantId: string) {
     operatorNote: application.paymentStatus === 'confirmedOffline' ? '운영자가 오프라인 입금을 확인했습니다.' : '운영자 오프라인 입금 확인 대기',
     recordedAt: application.submittedAt,
     updatedAt: new Date(),
-  }))).onConflictDoNothing();
+  }))).onConflictDoUpdate({
+    target: paymentRecords.paymentRecordId,
+    set: {
+      applicationId: sql`excluded.application_id`,
+      participantId: sql`excluded.participant_id`,
+      amountKrw: sql`excluded.amount_krw`,
+      paymentMode: sql`excluded.payment_mode`,
+      status: sql`excluded.status`,
+      operatorNote: sql`excluded.operator_note`,
+      recordedAt: sql`excluded.recorded_at`,
+      updatedAt: new Date(),
+    },
+  });
 }
 
 function parseTournamentRow(row: typeof tournaments.$inferSelect) {
