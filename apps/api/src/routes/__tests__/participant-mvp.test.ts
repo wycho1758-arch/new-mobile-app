@@ -27,6 +27,23 @@ describe('participant MVP dev-preview endpoints', () => {
     await resetParticipantMvpState();
   });
 
+  it('answers browser preflight requests before bearer auth for the deployed mobile origin', async () => {
+    const res = await app.request('/api/tournaments', {
+      method: 'OPTIONS',
+      headers: {
+        origin: 'https://picklehub-mobile-dev-production.up.railway.app',
+        'access-control-request-method': 'GET',
+        'access-control-request-headers': 'authorization,content-type',
+      },
+    });
+
+    expect(res.status).toBe(204);
+    expect(res.headers.get('access-control-allow-origin')).toBe(
+      'https://picklehub-mobile-dev-production.up.railway.app',
+    );
+    expect(res.headers.get('access-control-allow-headers')).toContain('authorization');
+  });
+
   it('lists and returns the sandbox tournament API shape', async () => {
     const list = await requestJson('/api/tournaments');
     expect(list.res.status).toBe(200);
