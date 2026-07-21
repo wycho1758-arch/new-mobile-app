@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채널홈 · 이벤트 — 와우매니지먼트그룹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/channel.css">
+<style>
+  .action-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .count-line { font-size: 14px; color: var(--text-2); margin-bottom: 20px; }
+  .count-line b { font-size: 19px; color: var(--text-1); margin: 0 4px; }
+  .filter-row { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; }
+  .filter-row .select { width: 240px; }
+  .filter-row .toggle-group { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-2); }
+  .filter-row .spacer { flex: 1; }
+  .month-header { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+  .event-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .event-row:last-child { border-bottom: none; }
+  .date-block { width: 56px; text-align: center; flex-shrink: 0; }
+  .date-block .day { font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .date-block .weekday { font-size: 12px; color: var(--text-2); }
+  .event-row .status { width: 60px; flex-shrink: 0; }
+  .event-row .info { flex: 1; min-width: 0; }
+  .event-row .name-row { display: flex; align-items: center; gap: 8px; }
+  .event-row .event-name { font-weight: 500; font-size: 14px; }
+  .event-row .meta { font-size: 12px; color: var(--text-2); line-height: 1.75; margin-top: 4px; }
+  .poster-sm { width: 64px; height: 64px; flex-shrink: 0; }
+  .kebab { color: var(--text-3); font-size: 18px; font-weight: 700; padding: 0 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">🏓</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="멤버십">🎫</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar avatar-danger">WMG</span>
+    </div>
+  </header>
+
+  <section class="channel-hero">
+    <div class="hero-info">
+      <div class="name-row">
+        <h1>와우매니지먼트그룹</h1>
+        <span class="verified-badge">✓</span>
+      </div>
+      <div class="stats-row">
+        <span>팔로워 <b>198</b></span>
+        <span>팔로잉 <b>2</b></span>
+      </div>
+      <p class="intro">와우매니지먼트그룹 피클볼 채널입니다. 함께 성장해요! <span class="more">더보기</span></p>
+      <div class="actions-row">
+        <span class="layout-btn-wrap">
+          <a class="btn btn-secondary" href="channel-layout.html">홈 레이아웃 설정</a>
+          <span class="notification-dot"></span>
+        </span>
+        <a class="btn btn-secondary" href="settings-basic.html">채널 관리</a>
+      </div>
+    </div>
+  </section>
+
+  <nav class="channel-tabs">
+    <a class="tab" href="channel-home.html">홈</a>
+    <a class="tab" href="channel-match.html">경기</a>
+    <a class="tab active" href="channel-event.html">이벤트</a>
+    <a class="tab" href="channel-results.html">경기 결과</a>
+    <a class="tab" href="channel-ranking-doubles.html">팀 랭킹</a>
+    <a class="tab" href="channel-team.html">팀</a>
+    <a class="tab" href="channel-content.html">콘텐츠</a>
+    <a class="tab" href="channel-community.html">커뮤니티</a>
+    <a class="tab" href="channel-info.html">정보</a>
+  </nav>
+
+  <main class="channel-content">
+    <div class="channel-container">
+
+      <div class="action-row">
+        <button class="btn btn-primary">＋ 이벤트 생성하기</button>
+        <div class="seg-control">
+          <span class="seg active">이벤트</span>
+          <span class="seg">오픈 플레이 <span class="badge badge-blue">BETA</span></span>
+        </div>
+      </div>
+
+      <p class="count-line">전체 <b>25</b>개의 이벤트</p>
+
+      <div class="filter-row">
+        <select class="select" style="width:240px;">
+          <option selected>2026</option>
+        </select>
+        <label class="toggle-group">
+          <span class="toggle"><input type="checkbox"><span class="knob"></span></span>
+          지난 이벤트 보기
+        </label>
+        <span class="spacer"></span>
+        <select class="select" style="width:240px;">
+          <option selected>모든 이벤트</option>
+        </select>
+      </div>
+
+      <h2 class="month-header">4월</h2>
+
+      <div class="event-list">
+        <div class="event-row">
+          <div class="date-block">
+            <div class="day">18</div>
+            <div class="weekday">토</div>
+          </div>
+          <div class="status"><span class="badge badge-danger">진행중</span></div>
+          <div class="info">
+            <div class="name-row">
+              <span class="event-name">2026 와우매니지먼트그룹 스프링 오픈 피클볼 챔피언십</span>
+              <span class="badge badge-blue">DUPR</span>
+            </div>
+            <p class="meta">📍 대전 유성구 피클볼파크<br>👤 와우매니지먼트그룹</p>
+          </div>
+          <div class="thumb poster-sm">🏓</div>
+          <button class="kebab" aria-label="더보기 메뉴">⋮</button>
+        </div>
+
+        <div class="event-row">
+          <div class="date-block">
+            <div class="day">05</div>
+            <div class="weekday">일</div>
+          </div>
+          <div class="status"><span class="badge badge-neutral">종료</span></div>
+          <div class="info">
+            <div class="name-row">
+              <span class="event-name">카메라파이 스튜디오 x 대전 피클볼 클럽 친선 대회</span>
+            </div>
+            <p class="meta">📍 대전 서구 둘원스포츠센터<br>👤 카메라파이 스튜디오</p>
+          </div>
+          <button class="kebab" aria-label="더보기 메뉴">⋮</button>
+        </div>
+
+        <div class="event-row">
+          <div class="date-block">
+            <div class="day">22</div>
+            <div class="weekday">수</div>
+          </div>
+          <div class="status"><span class="badge badge-green">접수중</span></div>
+          <div class="info">
+            <div class="name-row">
+              <span class="event-name">제1회 전국 아마추어 피클볼 페스티벌</span>
+              <span class="badge badge-blue">DUPR</span>
+            </div>
+            <p class="meta">📍 청주 석오스포츠파크<br>👤 대한피클볼협회</p>
+          </div>
+          <div class="thumb poster-sm">🏓</div>
+          <button class="kebab" aria-label="더보기 메뉴">⋮</button>
+        </div>
+
+        <div class="event-row">
+          <div class="date-block">
+            <div class="day">29</div>
+            <div class="weekday">수</div>
+          </div>
+          <div class="status"><span class="badge badge-green">접수중</span></div>
+          <div class="info">
+            <div class="name-row">
+              <span class="event-name">유성구 생활체육 피클볼 리그 4월 정기전</span>
+            </div>
+            <p class="meta">📍 대전 유성구 국민체육센터<br>👤 유성구 피클볼협회</p>
+          </div>
+          <button class="kebab" aria-label="더보기 메뉴">⋮</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="channel-footer">
+    <div class="links">
+      <a href="#">이용약관</a><span class="sep"></span>
+      <a href="#">개인정보처리방침</a><span class="sep"></span>
+      <a href="#">앱 문의</a><span class="sep"></span>
+      <a href="#">사업 문의</a><span class="sep"></span>
+      <a href="#">광고 문의</a><span class="sep"></span>
+      <a href="#">중계 문의</a>
+    </div>
+    <p class="company">주식회사 와우매니지먼트그룹&nbsp;&nbsp;|&nbsp;&nbsp;대표 김태훈&nbsp;&nbsp;|&nbsp;&nbsp;사업자등록번호 214-88-01234</p>
+    <p class="company">서울특별시 강남구 테헤란로 123, 8층&nbsp;&nbsp;|&nbsp;&nbsp;고객센터 02-1234-5678&nbsp;&nbsp;|&nbsp;&nbsp;contact@wowmg.com</p>
+    <p class="copyright">© 2024 - Vault Micro, Inc.</p>
+  </footer>
+
+</div>
+</body>
+</html>

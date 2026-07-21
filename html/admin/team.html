@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀 설정 · 팀 추가하기 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .header-row .page-title { margin-bottom: 0; }
+  .toggle-group { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+  .main .field { max-width: none; }
+  .field .field-desc { font-size: 14px; color: var(--text-2); margin-bottom: 8px; }
+  .field .req { color: var(--danger); margin-left: 2px; }
+  .select-sport { width: 320px; }
+  .select-visibility { width: 240px; }
+  .visibility-row { display: flex; align-items: center; justify-content: space-between; }
+  .textarea-wrap { position: relative; }
+  .textarea-wrap .textarea { min-height: 120px; padding-bottom: 32px; }
+  .textarea-wrap .counter {
+    position: absolute; left: 14px; bottom: 10px;
+    font-size: 12px; color: var(--text-2);
+  }
+  .footer-row { display: flex; justify-content: flex-end; gap: 16px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">P</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="전체화면">⛶</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WTG</span>
+    </div>
+  </header>
+
+  <div class="body-row">
+    <nav class="sidebar">
+      <div class="sidebar-title">채널 관리 ⚙</div>
+      <a class="menu-item" href="settings-basic.html"><span class="mi-icon">ⓘ</span>기본 정보 설정</a>
+      <a class="menu-item active" href="team.html"><span class="mi-icon">👥</span>팀 설정</a>
+      <a class="menu-item" href="content-match.html"><span class="mi-icon">🎬</span>콘텐츠 설정</a>
+      <a class="menu-item" href="community.html"><span class="mi-icon">💬</span>커뮤니티 설정</a>
+      <a class="menu-item" href="board.html"><span class="mi-icon">📋</span>게시판 관리<span class="badge-dot"></span></a>
+      <a class="menu-item" href="membership-plan.html"><span class="mi-icon">💳</span>멤버십 설정</a>
+    </nav>
+
+    <main class="main">
+      <div class="header-row">
+        <h1 class="page-title">팀 추가하기</h1>
+        <div class="toggle-group">
+          <span>대표팀으로 설정</span>
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <span class="knob"></span>
+          </label>
+        </div>
+      </div>
+
+      <form>
+        <div class="field">
+          <label class="field-label">팀 이름<span class="req">*</span></label>
+          <p class="field-desc">팀의 이름을 입력해주세요.</p>
+          <input class="input" type="text" placeholder="팀 이름을 입력하세요">
+        </div>
+
+        <div class="field">
+          <label class="field-label">종목</label>
+          <p class="field-desc">내 스포츠 팀의 종목(분야)을 선택해보세요.</p>
+          <select class="select select-sport">
+            <option selected>🛡 공용</option>
+          </select>
+          <p class="field-caption error">⚠️ 한 번 생성한 팀의 종목은 변경할 수 없습니다.</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label">팀 로고</label>
+          <p class="field-desc">팀 로고를 업로드 해주세요.</p>
+          <div class="dropzone">
+            <div class="dz-icon">🖼</div>
+            <p><strong>이미지를 업로드 해주세요.</strong></p>
+            <p class="text-xs muted-3 mb-16">600*600px 정방향(1:1) 이미지 권장</p>
+            <button class="btn btn-secondary" type="button">이미지 업로드</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">소개</label>
+          <p class="field-desc">팀에 대해 구체적으로 설명해주세요.</p>
+          <div class="textarea-wrap">
+            <textarea class="textarea" placeholder="소개글을 입력하세요."></textarea>
+            <span class="counter">0/700</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">위치</label>
+          <p class="field-desc">채널에 필요한 위치를 표시합니다. 주소 등록을 통해 구체적인 정보를 시청자에게 노출할 수 있습니다.</p>
+          <input class="input" type="text" placeholder="주소">
+        </div>
+
+        <div class="field">
+          <div class="visibility-row">
+            <label class="field-label" style="margin-bottom:0;">공개 범위<span class="req">*</span></label>
+            <select class="select select-visibility">
+              <option selected>전체 공개</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="footer-row">
+          <button class="btn btn-secondary" type="button">취소</button>
+          <button class="btn btn-primary" type="submit" disabled>저장</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+</body>
+</html>

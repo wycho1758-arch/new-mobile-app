@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스튜디오 · 랭킹 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .studio-main { max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; }
+  .rank-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+  .rank-title-row h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .rank-title-row .updated { margin-left: auto; font-size: 12px; color: var(--text-3); }
+
+  .channel-info { display: flex; align-items: center; gap: 16px; }
+  .channel-info .logo-box {
+    width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0;
+    background: var(--danger); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .channel-info .ch-label { font-size: 12px; color: var(--text-3); }
+  .channel-info .ch-name { font-size: 19px; font-weight: 700; margin: 2px 0; }
+  .channel-info .ch-desc { font-size: 14px; color: var(--text-2); }
+
+  .section-row { display: flex; align-items: center; justify-content: space-between; margin: 32px 0 16px; }
+  .section-row h2 { font-size: 19px; font-weight: 700; }
+  .seg-tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 4px; }
+  .seg-tabs .seg { padding: 5px 14px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; color: var(--text-2); }
+  .seg-tabs .seg.active { background: var(--brand); color: #fff; font-weight: 700; }
+
+  .filter-panel .f-row { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .filter-panel .f-label { width: 60px; font-size: 12px; color: var(--text-3); flex-shrink: 0; }
+  .filter-panel .f-head { display: flex; align-items: center; justify-content: space-between; }
+  .filter-panel .f-head strong { font-size: 14px; }
+  .filter-panel .f-reset { font-size: 12px; color: var(--text-2); }
+  .check-row { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-2); }
+  .check-box {
+    width: 18px; height: 18px; border-radius: 4px; background: var(--brand);
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  .podium { display: flex; align-items: flex-end; justify-content: center; gap: 16px; margin: 40px 0 32px; }
+  .podium .pod { display: flex; flex-direction: column; align-items: center; width: 140px; }
+  .podium .pod.gold { width: 160px; }
+  .podium .crown { font-size: 24px; margin-bottom: 8px; }
+  .podium .pod-avatar {
+    width: 64px; height: 64px; border-radius: var(--r-pill);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-soft);
+  }
+  .podium .gold .pod-avatar { width: 80px; height: 80px; font-size: 32px; border-color: var(--gold); }
+  .podium .pod-name { font-size: 14px; font-weight: 500; margin-top: 8px; }
+  .podium .pod-score { font-size: 19px; font-weight: 700; margin: 4px 0 8px; }
+  .podium .gold .pod-score { font-size: 24px; color: #a8821c; }
+  .podium .silver .pod-score { color: var(--text-2); }
+  .podium .bronze .pod-score { color: var(--live); }
+  .podium .pedestal {
+    width: 100%; border-radius: 12px 12px 0 0;
+    display: flex; align-items: flex-start; justify-content: center;
+    font-size: 30px; font-weight: 700; padding-top: 24px;
+  }
+  .podium .silver .pedestal { height: 100px; background: #eef1f0; color: var(--text-2); }
+  .podium .gold .pedestal { height: 140px; background: var(--gold-soft); color: #a8821c; padding-top: 44px; }
+  .podium .bronze .pedestal { height: 80px; background: var(--live-soft); color: var(--live); padding-top: 16px; }
+
+  .ranked-list { padding: 0; overflow: hidden; }
+  .rank-row { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-row .r-num { width: 24px; font-weight: 500; color: var(--text-3); }
+  .rank-row .r-name { flex: 1; font-weight: 500; }
+  .rank-row .r-score { font-weight: 500; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">🏓</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="내 티켓">🎫</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WMG</span>
+    </div>
+  </header>
+
+  <main class="studio-main">
+
+    <div class="rank-title-row">
+      <h1>랭킹</h1>
+      <span class="chip">🔍 피클볼</span>
+      <span class="updated">🕐 2026.07.13 10:02 업데이트</span>
+    </div>
+
+    <section class="card channel-info">
+      <span class="logo-box">WMG</span>
+      <div>
+        <p class="ch-label">단체 계정 · 채널 현황</p>
+        <p class="ch-name">와우매니지먼트그룹</p>
+        <p class="ch-desc">전국 피클볼 동호인이 모인 대표 커뮤니티 채널입니다.</p>
+      </div>
+    </section>
+
+    <div class="section-row">
+      <h2>복식 순위표</h2>
+      <div class="seg-tabs">
+        <button class="seg active">복식</button>
+        <button class="seg">단식</button>
+      </div>
+    </div>
+
+    <section class="card filter-panel">
+      <div class="f-head">
+        <strong>필터</strong>
+        <button class="f-reset">🔄 초기화</button>
+      </div>
+      <div class="f-row">
+        <span class="f-label">성별</span>
+        <div class="chip-tabs">
+          <button class="chip-tab active">남성</button>
+          <button class="chip-tab">여성</button>
+        </div>
+      </div>
+      <div class="f-row">
+        <span class="f-label">연령</span>
+        <div class="chip-tabs">
+          <button class="chip-tab">10대</button>
+          <button class="chip-tab">20대</button>
+          <button class="chip-tab active">30대</button>
+          <button class="chip-tab">40대</button>
+          <button class="chip-tab">50대</button>
+          <button class="chip-tab">60대</button>
+          <button class="chip-tab">70대+</button>
+        </div>
+      </div>
+      <div class="f-row">
+        <span class="f-label">국가</span>
+        <label class="check-row"><span class="check-box">✓</span>내 국가 선수만 보기</label>
+      </div>
+    </section>
+
+    <div class="podium">
+      <div class="pod silver">
+        <span class="pod-avatar">🏓</span>
+        <span class="pod-name">온뎀</span>
+        <span class="pod-score">4.942</span>
+        <div class="pedestal">2</div>
+      </div>
+      <div class="pod gold">
+        <span class="crown">👑</span>
+        <span class="pod-avatar">🏓</span>
+        <span class="pod-name">김용주</span>
+        <span class="pod-score">5.048</span>
+        <div class="pedestal">1</div>
+      </div>
+      <div class="pod bronze">
+        <span class="pod-avatar">🏓</span>
+        <span class="pod-name">Dink</span>
+        <span class="pod-score">4.847</span>
+        <div class="pedestal">3</div>
+      </div>
+    </div>
+
+    <section class="table-card ranked-list">
+      <div class="rank-row">
+        <span class="r-num">4</span><span class="avatar-sm">🏓</span>
+        <span class="r-name">김현준</span><span class="r-score">4.796</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-num">5</span><span class="avatar-sm">🏓</span>
+        <span class="r-name">피클볼치는 서코치</span><span class="r-score">4.683</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-num">6</span><span class="avatar-sm">🏓</span>
+        <span class="r-name">피클곽</span><span class="r-score">4.682</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-num">7</span><span class="avatar-sm">🏓</span>
+        <span class="r-name">류정호</span><span class="r-score">4.669</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-num">8</span><span class="avatar-sm">🏓</span>
+        <span class="r-name">이영기</span><span class="r-score">4.630</span>
+      </div>
+      <div class="rank-row">
+        <span class="r-num">9</span><span class="avatar-sm">🏓</span>
+        <span class="r-name">Brian</span><span class="r-score">4.620</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

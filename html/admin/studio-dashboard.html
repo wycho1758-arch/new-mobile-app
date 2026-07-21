@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스튜디오 · 대시보드 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .studio-main { max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 734fr) minmax(0, 442fr); gap: 24px; align-items: start; }
+  .banner-card {
+    background: linear-gradient(135deg, var(--brand-soft), var(--surface));
+    border: 1px solid var(--brand-border);
+    border-radius: var(--r-lg); padding: 32px;
+    box-shadow: var(--shadow-card);
+  }
+  .banner-card .headline { font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin: 8px 0 24px; }
+  .carousel-dots { display: flex; gap: 6px; margin-top: 20px; }
+  .carousel-dots .dot { width: 6px; height: 6px; border-radius: var(--r-pill); background: var(--border-strong); }
+  .carousel-dots .dot.active { background: var(--brand); }
+  .quick-actions { display: flex; flex-direction: column; gap: 16px; }
+  .quick-action {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-card); padding: 20px;
+    box-shadow: var(--shadow-soft); display: block;
+  }
+  .quick-action.is-accent { border-color: var(--accent); }
+  .quick-action.is-brand { border-color: var(--brand); }
+  .quick-action .qa-title { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .quick-action .qa-desc { font-size: 14px; color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">🏓</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="내 티켓">🎫</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WMG</span>
+    </div>
+  </header>
+
+  <main class="studio-main">
+    <div class="hero-grid">
+
+      <section class="banner-card">
+        <span class="badge badge-blue">대회 운영 문의</span>
+        <p class="muted mt-16">접수·대진표·시간표, 아직도 따로 관리하세요?</p>
+        <h2 class="headline">대회 운영,<br>카메라파이 스투디오에서<br>한 번에 해결하세요</h2>
+        <div class="chip-tabs">
+          <span class="chip-tab">참가자 관리</span>
+          <span class="chip-tab">대진표・시간표</span>
+          <span class="chip-tab">DUPR</span>
+          <span class="chip-tab">경기운영</span>
+        </div>
+        <div class="carousel-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </section>
+
+      <div class="quick-actions">
+        <a class="quick-action is-accent" href="#">
+          <div class="qa-title">🏓 경기 생성하기</div>
+          <p class="qa-desc">스코어보드 위젯과 전문적인 기록</p>
+        </a>
+        <a class="quick-action is-brand" href="studio-event.html">
+          <div class="qa-title">🏆 이벤트 생성하기</div>
+          <p class="qa-desc">쉭게 운영하는 완성도 높은 대회</p>
+        </a>
+        <a class="quick-action" href="#">
+          <div class="qa-title">✏️ 게시글 추가하기</div>
+          <p class="qa-desc">간편하게 작성하는 커뮤니티 게시글</p>
+        </a>
+      </div>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>

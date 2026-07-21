@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>요금제 및 멤버십 · 내 멤버십 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .carousel-row { display: flex; align-items: center; gap: 16px; }
+  .carousel-scroll { display: flex; gap: 16px; flex: 1; overflow-x: auto; padding-bottom: 4px; }
+  .channel-card {
+    width: 200px; flex-shrink: 0;
+    background: var(--surface); border-radius: var(--r-card);
+    box-shadow: var(--shadow-soft);
+    padding: 20px 16px; text-align: center;
+  }
+  .channel-card .avatar-lg {
+    width: 90px; height: 90px; border-radius: var(--r-pill);
+    background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; margin: 0 auto 12px;
+  }
+  .channel-card .channel-name { font-weight: 500; margin-bottom: 4px; }
+  .channel-card .follower-count { font-size: 12px; color: var(--text-2); margin-bottom: 12px; }
+  .channel-card .btn { width: 100%; }
+  .carousel-next-btn {
+    width: 44px; height: 44px; border-radius: var(--r-pill); flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-2); font-size: 16px;
+  }
+  .carousel-next-btn:hover { border-color: var(--brand-border); color: var(--brand-deep); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">P</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="전체화면">⛶</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WTG</span>
+    </div>
+  </header>
+
+  <div class="body-row">
+    <nav class="sidebar">
+      <div class="sidebar-title">채널 관리 ⚙</div>
+      <a class="menu-item" href="settings-basic.html"><span class="mi-icon">ⓘ</span>기본 정보 설정</a>
+      <a class="menu-item" href="team.html"><span class="mi-icon">👥</span>팀 설정</a>
+      <a class="menu-item" href="content-match.html"><span class="mi-icon">🎬</span>콘텐츠 설정</a>
+      <a class="menu-item" href="community.html"><span class="mi-icon">💬</span>커뮤니티 설정</a>
+      <a class="menu-item" href="board.html"><span class="mi-icon">📋</span>게시판 관리<span class="badge-dot"></span></a>
+      <a class="menu-item active" href="membership-plan.html"><span class="mi-icon">💳</span>멤버십 설정</a>
+    </nav>
+
+    <main class="main">
+      <h1 class="page-title">요금제 및 멤버십</h1>
+
+      <div class="tab-bar">
+        <a class="tab" href="membership-plan.html">내 요금제</a>
+        <a class="tab" href="membership-billing.html">결제 내역</a>
+        <a class="tab" href="membership-studio-plan.html">스튜디오 요금제</a>
+        <a class="tab active" href="membership-my.html">내 멤버십</a>
+        <a class="tab" href="membership-members.html">회원 관리</a>
+      </div>
+
+      <section class="card">
+        <div class="empty-state" style="padding: 16px 24px;">
+          <div class="empty-title">가입한 멤버십이 없습니다.</div>
+          <div class="empty-desc" style="margin-bottom: 0;">채널 멤버십에 가입하여 다양한 콘텐츠를 즐겨보세요!</div>
+        </div>
+      </section>
+
+      <h2 class="section-title">채널 알아보기</h2>
+      <div class="carousel-row">
+        <div class="carousel-scroll">
+          <div class="channel-card">
+            <div class="avatar-lg">노피</div>
+            <div class="channel-name">노원구피클볼협회</div>
+            <div class="follower-count">팔로워 265명</div>
+            <button class="btn btn-primary">팔로우</button>
+          </div>
+          <div class="channel-card">
+            <div class="avatar-lg">학부</div>
+            <div class="channel-name">학부모스포츠PTV</div>
+            <div class="follower-count">팔로워 177명</div>
+            <button class="btn btn-primary">팔로우</button>
+          </div>
+          <div class="channel-card">
+            <div class="avatar-lg">유소</div>
+            <div class="channel-name">유소년 축구 채널</div>
+            <div class="follower-count">팔로워 64명</div>
+            <button class="btn btn-primary">팔로우</button>
+          </div>
+          <div class="channel-card">
+            <div class="avatar-lg">SA</div>
+            <div class="channel-name">SARC 학생선수 유학</div>
+            <div class="follower-count">팔로워 16명</div>
+            <button class="btn btn-primary">팔로우</button>
+          </div>
+          <div class="channel-card">
+            <div class="avatar-lg">피매</div>
+            <div class="channel-name">피클볼매니아</div>
+            <div class="follower-count">팔로워 429명</div>
+            <button class="btn btn-primary">팔로우</button>
+          </div>
+        </div>
+        <button class="carousel-next-btn" aria-label="다음">›</button>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

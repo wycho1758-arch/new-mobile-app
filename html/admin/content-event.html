@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콘텐츠 설정 · 이벤트 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .action-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .event-cell { display: flex; align-items: center; gap: 12px; }
+  .event-cell .thumb { width: 84px; height: 84px; flex-shrink: 0; }
+  .event-cell .title { font-size: 14px; margin-bottom: 4px; }
+  .event-cell .meta { font-size: 12px; color: var(--text-3); }
+  .table .select { width: 160px; }
+  .sort-select { width: 140px; }
+  .row-actions { display: flex; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">P</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="전체화면">⛶</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WTG</span>
+    </div>
+  </header>
+
+  <div class="body-row">
+    <nav class="sidebar">
+      <div class="sidebar-title">채널 관리 ⚙</div>
+      <a class="menu-item" href="settings-basic.html"><span class="mi-icon">ⓘ</span>기본 정보 설정</a>
+      <a class="menu-item" href="team.html"><span class="mi-icon">👥</span>팀 설정<span class="chevron">▾</span></a>
+      <a class="menu-item active" href="content-match.html"><span class="mi-icon">🎬</span>콘텐츠 설정</a>
+      <a class="menu-item" href="community.html"><span class="mi-icon">💬</span>커뮤니티 설정</a>
+      <a class="menu-item" href="board.html"><span class="mi-icon">📋</span>게시판 관리<span class="badge-dot"></span></a>
+      <a class="menu-item" href="membership-plan.html"><span class="mi-icon">💳</span>멤버십 설정</a>
+    </nav>
+
+    <main class="main">
+      <h1 class="page-title">콘텐츠 설정</h1>
+
+      <div class="tab-bar">
+        <a class="tab" href="content-match.html">경기</a>
+        <a class="tab active" href="content-event.html">이벤트</a>
+        <a class="tab" href="content-video.html">동영상</a>
+        <a class="tab" href="content-playlist.html">재생목록</a>
+        <a class="tab" href="content-subtitle.html">실시간 자막</a>
+      </div>
+
+      <div class="action-bar">
+        <span class="muted">총 25개의 이벤트</span>
+        <div class="row gap-8">
+          <button class="btn btn-primary">+ 이벤트 추가</button>
+          <button class="btn btn-secondary">삭제</button>
+          <select class="select sort-select">
+            <option selected>최신순</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" aria-label="전체 선택"></th>
+              <th>이벤트</th>
+              <th>공개 범위</th>
+              <th>기간</th>
+              <th>상태</th>
+              <th>조회수</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="event-cell">
+                  <div class="thumb">🖼</div>
+                  <div>
+                    <div class="title">2024 와우매니지먼트 피클볼 오픈 챌린지</div>
+                    <div class="meta">2024.03.02 등록 · 조회 3,204</div>
+                  </div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted">2024.03.15 ~ 2024.03.17</td>
+              <td><span class="badge badge-danger">진행중</span></td>
+              <td>3,204</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" aria-label="수정">✏️</button>
+                  <button class="icon-btn" aria-label="삭제">🗑</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="event-cell">
+                  <div class="thumb">🖼</div>
+                  <div>
+                    <div class="title">제2회 카메라파이 챔피언스 리그</div>
+                    <div class="meta">2024.02.01 등록 · 조회 5,812</div>
+                  </div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted">2024.02.01 ~ 2024.02.03</td>
+              <td><span class="badge badge-neutral">종료</span></td>
+              <td>5,812</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" aria-label="수정">✏️</button>
+                  <button class="icon-btn" aria-label="삭제">🗑</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="event-cell">
+                  <div class="thumb">🖼</div>
+                  <div>
+                    <div class="title">와우 매니지먼트 유소년 피클볼 페스티벌</div>
+                    <div class="meta">2024.02.20 등록 · 조회 1,204</div>
+                  </div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted">2024.04.10 ~ 2024.04.12</td>
+              <td><span class="badge badge-blue">예정</span></td>
+              <td>1,204</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" aria-label="수정">✏️</button>
+                  <button class="icon-btn" aria-label="삭제">🗑</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="event-cell">
+                  <div class="thumb">🖼</div>
+                  <div>
+                    <div class="title">전국 아마추어 피클볼 마스터스</div>
+                    <div class="meta">2024.03.05 등록 · 조회 2,890</div>
+                  </div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted">2024.03.20 ~ 2024.03.22</td>
+              <td><span class="badge badge-danger">진행중</span></td>
+              <td>2,890</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" aria-label="수정">✏️</button>
+                  <button class="icon-btn" aria-label="삭제">🗑</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="event-cell">
+                  <div class="thumb">🖼</div>
+                  <div>
+                    <div class="title">카메라파이 주니어 푸로그램 결선</div>
+                    <div class="meta">2024.01.18 등록 · 조회 987</div>
+                  </div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted">2024.01.25 ~ 2024.01.26</td>
+              <td><span class="badge badge-neutral">종료</span></td>
+              <td>987</td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" aria-label="수정">✏️</button>
+                  <button class="icon-btn" aria-label="삭제">🗑</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

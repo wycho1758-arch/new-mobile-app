@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>기본 정보 설정 · 일반 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .section-head { margin-bottom: 16px; }
+  .section-head h2 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .section-head p { font-size: 14px; color: var(--text-2); }
+
+  .settings-card { padding: 8px 24px; max-width: 1156px; }
+  .setting-row { padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-row .sr-top { display: flex; align-items: center; gap: 12px; }
+  .setting-row .sr-icon { width: 20px; text-align: center; color: var(--text-2); flex-shrink: 0; }
+  .setting-row .sr-label { font-size: 14px; font-weight: 700; }
+  .setting-row .sr-control { margin-left: auto; }
+  .setting-row .select { width: 200px; }
+  .setting-row .sr-caption { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+  .chrome-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px; border-radius: var(--r-pill);
+    border: 1px solid var(--border-strong);
+    font-size: 12px; color: var(--text-2); margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">P</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="전체화면">⛶</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WTG</span>
+    </div>
+  </header>
+
+  <div class="body-row">
+    <nav class="sidebar">
+      <div class="sidebar-title">채널 관리 ⚙</div>
+      <a class="menu-item active" href="settings-basic.html"><span class="mi-icon">ⓘ</span>기본 정보 설정</a>
+      <a class="menu-item" href="team.html"><span class="mi-icon">👥</span>팀 설정<span class="chevron">▾</span></a>
+      <a class="menu-item" href="content-match.html"><span class="mi-icon">🎬</span>콘텐츠 설정</a>
+      <a class="menu-item" href="community.html"><span class="mi-icon">💬</span>커뮤니티 설정</a>
+      <a class="menu-item" href="board.html"><span class="mi-icon">📋</span>게시판 관리<span class="badge-dot"></span></a>
+      <a class="menu-item" href="membership-plan.html"><span class="mi-icon">💳</span>멤버십 설정</a>
+    </nav>
+
+    <main class="main">
+      <h1 class="page-title">기본 정보 설정</h1>
+
+      <div class="tab-bar">
+        <a class="tab" href="settings-basic.html">기본 정보</a>
+        <a class="tab" href="settings-branding.html">브랜딩</a>
+        <a class="tab" href="settings-menu.html">메뉴 관리</a>
+        <a class="tab" href="settings-account.html">계정</a>
+        <a class="tab" href="settings-connect.html">연결</a>
+        <a class="tab active" href="settings-general.html">일반</a>
+        <a class="tab" href="settings-block.html">차단</a>
+      </div>
+
+      <!-- 일반 웹 환경 설정 -->
+      <section>
+        <div class="section-head">
+          <h2>일반 웹 환경 설정</h2>
+          <p>웹 상의 카메라파이 스튜디오 서비스 설정을 관리합니다.</p>
+        </div>
+
+        <div class="card settings-card">
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-icon">🌐</span>
+              <span class="sr-label">언어</span>
+              <span class="sr-control"><select class="select"><option selected>한국어</option></select></span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-icon">🎨</span>
+              <span class="sr-label">디자인</span>
+              <span class="sr-control"><select class="select"><option selected>기기 테마</option></select></span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-label">인라인 재생</span>
+              <span class="sr-control"><label class="toggle"><input type="checkbox" checked><span class="knob"></span></label></span>
+            </div>
+            <p class="sr-caption">홈 및 검색 페이지에서 동영상 위에 마우스를 가져가면 동영상이 재생됩니다.</p>
+          </div>
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-label">쿠키 허용</span>
+              <span class="sr-control"><label class="toggle"><input type="checkbox" checked><span class="knob"></span></label></span>
+            </div>
+            <p class="sr-caption">쿠키는 웹사이트 경험을 개선하고 사용자에게 개인화된 서비스와 광고를 제공하는 데 사용됩니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 알림 설정 -->
+      <section class="mt-32">
+        <div class="section-head">
+          <h2>알림 설정</h2>
+          <p>CameraFi STUDIO에서 보내는 푸시 알림에 대한 설정입니다.</p>
+        </div>
+
+        <div class="card settings-card">
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-label">데스크탑 푸시 알림</span>
+              <span class="sr-control"><label class="toggle"><input type="checkbox"><span class="knob"></span></label></span>
+            </div>
+            <p class="sr-caption">현재 사용중인 브라우저에서 알림을 받습니다.</p>
+            <span class="chrome-badge">🌐 Chrome</span>
+          </div>
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-label">서비스 알림</span>
+              <span class="sr-control"><label class="toggle"><input type="checkbox" checked><span class="knob"></span></label></span>
+            </div>
+            <p class="sr-caption">맞춤 추천, 스포츠 소식 등 알림</p>
+          </div>
+          <div class="setting-row">
+            <div class="sr-top">
+              <span class="sr-label">마케팅 알림</span>
+              <span class="sr-control"><label class="toggle"><input type="checkbox"><span class="knob"></span></label></span>
+            </div>
+            <p class="sr-caption">쿠폰, 할인, 포인트 혜택, 광고 등 알림</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>

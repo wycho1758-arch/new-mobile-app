@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>커뮤니티 설정 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .list-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .list-header-row .count { font-size: 17px; font-weight: 700; }
+  .filter-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .sort-select { width: 140px; }
+  .post-cell { display: flex; align-items: center; gap: 16px; }
+  .post-cell .thumb { width: 65px; height: 65px; border-radius: 8px; flex-shrink: 0; }
+  .post-cell .text { max-width: 620px; }
+  .table .select { width: 120px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">P</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="전체화면">⛶</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WTG</span>
+    </div>
+  </header>
+
+  <div class="body-row">
+    <nav class="sidebar">
+      <div class="sidebar-title">채널 관리 ⚙</div>
+      <a class="menu-item" href="settings-basic.html"><span class="mi-icon">ⓘ</span>기본 정보 설정</a>
+      <a class="menu-item" href="team.html"><span class="mi-icon">👥</span>팀 설정<span class="chevron">▾</span></a>
+      <a class="menu-item" href="content-match.html"><span class="mi-icon">🎬</span>콘텐츠 설정</a>
+      <a class="menu-item active" href="community.html"><span class="mi-icon">💬</span>커뮤니티 설정</a>
+      <a class="menu-item" href="board.html"><span class="mi-icon">📋</span>게시판 관리<span class="badge-dot"></span></a>
+      <a class="menu-item" href="membership-plan.html"><span class="mi-icon">💳</span>멤버십 설정</a>
+    </nav>
+
+    <main class="main">
+      <h1 class="page-title">커뮤니티 설정</h1>
+
+      <div class="list-header-row">
+        <span class="count">총 13개의 게시글</span>
+        <div class="row gap-8">
+          <button class="btn btn-primary">+ 게시글 작성</button>
+          <button class="btn btn-secondary">삭제</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="chip-tabs">
+          <button class="chip-tab active">전체</button>
+          <button class="chip-tab">사진</button>
+          <button class="chip-tab">글</button>
+        </div>
+        <select class="select sort-select">
+          <option selected>최신순</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" aria-label="전체 선택"></th>
+              <th>게시글</th>
+              <th>공개 범위</th>
+              <th>날짜</th>
+              <th>조회수</th>
+              <th>수정</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="post-cell">
+                  <div class="thumb">🖼</div>
+                  <div class="text">6월 21일, 주말 한강리그 혼합복식 2.5부 경기를 진행했습니다. 참가해주신 모든 분들께 감사드리며 다음 리그도 많은 참여 부탁드립니다.</div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted text-xs">2026.06.22</td>
+              <td>252</td>
+              <td><button class="icon-btn" aria-label="수정">✎</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="post-cell">
+                  <div class="thumb">🖼</div>
+                  <div class="text">초보자를 위한 피클볼 기본 규칙 정리해봤어요! 서브부터 키친 라인까지 헷갈리는 부분 모아봤습니다.</div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted text-xs">2026.06.20</td>
+              <td>189</td>
+              <td><button class="icon-btn" aria-label="수정">✎</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="post-cell">
+                  <div class="thumb">🖼</div>
+                  <div class="text">이번 주 토요일 저녁 7시, 실내 코트 4면 대여했습니다. 선착순 16명 모집합니다. 댓글로 신청해주세요.</div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted text-xs">2026.06.18</td>
+              <td>96</td>
+              <td><button class="icon-btn" aria-label="수정">✎</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="post-cell">
+                  <div class="thumb">🖼</div>
+                  <div class="text">패들 추천 좀 해주세요! 초보인데 가성비 좋은 제품 있을까요? 예산은 10만원 정도 생각하고 있습니다.</div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted text-xs">2026.06.15</td>
+              <td>143</td>
+              <td><button class="icon-btn" aria-label="수정">✎</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="post-cell">
+                  <div class="thumb">🖼</div>
+                  <div class="text">7월 정기 랭킹전 일정 공지드립니다. 참가 신청은 이번 주 금요일까지 마감이니 서둘러주세요.</div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted text-xs">2026.06.12</td>
+              <td>278</td>
+              <td><button class="icon-btn" aria-label="수정">✎</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="post-cell">
+                  <div class="thumb">🖼</div>
+                  <div class="text">동호회 창립 1주년을 맞이해 사진전을 열었습니다! 추억이 담긴 사진들을 함께 감상해요.</div>
+                </div>
+              </td>
+              <td><select class="select"><option selected>전체 공개</option></select></td>
+              <td class="muted text-xs">2026.06.08</td>
+              <td>61</td>
+              <td><button class="icon-btn" aria-label="수정">✎</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

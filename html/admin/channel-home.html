@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채널홈 · 홈 — 와우매니지먼트그룹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/channel.css">
+<style>
+  /* 커뮤니티 포스트 카드 */
+  .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .post-card { background: var(--surface); border-radius: var(--r-card); box-shadow: var(--shadow-card); overflow: hidden; }
+  .post-card .thumb { height: 180px; border-radius: 0; }
+  .post-card .body { padding: 16px; }
+  .post-meta { font-size: 12px; color: var(--text-3); margin-bottom: 6px; }
+  .post-text {
+    font-size: 14px; color: var(--text-1);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .react-chips { display: flex; gap: 6px; margin-top: 12px; }
+  .react-chip {
+    font-size: 12px; padding: 3px 10px; border-radius: var(--r-pill);
+    background: var(--surface-tint); color: var(--text-2);
+  }
+  /* 이벤트 카드 */
+  .event-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .event-card { display: flex; justify-content: space-between; gap: 12px; padding: 16px; }
+  .event-card .event-name { font-weight: 500; font-size: 14px; margin: 8px 0 6px; }
+  .event-card .event-meta { font-size: 12px; color: var(--text-2); line-height: 1.7; }
+  .event-card .poster { width: 80px; height: 80px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">🏓</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="멤버십">🎫</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar avatar-danger">WMG</span>
+    </div>
+  </header>
+
+  <section class="channel-hero">
+    <div class="hero-info">
+      <div class="name-row">
+        <h1>와우매니지먼트그룹</h1>
+        <span class="verified-badge">✓</span>
+      </div>
+      <div class="stats-row">
+        <span>팔로워 <b>198</b></span>
+        <span>팔로잉 <b>2</b></span>
+      </div>
+      <p class="intro">와우매니지먼트그룹 피클볼 채널입니다. 함께 성장해요! <span class="more">더보기</span></p>
+      <div class="actions-row">
+        <span class="layout-btn-wrap">
+          <a class="btn btn-secondary" href="channel-layout.html">홈 레이아웃 설정</a>
+          <span class="notification-dot"></span>
+        </span>
+        <a class="btn btn-secondary" href="settings-basic.html">채널 관리</a>
+      </div>
+    </div>
+  </section>
+
+  <nav class="channel-tabs">
+    <a class="tab active" href="channel-home.html">홈</a>
+    <a class="tab" href="channel-match.html">경기</a>
+    <a class="tab" href="channel-event.html">이벤트</a>
+    <a class="tab" href="channel-results.html">경기 결과</a>
+    <a class="tab" href="channel-ranking-doubles.html">팀 랭킹</a>
+    <a class="tab" href="channel-team.html">팀</a>
+    <a class="tab" href="channel-content.html">콘텐츠</a>
+    <a class="tab" href="channel-community.html">커뮤니티</a>
+    <a class="tab" href="channel-info.html">정보</a>
+  </nav>
+
+  <main class="channel-content">
+    <div class="channel-container">
+
+      <!-- 커뮤니티 섹션 -->
+      <section>
+        <div class="section-head">
+          <h2 class="section-name">커뮤니티</h2>
+          <a class="more-link" href="channel-community.html">더보기 ›</a>
+        </div>
+        <div class="post-grid">
+          <article class="post-card">
+            <div class="thumb">🖼️</div>
+            <div class="body">
+              <p class="post-meta">전체 공개 · 2시간 전</p>
+              <p class="post-text">오늘 첫 피클볼 레슨 다녀왔어요! 생각보다 훨씬 재밌네요 🏓 다음 주에도 예약했습니다.</p>
+              <div class="react-chips">
+                <span class="react-chip">👍 12</span>
+                <span class="react-chip">😍 8</span>
+                <span class="react-chip">😐 2</span>
+              </div>
+            </div>
+          </article>
+          <article class="post-card">
+            <div class="thumb">🖼️</div>
+            <div class="body">
+              <p class="post-meta">전체 공개 · 5시간 전</p>
+              <p class="post-text">듀프 3.5 이상 게임 파트너 구합니다. 주말 오전 가능하신 분 댓글 남겨주세요!</p>
+              <div class="react-chips">
+                <span class="react-chip">👍 24</span>
+                <span class="react-chip">😍 15</span>
+                <span class="react-chip">😐 3</span>
+              </div>
+            </div>
+          </article>
+          <article class="post-card">
+            <div class="thumb">🖼️</div>
+            <div class="body">
+              <p class="post-meta">전체 공개 · 1일 전</p>
+              <p class="post-text">신상 패들 리뷰 올렸습니다. 스핑감이 확실히 다르네요, 궁금하신 분들은 커뮤니티 게시판 확인해주세요.</p>
+              <div class="react-chips">
+                <span class="react-chip">👍 41</span>
+                <span class="react-chip">😍 27</span>
+                <span class="react-chip">😐 5</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 이벤트 섹션 -->
+      <section class="mt-32">
+        <div class="section-head">
+          <h2 class="section-name">이벤트</h2>
+          <a class="more-link" href="channel-event.html">더보기 ›</a>
+        </div>
+        <div class="event-grid">
+          <article class="card event-card">
+            <div>
+              <span class="badge badge-green">접수중</span>
+              <p class="event-name">2026 와우매니지먼트그룹 스프링 오픈 피클볼 챔피언십</p>
+              <p class="event-meta">📅 2026.04.18<br>📍 대전 유성구 피클볼파크<br>👤 와우매니지먼트그룹</p>
+            </div>
+            <div class="thumb poster">🏓</div>
+          </article>
+          <article class="card event-card">
+            <div>
+              <span class="badge badge-danger">진행중</span>
+              <p class="event-name">카메라파이 스튜디오 x 대전 피클볼 클럽 친선 대회</p>
+              <p class="event-meta">📅 2026.03.28<br>📍 대전 서구 둘원스포츠센터<br>👤 카메라파이 스튜디오</p>
+            </div>
+            <div class="thumb poster">🏓</div>
+          </article>
+          <article class="card event-card">
+            <div>
+              <span class="badge badge-neutral">종료</span>
+              <p class="event-name">제1회 전국 아마추어 피클볼 페스티벌</p>
+              <p class="event-meta">📅 2026.02.15<br>📍 청주 석오스포츠센터<br>👤 대한피클볼협회</p>
+            </div>
+            <div class="thumb poster">🏓</div>
+          </article>
+        </div>
+      </section>
+
+      <div class="divider mt-32"></div>
+    </div>
+  </main>
+
+  <footer class="channel-footer">
+    <div class="links">
+      <a href="#">이용약관</a><span class="sep"></span>
+      <a href="#">개인정보처리방침</a><span class="sep"></span>
+      <a href="#">앱 문의</a><span class="sep"></span>
+      <a href="#">사업 문의</a><span class="sep"></span>
+      <a href="#">광고 문의</a><span class="sep"></span>
+      <a href="#">중계 문의</a>
+    </div>
+    <p class="company">주식회사 와우매니지먼트그룹&nbsp;&nbsp;|&nbsp;&nbsp;대표 김태훈&nbsp;&nbsp;|&nbsp;&nbsp;사업자등록번호 214-88-01234</p>
+    <p class="company">서울특별시 강남구 테헤란로 123, 8층&nbsp;&nbsp;|&nbsp;&nbsp;고객센터 02-1234-5678&nbsp;&nbsp;|&nbsp;&nbsp;contact@wowmg.com</p>
+    <p class="copyright">© 2024 - Vault Micro, Inc.</p>
+  </footer>
+
+</div>
+</body>
+</html>

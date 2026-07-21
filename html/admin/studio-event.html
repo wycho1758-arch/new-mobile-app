@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스튜디오 · 이벤트 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .studio-main { max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; }
+  .title-row { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+  .title-row h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .seg-tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 4px; }
+  .seg-tabs .seg { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: var(--r-pill); font-size: 14px; font-weight: 500; color: var(--text-2); }
+  .seg-tabs .seg.active { background: var(--brand); color: #fff; font-weight: 700; }
+  .title-row .create-btn { margin-left: auto; }
+
+  .promo-banner {
+    background: var(--accent); color: #fff; border-radius: var(--r-card);
+    padding: 24px 32px; box-shadow: var(--shadow-card);
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    margin-bottom: 28px;
+  }
+  .promo-banner .pb-head { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .promo-banner .pb-sub { font-size: 14px; opacity: .85; }
+  .promo-banner .pb-illust { font-size: 48px; line-height: 1; }
+
+  .filter-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .filter-row .select { width: 240px; flex-shrink: 0; }
+  .filter-row .input { flex: 1; }
+
+  .counter-row { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; }
+  .counter-row .count strong { font-size: 19px; color: var(--brand-deep); margin: 0 2px; }
+  .counter-row .toggle-group { display: inline-flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 14px; }
+  .counter-row .right { margin-left: auto; display: flex; gap: 8px; }
+
+  .month-header { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+  .event-list { padding: 0 20px; }
+  .event-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .event-row:last-child { border-bottom: none; }
+  .event-row .date-block { width: 56px; text-align: center; flex-shrink: 0; }
+  .event-row .date-block .day { font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .event-row .date-block .weekday { font-size: 12px; color: var(--text-2); }
+  .event-row .status { width: 96px; flex-shrink: 0; }
+  .event-row .info { flex: 1; min-width: 0; }
+  .event-row .name-row { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+  .event-row .meta { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+  .event-row .poster { width: 64px; height: 64px; flex-shrink: 0; }
+  .event-row .kebab { color: var(--text-2); font-size: 18px; font-weight: 700; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="left-group">
+      <button class="icon-btn" aria-label="메뉴">☰</button>
+      <span class="logo-mark">🏓</span>
+      <span class="brand-name">카메라파이 스튜디오</span>
+    </div>
+    <div class="right-group">
+      <button class="icon-btn" aria-label="내 티켓">🎫</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <span class="avatar">WMG</span>
+    </div>
+  </header>
+
+  <main class="studio-main">
+
+    <div class="title-row">
+      <h1>피클볼 이벤트</h1>
+      <div class="seg-tabs">
+        <button class="seg active">이벤트</button>
+        <button class="seg">오픈 플레이 <span class="badge badge-blue">BETA</span></button>
+      </div>
+      <button class="btn btn-primary create-btn">＋ 이벤트 생성하기</button>
+    </div>
+
+    <section class="promo-banner">
+      <div>
+        <p class="pb-head">마라톤 대회 소식을 한눈에! 🏃✨</p>
+        <p class="pb-sub">국내 마라톤 대회 알림 채널 팔로우하고 알림받으세요.</p>
+      </div>
+      <span class="pb-illust">🏃</span>
+    </section>
+
+    <div class="filter-row">
+      <select class="select"><option selected>피클볼</option></select>
+      <select class="select"><option selected>모든 이벤트</option></select>
+      <input class="input" type="text" placeholder="내용을 입력하세요">
+    </div>
+
+    <div class="counter-row">
+      <span class="count">전체 <strong>26</strong>개의 이벤트</span>
+      <label class="toggle-group">
+        <span class="toggle"><input type="checkbox"><span class="knob"></span></span>
+        지난 이벤트 보기
+      </label>
+      <div class="right">
+        <button class="btn btn-sm btn-secondary">접수중</button>
+        <button class="btn btn-sm btn-secondary">접수 마감임박</button>
+      </div>
+    </div>
+
+    <h2 class="month-header">7월</h2>
+
+    <section class="table-card event-list">
+
+      <div class="event-row">
+        <div class="date-block"><div class="day">18</div><div class="weekday">토</div></div>
+        <span class="status"><span class="badge badge-green">PLUS</span></span>
+        <div class="info">
+          <div class="name-row">2026년도 한강 비기너스 리그 대회 - 남자복식 비기너 <span class="badge badge-blue">DUPR</span></div>
+          <p class="meta">📍 서울 한강공원 피크닉장</p>
+          <p class="meta">👤 와우매니지먼트그룹</p>
+        </div>
+        <div class="thumb poster">🏓</div>
+        <button class="kebab" aria-label="더보기">⋮</button>
+      </div>
+
+      <div class="event-row">
+        <div class="date-block"><div class="day">19</div><div class="weekday">일</div></div>
+        <span class="status"><span class="badge badge-danger">접수 마감임박</span></span>
+        <div class="info">
+          <div class="name-row">2026 주말 한강리그 동호인 피클볼대회 – 여자복식 2.5 (16팀)</div>
+          <p class="meta">📍 서울 한강공원 뚝섬지구</p>
+          <p class="meta">👤 한강피클볼클럽</p>
+        </div>
+        <div class="thumb poster">🏓</div>
+        <button class="kebab" aria-label="더보기">⋮</button>
+      </div>
+
+      <div class="event-row">
+        <div class="date-block"><div class="day">25</div><div class="weekday">토</div></div>
+        <span class="status"><span class="badge badge-neutral">종료</span></span>
+        <div class="info">
+          <div class="name-row">2026 충청권 피클볼협회 연합 친선경기 대회 <span class="badge badge-blue">DUPR</span></div>
+          <p class="meta">📍 대전 유성구 피클볼파크</p>
+          <p class="meta">👤 충청권피클볼협회</p>
+        </div>
+        <div class="thumb poster">🏓</div>
+        <button class="kebab" aria-label="더보기">⋮</button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

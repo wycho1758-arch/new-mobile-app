@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>모달 갤러리 — 카메라파이 스튜디오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .gallery { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
+  .gallery-title { font-size: 24px; font-weight: 700; margin-bottom: 40px; }
+  .modal-section { margin-bottom: 56px; }
+  .modal-caption { font-size: 15px; font-weight: 700; color: var(--text-2); margin-bottom: 16px; }
+  .modal-caption::before { content: "◇ "; color: var(--brand); }
+
+  /* modal helpers (page-specific) */
+  .modal .field { max-width: none; margin-bottom: 20px; }
+  .modal .field:last-child { margin-bottom: 0; }
+  .modal-progress { height: 4px; border-radius: var(--r-lg) var(--r-lg) 0 0; background: var(--border); overflow: hidden; }
+  .modal-progress .fill { height: 100%; width: 12.5%; background: var(--brand); }
+  .help-dot {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: var(--r-pill);
+    background: var(--surface-tint); color: var(--brand-deep);
+    font-size: 11px; font-weight: 700; margin-left: 6px; vertical-align: 2px;
+  }
+  .req { color: var(--danger); }
+  .char-count { text-align: right; font-size: 12px; color: var(--text-3); margin-top: 6px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .foot-half { justify-content: stretch; }
+  .foot-half .btn { flex: 1; }
+
+  .or-divider { display: flex; align-items: center; gap: 16px; color: var(--text-3); font-size: 12px; margin: 20px 0; }
+  .or-divider::before, .or-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  .empty-box {
+    border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+    padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    color: var(--text-3); font-size: 14px;
+  }
+
+  .radio-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .radio-row .rc {
+    width: 20px; height: 20px; border-radius: var(--r-pill);
+    border: 2px solid var(--border-strong); flex-shrink: 0;
+  }
+  .radio-row.selected { background: var(--brand-soft); color: var(--brand-deep); font-weight: 700; }
+  .radio-row.selected .rc { border-color: var(--brand); background: var(--brand); box-shadow: inset 0 0 0 4px #fff; }
+
+  .confirm-modal { text-align: center; padding: 24px; }
+  .confirm-modal .close-row { text-align: right; color: var(--text-3); font-size: 16px; }
+  .confirm-modal h3 { font-size: 19px; font-weight: 700; margin: 12px 0 8px; }
+  .confirm-modal p { font-size: 14px; color: var(--text-2); margin-bottom: 24px; }
+  .confirm-modal .btn-row { display: flex; gap: 8px; }
+  .confirm-modal .btn-row .btn { flex: 1; }
+
+  /* 이벤트 생성 유형 선택 */
+  .type-modal { width: 1160px; padding: 40px; }
+  .type-modal .tm-title { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .type-modal .tm-sub { font-size: 15px; color: var(--text-2); margin: 8px 0 32px; }
+  .type-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .type-card {
+    border: 1px solid var(--border); border-radius: var(--r-card);
+    background: var(--surface); padding: 24px;
+    transition: border-color .15s, box-shadow .15s; cursor: pointer;
+  }
+  .type-card:hover { border-color: var(--brand-border); box-shadow: var(--shadow-soft); }
+  .type-card .icon-box {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--accent-soft); font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 16px 0;
+  }
+  .type-card h4 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+  .type-card .tc-desc { font-size: 14px; color: var(--text-2); min-height: 63px; }
+  .type-card ul { list-style: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .type-card ul li { font-size: 14px; color: var(--text-2); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="gallery">
+  <h1 class="gallery-title">모달 갤러리</h1>
+
+  <!-- ============ 1. 경기 생성하기 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 경기 생성하기</p>
+    <div class="modal-backdrop static">
+      <div class="modal" style="width: 560px;">
+        <div class="modal-progress"><div class="fill"></div></div>
+        <div class="modal-head">
+          <h3>경기 생성하기 <span class="help-dot">?</span></h3>
+          <button class="close" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label class="field-label">경기 종목</label>
+            <select class="select"><option selected>피클볼</option></select>
+          </div>
+          <div class="field">
+            <label class="field-label">선수 구분</label>
+            <select class="select"><option selected>동호회/동아리</option></select>
+          </div>
+          <div class="field">
+            <label class="field-label">경기 이름<span class="req">*</span></label>
+            <input class="input" type="text" placeholder="경기 이름을 입력하세요">
+          </div>
+          <div class="field">
+            <label class="field-label">경기 설명</label>
+            <textarea class="textarea" placeholder="경기에 대한 설명을 입력하세요"></textarea>
+            <p class="char-count">0/1000</p>
+          </div>
+          <div class="two-col">
+            <div class="field">
+              <label class="field-label">경기 날짜<span class="req">*</span></label>
+              <input class="input" type="text" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="field">
+              <label class="field-label">시작 시간<span class="req">*</span></label>
+              <input class="input" type="text" placeholder="HH:MM">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">경기 상태<span class="req">*</span></label>
+            <select class="select"><option selected>예정</option></select>
+          </div>
+          <div class="field">
+            <label class="field-label">공개 범위<span class="req">*</span></label>
+            <select class="select"><option selected>전체 공개</option></select>
+          </div>
+          <div class="divider"></div>
+          <div class="field">
+            <label class="field-label">이미지 선택</label>
+            <div class="dropzone">이미지를 드래그하거나 선택하세요</div>
+            <label class="row gap-8 mt-16">
+              <span class="toggle"><input type="checkbox" checked><span class="knob"></span></span>
+              대표 이미지로 설정
+            </label>
+          </div>
+          <div class="field">
+            <label class="field-label">리그 이름</label>
+            <input class="input" type="text" placeholder="리그 이름을 입력하세요">
+          </div>
+          <div class="field">
+            <label class="field-label">경기 장소</label>
+            <input class="input" type="text" placeholder="경기 장소를 입력하세요">
+          </div>
+          <div class="field">
+            <label class="field-label">해시태그</label>
+            <div class="row gap-8">
+              <span class="chip">#공용 <span class="x">×</span></span>
+              <span class="chip">#동호회/동아리 <span class="x">×</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary">다음</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. 재생목록 만들기 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 재생목록 만들기</p>
+    <div class="modal-backdrop static">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>재생목록 만들기 <span class="help-dot">?</span></h3>
+          <button class="close" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label class="field-label">제목<span class="req">*</span></label>
+            <input class="input" type="text" placeholder="재생목록 제목을 입력하세요">
+          </div>
+          <div class="field">
+            <label class="field-label">설명</label>
+            <textarea class="textarea" placeholder="재생목록에 대한 설명을 입력하세요"></textarea>
+            <p class="char-count">0/100</p>
+          </div>
+          <div class="field">
+            <label class="field-label">콘텐츠</label>
+            <div class="empty-box">
+              <span>추가된 콘텐츠가 없습니다</span>
+              <button class="btn btn-sm btn-primary">콘텐츠 추가하기</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">공개범위</label>
+            <select class="select"><option selected>전체 공개</option></select>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary">완료</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. 동영상 추가하기 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 동영상 추가하기</p>
+    <div class="modal-backdrop static">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>동영상 추가하기 <span class="help-dot">?</span></h3>
+          <button class="close" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label class="field-label">링크</label>
+            <input class="input" type="text" placeholder="동영상 URL을 입력하세요">
+          </div>
+          <div class="or-divider">또는</div>
+          <div class="field">
+            <label class="field-label">파일 선택</label>
+            <div class="dropzone">
+              <div>파일을 드래그하거나 선택하세요</div>
+              <div class="text-xs muted-3 mt-8">20분 이내, 1GB 미만의 파일을 업로드해주세요</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary">다음</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. 새 게시판 만들기 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 새 게시판 만들기</p>
+    <div class="modal-backdrop static">
+      <div class="modal" style="width: 335px;">
+        <div class="modal-head">
+          <h3>새 게시판 만들기</h3>
+          <button class="close" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label class="field-label">게시판 이름</label>
+            <input class="input" type="text" placeholder="예: 가입 인사, 장비 추천 등">
+          </div>
+          <div class="field">
+            <label class="field-label">게시판 설명</label>
+            <textarea class="textarea" style="min-height:62px" placeholder="게시판 상단에 한 줄로 보일 내용을 적어주세요."></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">쓰기 권한</label>
+            <select class="select"><option selected>전체 방문자</option></select>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary" disabled>저장하기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. 종목 선택 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 종목 선택</p>
+    <div class="modal-backdrop static">
+      <div class="modal" style="width: 400px;">
+        <div class="modal-head">
+          <h3>종목 선택</h3>
+          <button class="close" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="radio-row"><span class="rc"></span>🏸 배드민턴</div>
+          <div class="radio-row selected"><span class="rc"></span>🏓 피클볼</div>
+          <div class="radio-row"><span class="rc"></span>🎾 빠델</div>
+        </div>
+        <div class="modal-foot foot-half">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary">확인</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. 경기생성 취소확인 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 경기생성 취소확인</p>
+    <div class="modal-backdrop static">
+      <div class="modal confirm-modal" style="width: 400px;">
+        <div class="close-row"><button class="close" aria-label="닫기">✕</button></div>
+        <h3>경기 생성을 그만두시겠습니까?</h3>
+        <p>입력한 경기 정보는 모두 사라져요.</p>
+        <div class="btn-row">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary">확인</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. 게시글 작성하기 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 게시글 작성하기</p>
+    <div class="modal-backdrop static">
+      <div class="modal" style="width: 700px;">
+        <div class="modal-head">
+          <h3>게시글 작성하기</h3>
+          <button class="close" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="muted mb-16">커뮤니티에 올라갈 게시글을 작성해보세요.</p>
+          <div class="field">
+            <label class="field-label">내용<span class="req">*</span></label>
+            <textarea class="textarea" style="min-height:120px" placeholder="내용을 입력하세요."></textarea>
+            <p class="char-count">0/700</p>
+          </div>
+          <div class="field">
+            <label class="field-label">이미지 선택</label>
+            <div class="dropzone">
+              <div class="dz-icon">🖼️</div>
+              <div>이미지 파일을 드래그 하거나 파일을 선택해주세요.</div>
+              <div class="text-xs muted-3 mt-8">(2000×2000px 이하의 정방형(1:1) 이미지 권장)</div>
+              <button class="btn btn-secondary mt-16">이미지 업로드</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">공개 범위</label>
+            <select class="select"><option selected>전체 공개</option></select>
+          </div>
+        </div>
+        <div class="modal-foot foot-half">
+          <button class="btn btn-secondary">취소</button>
+          <button class="btn btn-primary" disabled>완료</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. 이벤트 생성 유형 선택 ============ -->
+  <section class="modal-section">
+    <p class="modal-caption">모달 / 이벤트 생성 유형 선택</p>
+    <div class="modal-backdrop static">
+      <div class="modal type-modal">
+        <h2 class="tm-title">어떤 이벤트를 만드시나요?</h2>
+        <p class="tm-sub">목적에 맞는 이벤트 유형을 선택해주세요.</p>
+        <div class="type-cards">
+
+          <div class="type-card">
+            <span class="badge badge-green">PLUS</span>
+            <div class="icon-box">✨</div>
+            <h4>일반 행사/공지</h4>
+            <p class="tc-desc">세미나, 모임, 간단한 공지사항 등 경기 대진표가 필요 없는 모든 종류의 이벤트를 생성할 수 있습니다.</p>
+            <ul>
+              <li>✅ 단순 공지</li>
+              <li>✅ 참가 접수 및 티켓 판매</li>
+            </ul>
+          </div>
+
+          <div class="type-card">
+            <span class="badge badge-blue">BETA</span>
+            <div class="icon-box">🚩</div>
+            <h4>오픈플레이</h4>
+            <p class="tc-desc">팀이나 대진표를 정해두지 않고, 자유롭게 경기를 진행 할 수 있습니다.</p>
+            <ul>
+              <li>✅ 자유로운 팀 구성 및 경기 운영</li>
+              <li>✅ 대진표 없이 간편한 경기 진행</li>
+              <li>✅ 친목, 체험, 클럽 모임에 적합</li>
+            </ul>
+          </div>
+
+          <div class="type-card">
+            <span class="badge badge-green">PLUS</span>
+            <div class="icon-box">🏆</div>
+            <h4>스포츠 대회</h4>
+            <p class="tc-desc">각 스포츠 종목에 맞춰 경기를 생성하고 대진표를 효율적으로 운영할 수 있습니다.</p>
+            <ul>
+              <li>✅ 경기/종목별 구분 설정</li>
+              <li>✅ 참가 접수 및 일부 종목 대진표 제공</li>
+              <li>✅ DUPR 공식 기록 연동 (피클볼)</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
